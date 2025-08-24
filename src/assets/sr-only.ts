@@ -1,0 +1,14 @@
+import { css } from "lit";
+
+export const srOnly = css`
+  .sr-only {
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border-width:0;
+    width:1px;
+    height:1px;
+    margin:-1px;
+    padding:0;
+    position:absolute;
+    overflow:hidden
+  };`;
