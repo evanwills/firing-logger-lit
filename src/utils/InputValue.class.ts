@@ -3,14 +3,14 @@ import type { FReportValidity, TFauxValidity, TTrueValidity } from '../types/fau
 import { getTrueValidity } from './event.utils';
 
 export default class {
-  _value : string | number;
+  _value : string | number | object;
 
   _validity : TTrueValidity;
 
   _reportValidity : null | FReportValidity;
 
   constructor(
-    value : string | number,
+    value : string | number | object,
     validity: TFauxValidity,
     reportValidity : null | FReportValidity = null,
   ) {

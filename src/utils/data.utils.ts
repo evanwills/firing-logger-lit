@@ -100,31 +100,35 @@ export const isNum = (input : unknown) : boolean => {
 /**
  * Try to force a value to be a number
  *
- * @param {unknown} input Value to be forced to a number
- * @param {boolean} float Whether or not output should be a float
+ * @param {unknown} input      Value to be forced to a number
+ * @param {number}  _default   Default value to return if input could
+ *                             not be converted into a number
+ * @param {boolean} forceFloat Whether or not output should be a
+ *                             float
  *
  * @returns {number|null} Number if value could be forced to a number.
  *                        NULL otherwise
  */
 export const forceNum = (
   input : unknown,
-  float : boolean = false,
-) : number | null => {
+  _default: number = 0,
+  forceFloat : boolean = false,
+) : number => {
   let output = input;
 
   if (typeof input === 'string') {
-    output = (float === true)
+    output = (forceFloat === true)
       ? parseFloat(input)
       : parseInt(input, 10);
   }
 
   if (isNum(output) === true) {
-    return (float === true)
+    return (forceFloat === true)
       ? (output as number)
       : Math.round((input as number));
   }
 
-  return null;
+  return _default;
 };
 
 /**
@@ -289,3 +293,12 @@ export const simpleStr = (input : string) : string => {
 
   return input.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '');
 };
+
+export const calculateExpectedTemp = (
+  startTemp : number,
+  timeNow : number,
+  startTime : number,
+  rampRate : number,
+) : number => Math.round(
+  startTemp + (((timeNow - startTime) / (3600 * 1000)) * rampRate),
+);

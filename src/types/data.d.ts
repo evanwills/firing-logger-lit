@@ -1,22 +1,24 @@
+import type { SVGTemplateResult } from "lit";
+
 export type ISO8601 = string;
 export type ID = string;
 
 // ========================================================
 // START: REDUX types
 
-interface Action {
+export interface Action {
   type: string,
   payload: object
 }
 
-interface FancyPayload {
+export interface FancyPayload {
   id: ID,
   value: any,
   isChecked: boolean,
   extra: string|number,
   suffix: string|number
 }
-interface FancyAction extends Action {
+export interface FancyAction extends Action {
   type: string,
   payload: FancyPayload,
   href: string | null,
@@ -29,14 +31,14 @@ interface FancyAction extends Action {
 // START: stored data types
 
 
-interface Kiln {
+export interface Kiln {
   id: ID,
   brand: string,
   model: string,
   name: string,
   installDate: ISO8601|null,
-  fuel: fuelSource,
-  type: kilnType,
+  fuel: EfuelSource,
+  type: EkilnType,
   maxTemp: number,
   maxProgramCount: number,
   width: number,
@@ -59,11 +61,11 @@ interface Kiln {
   isHot: boolean
 }
 
-interface  EquipmentLogEntry {
+export interface  EquipmentLogEntry {
   id: ID,
   equipmentID: string,
   date: number,
-  type: equipmentLogType,
+  type: EequipmentLogType,
   user: string,
   shortDesc: string,
   longDesc: string,
@@ -72,11 +74,30 @@ interface  EquipmentLogEntry {
   verifiedBy: string | null
 }
 
-interface FiringProgram {
+export interface IFiringProgramData {
   id: ID,
   kilnID: string,
   controllerProgramID: number,
-  type: firingType,
+  type: EfiringType,
+  name: string,
+  version: number,
+  description: string,
+  steps: [FiringStep],
+  created: ISO8601,
+  createdBy: ID,
+  superseded: boolean,
+  parentID: string,
+  used: boolean,
+  useCount: number,
+  deleted: boolean,
+  locked: boolean
+}
+
+export interface IStoredFiringProgram extends IFiringProgramData {
+  id: ID,
+  kilnID: string,
+  controllerProgramID: number,
+  type: EfiringType,
   name: string,
   version: number,
   description: string,
@@ -94,26 +115,25 @@ interface FiringProgram {
   locked: boolean
 }
 
-interface FiringProgramTmp implements FiringProgram {
+export interface FiringProgramTmp implements IStoredFiringProgram {
   confirmed: boolean,
   errors: object,
   lastField: string,
   mode: string
 }
 
-type FiringStep = {
+export type FiringStep = {
   endTemp: number, // positive degrees
   rate: number,    // degrees per hour
   hold: number     // minutes to hold at end temperature
 }
 
-
-interface FiringLog {
+export interface FiringLog {
   id: ID,
   kilnID: string,
   programID: string,
   diaryID: string|null,
-  firingType: firingType,
+  firingType: EfiringType,
   start: number,
   end: number|null,
   started: boolean,
@@ -126,64 +146,64 @@ interface FiringLog {
   responsibleLog: [ResponsibleLogEntry]
 }
 
-interface TemperatureLogEntry {
+export interface TemperatureLogEntry {
   userID: string,
   time: number,
   tempExpected: number,
   tempActual: number,
-  state: temperatureState,
+  state: EtemperatureState,
   notes: string,
 }
 
-interface ResponsibleLogEntry {
+export interface ResponsibleLogEntry {
   time: Date,
   userID: string,
   isStart: boolean
 }
 
-interface Kilns {
+export interface Kilns {
   all: [Kiln],
   tmp: Kiln
 }
 
-interface AllFiringPrograms {
+export interface AllFiringPrograms {
   all: [FiringProgram]
   tmp: FiringProgram
 }
 
-type FiringLogs = [FiringLog]
-type equipmentLog = [EquipmentLogEntry]
-type users = [User]
-type calendar = [DiaryEntry]
+export type FiringLogs = [FiringLog]
+export type equipmentLog = [EquipmentLogEntry]
+export type users = [User]
+export type calendar = [DiaryEntry]
 
-interface DiaryEntry {
-    id: ID,
-    date: Date,
-    kilnID: string,
-    ownerID: string,
-    approverID: string,
-    programID: string,
-    firingType: firingType,
-    notes: string,
-    confirmed: boolean,
-    started: boolean,
+export interface DiaryEntry {
+  id: ID,
+  date: Date,
+  kilnID: string,
+  ownerID: string,
+  approverID: string,
+  programID: string,
+  firingType: EfiringType,
+  notes: string,
+  confirmed: boolean,
+  started: boolean,
 }
 
-interface User {
-    id: ID,
-    firstName: string
-    lastName: string,
-    preferredName: string,
-    phone: string,
-    email: string,
-    canFire: boolean,
-    canLog: boolean,
-    canPack: boolean,
-    canUnpack: boolean,
-    canPrice: boolean,
+export interface User {
+  id: ID,
+  firstName: string
+  lastName: string,
+  preferredName: string,
+  phone: string,
+  email: string,
+  canFire: boolean,
+  canLog: boolean,
+  canPack: boolean,
+  canUnpack: boolean,
+  canPrice: boolean,
 }
 
-interface Studio {
+export interface Studio {
   kilns: [kiln],
   firingPrograms: AllFiringPrograms,
   firingLogs: FiringLogs,
@@ -197,22 +217,38 @@ interface Studio {
 // ========================================================
 // START: view only types
 
+export type TSvgRenderLog = {
+  time: string,
+  duration: string,
+  temp: number
+}
 
-interface FiringReport {
+export type TSvgLogPathD = {
+  time: number,
+  temp: number,
+}
+
+export type TSvgUnit = {
+  offset: number,
+  value: string|number|SVGTemplateResult,
+}
+
+
+export interface FiringReport {
     kilnName: string,
     program: firingProgram,
-    firingType: firingType,
-    state: firingState,
+    firingType: EfiringType,
+    kilnState: EprogramState,
     responsible: string,
     startTime: Date,
     endTime: Date,
-    firingState: firingState,
-    tempState: temperatureState,
+    programState: EprogramState,
+    tempState: EtemperatureState,
     log: [reportRow]
     currentRate: number
 }
 
-interface ReportRow {
+export interface ReportRow {
     time: Date,
     temp: number,
     expectedTemp: number,
@@ -220,7 +256,7 @@ interface ReportRow {
     expectedRate: number
 }
 
-interface veiw {
+export interface veiw {
   route: [string],
   title: string,
   url: string,
@@ -228,14 +264,14 @@ interface veiw {
   settingsOpen: false
 }
 
-interface App {
-    currentUser: user,
-    reports: [firingReport],
-    view: view,
-    stateSlice: kilns | allFiringPrograms | firingLogs | maintenance | issues | users | diary
+export interface App {
+  currentUser: user,
+  reports: [firingReport],
+  view: Eview,
+  stateSlice: kilns | allFiringPrograms | firingLogs | maintenance | issues | users | diary
 }
 
-function view (state: object, eHandler: function, routes: array) : html
+function Fview (state: object, eHandler: function, routes: array) : html
 
 
 //  END:  view only types
@@ -243,44 +279,58 @@ function view (state: object, eHandler: function, routes: array) : html
 // START: enums
 
 
-enum firingType {
-    bisque,
-    glaze,
-    single,
-    luster,
-    onglaze
+enum EfiringType {
+  bisque,
+  glaze,
+  single,
+  luster,
+  onglaze
 }
 
-enum firingState {
-    pending,
-    started,
-    completed,
-    aborted
+enum EprogramState {
+  pending,
+  started,
+  completed,
+  aborted,
 }
 
-enum temperatureState {
-    nominal,
-    over,
-    under
+enum EkilnFiringState {
+  available,
+  packing,
+  packed,
+  heating,
+  holding,
+  cooling,
+  cold,
+  unpacking,
+  emptied,
 }
 
-enum view {
-    diary,
-    firings,
-    kilns,
-    programs,
-    report,
-    users
+enum EtemperatureState {
+  nominal,
+  over,
+  overError,
+  under,
+  underError,
 }
 
-enum fuelSource {
+enum Eview {
+  diary,
+  firings,
+  kilns,
+  programs,
+  report,
+  users
+}
+
+enum EfuelSource {
   electric,
   gas,
   wood,
   oil,
 }
 
-enum kilnType {
+enum EkilnType {
   'general',
   'raku',
   'platter',
@@ -288,13 +338,13 @@ enum kilnType {
   'annagamma'
 }
 
-enum equipmentLogType {
+enum EequipmentLogType {
   usage,
   maintenance,
   problem
 }
 
-enum programStatus {
+enum EprogramStatus {
   unused,
   selected,
   used

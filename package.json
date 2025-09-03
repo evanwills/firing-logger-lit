@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "lit": "^3.3.1"
+    "lit": "^3.3.1",
+    "nanoid": "^5.1.5"
   },
   "devDependencies": {
     "typescript": "~5.8.3",

@@ -1,8 +1,11 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
-import litLogo from './assets/lit.svg'
-import viteLogo from '/vite.svg'
-import './components/log-entry-input'
+import { LitElement, css, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import litLogo from './assets/lit.svg';
+import viteLogo from '/vite.svg';
+import './components/log-entry-input';
+import './components/firing-plot';
+import { nanoid } from 'nanoid';
+import './data/flWatcher';
 
 /**
  * An example element.
@@ -16,15 +19,29 @@ export class FiringLogger extends LitElement {
    * Copy for the read the docs hint.
    */
   @property()
-  docsHint = 'Click on the Vite and Lit logos to learn more'
+  docsHint = 'Click on the Vite and Lit logos to learn more';
 
   /**
    * The number of times the button has been clicked.
    */
   @property({ type: Number })
-  count = 0
+  count = 0;
+
+  @state()
+  firingID = nanoid(10);
+
+  @state()
+  userID = nanoid(10);
 
   render() {
+    console.group('<firing-logger>.render()');
+    console.log('this.firingID:', this.firingID);
+    console.log('this.userID:', this.userID);
+    console.groupEnd();
+
+    const now = Date.now();
+    const start = now - (3600 * 1000 * 1.5);
+
     return html`
       <div>
         <a href="https://vite.dev" target="_blank">
@@ -37,18 +54,16 @@ export class FiringLogger extends LitElement {
       <slot></slot>
       <div class="card">
         <log-entry-input
-          id="entry"
-          not-metric
-          time=${Date.now()}
+          id="${this.firingID}"
+          time="${now}"
+          start-time=${start}
+          start-temp=${200}
+          ramp-rate=${150}
           user-name="Evan"
-          user-id="1234"></log-entry-input>
+          user-id="${this.userID}"></log-entry-input>
       </div>
-      <p class="read-the-docs">${this.docsHint}</p>
+      <firing-plot></firing-plot>
     `
-  }
-
-  private _onClick() {
-    this.count++
   }
 
   static styles = css`

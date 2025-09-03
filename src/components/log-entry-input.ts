@@ -7,6 +7,8 @@ import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-style
 import { ifDefined } from 'lit/directives/if-defined.js';
 import InputValueClass from '../utils/InputValue.class';
 import { classMap } from 'lit/directives/class-map.js';
+import { dispatchFLaction } from '../utils/event.utils';
+import { calculateExpectedTemp, forceNum } from '../utils/data.utils';
 
 /**
  * An example element.
@@ -37,6 +39,15 @@ export class LogEntryInput extends LitElement {
   @property({ type: String, attribute: 'user-id' })
   userID : string = '';
 
+  @property({ type: Number, attribute: 'ramp-rate' })
+  rampRate : number = 0;
+
+  @property({ type: Number, attribute: 'start-time' })
+  startTime : number = 0;
+
+  @property({ type: Number, attribute: 'start-temp' })
+  startTemp : number = 0;
+
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
@@ -63,6 +74,9 @@ export class LogEntryInput extends LitElement {
 
   @state()
   _timeError : boolean = false;
+
+  @state()
+  _expectedTemp : number = 0;
 
 
   //  END:  state
@@ -93,12 +107,14 @@ export class LogEntryInput extends LitElement {
   // START: event handlers
 
   handleOptionChange(event : InputEvent) : void {
+    event.preventDefault();
     console.group('<log-entry-input>.handleOptionChange()');
     console.log('event:', event);
     console.groupEnd();
   }
 
   toggleDialogue(event : InputEvent) : void {
+    event.preventDefault();
     // console.log('event:', event);
     if (this.dialogue === null
       && event.target instanceof HTMLButtonElement) {
@@ -111,15 +127,23 @@ export class LogEntryInput extends LitElement {
       this._time = Date.now();
       this._resetValues();
       this.dialogue.showModal();
+
+      if (this.rampRate > 0 && this.startTemp > 0 && this.startTime > 0) {
+        this._expectedTemp = calculateExpectedTemp(
+          this.startTemp,
+          this._time,
+          this.startTime,
+          this.rampRate,
+        );
+      }
     }
   }
 
   handleTimeChange(event : CustomEvent) : void {
+    event.preventDefault();
     if (event.detail instanceof InputValueClass) {
       if (event.detail.checkValidity() === true) {
-        this._time = (typeof event.detail.value === 'string')
-          ? parseInt(event.detail.value, 10)
-          : event.detail.value;
+        this._time = forceNum(event.detail.value, this._time);
 
         this._timeError = false;
       } else {
@@ -129,11 +153,10 @@ export class LogEntryInput extends LitElement {
   }
 
   handleTempChange(event : CustomEvent) : void {
+    event.preventDefault();
     if (event.detail instanceof InputValueClass) {
       if (event.detail.checkValidity() === true) {
-        this._temp = (typeof event.detail.value === 'string')
-          ? parseInt(event.detail.value, 10)
-          : event.detail.value;
+        this._temp = forceNum(event.detail.value, this._temp);
 
         this._tempError = false;
       } else {
@@ -143,6 +166,7 @@ export class LogEntryInput extends LitElement {
   }
 
   handleNotesChange(event : InputEvent) : void {
+    event.preventDefault();
     this._notes = (event.target as HTMLTextAreaElement).value.replace(/<.*?>/isg, '').substring(0, 500);
   }
 
@@ -156,7 +180,21 @@ export class LogEntryInput extends LitElement {
     if (this._tempError === false
       && this._timeError === false
       && this.dialogue !== null
-      && this.dialogue.open === true) {
+      && this.dialogue.open === true
+    ) {
+      dispatchFLaction(
+        this,
+        'submit-log-entry',
+        {
+          firingID: this.id,
+          temp: this._temp,
+          time: this._time,
+          notes: this._notes,
+          changes: this._options,
+        },
+        this.userID,
+      );
+
       this.dialogue.close();
       this._resetValues();
     }
@@ -228,6 +266,7 @@ export class LogEntryInput extends LitElement {
               <temperature-input
                 id="${this._getID('temp')}"
                 ?not-metric=${this.notMetric}
+                placeholder=${this._expectedTemp}
                 ?show-error=${ifDefined(this._tempError ? true : undefined)}
                 .value="${this._temp}"
                 @change=${this.handleTempChange}></temperature-input>
@@ -317,7 +356,7 @@ export class LogEntryInput extends LitElement {
     cursor: pointer;
   }
   @media screen and (min-width: 20rem) {
-    dialog { max-width: 18rem; }
+    dialog { max-width: 18.5rem; }
   }
   `;
 }

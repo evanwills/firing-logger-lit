@@ -1,9 +1,11 @@
 import { LitElement, css, html, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
-import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles';
-import { dispatchCustomEvent } from '../utils/event.utils';
-import type { FReportValidity, TTrueValidity } from '../types/fauxDom';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { c2f, f2c, x2x } from '../utils/conversions.utils';
+import { forceNum } from '../utils/data.utils';
+import { dispatchCustomEvent, getIncrement } from '../utils/event.utils';
+import type { FReportValidity, TTrueValidity } from '../types/fauxDom';
+import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles';
 // import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 /**
@@ -17,27 +19,57 @@ export class TemperatureInput extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  /**
+   * @property Whether or not to convert metric temperature to farenheight
+   */
   @property({ type: Boolean, attribute: 'not-metric' })
   notMetric : boolean = false;
 
+  /**
+   * @property Whether or not to show an error message for this field
+   */
   @property({ type: Boolean, attribute: 'show-error' })
   showError : boolean = false;
 
+  /**
+   * @property ID of the temperature input field
+   */
   @property({ type: String, attribute: 'id' })
   id : string = '';
 
+  /**
+   * @property Label string for the temperature input field label
+   */
   @property({ type: String, attribute: 'label' })
   label : string = 'Temperature';
 
+  /**
+   * @property Minimum temperature (in celsius) the user may enter.
+   */
   @property({ type: Number, attribute: 'min' })
   min : number = 0;
 
+  /**
+   * @property Maximum temperature (in celsius) the user may enter.
+   */
   @property({ type: Number, attribute: 'max' })
   max : number = 1400;
 
+  /**
+   * @property Placeholder (expected) temperature (in celsius)
+   */
+  @property({ type: Number, attribute: 'placeholder' })
+  placeholder: number = 0;
+
+  /**
+   * @property Whether or not to render values as read-only
+   */
   @property({ type: Boolean, attribute: 'readonly' })
   readonly : boolean = false;
 
+  /**
+   * @property Predefined temperature (in celsius)
+   */
   @property({ type: Number, attribute: 'value' })
   value : number = 0;
 
@@ -109,30 +141,71 @@ export class TemperatureInput extends LitElement {
       : input;
   }
 
+  _handleChangeInner(target: HTMLInputElement) : void {
+    if (this._reportValidity !== null) {
+      this._errorMsg = this._reportValidity((target.validity as TTrueValidity));
+    }
+    const value : string | number = typeof target.value === 'number'
+      ? target.value
+      : parseInt(target.value, 10);
+
+    dispatchCustomEvent(
+      this,
+      this._setValue(value as number),
+      (target.validity as TTrueValidity),
+      this._reportValidity
+    );
+  }
+
+  _getTargetVal(inc: number) : string {
+    return ((this.placeholder * 1) + inc).toString();
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
 
   handleChange(event : InputEvent) : void {
-    console.group('<temp-input>.handleChange()');
-    console.log('event:', event);
-    console.log('this._errorMsg (before):', this._errorMsg);
-    if (this._reportValidity !== null) {
-      this._errorMsg = this._reportValidity(
-        ((event.target as HTMLInputElement).validity as TTrueValidity),
-      );
-    }
-    const value : string | number = typeof (event.target as HTMLInputElement).value === 'number'
-      ? (event.target as HTMLInputElement).value
-      : parseInt((event.target as HTMLInputElement).value, 10);
+    this._handleChangeInner((event.target as HTMLInputElement));
+  }
 
-    dispatchCustomEvent(
-      this,
-      this._setValue(value as number),
-      ((event.target as HTMLInputElement).validity as TTrueValidity),
-      this._reportValidity
-    );
-    console.log('this._errorMsg (after):', this._errorMsg);
+  handleKeyUp(event: KeyboardEvent) : void {
+    if (typeof event.target !== 'undefined'
+      && event.target instanceof HTMLInputElement
+    ) {
+      const { inc, minus, _default } = getIncrement(event);
+      const val = forceNum(event.target.value, _default);
+
+      if (inc !== 0 && val > -273) {
+        if (val < 2) {
+          event.target.value = this._getTargetVal(inc);
+        } else if (inc > 1) {
+          event.target.value = ((val + inc) - minus).toString();
+        } else if (inc < -1) {
+          event.target.value = ((val + inc) + minus).toString();
+        }
+      }
+    }
+
+    this._handleChangeInner(event.target as HTMLInputElement);
+  }
+
+  /**
+   * If the input value is empty set input value to match placeholder
+   * value
+   *
+   * @param event
+   */
+  handleInput(event: InputEvent) : void {
+    const data = forceNum(event.data, -273);
+
+    if (event.inputType === 'insertReplacementText'
+      && event.target instanceof HTMLInputElement
+      && data > -273
+      && data < 2
+    ) {
+      event.target.value = this._getTargetVal((data === 1) ? 1 : -1);
+    }
   }
 
   //  END:  event handlers
@@ -184,9 +257,12 @@ export class TemperatureInput extends LitElement {
         id="${this.id}"
         max="${this._getValue(this.max)}"
         min="${this._getValue(this.min)}"
+        placeholder=${ifDefined((this.placeholder > 0) ? this._getValue(this.placeholder) : undefined)}
         step="1"
         .value="${(this.value > 0) ? this._getValue(this.value) : ''}"
-        @change=${this.handleChange} />
+        @change=${this.handleChange}
+        @input=${this.handleInput}
+        @keyup=${this.handleKeyUp} />
       `;
   }
 
@@ -227,7 +303,11 @@ export class TemperatureInput extends LitElement {
       --extra-left: 0.25rem;
     }
     ${logEntryInputStyle}
-    .input.temp { width: 3.5rem }
+    .input.temp {
+      padding-right: 0;
+      text-align: end;
+      width: 3.5rem;
+    }
   `;
 
   //  END:  styles

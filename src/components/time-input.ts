@@ -235,7 +235,7 @@ export class TimeInput extends LitElement {
       background: transparent;
       display: inline-block;
       padding: 0;
-      margin-left: 0.3rem;
+      margin-left: 0.75rem;
     }
     button:hover {
       cursor: pointer;

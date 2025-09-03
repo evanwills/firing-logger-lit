@@ -3,7 +3,7 @@ export const round = (input : number, points: number = 0) : number => {
     return Math.round(input);
   }
 
-  const factor = Math.pow(points, 10);
+  const factor = Math.pow(10, points);
 
   return (Math.round(input * factor) / factor);
 };
