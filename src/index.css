@@ -11,6 +11,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --rect-fill: transparent;
+  --rect-stroke: #625a86;
+  --rect-stroke-width: 1;
+  --grid-stroke: #fafafa;
+  --grid-stroke-width: 0.15;
+  --grid-dash:  5 10;
+  --log-colour: #cc5eff;
+  --log-width: 10;
+  --program-colour: #1da827;
+  --program-width: 7.5;
+  --program-dash: 15 15;
+  --font-size: 3rem;
+  --font-colour: #fff;
+  --font-weight: bold;
+  --font-height: 3rem;
 }
 
 a {
@@ -32,6 +48,10 @@ body {
 
 @media (prefers-color-scheme: light) {
   :root {
+    --rect-stroke: #2b1b6f;
+    --grid-stroke: #555;
+    --log-colour: #66195c;
+    --program-colour: #1d7527;
     color: #213547;
     background-color: #ffffff;
   }
