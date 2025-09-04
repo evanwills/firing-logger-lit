@@ -41,6 +41,18 @@ export class FiringPlot extends LitElement {
   _yOffset : number = 100;
 
   @state()
+  _gridX : number = 0;
+
+  @state()
+  _gridY : number = 0;
+
+  @state()
+  _gridStep : number = 100;
+
+  @state()
+  _tollerance : number = 200;
+
+  @state()
   _log : TSvgRenderLog[] = [
     { time: '2025-09-02T04:30:00+10:00', duration: '00:00', temp: 18 },
     { time: '2025-09-02T05:31:00+10:00', duration: '01:01', temp: 81 },
@@ -96,7 +108,7 @@ export class FiringPlot extends LitElement {
   parseLog() : TSvgLogPathD[] {
     return this._log.map((item) => {
       const _time = item.duration.split(':').map((t) => parseInt(t, 10));
-      const time = round(((_time[0] + (_time[1] / 60)) * 100), 2);
+      const time = round(((_time[0] + (_time[1] / 60)) * this._gridStep), 2);
 
       return { temp: item.temp, time };
     });
@@ -118,9 +130,13 @@ export class FiringPlot extends LitElement {
   getTempSteps() : TSvgUnit[] {
     const output : TSvgUnit[] = [];
     console.log('this._maxTemp:', this._maxTemp);
+    const max = this._maxTemp + this._gridStep
 
-    for (let a = 100; a < this._maxTemp + 100; a += 100) {
-      output.push({ offset: (this._maxTemp - a + 100), value: svg`${a}&deg;` });
+    for (let a = this._gridStep; a < max; a += this._gridStep) {
+      output.push({
+        offset: (this._maxTemp - a + this._gridStep + 2),
+        value: svg`${a}&deg;`
+      });
     }
 
     return output;
@@ -128,9 +144,21 @@ export class FiringPlot extends LitElement {
 
   getTimeSteps() : TSvgUnit[] {
     const output : TSvgUnit[] = [];
+    const max = this._maxTime + this._gridStep;
 
-    for (let a = 100; a < this._maxTime + 100; a += 100) {
-      output.push({ offset: (this._xOffset + a + 12), value: a / 100 });
+    for (let a = this._gridStep; a < max; a += this._gridStep) {
+      const hour = (a / this._gridStep);
+      /**
+       * @var extra - this is a hack to get the hour markers centred
+       *              below the vertical grid lines
+       */
+      const extra = (hour >= 10)
+        ? 24
+        : 12
+      const offset = (this._xOffset + a + extra);
+      if (offset < this._gridX) {
+        output.push({ offset, value: hour });
+      }
     }
 
     return output;
@@ -148,6 +176,24 @@ export class FiringPlot extends LitElement {
   //  END:  lifecycle methods
   // ------------------------------------------------------
   // START: helper render methods
+
+  hGrid(y: number) : SVGTemplateResult {
+    return svg`
+      <line
+        x1="${this._xOffset}"
+        x2="${this._gridX}"
+        y1="${y}"
+        y2="${y}" />`;
+  }
+
+  vGrid(x: number) : SVGTemplateResult {
+    return svg`
+      <line
+        x1="${x}"
+        x2="${x}"
+        y1="0"
+        y2="${this._gridY - this._yOffset}" />`;
+  }
 
   //  END:  helper render methods
   // ------------------------------------------------------
@@ -171,11 +217,11 @@ export class FiringPlot extends LitElement {
       ),
     );
 
-    const h = (this._maxTemp + 200);
-    const w = (this._maxTime + 250);
-    const vb = `0 0 ${w} ${h}`;
+    this._gridX = (this._maxTime + this._tollerance);
+    this._gridY = (this._maxTemp + this._tollerance);
+    const vb = `0 0 ${this._gridX} ${this._gridY}`;
 
-    const hLines = this.getLines(this._maxTemp + this._xOffset);
+    const hLines = this.getLines(this._maxTemp + this._xOffset - 100);
     const vLines = this.getLines((this._maxTime + 250), 250);
 
     const tempSteps = this.getTempSteps();
@@ -183,13 +229,17 @@ export class FiringPlot extends LitElement {
 
     return svg`
     <svg width="100%" height="100%" viewBox="${vb}">
-      <rect x="${this._xOffset}" y="0" width="${w - 100}" height="${h -100}"></rect>
+      <rect
+        x="${this._xOffset}"
+        y="0"
+        width="${this._gridX - this._xOffset}"
+        height="${this._gridY -this._yOffset}" />
       <g id="grid">
         <g id="horizontal-lines">
-          ${hLines.map((y : number) : SVGTemplateResult => svg`<line x1="100" y1="${y}" x2="${w}" y2="${y}" />`)}
+          ${hLines.map(this.hGrid.bind(this))}
         </g>
         <g id="vertical-lines">
-          ${vLines.map((x : number) : SVGTemplateResult => svg`<line x1="${x}" y1="0" x2="${x}" y2="${h - 100}" />`)}
+          ${vLines.map(this.vGrid.bind(this))}
         </g>
       </g>
       <g id="units">
@@ -198,7 +248,7 @@ export class FiringPlot extends LitElement {
           <tspan>
         </text>
         <text id="hours" class="units">
-          ${timeSteps.map((item) => svg`<tspan x="${item.offset}" y="${h - 50}">${item.value}</tspan>`)}
+          ${timeSteps.map((item) => svg`<tspan x="${item.offset}" y="${this._gridY - 40}">${item.value}</tspan>`)}
           <tspan>
         </text>
       </g>
@@ -214,48 +264,48 @@ export class FiringPlot extends LitElement {
 
   static styles = css`
     :host {
-      --rect-fill: #fff;
-      --rect-colour: #2b1b6f;
-      --rect-width: 0.15;
-      --grid-colour: #6e6e6e;
-      --grid-width: 0.15;
-      --grid-dash:  0.15, 0.45;
-      --log-colour: #66195c;
-      --log-width: 10;
-      --program-colour: #1d7527;
-      --program-width: 7.5;
-      --program-dash: 15 15;
-      --font-size: 3rem;
-      --font-colour: #fff;
-      --font-weight: bold;
-      --font-height: 3rem;
+      --rect-fill: inherit;
+      --rect-stroke: inherit;
+      --rect-stroke-width: inherit;
+      --grid-stroke: inherit;
+      --grid-stroke-width: inherit;
+      --grid-dash: inherit;
+      --log-stroke: inherit;
+      --log-stroke-width: inherit;
+      --program-stroke: inherit;
+      --program-stroke-width: inherit;
+      --program-dash: inherit;
+      --font-size: inherit;
+      --font-colour: inherit;
+      --font-weight: inherit;
+      --font-height: inherit;
     }
     rect {
-      fill: var(--rect-fill);
-      stroke: var(--rect-colour);
-      stroke-width: var(--rect-width);
+      fill: var(--rect-fill, transparent);
+      stroke: var(--rect-stroke, #625a86);
+      stroke-width: var(--rect-stroke-width, 1);
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10;
       stroke-opacity: 1;
     }
     line {
-      fill: var(--grid-fill);
+      fill: var(--grid-fill, none);
       fill-opacity: 1;
-      stroke: var(--grid-colour);
-      stroke-width: var(--grid-width);
+      stroke: var(--grid-stroke, #fafafa);
+      stroke-width: var(--grid-stroke-width, 0.15);
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10;
-      stroke-dasharray: var(--grid-dash);
+      stroke-dasharray: var(--grid-dash, 5 10);
       stroke-dashoffset: 0;
       stroke-opacity: 1;
     }
     .log {
       fill: none;
       fill-opacity: 1;
-      stroke: var(--log-colour);
-      stroke-width: var(--log-width);
+      stroke: var(--log-stroke, #cc5eff);
+      stroke-width: var(--log-stroke-width, 10);
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10;
@@ -265,23 +315,23 @@ export class FiringPlot extends LitElement {
     .program {
       fill: none;
       fill-opacity: 1;
-      stroke: var(--program-colour);
-      stroke-width: var(--program-width);
+      stroke: var(--program-stroke, #1da827);
+      stroke-width: var(--program-stroke-width, 7.5);
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10;
-      stroke-dasharray: var(--program-dash);
+      stroke-dasharray: var(--program-dash, 15 15);
       stroke-dashoffset: 0;
       stroke-opacity: 1;
     }
     .units, tspan {
-      color: var(--font-colour);
-      fill: var(--font-colour);
+      color: var(--font-colour, #fff);
+      fill: var(--font-colour, #fff);
       fill-opacity: 1;
-      font-size: var(--font-size);
-      font-weight: var(--font-weight);
+      font-size: var(--font-size, 3rem);
+      font-weight: var(--font-weight, bold);
       font-family: Arial;
-      line-height: var(--font-height);
+      line-height: var(--font-height,3rem);
       stroke: none;
       text-align: end;
       text-anchor: end;
