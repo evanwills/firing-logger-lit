@@ -15,13 +15,14 @@
   --rect-fill: transparent;
   --rect-stroke: #625a86;
   --rect-stroke-width: 1;
+  --grid-fill: none;
   --grid-stroke: #fafafa;
   --grid-stroke-width: 0.15;
   --grid-dash:  5 10;
-  --log-colour: #cc5eff;
-  --log-width: 10;
-  --program-colour: #1da827;
-  --program-width: 7.5;
+  --log-stroke: #cc5eff;
+  --log-stroke-width: 10;
+  --program-stroke: #1da827;
+  --program-stroke-width: 7.5;
   --program-dash: 15 15;
   --font-size: 3rem;
   --font-colour: #fff;
@@ -50,8 +51,8 @@ body {
   :root {
     --rect-stroke: #2b1b6f;
     --grid-stroke: #555;
-    --log-colour: #66195c;
-    --program-colour: #1d7527;
+    --log-stroke: #66195c;
+    --program-stroke: #1d7527;
     color: #213547;
     background-color: #ffffff;
   }
