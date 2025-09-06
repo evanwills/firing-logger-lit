@@ -1,30 +1,26 @@
-import type { ID } from "./data";
+import { nanoid } from 'nanoid';
+import type { FDataStoreSingleton, TDataStore } from '../types/store.d.ts';
+import { splitSlice } from '../utils/store.utils.ts';
 
-/**
- * TStoreSlice is a dot-separated string matching the following regular expression pattern
- *
- * /^[a-z\d]+(?:[A-Z]+[a-z\d]*)*(?:\.(?:#[A-Za-z\d_-]{16}|@\d+\d+|[a-z\d]+(?:[A-Z]+[a-z\d]*)*))*$/
- *
- * If the preceeding slice segment is an array, an ID can be used to
- * select a specific item from the array.
- *
- * object property (camel case /^[a-z\d]+(?:[A-Z]+[a-z\d]*)*$/)
- * Array item ID (/^#[a-z\d_-]{16}$/i)
- * Array pagination set (/^@\d+\d+$/)
- */
-export type TStoreSlice = string;
+let store : TDataStore | null = null;
 
-export type TDataStore = {
+class IdbDataStore implements TDataStore {
+  constructor(
+    schema : any,
+    reducers : any,
+  ) {
+
+  }
+
   /**
-   * Read data from the store
    *
    * @param slice Dot separated string for hierrarchical store segment
-   *
    * @returns What ever data is held within the store segment
-   *
    * @throws {Error} If slice is a non-empty string and
    */
-  read: (slice : TStoreSlice) => Promise<any>,
+  read(slice: string = '') : any {
+
+  }
 
   /**
    * Write data to the store
@@ -37,11 +33,9 @@ export type TDataStore = {
    *          Error message string if there was a problem with the
    *          write action
    */
-  write: (
-    action : string,
-    userID: ID,
-    payload: any
-  ) => Promise<string>,
+  write(action : string, userID : string, payload: any) : string {
+    return '';
+  }
 
   /**
    * Add watcher to do something after a successful write action
@@ -49,7 +43,7 @@ export type TDataStore = {
    * @param action  Name of action to watch for
    * @param handler Handler function to do something with a
    *                particular slice of store after a write action
-   *                __NOTE:__ handler is called every time a "write"
+   *                __NOTE:__ handler is called every time a 'write'
    *                          action with the same name is
    *                          successfully executed.
    * @param slice   Dot separated string for hierrarchical store
@@ -59,11 +53,16 @@ export type TDataStore = {
    *          `ignore()` when the client no longer needs to watch for
    *          that action
    */
-  watch: (
-    action : string,
-    handler: (slice: any) => void,
-    slice: TStoreSlice,
-  ) => ID,
+  watch(
+    action: string,
+    handler : (payload: any) => void,
+    slice: string = '',
+  ) : string {
+    const id = nanoid(10);
+    const _slice = splitSlice(slice);
+
+    return id;
+  }
 
   /**
    * Stop watching for a particular action
@@ -73,7 +72,15 @@ export type TDataStore = {
    * @returns TRUE if watcher was removed.
    *          FALSE otherwise
    */
-  ignore: (watchID: ID) => boolean,
-};
+  ignore(watchID : string) : boolean {
+    return false;
+  }
+}
 
-export type FDataStoreSingleton = () => TDataStore;
+export const getSingletonStore : FDataStoreSingleton = () : TDataStore => {
+  if (store === null) {
+    store = new IdbDataStore({}, {});
+  }
+
+  return store;
+};

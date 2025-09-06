@@ -6,12 +6,20 @@ export type ID = string;
 // ========================================================
 // START: REDUX types
 
+export interface IKeyValue {
+  [key: string]: any
+}
+
+export interface IIdObject implements IKeyValue {
+  id: ID,
+}
+
 export interface Action {
   type: string,
   payload: object
 }
 
-export interface FancyPayload {
+export interface FancyPayload implements IIdObject, IKeyValue {
   id: ID,
   value: any,
   isChecked: boolean,
@@ -31,7 +39,7 @@ export interface FancyAction extends Action {
 // START: stored data types
 
 
-export interface Kiln {
+export interface Kiln implements IIdObject {
   id: ID,
   brand: string,
   model: string,
@@ -61,7 +69,7 @@ export interface Kiln {
   isHot: boolean
 }
 
-export interface  EquipmentLogEntry {
+export interface  EquipmentLogEntry implements IIdObject {
   id: ID,
   equipmentID: string,
   date: number,
@@ -74,7 +82,7 @@ export interface  EquipmentLogEntry {
   verifiedBy: string | null
 }
 
-export interface IFiringProgramData {
+export interface IFiringProgramData implements IIdObject {
   id: ID,
   kilnID: string,
   controllerProgramID: number,
@@ -97,7 +105,7 @@ export interface IStoredFiringProgram extends IFiringProgramData {
   id: ID,
   kilnID: string,
   controllerProgramID: number,
-  type: EfiringType,
+  type: string,
   name: string,
   version: number,
   description: string,
@@ -123,12 +131,13 @@ export interface FiringProgramTmp implements IStoredFiringProgram {
 }
 
 export type FiringStep = {
+  order: number,   // step order in program, starting at 1
   endTemp: number, // positive degrees
   rate: number,    // degrees per hour
   hold: number     // minutes to hold at end temperature
 }
 
-export interface FiringLog {
+export interface FiringLog implements IIdObject {
   id: ID,
   kilnID: string,
   programID: string,
@@ -176,7 +185,7 @@ export type equipmentLog = [EquipmentLogEntry]
 export type users = [User]
 export type calendar = [DiaryEntry]
 
-export interface DiaryEntry {
+export interface DiaryEntry implements IIdObject {
   id: ID,
   date: Date,
   kilnID: string,
@@ -189,7 +198,7 @@ export interface DiaryEntry {
   started: boolean,
 }
 
-export interface User {
+export interface User implements IIdObject {
   id: ID,
   firstName: string
   lastName: string,
@@ -203,7 +212,7 @@ export interface User {
   canPrice: boolean,
 }
 
-export interface Studio {
+export interface Studio implements IIdObject {
   kilns: [kiln],
   firingPrograms: AllFiringPrograms,
   firingLogs: FiringLogs,
@@ -217,15 +226,10 @@ export interface Studio {
 // ========================================================
 // START: view only types
 
-export type TSvgRenderLog = {
-  time: string,
-  duration: string,
-  temp: number
-}
-
-export type TSvgLogPathD = {
-  time: number,
-  temp: number,
+export type TSvgPathItem = {
+  timeOffset: number, // number of minutes from start of firing
+  actualTime?: string, // ISO8601 date-time string for tooltips
+  temp: number, // temperature at this time
 }
 
 export type TSvgUnit = {
@@ -249,11 +253,11 @@ export interface FiringReport {
 }
 
 export interface ReportRow {
-    time: Date,
-    temp: number,
-    expectedTemp: number,
-    rate: number,
-    expectedRate: number
+  time: Date,
+  temp: number,
+  expectedTemp: number,
+  rate: number,
+  expectedRate: number
 }
 
 export interface veiw {
@@ -288,6 +292,7 @@ enum EfiringType {
 }
 
 enum EprogramState {
+  idle,
   pending,
   started,
   completed,

@@ -19,11 +19,11 @@
   --grid-stroke: #fafafa;
   --grid-stroke-width: 0.15;
   --grid-dash:  5 10;
-  --log-stroke: #cc5eff;
-  --log-stroke-width: 10;
-  --program-stroke: #1da827;
-  --program-stroke-width: 7.5;
-  --program-dash: 15 15;
+  --primary-stroke: #cc5eff;
+  --primary-stroke-width: 10;
+  --secondary-stroke: #1da827;
+  --secondary-stroke-width: 7.5;
+  --secondary-dash: 15 15;
   --font-size: 3rem;
   --font-colour: #fff;
   --font-weight: bold;

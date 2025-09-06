@@ -1,0 +1,193 @@
+{
+  "kilns": [
+    {
+      "id": "AXARcxcpZN",
+      "brand": "Woodrow",
+      "model": "My Big Kiln 310L",
+      "name": "Large Woodrow (kiln 1)",
+      "installDate": "2025-07-17",
+      "fuel": "Electric",
+      "type": "general",
+      "maxTemp": 1295,
+      "maxProgramCount": 20,
+      "width": 700,
+      "depth": 600,
+      "height": 740,
+      "glaze": true,
+      "bisque": true,
+      "luster": true,
+      "onglaze": true,
+      "saggar": false,
+      "raku": false,
+      "pit": false,
+      "black": false,
+      "rawGlaze": false,
+      "saltGlaze": false,
+      "useCount": 20,
+      "isRetired": false,
+      "isWorking": true,
+      "isInUse": true,
+      "isHot": false
+    },
+    {
+      "id": "WpnCnk5aLA",
+      "brand": "Woodrow",
+      "model": "My Studio Kiln 115L",
+      "name": "Small Woodrow (kiln 2)",
+      "installDate": "2025-07-17",
+      "fuel": "Electric",
+      "type": "general",
+      "maxTemp": 1295,
+      "maxProgramCount": 20,
+      "width": 450,
+      "depth": 440,
+      "height": 575,
+      "glaze": true,
+      "bisque": true,
+      "luster": true,
+      "onglaze": true,
+      "saggar": false,
+      "raku": false,
+      "pit": false,
+      "black": false,
+      "rawGlaze": false,
+      "saltGlaze": false,
+      "useCount": 100,
+      "isRetired": false,
+      "isWorking": true,
+      "isInUse": true,
+      "isHot": false
+    }
+  ],
+  "programs": [
+    {
+      "id": "ZQfi3zS0Rt",
+      "kilnID": "WpnCnk5aLA",
+      "controllerProgramID": 1,
+      "type": "bisque",
+      "name": "Normal bisque",
+      "version": 1,
+      "description": "Cone 06 bisque firing for small to medium sized work",
+      "maxTemp": 1000,
+      "duration": 38400,
+      "averageRate": 93.75,
+      "created": "2025-08-25T18:30:00+10:00",
+      "createdBy": "wfj_myxTAV",
+      "superseded": false,
+      "parentID": "",
+      "used": true,
+      "useCount": 1,
+      "deleted": false,
+      "locked": false,
+      "steps": [
+        {
+          "order": 1,
+          "endTemp": 225,
+          "rate": 75,
+          "hold": 0
+        },
+        {
+          "order": 2,
+          "endTemp": 525,
+          "rate": 150,
+          "hold": 0
+        },
+        {
+          "order": 3,
+          "endTemp": 725,
+          "rate": 100,
+          "hold": 0
+        },
+        {
+          "order": 4,
+          "endTemp": 1000,
+          "rate": 75,
+          "hold": 0
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "wfj_myxTAV",
+      "username": "evanwills",
+      "firstName": "Evan",
+      "lastName": "Wills",
+      "preferredName": "Evan",
+      "email": "evanwills@illawarrapotters.com.au"
+    }
+  ],
+
+  "EfiringType": {
+    "bisque": "Bisque",
+    "glaze": "Glaze",
+    "single": "Single firing glaze",
+    "luster": "Luster",
+    "onglaze": "Onglaze"
+  },
+
+  "EprogramState": {
+    "idle": "Idle",
+    "pending": "Pending",
+    "started": "Started",
+    "completed": "Completed",
+    "aborted": "Aborted"
+  },
+
+  "EkilnFiringState": {
+    "available": "Available",
+    "packing": "Packing",
+    "packed": "Packed",
+    "heating": "Heating",
+    "holding": "Holding",
+    "cooling": "Cooling",
+    "cold": "Cold",
+    "unpacking": "Unpacking",
+    "emptied": "Emptied"
+  },
+
+  "EtemperatureState": {
+    "nominal": "Nominal",
+    "over": "Over",
+    "overError": "OverError",
+    "under": "Under",
+    "underError": "UnderError"
+  },
+
+  "Eview": {
+    "diary": "Diary",
+    "firings": "Firings",
+    "kilns": "Kilns",
+    "programs": "Programs",
+    "report": "Report",
+    "users": "Users"
+  },
+
+  "EfuelSource": {
+    "electric": "Electric",
+    "gas": "Gas",
+    "wood": "Wood",
+    "oil": "Oil",
+    "other": "Other"
+  },
+
+  "EkilnType": {
+    "general": "General",
+    "raku": "Raku",
+    "platter": "Platter",
+    "black firing": "Black firing",
+    "annagamma": "Annagamma"
+  },
+
+  "EequipmentLogType": {
+    "usage": "Usage",
+    "maintenance": "Maintenance",
+    "problem": "Problem"
+  },
+
+  "EprogramStatus": {
+    "unused": "Unused",
+    "selected": "Selected",
+    "used": "Used"
+  }
+}

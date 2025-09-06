@@ -1,0 +1,49 @@
+import { css } from 'lit';
+
+export const programViewVars = css`
+:host {
+  --table-border-colour: inherit;
+  --table-cell-padding: inherit;
+  --delete-bg: inherit;
+  --label-width: inherit;
+}
+button:hover { cursor: pointer; }`;
+
+export const tableStyles = css`
+table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+td, th {
+  border-left: 0.05rem solid var(--table-border-colour, #ccc);
+  border-top: 0.05rem solid var(--table-border-colour, #ccc);
+  padding: var(--table-cell-padding, 0.25em 0.5em);
+}
+thead th {
+  line-height: 1rem;
+  padding-bottom: 0.4rem;
+}
+th .unit {
+  font-weight: normal;
+  font-size: 0.75rem;
+}
+td:first-child, th:first-child {
+  border-left: none;
+}
+thead tr:first-child td, thead tr:first-child th {
+  border-top: none;
+}
+thead th, thead td {
+  vertical-align: bottom;
+}
+tbody th, tbody td {
+  border-left: 0.05rem solid var(--table-border-colour, #ccc);
+  border-top: 0.05rem solid var(--table-border-colour, #ccc);
+}
+th:first-child, td:first-child {
+  border-left: none;
+}
+tfoot td, tfoot th {
+  border-top: none;
+  padding-top: 1rem;
+}`;

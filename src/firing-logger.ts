@@ -1,11 +1,10 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import litLogo from './assets/lit.svg';
-import viteLogo from '/vite.svg';
-import './components/log-entry-input';
-import './components/firing-plot';
 import { nanoid } from 'nanoid';
-import './data/flWatcher';
+import './components/log-entry-input.ts';
+import './components/firing-plot.ts';
+import './data/flWatcher.ts';
+import './components/program-view.ts';
 
 /**
  * An example element.
@@ -43,16 +42,14 @@ export class FiringLogger extends LitElement {
     const start = now - (3600 * 1000 * 1.5);
 
     return html`
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src=${viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://lit.dev" target="_blank">
-          <img src=${litLogo} class="logo lit" alt="Lit logo" />
-        </a>
-      </div>
-      <slot></slot>
-      <div class="card">
+      <h1>Firing Logger</h1>
+      <p>A kiln firing logger and plotter.</p>
+      <p>ID: <code>${nanoid(10)}</code></p>
+
+      <program-view
+        program-uid="ZQfi3zS0Rt"
+        user-id="${this.userID}"></program-view>
+      <!-- <div class="card">
         <log-entry-input
           id="${this.firingID}"
           time="${now}"
@@ -62,7 +59,7 @@ export class FiringLogger extends LitElement {
           user-name="Evan"
           user-id="${this.userID}"></log-entry-input>
       </div>
-      <firing-plot></firing-plot>
+      <firing-plot></firing-plot> -->
     `
   }
 

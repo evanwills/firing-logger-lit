@@ -1,8 +1,7 @@
 import { LitElement, css, svg, type SVGTemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { round } from '../utils/numeric.utils';
-import type { TSvgLogPathD, TSvgRenderLog, TSvgUnit } from '../types/data';
-import { getMax } from '../utils/conversions.utils';
+import type { FiringStep, TSvgPathItem, TSvgUnit } from '../types/data.d.ts';
+import { getMax, plotPointsFromSteps } from '../utils/conversions.utils.ts';
 
 /**
  * An example element.
@@ -15,11 +14,27 @@ export class FiringPlot extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: Number, attribute: 'max-temp' })
-  maxTemp : number = 1200;
+  @property({ type: Boolean, attribute: 'not-metric' })
+  notMetric : boolean = false;
 
-  @property({ type: Number, attribute: 'max-time' })
-  maxTime : number = 14;
+  /**
+   * @property Primary data to plot (usually actual firing data)
+   *           (or program data if no actual)
+   */
+  @property({ type: Object, attribute: 'primary' })
+  primary : Array<TSvgPathItem|FiringStep> = [];
+
+  /**
+   * @property Secondary data to plot (usually program data)
+   */
+  @property({ type: Object, attribute: 'secondary' })
+  secondary : FiringStep[] = [];
+
+  /**
+   * @property Secondary data to plot (usually program data)
+   */
+  @property({ type: Boolean, attribute: 'primary-is-program' })
+  primaryIsProgram : boolean = false;
 
   //  END:  properties/attributes
   // ------------------------------------------------------
@@ -52,45 +67,6 @@ export class FiringPlot extends LitElement {
   @state()
   _tollerance : number = 200;
 
-  @state()
-  _log : TSvgRenderLog[] = [
-    { time: '2025-09-02T04:30:00+10:00', duration: '00:00', temp: 18 },
-    { time: '2025-09-02T05:31:00+10:00', duration: '01:01', temp: 81 },
-    { time: '2025-09-02T06:31:00+10:00', duration: '02:01', temp: 158 },
-    { time: '2025-09-02T07:31:00+10:00', duration: '03:01', temp: 249 },
-    { time: '2025-09-02T08:31:00+10:00', duration: '04:01', temp: 343 },
-    { time: '2025-09-02T09:27:00+10:00', duration: '04:57', temp: 437 },
-    { time: '2025-09-02T09:38:00+10:00', duration: '05:08', temp: 454 },
-    { time: '2025-09-02T09:50:00+10:00', duration: '05:20', temp: 474 },
-    { time: '2025-09-02T10:00:00+10:00', duration: '05:30', temp: 492 },
-    { time: '2025-09-02T10:34:00+10:00', duration: '06:04', temp: 546 },
-    { time: '2025-09-02T10:44:00+10:00', duration: '06:14', temp: 564 },
-    { time: '2025-09-02T11:04:00+10:00', duration: '06:34', temp: 602 },
-    { time: '2025-09-02T11:15:00+10:00', duration: '06:45', temp: 618 },
-    { time: '2025-09-02T12:57:00+10:00', duration: '08:27', temp: 780 },
-    { time: '2025-09-02T13:57:00+10:00', duration: '09:27', temp: 874 },
-    { time: '2025-09-02T14:39:00+10:00', duration: '10:09', temp: 932 },
-    { time: '2025-09-02T15:11:00+10:00', duration: '10:41', temp: 972 },
-    { time: '2025-09-02T15:26:00+10:00', duration: '10:56', temp: 992 },
-    { time: '2025-09-02T15:45:00+10:00', duration: '11:15', temp: 1012 },
-    { time: '2025-09-02T16:18:00+10:00', duration: '11:48', temp: 1042 },
-    { time: '2025-09-02T16:30:00+10:00', duration: '12:00', temp: 1057 },
-    { time: '2025-09-02T16:44:00+10:00', duration: '12:14', temp: 1070 },
-    { time: '2025-09-02T17:09:00+10:00', duration: '12:39', temp: 1095 },
-    { time: '2025-09-02T17:25:00+10:00', duration: '12:55', temp: 1109 },
-    { time: '2025-09-02T18:18:00+10:00', duration: '13:48', temp: 1135 },
-    { time: '2025-09-02T20:04:00+10:00', duration: '15:34', temp: 1200 },
-  ];
-
-  @state()
-  _program : TSvgLogPathD[] = [
-    { time: 0, temp: 18 },
-    { time: 1000, temp: 1000 },
-    { time: 1140, temp: 1112 },
-    { time: 1360, temp: 1200 },
-  ];
-
-
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -105,63 +81,19 @@ export class FiringPlot extends LitElement {
     return output;
   }
 
-  parseLog() : TSvgLogPathD[] {
-    return this._log.map((item) => {
-      const _time = item.duration.split(':').map((t) => parseInt(t, 10));
-      const time = round(((_time[0] + (_time[1] / 60)) * this._gridStep), 2);
-
-      return { temp: item.temp, time };
-    });
-  }
-
-  getPathD(timeTemp : TSvgLogPathD[]) : string {
+  getPathD(timeTemp : TSvgPathItem[]) : string {
     let cmd = 'M';
     let output = '';
 
+    const adjust = 3600 / this._gridStep
+
     for (const entry of timeTemp) {
-      output += `${cmd} ${(entry.time + this._xOffset)},`
-        + `${(this.maxTemp - entry.temp + this._yOffset)}`;
+      output += `${cmd} ${((entry.timeOffset / adjust) + (this._xOffset))},`
+        + `${(this._maxTemp - entry.temp + this._yOffset)}`;
       cmd = ' L'
     }
 
     return output
-  }
-
-  getTempSteps() : TSvgUnit[] {
-    const output : TSvgUnit[] = [];
-    console.log('this._maxTemp:', this._maxTemp);
-    const max = this._maxTemp + this._gridStep
-
-    for (let a = this._gridStep; a < max; a += this._gridStep) {
-      output.push({
-        offset: (this._maxTemp - a + this._gridStep + 2),
-        value: svg`${a}&deg;`
-      });
-    }
-
-    return output;
-  }
-
-  getTimeSteps() : TSvgUnit[] {
-    const output : TSvgUnit[] = [];
-    const max = this._maxTime + this._gridStep;
-
-    for (let a = this._gridStep; a < max; a += this._gridStep) {
-      const hour = (a / this._gridStep);
-      /**
-       * @var extra - this is a hack to get the hour markers centred
-       *              below the vertical grid lines
-       */
-      const extra = (hour >= 10)
-        ? 24
-        : 12
-      const offset = (this._xOffset + a + extra);
-      if (offset < this._gridX) {
-        output.push({ offset, value: hour });
-      }
-    }
-
-    return output;
   }
 
 
@@ -195,27 +127,58 @@ export class FiringPlot extends LitElement {
         y2="${this._gridY - this._yOffset}" />`;
   }
 
+  getTempSteps() : SVGTemplateResult[] {
+    const output : TSvgUnit[] = [];
+    const max = this._maxTemp + this._gridStep
+
+    for (let a = this._gridStep; a < max; a += this._gridStep) {
+      output.push({
+        offset: (this._maxTemp - a + this._gridStep + 2),
+        value: svg`${a}&deg;`
+      });
+    }
+
+    return output.map((item) => svg`<tspan x="125" y="${item.offset + 10}">${item.value}</tspan>`);
+  }
+
+  getTimeSteps() : SVGTemplateResult[] {
+    const output : TSvgUnit[] = [];
+    const max = this._maxTime + this._gridStep;
+
+    for (let a = this._gridStep; a < max; a += this._gridStep) {
+      const hour = (a / this._gridStep);
+      /**
+       * @var extra - this is a hack to get the hour markers centred
+       *              below the vertical grid lines
+       */
+      const extra = (hour >= 10)
+        ? 24
+        : 12
+
+      const offset = (this._xOffset + a + extra);
+
+      if (offset < this._gridX) {
+        output.push({ offset, value: hour });
+      }
+    }
+
+    return output.map((item) => svg`<tspan x="${item.offset}" y="${this._gridY - 40}">${item.value}</tspan>`);
+  }
+
   //  END:  helper render methods
   // ------------------------------------------------------
   // START: main render method
 
   render() {
-    const log = this.parseLog();
+    const primary : TSvgPathItem[] = (this.primaryIsProgram)
+      ? plotPointsFromSteps(this.primary as FiringStep[])
+      : this.primary as TSvgPathItem[];
+    const secondary : TSvgPathItem[] = (this.secondary.length > 0)
+      ? plotPointsFromSteps(this.secondary)
+      : [];
 
-    this._maxTemp = Math.ceil(
-      getMax(
-        log,
-        'temp',
-        getMax(this._program, 'temp'),
-      ),
-    );
-    this._maxTime = Math.ceil(
-      getMax(
-        log,
-        'time',
-        getMax(this._program, 'time'),
-      ),
-    );
+    this._maxTemp = Math.ceil(getMax(primary, 'temp', getMax(secondary, 'temp')));
+    this._maxTime = Math.ceil((getMax(primary, 'time', getMax(secondary, 'time')) / 36));
 
     this._gridX = (this._maxTime + this._tollerance);
     this._gridY = (this._maxTemp + this._tollerance);
@@ -223,9 +186,6 @@ export class FiringPlot extends LitElement {
 
     const hLines = this.getLines(this._maxTemp + this._xOffset - 100);
     const vLines = this.getLines((this._maxTime + 250), 250);
-
-    const tempSteps = this.getTempSteps();
-    const timeSteps = this.getTimeSteps();
 
     return svg`
     <svg width="100%" height="100%" viewBox="${vb}">
@@ -242,18 +202,16 @@ export class FiringPlot extends LitElement {
           ${vLines.map(this.vGrid.bind(this))}
         </g>
       </g>
+
       <g id="units">
-        <text id="degrees" class="units">
-          ${tempSteps.map((item) => svg`<tspan x="125" y="${item.offset + 10}">${item.value}</tspan>`)}
-          <tspan>
-        </text>
-        <text id="hours" class="units">
-          ${timeSteps.map((item) => svg`<tspan x="${item.offset}" y="${this._gridY - 40}">${item.value}</tspan>`)}
-          <tspan>
-        </text>
+        <text id="degrees" class="units">${this.getTempSteps()}</text>
+        <text id="hours" class="units">${this.getTimeSteps()}</text>
       </g>
-      <path class="program" d="${this.getPathD(this._program)}" />
-      <path class="log" d="${this.getPathD(log)}" />
+
+      ${(secondary.length > 0)
+        ? svg`<path class="secondary" d="${this.getPathD(secondary)}" />`
+        : ''}
+      <path class="primary" d="${this.getPathD(primary)}" />
     </svg>
     `;
   }
@@ -270,11 +228,11 @@ export class FiringPlot extends LitElement {
       --grid-stroke: inherit;
       --grid-stroke-width: inherit;
       --grid-dash: inherit;
-      --log-stroke: inherit;
-      --log-stroke-width: inherit;
-      --program-stroke: inherit;
-      --program-stroke-width: inherit;
-      --program-dash: inherit;
+      --primary-stroke: inherit;
+      --primary-stroke-width: inherit;
+      --secondary-stroke: inherit;
+      --secondary-stroke-width: inherit;
+      --secondary-dash: inherit;
       --font-size: inherit;
       --font-colour: inherit;
       --font-weight: inherit;
@@ -301,26 +259,26 @@ export class FiringPlot extends LitElement {
       stroke-dashoffset: 0;
       stroke-opacity: 1;
     }
-    .log {
+    .primary {
       fill: none;
       fill-opacity: 1;
-      stroke: var(--log-stroke, #cc5eff);
-      stroke-width: var(--log-stroke-width, 10);
+      stroke: var(--primary-stroke, #cc5eff);
+      stroke-width: var(--primary-stroke-width, 10);
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10;
       stroke-dasharray: none;
       stroke-opacity: 1;
     }
-    .program {
+    .secondary {
       fill: none;
       fill-opacity: 1;
-      stroke: var(--program-stroke, #1da827);
-      stroke-width: var(--program-stroke-width, 7.5);
+      stroke: var(--secondary-stroke, #1da827);
+      stroke-width: var(--secondary-stroke-width, 7.5);
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10;
-      stroke-dasharray: var(--program-dash, 15 15);
+      stroke-dasharray: var(--secondary-dash, 15 15);
       stroke-dashoffset: 0;
       stroke-opacity: 1;
     }

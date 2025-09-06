@@ -2,6 +2,8 @@ import { nanoid } from "nanoid";
 import type { TDataStore } from "../types/store";
 import { splitSlice } from "../utils/store.utils";
 
+let store : TDataStore | null = null;
+
 export class IdbDataStore implements TDataStore {
   constructor(
     schema : any,
@@ -10,6 +12,12 @@ export class IdbDataStore implements TDataStore {
 
   }
 
+  /**
+   *
+   * @param slice Dot separated string for hierrarchical store segment
+   * @returns What ever data is held within the store segment
+   * @throws {Error} If slice is a non-empty string and
+   */
   read(slice: string = '') : any {
 
   }
@@ -68,3 +76,11 @@ export class IdbDataStore implements TDataStore {
     return false;
   }
 }
+
+export const getDataStoreSingleton = () : TDataStore => {
+  if (store === null) {
+    store = new IdbDataStore({}, {});
+  }
+
+    return store;
+};

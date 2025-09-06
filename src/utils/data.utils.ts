@@ -302,3 +302,5 @@ export const calculateExpectedTemp = (
 ) : number => Math.round(
   startTemp + (((timeNow - startTime) / (3600 * 1000)) * rampRate),
 );
+
+export const deepClone = <T>(input : T) : T => JSON.parse(JSON.stringify(input));
