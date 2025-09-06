@@ -16,8 +16,8 @@
   --rect-stroke: #625a86;
   --rect-stroke-width: 1;
   --grid-fill: none;
-  --grid-stroke: #fafafa;
-  --grid-stroke-width: 0.15;
+  --grid-stroke: #fff;
+  --grid-stroke-width: 0.2;
   --grid-dash:  5 10;
   --primary-stroke: #cc5eff;
   --primary-stroke-width: 10;

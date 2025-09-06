@@ -4,10 +4,16 @@ import type { TDataStore } from '../types/store.d.ts';
 import type { FiringStep, ID, IStoredFiringProgram, TSvgPathItem } from '../types/data.d.ts';
 import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { deepClone, isNonEmptyStr } from '../utils/data.utils.ts';
-import { c2f, durationFromSteps, hoursFromSeconds, maxTempFromSteps, x2x } from '../utils/conversions.utils.ts';
+import {
+  c2f,
+  durationFromStep,
+  durationFromSteps,
+  maxTempFromSteps,
+  x2x,
+} from '../utils/conversions.utils.ts';
+import { keyValueStyle, programViewVars, tableStyles } from "../assets/program-view-style.ts";
 import './firing-plot.ts'
 import './program-view--edit.ts'
-import { programViewVars, tableStyles } from "../assets/program-view-style.ts";
 
 /**
  * An example element.
@@ -150,20 +156,14 @@ export class ProgramView extends LitElement {
       <div class="summary-outer">
         <div class="summary">
           <p>${this.description}</p>
-          <div>
-            <p class="key-value">
-              <strong>Type:</strong>
-              <span>${this.type}</span>
-            </p>
-            <p class="key-value">
-              <strong>Max Temp:</strong>
-              <span>${this._converter(this.maxTemp)}&deg;${this._unit}</span>
-            </p>
-            <p class="key-value">
-              <strong>Duration:</strong>
-              <span>${hoursFromSeconds(this.duration)}</span>
-            </p>
-          </div>
+          <program-view-meta
+            .converter=${this._converter}
+            .duration=${this.duration}
+            .maxTemp=${this.maxTemp}
+            .notMetric=${this.notMetric}
+            .type=${this.type}
+            .unit=${this._unit}>
+          </program-view-meta>
         </div>
       </div>
 
@@ -198,13 +198,13 @@ export class ProgramView extends LitElement {
           </tr>
         </thead>
         <tbody>
-          ${this.steps.map(step => html`
+          ${this.steps.map((step, i) => html`
             <tr>
               <th>${step.order}</th>
               <td>${this._converter(step.endTemp)}</td>
               <td>${step.rate}</td>
               <td>${step.hold}</td>
-              <td>${hoursFromSeconds(durationFromSteps([step]))}</td>
+              <td>${durationFromStep(this.steps, i)}</td>
             </tr>
           `)}
         </tbody>
@@ -246,15 +246,6 @@ export class ProgramView extends LitElement {
     ${programViewVars}
     .program-view h3, .program-view p { text-align: left; }
 
-    .key-value {
-      display: flex;
-      column-gap: 0.5rem;
-    }
-
-    .key-value strong { min-width: 5.5rem; }
-
-    .key-value span { text-transform: capitalize; white-space: nowrap; }
-
     .summary-outer {
       container-name: summary-block;
       container-type: inline-size;
@@ -278,7 +269,8 @@ export class ProgramView extends LitElement {
       }
     }
 
-    ${tableStyles}`;
+    ${tableStyles}
+    ${keyValueStyle}`;
 
   //  END:  styles
   // ------------------------------------------------------

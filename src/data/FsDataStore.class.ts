@@ -6,7 +6,7 @@ import FiringLoggerData from './firing-logger.json' with { type: 'json' };
 
 let store : TDataStore | null = null;
 
-export class IdbDataStore implements TDataStore {
+class FsDataStore implements TDataStore {
   _data = {};
 
   constructor(
@@ -41,6 +41,11 @@ export class IdbDataStore implements TDataStore {
    *          write action
    */
   write(action : string, userID : string, payload: any) : Promise<string> {
+    console.group('FsDataStore.write()');
+    console.log('Action :', action);
+    console.log('UserID :', userID);
+    console.log('Payload:', payload);
+    console.groupEnd();
     return Promise.resolve('');
   }
 
@@ -65,9 +70,16 @@ export class IdbDataStore implements TDataStore {
     handler : (payload: any) => void,
     slice: string = '',
   ) : string {
+    console.group('FsDataStore.watch()');
+    console.log('Action :', action);
+    console.log('UserID :', handler);
+    console.log('slice:', slice);
     const id = nanoid(10);
     const _slice = splitSlice(slice);
 
+    console.log('id:', id);
+    console.log('_slice:', _slice);
+    console.groupEnd();
     return id;
   }
 
@@ -80,14 +92,17 @@ export class IdbDataStore implements TDataStore {
    *          FALSE otherwise
    */
   ignore(watchID : string) : boolean {
+    console.group('FsDataStore.ignore()');
+    console.log('watchID :', watchID);
+    console.groupEnd();
     return false;
   }
 }
 
 export const getDataStoreSingleton = () : TDataStore => {
   if (store === null) {
-    store = new IdbDataStore({}, {});
+    store = new FsDataStore();
   }
 
-    return store;
+  return store;
 };

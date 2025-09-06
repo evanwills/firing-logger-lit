@@ -9,6 +9,17 @@ export const programViewVars = css`
 }
 button:hover { cursor: pointer; }`;
 
+export const keyValueStyle = css`
+.key-value {
+  column-gap: 0.5rem;
+  display: flex;
+  text-align: left;
+}
+
+.key-value strong { min-width: 5.5rem; }
+
+.key-value span { text-transform: capitalize; white-space: nowrap; }`;
+
 export const tableStyles = css`
 table {
   border-collapse: collapse;
@@ -24,8 +35,8 @@ thead th {
   padding-bottom: 0.4rem;
 }
 th .unit {
-  font-weight: normal;
   font-size: 0.75rem;
+  font-weight: normal;
 }
 td:first-child, th:first-child {
   border-left: none;

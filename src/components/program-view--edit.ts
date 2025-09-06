@@ -1,11 +1,18 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { c2f, durationFromSteps, f2c, hoursFromSeconds, maxTempFromSteps, x2x } from '../utils/conversions.utils.ts';
+import {
+  c2f,
+  durationFromSteps,
+  f2c,
+  maxTempFromSteps,
+  x2x,
+} from '../utils/conversions.utils.ts';
 import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { programViewVars, tableStyles } from '../assets/program-view-style.ts';
 import type { TDataStore } from '../types/store.d.ts';
 import type { FiringStep, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
-import './firing-plot.ts'
+import './firing-plot.ts';
+import './program-view-meta.ts';
 
 /**
  * An example element.
@@ -216,6 +223,7 @@ export class ProgramViewEdit extends LitElement {
     if (this._ready === false) {
       return html`<p>Loading...</p>`;
     }
+
     return html`
       <div>
         <h2>Edit: ${this.name}</h2>
@@ -234,7 +242,8 @@ export class ProgramViewEdit extends LitElement {
             <textarea
               id="description"
               maxlength="255"
-              @keyup=${this.handleChange}>${this._description}</textarea>
+              .value="${this._description}"
+              @keyup=${this.handleChange}></textarea>
           </li>
           <li>
             <label for="type">Firing type:</label>
@@ -252,14 +261,13 @@ export class ProgramViewEdit extends LitElement {
             </select>
           </li>
         </ul>
-        <p class="key-value">
-          <strong>Max Temp:</strong>
-          <span>${this._converter(this._maxTemp)}&deg;${this._unit}</span>
-        </p>
-        <p class="key-value">
-          <strong>Duration:</strong>
-          <span>${hoursFromSeconds(this._duration)}</span>
-        </p>
+
+        <program-view-meta
+          .converter=${this._converter}
+          .duration=${this._duration}
+          .maxTemp=${this._maxTemp}
+          .notMetric=${this.notMetric}
+          .unit=${this._unit}></program-view-meta>
 
         <h3>Program steps</h3>
 
@@ -291,7 +299,7 @@ export class ProgramViewEdit extends LitElement {
             </tr>
           </thead>
           <tbody>
-            ${this._tmpSteps.map(step => html`
+            ${this._tmpSteps.map((step) => html`
               <tr>
                 <th>${step.order}</th>
                 <td>
@@ -313,7 +321,7 @@ export class ProgramViewEdit extends LitElement {
                     title="Ramp rate (Deg/hr) for step ${step.order}"
                     value="${this._converter(step.rate)}"
                     @keyup=${this.updateStep} />
-                  </td>
+                </td>
                 <td>
                   <input
                     data-step-order="${step.order}"
@@ -324,7 +332,15 @@ export class ProgramViewEdit extends LitElement {
                     value="${this._converter(step.hold)}"
                     @keyup=${this.updateStep} />
                 </td>
-                <td><button class="delete" value="${step.order}" @click=${this.deleteStep}>&times;</button></td>
+                <td>
+                  <button
+                    class="delete"
+                    title="Delete step ${step.order}"
+                    value="${step.order}"
+                    @click=${this.deleteStep}>
+                    &times;
+                  </button>
+                </td>
               </tr>
             `)}
           </tbody>
@@ -352,11 +368,6 @@ export class ProgramViewEdit extends LitElement {
 
     h3 { text-align: left; }
 
-    input[type="number"] {
-      width: 3.5rem;
-      text-align: center;
-    }
-
     .delete {
       background: var(--delete-bg, #aa0000);
       border: var(--delete-border, 0.05rem solid #fff);
@@ -372,6 +383,7 @@ export class ProgramViewEdit extends LitElement {
       margin-bottom: 1rem;
       text-align: left;
     }
+
     li label {
       font-weight: bold;
       width: var(--label-width, 5.75rem);
@@ -382,6 +394,11 @@ export class ProgramViewEdit extends LitElement {
       font-family: inherit;
       font-size: inherit;
       padding: 0.25rem 0 0.25rem 0.5rem;
+    }
+
+    input[type="number"] {
+      width: 3.5rem;
+      text-align: center;
     }
 
     input[type="text"] {

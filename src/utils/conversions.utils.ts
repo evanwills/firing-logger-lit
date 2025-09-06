@@ -76,6 +76,7 @@ export const durationFromSteps = (steps: FiringStep[]) : number => {
   let output : number = 0;
   let lastEndTemp : number = 0;
 
+
   for (const step of steps) {
     if (step.hold > 0) {
       output += step.hold * 60;
@@ -93,6 +94,20 @@ export const durationFromSteps = (steps: FiringStep[]) : number => {
 
   return Math.round(output);
 };
+
+export const durationFromStep = (steps: FiringStep[], i : number) : string => {
+  let diff : number = 0;
+
+  if (steps.length > 0) {
+    if (i === 0) {
+      diff = steps[0].endTemp;
+    } else if (i > 0 && i < steps.length) {
+      diff = Math.abs(steps[i].endTemp - steps[i - 1].endTemp);
+    }
+  }
+
+  return hoursFromSeconds((diff / steps[i].rate) * 3600 + (steps[i].hold * 60));
+}
 
 export const maxTempFromSteps = (steps: FiringStep[]) : number => {
   if (steps.length === 0) {

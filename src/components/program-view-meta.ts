@@ -1,0 +1,92 @@
+import { LitElement, css, html, type TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { hoursFromSeconds, x2x } from "../utils/conversions.utils.ts";
+import { keyValueStyle, programViewVars } from '../assets/program-view-style.ts';
+
+@customElement('program-view-meta')
+export class ProgramViewMeta extends LitElement {
+  // ------------------------------------------------------
+  // START: properties/attributes
+
+  @property({ type: Boolean, attribute: 'not-metric' })
+  notMetric : boolean = false;
+
+  @property({ type: Number, attribute: 'max-temp' })
+  maxTemp : number = 0;
+
+  @property({ type: Number, attribute: 'duration' })
+  duration : number = 0;
+
+  @property({ type: String, attribute: 'type' })
+  type : string = '';
+
+  @property({ type: Function, attribute: 'converter' })
+  converter : (T : number) => number = x2x;
+
+  @property({ type: String, attribute: 'unit' })
+  unit : string = 'C';
+
+  //  END:  properties/attributes
+  // ------------------------------------------------------
+  // START: state
+
+  //  END:  state
+  // ------------------------------------------------------
+  // START: helper methods
+
+  //  END:  helper methods
+  // ------------------------------------------------------
+  // START: event handlers
+
+  //  END:  event handlers
+  // ------------------------------------------------------
+  // START: lifecycle methods
+
+  //  END:  lifecycle methods
+  // ------------------------------------------------------
+  // START: helper render methods
+
+  //  END:  helper render methods
+  // ------------------------------------------------------
+  // START: main render method
+
+  render() : TemplateResult{
+    return html`
+      <div>
+        ${(this.type !== '')
+          ? html`<p class="key-value">
+            <strong>Type:</strong>
+            <span>${this.type}</span>
+          </p>`
+          : ''
+        }
+        <p class="key-value">
+          <strong>Max Temp:</strong>
+          <span>${this.converter(this.maxTemp)}&deg;${this.unit}</span>
+        </p>
+        <p class="key-value">
+          <strong>Duration:</strong>
+          <span>${hoursFromSeconds(this.duration)}</span>
+        </p>
+      </div>
+    `;
+  }
+
+  //  END:  main render method
+  // ------------------------------------------------------
+  // START: styles
+
+  static styles = css`
+    ${programViewVars}
+    ${keyValueStyle}
+  `;
+
+  //  END:  styles
+  // ------------------------------------------------------
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'program-view-meta': ProgramViewMeta,
+  }
+};
