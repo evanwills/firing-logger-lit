@@ -10,7 +10,7 @@ export const getDataFromSlice = (data: any, slice: string[]) : any => {
     if (Array.isArray(data) === true) {
       if (slice[0].startsWith('#')) {
         return getById(data, slice[0]);
-      } else if (slice[0].startsWith('.')) {
+      } else if (slice[0].startsWith('^')) {
         return getAllById(data, slice[0]);
       } else if (slice[0].startsWith('@')) {
         return getPaginationSet(data, slice[0]);

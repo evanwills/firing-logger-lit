@@ -83,7 +83,7 @@ export const getById = <T extends IIdObject>(input : T[], id : string) : T | nul
  *                 The string before the "=" is the property name.
  *                 The string after the "=" is the ID to be matched.
  *                 keyValue is assumed to match RegExp
- *                 `/^\.[a-z\d]+=[a-z\d_-]+$/i`
+ *                 `/^\^[a-z\d]+=[a-z\d_-]+$/i`
  *
  * @returns All items in the array that match key/value pair.
  */

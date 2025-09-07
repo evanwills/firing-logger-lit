@@ -20,6 +20,9 @@ export class ProgramViewMeta extends LitElement {
   @property({ type: String, attribute: 'type' })
   type : string = '';
 
+  @property({ type: String, attribute: 'cone' })
+  cone : string = '';
+
   @property({ type: Function, attribute: 'converter' })
   converter : (T : number) => number = x2x;
 
@@ -61,13 +64,19 @@ export class ProgramViewMeta extends LitElement {
           : ''
         }
         <p class="key-value">
-          <strong>Max Temp:</strong>
+          <strong>Max temp:</strong>
           <span>${this.converter(this.maxTemp)}&deg;${this.unit}</span>
         </p>
         <p class="key-value">
           <strong>Duration:</strong>
           <span>${hoursFromSeconds(this.duration)}</span>
         </p>
+        ${(this.cone !== '')
+          ? html`<p class="key-value">
+            <strong>Cone:</strong>
+            <span>${this.cone}</span>
+          </p>`
+          : ''}
       </div>
     `;
   }

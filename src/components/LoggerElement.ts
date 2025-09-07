@@ -1,5 +1,5 @@
 import { LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import type { ID } from '../types/data.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../utils/conversions.utils.ts';
 import type { TDataStore } from '../types/store.d.ts';

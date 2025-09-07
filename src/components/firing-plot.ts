@@ -1,4 +1,4 @@
-import { LitElement, css, svg, type SVGTemplateResult } from 'lit';
+import { LitElement, css, html, svg, type SVGTemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { FiringStep, TSvgPathItem, TSvgUnit } from '../types/data.d.ts';
 import { getMax, plotPointsFromSteps } from '../utils/conversions.utils.ts';
@@ -35,6 +35,13 @@ export class FiringPlot extends LitElement {
    */
   @property({ type: Boolean, attribute: 'primary-is-program' })
   primaryIsProgram : boolean = false;
+
+  /**
+   * @property Whether or not the details wrapper should be open by
+   *           default
+   */
+  @property({ type: Boolean, attribute: 'open' })
+  open : boolean = false;
 
   //  END:  properties/attributes
   // ------------------------------------------------------
@@ -186,33 +193,37 @@ export class FiringPlot extends LitElement {
 
     const hLines = this.getLines(this._maxTemp + this._xOffset - 100);
     const vLines = this.getLines((this._maxTime + 250), 250);
+    console.log('this.open:', this.open);
+    return html`
+    <details ?open=${this.open}>
+      <summary>View firing graph</summary>
+      ${svg`
+        <svg width="100%" height="100%" viewBox="${vb}">
+          <rect
+            x="${this._xOffset}"
+            y="0"
+            width="${this._gridX - this._xOffset}"
+            height="${this._gridY -this._yOffset}" />
+          <g id="grid">
+            <g id="horizontal-lines">
+              ${hLines.map(this.hGrid.bind(this))}
+            </g>
+            <g id="vertical-lines">
+              ${vLines.map(this.vGrid.bind(this))}
+            </g>
+          </g>
 
-    return svg`
-    <svg width="100%" height="100%" viewBox="${vb}">
-      <rect
-        x="${this._xOffset}"
-        y="0"
-        width="${this._gridX - this._xOffset}"
-        height="${this._gridY -this._yOffset}" />
-      <g id="grid">
-        <g id="horizontal-lines">
-          ${hLines.map(this.hGrid.bind(this))}
-        </g>
-        <g id="vertical-lines">
-          ${vLines.map(this.vGrid.bind(this))}
-        </g>
-      </g>
+          <g id="units">
+            <text id="degrees" class="units">${this.getTempSteps()}</text>
+            <text id="hours" class="units">${this.getTimeSteps()}</text>
+          </g>
 
-      <g id="units">
-        <text id="degrees" class="units">${this.getTempSteps()}</text>
-        <text id="hours" class="units">${this.getTimeSteps()}</text>
-      </g>
-
-      ${(secondary.length > 0)
-        ? svg`<path class="secondary" d="${this.getPathD(secondary)}" />`
-        : ''}
-      <path class="primary" d="${this.getPathD(primary)}" />
-    </svg>
+          ${(secondary.length > 0)
+            ? svg`<path class="secondary" d="${this.getPathD(secondary)}" />`
+            : ''}
+          <path class="primary" d="${this.getPathD(primary)}" />
+        </svg>`}
+      </details>
     `;
   }
 
@@ -238,6 +249,7 @@ export class FiringPlot extends LitElement {
       --font-weight: inherit;
       --font-height: inherit;
     }
+    svg { margin-top: 0.5rem; }
     rect {
       fill: var(--rect-fill, transparent);
       stroke: var(--rect-stroke, #625a86);
@@ -296,6 +308,9 @@ export class FiringPlot extends LitElement {
     }
     .deg { text-align: right; }
     .hour { text-align: center; }
+    details summary {
+      text-align: left;
+    }
   `
 }
 

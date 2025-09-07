@@ -8,10 +8,10 @@ import {
 } from '../utils/conversions.utils.ts';
 import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { programViewVars, tableStyles } from '../assets/program-view-style.ts';
-import type { TDataStore } from '../types/store.d.ts';
 import type { FiringStep, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
 import './firing-plot.ts';
 import './program-view-meta.ts';
+import { getTopCone } from "../utils/getCone.util.ts";
 
 /**
  * An example element.
@@ -38,6 +38,9 @@ export class ProgramViewEdit extends LoggerElement {
 
   @property({ type: String, attribute: 'name'})
   name : string = '';
+
+  @property({ type: String, attribute: 'cone'})
+  cone : string = '';
 
   @property({ type: String, attribute: 'description'})
   description : string = '';
@@ -78,6 +81,9 @@ export class ProgramViewEdit extends LoggerElement {
 
   @state()
   _duration : number = 0;
+
+  @state()
+  _cone : string = '';
 
   stepsAsPath : TSvgPathItem[] = [];
 
@@ -137,8 +143,9 @@ export class ProgramViewEdit extends LoggerElement {
       return step;
     });
 
-    this._maxTemp = maxTempFromSteps(this.steps);
-    this._duration = durationFromSteps(this.steps);
+    this._maxTemp = maxTempFromSteps(this._tmpSteps);
+    this._duration = durationFromSteps(this._tmpSteps);
+    this._cone = getTopCone(this._tmpSteps, this._maxTemp);
   }
 
   handleChange(event : InputEvent) : void {
@@ -178,6 +185,7 @@ export class ProgramViewEdit extends LoggerElement {
             name: this._name,
             description: this._description,
             type: this._type,
+            cone: this._cone,
           },
         },
       ),
@@ -209,6 +217,7 @@ export class ProgramViewEdit extends LoggerElement {
     this._tmpSteps = [...this.steps];
     this._type = this.firingType;
     this._name = this.name;
+    this._cone = this.cone;
     this._description = this.description;
     this._maxTemp = maxTempFromSteps(this.steps);
     this._duration = durationFromSteps(this.steps);
@@ -226,6 +235,11 @@ export class ProgramViewEdit extends LoggerElement {
     if (this._ready === false) {
       return html`<p>Loading...</p>`;
     }
+
+    console.group('<program-view-edit>.render()');
+    console.log('this._cone:', this._cone);
+    console.log('this.cone:', this.cone);
+    console.groupEnd();
 
     return html`
       <div>
@@ -270,6 +284,7 @@ export class ProgramViewEdit extends LoggerElement {
           .duration=${this._duration}
           .maxTemp=${this._maxTemp}
           .notMetric=${this.notMetric}
+          .cone=${this._cone}
           .unit=${this._tUnit}></program-view-meta>
 
         <h3>Program steps</h3>

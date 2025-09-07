@@ -64,6 +64,9 @@ export class ProgramView extends LoggerElement {
   name : string = '';
 
   @state()
+  cone : string = '';
+
+  @state()
   description : string = '';
 
   @state()
@@ -99,6 +102,7 @@ export class ProgramView extends LoggerElement {
           if (data !== null) {
             this.programData = data;
             this.name = data.name;
+            this.cone = data.cone;
             this.description = data.description;
             this.maxTemp = data.maxTemp;
             this.duration = data.duration;
@@ -129,6 +133,7 @@ export class ProgramView extends LoggerElement {
       this.maxTemp = maxTempFromSteps(this.steps);
       this.type = event.detail.type;
       this.name = event.detail.name;
+      this.cone = event.detail.cone;
       this.description = event.detail.description;
       this._edit = false;
     }
@@ -158,6 +163,7 @@ export class ProgramView extends LoggerElement {
           <program-view-meta
             .converter=${this._tConverter}
             .duration=${this.duration}
+            .cone=${this.cone}
             .maxTemp=${this.maxTemp}
             .notMetric=${this.notMetric}
             .type=${this.type}
@@ -230,6 +236,7 @@ export class ProgramView extends LoggerElement {
               .steps=${deepClone(this.steps)}
               .firingType=${this.type}
               .name=${this.name}
+              .cone=${this.cone}
               .description=${this.description}
               .notMetric=${this.notMetric}
               @cancel=${() => { this._edit = !this._edit }}

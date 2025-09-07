@@ -63,7 +63,7 @@ export interface IKiln implements IIdObject {
   rawGlaze: boolean,
   saltGlaze: boolean,
   useCount: number,
-  isRetired: false,
+  isRetired: boolean,
   isWorking: boolean,
   isInUse: boolean,
   isHot: boolean

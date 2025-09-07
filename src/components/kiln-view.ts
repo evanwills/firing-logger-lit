@@ -1,7 +1,7 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { LoggerElement } from "./LoggerElement.ts";
-import type { ID, IKiln } from "../types/data.d.ts";
+import type { ID, IFiringProgramData, IKiln } from "../types/data.d.ts";
 import { isNonEmptyStr } from "../utils/data.utils.ts";
 
 /**
@@ -37,21 +37,130 @@ export class KilnView extends LoggerElement {
   // _converter : (T : number) => number = x2x;
   // _store : TDataStore | null = null;
   // _unit : string = 'C';
-  //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  @state()
+  _brand : string = '';
+
+  @state()
+  _model : string = '';
+
+  @state()
+  _name : string = '';
+
+  @state()
+  _installDate : Date|null = null;
+
+  @state()
+  _fuel : string = '';
+
+  @state()
+  _type : string = '';
+
+  @state()
+  _maxTemp : number = 0;
+
+  @state()
+  _maxProgramCount : number = 0;
+
+  @state()
+  _width: number  = 0;
+
+  @state()
+  _depth: number = 0;
+
+  @state()
+  _height: number = 0;
+
+  @state()
+  _glaze: boolean = false;
+
+  @state()
+  _bisque: boolean = false;
+
+  @state()
+  _luster: boolean = false;
+
+  @state()
+  _onglaze: boolean = false;
+
+  @state()
+  _saggar: boolean = false;
+
+  @state()
+  _raku: boolean = false;
+
+  @state()
+  _pit: boolean = false;
+
+  @state()
+  _black: boolean = false;
+
+  @state()
+  _rawGlaze: boolean = false;
+
+  @state()
+  _saltGlaze: boolean = false;
+
+  @state()
+  _isRetired: boolean = false;
+
+  @state()
+  _isWorking: boolean = false;
+
+  _useCount: number = 0;
+
+  _isInUse: boolean = false;
+
+  _isHot: boolean = false;
+
+  _programs : IFiringProgramData[] = [];
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
+
+  _setKilnData(data : IKiln) : void {
+    this._brand = data.brand;
+    this._model = data.model;
+    this._name = data.name;
+    this._installDate = (data.installDate !== null)
+      ? new Date(data.installDate)
+      : null;
+    this._fuel = data.fuel.toString();
+    this._type = data.type.toString();
+    this._maxTemp = data.maxTemp;
+    this._maxProgramCount = data.maxProgramCount;
+    this._width = data.width;
+    this._depth = data.depth;
+    this._height = data.height;
+    this._glaze = data.glaze;
+    this._bisque = data.bisque;
+    this._luster = data.luster;
+    this._onglaze = data.onglaze;
+    this._saggar = data.saggar;
+    this._raku = data.raku;
+    this._pit = data.pit;
+    this._black = data.black;
+    this._rawGlaze = data.rawGlaze;
+    this._saltGlaze = data.saltGlaze;
+    this._useCount = data.useCount;
+    this._isRetired = data.isRetired;
+    this._isWorking = data.isWorking;
+    this._isInUse = data.isInUse;
+    this._isHot = data.isHot;
+  }
+  _setProgramData(data : IFiringProgramData[]) : void {
+    this._programs = data;
+  }
 
   _getFromStore() : void {
     super._getFromStore();
 
     if (isNonEmptyStr(this.kilnID)) {
       if (this._store !== null) {
-        this._store.read(`programs.#${this.kilnID}`).then((data : IKiln) : void => {
-          console.log('data:', data);
-        });
+        this._store.read(`kilns.#${this.kilnID}`).then(this._setKilnData);
+        this._store.read(`programs.kilnID=${this.kilnID}`).then(this._setProgramData);
       }
     }
   }

@@ -71,6 +71,7 @@
       "description": "Cone 06 bisque firing for small to medium sized work",
       "maxTemp": 1000,
       "duration": 38400,
+      "cone": "06",
       "averageRate": 93.75,
       "created": "2025-08-25T18:30:00+10:00",
       "createdBy": "wfj_myxTAV",

@@ -46,7 +46,6 @@ class FsDataStore implements TDataStore {
     console.log('UserID :', userID);
     console.log('Payload:', payload);
     console.groupEnd();
-
     return Promise.resolve('');
   }
 
