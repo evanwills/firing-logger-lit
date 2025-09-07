@@ -8,9 +8,9 @@ import {
   maxTempFromSteps,
 } from '../utils/conversions.utils.ts';
 import { keyValueStyle, programViewVars, tableStyles } from "../assets/program-view-style.ts";
-import './firing-plot.ts'
-import './program-view--edit.ts'
 import { LoggerElement } from "./LoggerElement.ts";
+import './firing-plot.ts'
+import './program-view-edit.ts'
 
 /**
  * An example element.

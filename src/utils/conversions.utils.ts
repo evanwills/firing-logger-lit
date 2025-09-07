@@ -162,11 +162,3 @@ export const plotPointsFromSteps = (
 
   return output;
 };
-
-export const getTopCone = (steps : FiringStep[], maxTemp: number) : string => {
-  const step = steps.find((step) => step.endTemp === maxTemp);
-
-  if (typeof step !== 'undefined') {
-
-  }
-}

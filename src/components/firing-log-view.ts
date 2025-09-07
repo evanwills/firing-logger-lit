@@ -20,7 +20,6 @@ export class FiringLogView extends LoggerElement {
   // notMetric : boolean = false;
   // userID : ID = '';
   // readOnly : boolean = false;
-  //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @property({ type: String, attribute: 'firing-log-uid' })
@@ -33,11 +32,16 @@ export class FiringLogView extends LoggerElement {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // State inherited from LoggerElement
   //
-  // _converter : (T : number) => number = x2x;
-  // _store : TDataStore | null = null;
-  // _unit : string = 'C';
-  //
+  // _tConverter : (T : number) => number = x2x;
+  // _tConverterRev : (T : number) => number = x2x;
+  // _lConverter : (T : number) => number = x2x;
+  // _lConverterRev : (T : number) => number = x2x;
+  // _tUnit : string = 'C';
+  // _lUnit : string = 'mm';
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  @state()
+  _ready : boolean = false;
 
   //  END:  state
   // ------------------------------------------------------
