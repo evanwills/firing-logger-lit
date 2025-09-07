@@ -139,35 +139,53 @@ export type FiringStep = {
 
 export interface FiringLog implements IIdObject {
   id: ID,
-  kilnID: string,
-  programID: string,
-  diaryID: string|null,
+  kilnID: ID,
+  programID: ID,
+  diaryID: ID|null,
   firingType: EfiringType,
+  firingState: EkilnFiringState,
   start: number,
   end: number|null,
   started: boolean,
   complete: boolean,
   maxTemp: number,
   currentTemp: number,
-  responsibleID: string,
+  responsibleID: ID,
   notes: string,
   tempLog: [TemperatureLogEntry]
   responsibleLog: [ResponsibleLogEntry]
 }
 
-export interface TemperatureLogEntry {
-  userID: string,
-  time: number,
+export interface IFiringLogEntry {
+  userID: ID,
+  firingID: ID,
+  time: Date,
+  notes: string,
+}
+
+export interface TemperatureLogEntry extends IFiringLogEntry {
+  userID: ID,
+  firingID: ID,
+  time: Date,
+  timeOffset: number,
   tempExpected: number,
   tempActual: number,
   state: EtemperatureState,
   notes: string,
 }
 
-export interface ResponsibleLogEntry {
+export interface ResponsibleLogEntry extends IFiringLogEntry {
+  userID: ID,
+  firingID: ID,
   time: Date,
-  userID: string,
   isStart: boolean
+}
+
+export interface StateChangeLogEntry extends IFiringLogEntry {
+  userID: ID,
+  firingID: ID,
+  time: Date,
+  newState: EkilnFiringState,
 }
 
 export interface Kilns {

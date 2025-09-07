@@ -1,7 +1,16 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { LoggerElement } from "./LoggerElement.ts";
-import type { ID } from "../types/data.d.ts";
+import type {
+  FiringLog,
+  IFiringLogEntry,
+  ID,
+  ResponsibleLogEntry,
+  StateChangeLogEntry,
+  TemperatureLogEntry,
+} from "../types/data.d.ts";
+
+import { isChangeLog, isRespLog, isTempLog } from '../types/data.type-guards.ts';
 
 /**
  * An example element.
@@ -38,10 +47,16 @@ export class FiringLogView extends LoggerElement {
   // _lConverterRev : (T : number) => number = x2x;
   // _tUnit : string = 'C';
   // _lUnit : string = 'mm';
+  // _store : TDataStore | null = null;
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @state()
   _ready : boolean = false;
+
+  _log : TemperatureLogEntry[] = []
+  _changeLog : StateChangeLogEntry[]  = []
+  _responsibleLog : ResponsibleLogEntry[]  = []
+  _rawLog : IFiringLogEntry[] = [];
 
   //  END:  state
   // ------------------------------------------------------
@@ -49,6 +64,20 @@ export class FiringLogView extends LoggerElement {
 
   _getFromStore() : void {
     super._getFromStore();
+
+    if (this.firingLogID !== '' && this._store !== null) {
+      this._store.read(`firings.#${this.firingLogID}`).then((firingResult : FiringLog | null ) => {
+        if (firingResult !== null) {
+
+          this._store?.read(`logs.firingID=${this.firingLogID}`).then((logResult : IFiringLogEntry[]) => {
+            this._rawLog = logResult;
+            this._log = logResult.filter(isTempLog);
+            this._responsibleLog = logResult.filter(isRespLog);
+            this._changeLog = logResult.filter(isChangeLog);
+          });
+        }
+      });
+    }
   }
 
   //  END:  helper methods
