@@ -39,7 +39,7 @@ export interface FancyAction extends Action {
 // START: stored data types
 
 
-export interface Kiln implements IIdObject {
+export interface IKiln implements IIdObject {
   id: ID,
   brand: string,
   model: string,
@@ -210,6 +210,7 @@ export interface User implements IIdObject {
   canPack: boolean,
   canUnpack: boolean,
   canPrice: boolean,
+  adminLevel: number,
 }
 
 export interface Studio implements IIdObject {

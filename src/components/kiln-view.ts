@@ -1,7 +1,8 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { LoggerElement } from "./LoggerElement.ts";
-import type { ID } from "../types/data.d.ts";
+import type { ID, IKiln } from "../types/data.d.ts";
+import { isNonEmptyStr } from "../utils/data.utils.ts";
 
 /**
  * An example element.
@@ -9,8 +10,8 @@ import type { ID } from "../types/data.d.ts";
  * @slot - This element has a slot
  * @csspart button - The button
  */
-@customElement('firing-log-view')
-export class FiringLogView extends LoggerElement {
+@customElement('kiln-view')
+export class KilnView extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -23,8 +24,8 @@ export class FiringLogView extends LoggerElement {
   //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  @property({ type: String, attribute: 'firing-log-uid' })
-  firingLogID : ID = '';
+  @property({ type: String, attribute: 'kiln-uid' })
+  kilnID : ID = '';
 
   //  END:  properties/attributes
   // -----------------------------
@@ -45,6 +46,14 @@ export class FiringLogView extends LoggerElement {
 
   _getFromStore() : void {
     super._getFromStore();
+
+    if (isNonEmptyStr(this.kilnID)) {
+      if (this._store !== null) {
+        this._store.read(`programs.#${this.kilnID}`).then((data : IKiln) : void => {
+          console.log('data:', data);
+        });
+      }
+    }
   }
 
   //  END:  helper methods
@@ -85,6 +94,6 @@ export class FiringLogView extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'firing-log-view': FiringLogView,
+    'kiln-view': KilnView,
   }
 };

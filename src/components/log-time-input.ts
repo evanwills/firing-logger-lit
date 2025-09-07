@@ -1,10 +1,10 @@
 import { LitElement, css, html, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
-import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles';
-import { getISO8601time } from '../utils/date-time.utils';
-import { srOnly } from '../assets/sr-only';
-import type { FReportValidity, TTrueValidity } from '../types/fauxDom';
-import { dispatchCustomEvent, getTrueValidity } from '../utils/event.utils';
+import type { FReportValidity, TTrueValidity } from '../types/fauxDom.d.ts';
+import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles.ts';
+import { getISO8601time } from '../utils/date-time.utils.ts';
+import { srOnly } from '../assets/sr-only.ts';
+import { dispatchCustomEvent, getTrueValidity } from '../utils/event.utils.ts';
 
 /**
  * An example element.

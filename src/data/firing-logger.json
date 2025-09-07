@@ -1,4 +1,5 @@
 {
+  "activeUserID": "wfj_myxTAV",
   "kilns": [
     {
       "id": "AXARcxcpZN",
@@ -114,7 +115,59 @@
       "firstName": "Evan",
       "lastName": "Wills",
       "preferredName": "Evan",
-      "email": "evanwills@illawarrapotters.com.au"
+      "phone": "+610412345678",
+      "email": "evanwills@example.com",
+      "canFire": true,
+      "canLog": true,
+      "canPack": true,
+      "canUnpack": true,
+      "canPrice": true,
+      "adminLevel": 3
+    },
+    {
+      "id": "BVfKmdlaXp",
+      "username": "robyn",
+      "firstName": "Robyn",
+      "lastName": "",
+      "preferredName": "Robyn",
+      "phone": "+610423456789",
+      "email": "robyn@example.com",
+      "canFire": true,
+      "canLog": true,
+      "canPack": true,
+      "canUnpack": true,
+      "canPrice": true,
+      "adminLevel": 2
+    },
+    {
+      "id": "G9armmJStu",
+      "username": "scarlet",
+      "firstName": "Scarlet",
+      "lastName": "",
+      "preferredName": "Scarlet",
+      "phone": "+610434567890",
+      "email": "scarlet@example.com",
+      "canFire": false,
+      "canLog": true,
+      "canPack": false,
+      "canUnpack": true,
+      "canPrice": true,
+      "adminLevel": 2
+    },
+    {
+      "id": "G9armmJStu",
+      "username": "mon",
+      "firstName": "Monica",
+      "lastName": "",
+      "preferredName": "Mon",
+      "phone": "+610445678901",
+      "email": "monica@example.com",
+      "canFire": false,
+      "canLog": true,
+      "canPack": false,
+      "canUnpack": true,
+      "canPrice": true,
+      "adminLevel": 1
     }
   ],
 
@@ -189,5 +242,12 @@
     "unused": "Unused",
     "selected": "Selected",
     "used": "Used"
-  }
+  },
+
+  "EAdminLevels": [
+    "Standard member",
+    "Firing logger",
+    "Admin",
+    "Super admin"
+  ]
 }

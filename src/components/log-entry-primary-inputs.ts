@@ -7,8 +7,8 @@ import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-style
 import { dispatchFLaction } from '../utils/event.utils.ts';
 import { calculateExpectedTemp, forceNum } from '../utils/data.utils.ts';
 import InputValueClass from '../utils/InputValue.class.ts';
-import './temp-input.ts';
-import './time-input.ts';
+import './log-temp-input.ts';
+import './log-time-input.ts';
 
 /**
  * An example element.

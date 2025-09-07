@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
-import './components/log-entry-input.ts';
+import './components/log-entry-primary-inputs.ts';
 import './components/firing-plot.ts';
 import './data/flWatcher.ts';
 import './components/program-view.ts';

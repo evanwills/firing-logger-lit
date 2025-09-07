@@ -1,11 +1,11 @@
-import { LitElement, css, html, type TemplateResult } from 'lit'
+import { css, html, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { c2f, f2c, x2x } from '../utils/conversions.utils';
-import { forceNum } from '../utils/data.utils';
-import { dispatchCustomEvent, getIncrement } from '../utils/event.utils';
-import type { FReportValidity, TTrueValidity } from '../types/fauxDom';
-import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles';
+import type { FReportValidity, TTrueValidity } from '../types/fauxDom.d.ts';
+import { forceNum } from '../utils/data.utils.ts';
+import { dispatchCustomEvent, getIncrement } from '../utils/event.utils.ts';
+import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles.ts';
+import { LoggerElement } from "./LoggerElement.ts";
 // import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 /**
@@ -15,15 +15,18 @@ import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-style
  * @csspart button - The button
  */
 @customElement('temperature-input')
-export class TemperatureInput extends LitElement {
+export class TemperatureInput extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  /**
-   * @property Whether or not to convert metric temperature to farenheight
-   */
-  @property({ type: Boolean, attribute: 'not-metric' })
-  notMetric : boolean = false;
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Properties/Attributes inherited from LoggerElement
+  //
+  // notMetric : boolean = false;
+  // userID : ID = '';
+  // readOnly : boolean = false;
+  //
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   /**
    * @property Whether or not to show an error message for this field
@@ -62,12 +65,6 @@ export class TemperatureInput extends LitElement {
   placeholder: number = 0;
 
   /**
-   * @property Whether or not to render values as read-only
-   */
-  @property({ type: Boolean, attribute: 'readonly' })
-  readonly : boolean = false;
-
-  /**
    * @property Predefined temperature (in celsius)
    */
   @property({ type: Number, attribute: 'value' })
@@ -77,8 +74,14 @@ export class TemperatureInput extends LitElement {
   // ------------------------------------------------------
   // START: state
 
-  @state()
-  _unit : string = 'C';
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // State inherited from LoggerElement
+  //
+  // _converter : (T : number) => number = x2x;
+  // _store : TDataStore | null = null;
+  // _unit : string = 'C';
+  //
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @state()
   _errorMsg : string | TemplateResult = '';
@@ -91,14 +94,10 @@ export class TemperatureInput extends LitElement {
   // START: helper methods
 
   _getReportValidity() {
-    const converter = (this.notMetric === true)
-      ? c2f
-      : x2x;
-    const unit = this._unit;
     const min = this.min;
     const max = this.max;
 
-    const reportRange = (val : number, str: string) => html`Please enter a temperature that is ${str} than ${converter(val)}&deg;${unit}`;
+    const reportRange = (val : number, str: string) => html`Please enter a temperature that is ${str} than ${this._tConverter(val)}&deg;${this._tUnit}`;
 
     return (validity : TTrueValidity) : string | TemplateResult => {
       if (validity.badInput
@@ -130,15 +129,11 @@ export class TemperatureInput extends LitElement {
   }
 
   _getValue(input : number) : number {
-    return (this.notMetric === true)
-      ? c2f(input)
-      : input;
+    return this._tConverter(input);
   }
 
   _setValue(input : number) : number {
-    return (this.notMetric === true)
-      ? f2c(input)
-      : input;
+    return this._tConverterRev(input);
   }
 
   _handleChangeInner(target: HTMLInputElement) : void {
@@ -215,10 +210,6 @@ export class TemperatureInput extends LitElement {
   connectedCallback() : void {
     super.connectedCallback();
 
-    this._unit = (this.notMetric === true)
-      ? 'F'
-      : 'C';
-
     this._reportValidity = this._getReportValidity();
   }
 
@@ -230,7 +221,7 @@ export class TemperatureInput extends LitElement {
     return html`
       <span class="label">
         ${this.label}:
-        <span class="sr-only">in degrees ${this._unit}</span>
+        <span class="sr-only">in degrees ${this._tUnit}</span>
       </span>
       <span class="input">${this._getValue(this.value)}</span>`;
   }
@@ -271,7 +262,7 @@ export class TemperatureInput extends LitElement {
   // START: main render method
 
   render() : TemplateResult {
-    const content = (this.readonly === true)
+    const content = (this.readOnly === true)
       ? this.renderReadOnly()
       : this.renderEditable();
 
@@ -285,7 +276,7 @@ export class TemperatureInput extends LitElement {
     return html`
       <li>
         ${content}
-        <span class="extra deg">&deg;${this._unit}</span>
+        <span class="extra deg">&deg;${this._tUnit}</span>
         ${(msg !== '')
           ? html`<p class="error">${msg}</p>`
           : ''}

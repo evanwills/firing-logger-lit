@@ -4,11 +4,11 @@
  *
  * Each function is exported so it can be easily unit tested.
  *
- * @file data-utils.js
- * @author Evan Wills <evan.wills@thesmithfamily.com.au>
+ * @file data.utils.js
+ * @author Evan Wills <https://github.com/evanwills>
  */
 
-import type { IAnyObject, IStringObject } from "../types/fauxDom";
+import type { IAnyObject, IStringObject } from '../types/fauxDom.d.ts';
 
 export const arrayRemoveValue = <t>(
   arr : Array<t>,

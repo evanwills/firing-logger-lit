@@ -28,6 +28,10 @@
   --font-colour: #fff;
   --font-weight: bold;
   --font-height: 3rem;
+  --table-border-colour: #aaa;
+  --table-cell-padding: 0.25em 0.5em;
+  --delete-bg: #aa0000;
+  --label-width: 5.75rem;
 }
 
 a {

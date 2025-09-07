@@ -1,5 +1,5 @@
-import type { FReportValidity, TFauxValidity, TTrueValidity } from "../types/fauxDom";
-import InputValue from "./InputValue.class"
+import type { FReportValidity, TFauxValidity, TTrueValidity } from "../types/fauxDom.d.ts";
+import InputValue from "./InputValue.class.ts"
 
 /**
  * Get a new custom event to dispatch

@@ -1,19 +1,16 @@
-import { LitElement, css, html, type TemplateResult } from 'lit';
+import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { TDataStore } from '../types/store.d.ts';
 import type { FiringStep, ID, IStoredFiringProgram, TSvgPathItem } from '../types/data.d.ts';
-import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { deepClone, isNonEmptyStr } from '../utils/data.utils.ts';
 import {
-  c2f,
   durationFromStep,
   durationFromSteps,
   maxTempFromSteps,
-  x2x,
 } from '../utils/conversions.utils.ts';
 import { keyValueStyle, programViewVars, tableStyles } from "../assets/program-view-style.ts";
 import './firing-plot.ts'
 import './program-view--edit.ts'
+import { LoggerElement } from "./LoggerElement.ts";
 
 /**
  * An example element.
@@ -22,25 +19,37 @@ import './program-view--edit.ts'
  * @csspart button - The button
  */
 @customElement('program-view')
-export class ProgramView extends LitElement {
+export class ProgramView extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: Boolean, attribute: 'not-metric' })
-  notMetric : boolean = false;
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Properties/Attributes inherited from LoggerElement
+  //
+  // notMetric : boolean = false;
+  // userID : ID = '';
+  // readOnly : boolean = false;
+  //
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @property({ type: String, attribute: 'program-uid' })
   programID : ID = '';
 
-  @property({ type: String, attribute: 'user-uid' })
-  userID : ID = '';
-
-  @property({ type: Boolean, attribute: 'read-only' })
-  readOnly : boolean = false;
-
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // State inherited from LoggerElement
+  //
+  // _tConverter : (T : number) => number = x2x;
+  // _tConverterRev : (T : number) => number = x2x;
+  // _lConverter : (T : number) => number = x2x;
+  // _lConverterRev : (T : number) => number = x2x;
+  // _tUnit : string = 'C';
+  // _lUnit : string = 'mm';
+  //
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @state()
   _ready : boolean = false;
@@ -72,15 +81,6 @@ export class ProgramView extends LitElement {
   programData : IStoredFiringProgram | null = null;
 
   @state()
-  _store : TDataStore | null = null;
-
-  @state()
-  _converter : (T : number) => number = x2x;
-
-  @state()
-  _unit : string = 'C';
-
-  @state()
   _tmpSteps : FiringStep[] = [];
 
   @state()
@@ -90,34 +90,8 @@ export class ProgramView extends LitElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  //  END:  helper methods
-  // ------------------------------------------------------
-  // START: event handlers
-
-  toggleEdit() : void {
-    this._edit = !this._edit;
-  }
-
-  saveSteps(event : CustomEvent) : void {
-    this.steps = event.detail.steps;
-    this.duration = durationFromSteps(this.steps);
-    this.maxTemp = maxTempFromSteps(this.steps);
-    this.type = event.detail.type;
-    this.name = event.detail.name;
-    this.description = event.detail.description;
-    this._edit = false;
-  }
-
-  //  END:  event handlers
-  // ------------------------------------------------------
-  // START: lifecycle methods
-
-  connectedCallback() : void {
-    super.connectedCallback();
-
-    if (this._store === null) {
-      this._store = getDataStoreSingleton();
-    }
+  _getFromStore() : void {
+    super._getFromStore();
 
     if (isNonEmptyStr(this.programID)) {
       if (this._store !== null) {
@@ -138,11 +112,36 @@ export class ProgramView extends LitElement {
       this._ready = true;
       this._edit = true;
     }
+  }
 
-    if (this.notMetric === true) {
-      this._converter = c2f;
-      this._unit = 'F';
+  //  END:  helper methods
+  // ------------------------------------------------------
+  // START: event handlers
+
+  toggleEdit() : void {
+    this._edit = !this._edit;
+  }
+
+  saveSteps(event : CustomEvent) : void {
+    if (this.readOnly === false) {
+      this.steps = event.detail.steps;
+      this.duration = durationFromSteps(this.steps);
+      this.maxTemp = maxTempFromSteps(this.steps);
+      this.type = event.detail.type;
+      this.name = event.detail.name;
+      this.description = event.detail.description;
+      this._edit = false;
     }
+  }
+
+  //  END:  event handlers
+  // ------------------------------------------------------
+  // START: lifecycle methods
+
+  connectedCallback() : void {
+    super.connectedCallback();
+
+    this._getFromStore();
   }
 
   //  END:  lifecycle methods
@@ -157,12 +156,12 @@ export class ProgramView extends LitElement {
         <div class="summary">
           <p>${this.description}</p>
           <program-view-meta
-            .converter=${this._converter}
+            .converter=${this._tConverter}
             .duration=${this.duration}
             .maxTemp=${this.maxTemp}
             .notMetric=${this.notMetric}
             .type=${this.type}
-            .unit=${this._unit}>
+            .unit=${this._tUnit}>
           </program-view-meta>
         </div>
       </div>
@@ -183,12 +182,12 @@ export class ProgramView extends LitElement {
             <th>Step</th>
             <th>
               End Temp<br />
-              <span class="unit">(°${this._unit})
+              <span class="unit">(°${this._tUnit})
               </span>
             </th>
             <th>
               Rate<br />
-              <span class="unit">(°${this._unit}/hr)</span>
+              <span class="unit">(°${this._tUnit}/hr)</span>
             </th>
             <th>
               Hold<br />
@@ -201,7 +200,7 @@ export class ProgramView extends LitElement {
           ${this.steps.map((step, i) => html`
             <tr>
               <th>${step.order}</th>
-              <td>${this._converter(step.endTemp)}</td>
+              <td>${this._tConverter(step.endTemp)}</td>
               <td>${step.rate}</td>
               <td>${step.hold}</td>
               <td>${durationFromStep(this.steps, i)}</td>

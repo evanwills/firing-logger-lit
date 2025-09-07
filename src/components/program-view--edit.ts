@@ -1,11 +1,10 @@
-import { LitElement, css, html, type TemplateResult } from 'lit';
+import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { LoggerElement } from "./LoggerElement.ts";
 import {
-  c2f,
   durationFromSteps,
   f2c,
   maxTempFromSteps,
-  x2x,
 } from '../utils/conversions.utils.ts';
 import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { programViewVars, tableStyles } from '../assets/program-view-style.ts';
@@ -21,12 +20,18 @@ import './program-view-meta.ts';
  * @csspart button - The button
  */
 @customElement('program-view-edit')
-export class ProgramViewEdit extends LitElement {
+export class ProgramViewEdit extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: Boolean, attribute: 'not-metric' })
-  notMetric : boolean = false;
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Properties/Attributes inherited from LoggerElement
+  //
+  // notMetric : boolean = false;
+  // userID : ID = '';
+  // readOnly : boolean = false;
+  //
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @property({ type: Array, attribute: '' })
   steps : FiringStep[] = [];
@@ -43,6 +48,18 @@ export class ProgramViewEdit extends LitElement {
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // State inherited from LoggerElement
+  //
+  // _tConverter : (T : number) => number = x2x;
+  // _tConverterRev : (T : number) => number = x2x;
+  // _lConverter : (T : number) => number = x2x;
+  // _lConverterRev : (T : number) => number = x2x;
+  // _tUnit : string = 'C';
+  // _lUnit : string = 'mm';
+  //
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @state()
   _ready : boolean = false;
@@ -67,16 +84,7 @@ export class ProgramViewEdit extends LitElement {
   firingTypes : Array<{ value: string; label: string }> = [];
 
   @state()
-  _converter : (T : number) => number = x2x;
-
-  @state()
-  _unit : string = 'C';
-
-  @state()
   _tmpSteps : FiringStep[] = [];
-
-  @state()
-  _store : TDataStore | null = null;
 
   //  END:  state
   // ------------------------------------------------------
@@ -204,11 +212,6 @@ export class ProgramViewEdit extends LitElement {
     this._description = this.description;
     this._maxTemp = maxTempFromSteps(this.steps);
     this._duration = durationFromSteps(this.steps);
-
-    if (this.notMetric === true) {
-      this._converter = c2f;
-      this._unit = 'F';
-    }
   }
 
   //  END:  lifecycle methods
@@ -263,11 +266,11 @@ export class ProgramViewEdit extends LitElement {
         </ul>
 
         <program-view-meta
-          .converter=${this._converter}
+          .converter=${this._tConverter}
           .duration=${this._duration}
           .maxTemp=${this._maxTemp}
           .notMetric=${this.notMetric}
-          .unit=${this._unit}></program-view-meta>
+          .unit=${this._tUnit}></program-view-meta>
 
         <h3>Program steps</h3>
 
@@ -285,11 +288,11 @@ export class ProgramViewEdit extends LitElement {
               <th>Step</th>
               <th>
                 End Temp<br />
-                <span class="unit">(°${this._unit})</span>
+                <span class="unit">(°${this._tUnit})</span>
               </th>
               <th>
                 Rate<br />
-                <span class="unit">(°${this._unit}/hr)</span>
+                <span class="unit">(°${this._tUnit}/hr)</span>
               </th>
               <th>
                 Hold<br />
@@ -309,7 +312,7 @@ export class ProgramViewEdit extends LitElement {
                     type="number"
                     step="1"
                     title="Target temperature for step ${step.order}"
-                    value="${this._converter(step.endTemp)}"
+                    value="${this._tConverter(step.endTemp)}"
                     @keyup=${this.updateStep} />
                 </td>
                 <td>
@@ -319,7 +322,7 @@ export class ProgramViewEdit extends LitElement {
                     type="number"
                     step="1"
                     title="Ramp rate (Deg/hr) for step ${step.order}"
-                    value="${this._converter(step.rate)}"
+                    value="${this._tConverter(step.rate)}"
                     @keyup=${this.updateStep} />
                 </td>
                 <td>
@@ -329,7 +332,7 @@ export class ProgramViewEdit extends LitElement {
                     type="number"
                     step="1"
                     title="Hold time (in munutes) for step ${step.order}"
-                    value="${this._converter(step.hold)}"
+                    value="${this._tConverter(step.hold)}"
                     @keyup=${this.updateStep} />
                 </td>
                 <td>

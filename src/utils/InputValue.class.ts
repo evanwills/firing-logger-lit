@@ -1,6 +1,6 @@
 import type { TemplateResult } from 'lit';
-import type { FReportValidity, TFauxValidity, TTrueValidity } from '../types/fauxDom';
-import { getTrueValidity } from './event.utils';
+import type { FReportValidity, TFauxValidity, TTrueValidity } from '../types/fauxDom.d.ts';
+import { getTrueValidity } from './event.utils.ts';
 
 export default class {
   _value : string | number | object;

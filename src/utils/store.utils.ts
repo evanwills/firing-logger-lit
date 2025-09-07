@@ -1,4 +1,16 @@
-import type { IIdObject } from "../types/data";
+import type { IIdObject, IKeyValue } from '../types/data.d.ts';
+
+const parseKeyValue = (input : string) : string => {
+  if (input.includes('=') === false)  {
+    return input.replace(/[^a-z\d]+/ig, '');
+  }
+
+  const tmp = input.split('=');
+  tmp[0] = tmp[0].replace(/[^a-z\d]+/ig, '');
+  tmp[1] = tmp[1].replace(/[^a-z\d_-]+/ig, '');
+
+  return `.${tmp[0]}=${tmp[1]}`;
+}
 
 export const splitSlice = (input : string) : string[] => input
   .split('.')
@@ -11,10 +23,10 @@ export const splitSlice = (input : string) : string[] => input
 
       case '@':
         // "@" is used for pagination sets
-        return '@' + output.replace(/[^\d:]+/ig, '').replace(/^.*?(\d+:\d+).*?$/, '$1');
+        return '@' + output.replace(/[^\d:]+/ig, '').replace(/^.*?(\d+:\d+).*?$/, '$1');;
 
       default:
-        return output.replace(/[^a-z\d]+/ig, '');
+        return parseKeyValue(output);
     }
   });
 
@@ -61,3 +73,29 @@ export const getById = <T extends IIdObject>(input : T[], id : string) : T | nul
     ? output
     : null;
 };
+
+/**
+ * Get all the elements in an array that have property matching the
+ * given ID
+ *
+ * @param input    Array of objects to be filtered
+ * @param keyValue Key/Value string (prop=ID)
+ *                 The string before the "=" is the property name.
+ *                 The string after the "=" is the ID to be matched.
+ *                 keyValue is assumed to match RegExp
+ *                 `/^\.[a-z\d]+=[a-z\d_-]+$/i`
+ *
+ * @returns All items in the array that match key/value pair.
+ */
+export const getAllById = <T extends IKeyValue>(input : T[], keyValue : string) : T[] => {
+  const [key, value] = keyValue.substring(1).split('=', 2);
+
+  if (key !== '' && value !== '') {
+    return input.filter(
+      (item : IKeyValue) : boolean => (typeof item[key] === 'string'
+        && item[key] === value),
+    );
+  }
+
+  return [];
+}

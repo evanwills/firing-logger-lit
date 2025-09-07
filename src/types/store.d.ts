@@ -1,4 +1,4 @@
-import type { ID } from "./data";
+import type { ID } from './data.d.ts';
 
 /**
  * TStoreSlice is a dot-separated string matching the following regular expression pattern
