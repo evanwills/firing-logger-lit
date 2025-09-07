@@ -9,7 +9,6 @@ import type {
   StateChangeLogEntry,
   TemperatureLogEntry,
 } from "../types/data.d.ts";
-
 import { isChangeLog, isRespLog, isTempLog } from '../types/data.type-guards.ts';
 
 /**
