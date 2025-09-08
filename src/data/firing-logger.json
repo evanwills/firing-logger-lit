@@ -1,5 +1,7 @@
 {
   "activeUserID": "wfj_myxTAV",
+  "firings": [
+  ],
   "kilns": [
     {
       "id": "AXARcxcpZN",
@@ -59,6 +61,8 @@
       "isInUse": true,
       "isHot": false
     }
+  ],
+  "logs": [
   ],
   "programs": [
     {
