@@ -53,6 +53,9 @@ export class FiringLogView extends LoggerElement {
   @state()
   _ready : boolean = false;
 
+  @state()
+  _edit : boolean = false;
+
   _log : TemperatureLogEntry[] = []
   _changeLog : StateChangeLogEntry[]  = []
   _responsibleLog : ResponsibleLogEntry[]  = []
@@ -66,22 +69,27 @@ export class FiringLogView extends LoggerElement {
   _getFromStore() : void {
     super._getFromStore();
 
-    if (this.firingLogID !== '' && this._store !== null) {
-      this._store.read(`firings.#${this.firingLogID}`).then((firingResult : FiringLog | null ) => {
-        if (firingResult !== null) {
+    if (this._store !== null) {
+      if (this.firingLogID !== '') {
+        this._store.read(`firings.#${this.firingLogID}`).then((firingResult : FiringLog | null ) => {
+          if (firingResult !== null) {
+            this._ready = true;
 
-          this._store?.read(`logs.firingID=${this.firingLogID}`).then((logResult : IFiringLogEntry[]) => {
-            this._rawLog = logResult;
-            this._log = logResult.filter(isTempLog);
-            this._responsibleLog = logResult.filter(isRespLog);
-            this._changeLog = logResult.filter(isChangeLog);
-          });
+            this._store?.read(`logs.firingID=${this.firingLogID}`).then((logResult : IFiringLogEntry[]) => {
+              this._rawLog = logResult;
+              this._log = logResult.filter(isTempLog);
+              this._responsibleLog = logResult.filter(isRespLog);
+              this._changeLog = logResult.filter(isChangeLog);
+            });
 
-          this._store?.read(`programs.#${firingResult.programID}`).then((programResult : IStoredFiringProgram | null) => {
-            this._program = programResult;
-          })
-        }
-      });
+            this._store?.read(`programs.#${firingResult.programID}`).then((programResult : IStoredFiringProgram | null) => {
+              this._program = programResult;
+            })
+          }
+        });
+      } else {
+        this._edit = true;
+      }
     }
   }
 
