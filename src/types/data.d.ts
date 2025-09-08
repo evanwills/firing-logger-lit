@@ -103,7 +103,7 @@ export interface IFiringProgramData implements IIdObject {
 
 export interface IStoredFiringProgram extends IFiringProgramData {
   id: ID,
-  kilnID: string,
+  kilnID: ID,
   controllerProgramID: number,
   type: string,
   name: string,
@@ -149,6 +149,7 @@ export interface FiringLog implements IIdObject {
   started: boolean,
   complete: boolean,
   maxTemp: number,
+  cone: string,
   currentTemp: number,
   responsibleID: ID,
   notes: string,

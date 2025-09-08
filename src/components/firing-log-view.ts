@@ -8,6 +8,7 @@ import type {
   ResponsibleLogEntry,
   StateChangeLogEntry,
   TemperatureLogEntry,
+  IStoredFiringProgram,
 } from "../types/data.d.ts";
 import { isChangeLog, isRespLog, isTempLog } from '../types/data.type-guards.ts';
 
@@ -56,6 +57,7 @@ export class FiringLogView extends LoggerElement {
   _changeLog : StateChangeLogEntry[]  = []
   _responsibleLog : ResponsibleLogEntry[]  = []
   _rawLog : IFiringLogEntry[] = [];
+  _program : IStoredFiringProgram | null = null;
 
   //  END:  state
   // ------------------------------------------------------
@@ -74,6 +76,10 @@ export class FiringLogView extends LoggerElement {
             this._responsibleLog = logResult.filter(isRespLog);
             this._changeLog = logResult.filter(isChangeLog);
           });
+
+          this._store?.read(`programs.#${firingResult.programID}`).then((programResult : IStoredFiringProgram | null) => {
+            this._program = programResult;
+          })
         }
       });
     }
