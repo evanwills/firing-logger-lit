@@ -1,4 +1,5 @@
-import { isNonEmptyStr, isObj } from './data.utils';
+import type { IKeyValue } from "../types/data.d.ts";
+import { isNonEmptyStr, isObj } from './data.utils.ts';
 
 export default class FauxTarget {
   // ----------------------------------------------------------------
@@ -6,17 +7,27 @@ export default class FauxTarget {
 
   value;
 
-  validity = {};
+  validity : ValidityState = {
+    badInput: false,
+    customError: false,
+    patternMismatch: false,
+    rangeOverflow: false,
+    rangeUnderflow: false,
+    stepMismatch: false,
+    tooLong: false,
+    tooShort: false,
+    typeMismatch: false,
+    valid: true,
+    valueMissing: false,
+  };
 
   //  END:  Public properties
   // ----------------------------------------------------------------
   // START: Private properties
 
-  _rawValue;
-
   _localName = '';
 
-  _otherProps = {};
+  _otherProps : IKeyValue = {};
 
   _externalReport;
 
@@ -30,36 +41,27 @@ export default class FauxTarget {
    * Get a faux target DOM element as would be expected to be in an
    * InputEvent
    *
-   * @param {any}    value      Value to be sent with faux input
-   *                            elements
-   * @param {Object} validity   [{} (empty object)] Input validity props
-   * @param {Object} otherProps [{} (empty object)] Any other props you
+   * @param value      Value to be sent with faux input elements
+   * @param validity   [{} (empty object)] Input validity props
+   * @param otherProps [{} (empty object)] Any other props you
    *                            might want to add to the event target
-   * @param {string} tag        ["input"] Tag name for the event target
+   * @param tag        ["input"] Tag name for the event target
    *
-   * @returns {Object} Object that mimics an HTML
-   *                   input/select/button/textarea field included as
-   *                   the `target` property of an event
    */
-  constructor(value, validity = {}, otherProps = {}, tag = 'input') {
+  constructor(
+    value : string | number,
+    validity : IKeyValue = {},
+    otherProps : IKeyValue = {},
+    tag = 'input',
+  ) {
     this._localName = tag.toLowerCase();
     this.value = value;
 
-    const { reportValidity, rawValue, ...other } = (isObj(otherProps) === true)
+    const { reportValidity, ...other } = (isObj(otherProps) === true)
       ? otherProps
       : {};
 
-    const unknown = {};
-
-    for (const key of Object.keys(other)) {
-      if (typeof this[key] === typeof other[key]) {
-        this[key] = other[key];
-      } else {
-        unknown[key] = other[key];
-      }
-    }
-
-    this._otherProps = unknown;
+    this._otherProps = other;
 
     const { validityMsg, ..._validity } = (isObj(validity) === true)
       ? validity
@@ -76,13 +78,19 @@ export default class FauxTarget {
   // ----------------------------------------------------------------
   // START: Getter methods
 
+  get id() {
+    return (typeof this._otherProps.id === 'string')
+      ? this._otherProps.id
+      : '';
+  }
+
   get faux() { return true; } // eslint-disable-line class-methods-use-this
 
   get nodeName() { return this._getTAG(); }
 
   get rawValue() {
-    return (typeof this._rawValue !== 'undefined')
-      ? this._rawValue
+    return (typeof this._otherProps.rawValue !== 'undefined')
+      ? this._otherProps.rawValue
       : this.value;
   }
 
@@ -94,7 +102,7 @@ export default class FauxTarget {
 
   _getTAG() { return this._localName.toUpperCase(); }
 
-  _setValidity(_validity) {
+  _setValidity(_validity : IKeyValue) {
     this.validity = {
       badInput: false,
       customError: false,
@@ -122,11 +130,11 @@ export default class FauxTarget {
   // ----------------------------------------------------------------
   // START: Public methods
 
-  checkValidity() {
-    for (const key of Object.keys(this.validity)) {
+  checkValidity() : boolean {
+    for (const key in this.validity) {
       const tmp = (key === 'valid')
-        ? !this.validity[key]
-        : this.validity[key];
+        ? !(this.validity[key] as boolean)
+        : (this.validity[key] as boolean);
 
       if (tmp === true) {
         return false;
@@ -136,11 +144,11 @@ export default class FauxTarget {
     return true;
   }
 
-  other(prop) {
+  other(prop : string) : any {
     return this._otherProps[prop];
   }
 
-  reportValidity() {
+  reportValidity() : string {
     const rType = typeof this._externalReport;
 
     if (rType === 'function') {

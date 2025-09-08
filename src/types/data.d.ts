@@ -110,6 +110,7 @@ export interface IStoredFiringProgram extends IFiringProgramData {
   version: number,
   description: string,
   maxTemp: number,
+  cone: string,
   duration: number,
   averageRate: number,
   steps: [FiringStep],

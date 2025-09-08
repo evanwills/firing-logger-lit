@@ -1,5 +1,6 @@
-import { isObj } from './data-utils';
-import FauxTarget from './FauxTarget.class';
+import type { IKeyValue } from "../types/data.d.ts";
+import { isObj } from './data.utils.ts';
+import FauxTarget from './FauxTarget.class.ts';
 
 export default class FauxEvent {
   // ----------------------------------------------------------------
@@ -7,11 +8,11 @@ export default class FauxEvent {
 
   _isKeyboard = false;
 
-  _keyboard = {};
-
-  _target;
+  _keyboard : IKeyValue = {};
 
   _timeStamp = 0;
+
+  _target : FauxTarget;
 
   _type = '';
 
@@ -20,18 +21,17 @@ export default class FauxEvent {
   // START: Constructor
 
   constructor(
-    value,
-    rawValue = undefined,
-    validity = {},
-    otherProps = {},
-    type = 'change',
-    tag = 'input',
+    value : string | number,
+    validity : IKeyValue = {},
+    otherProps : IKeyValue = {},
+    type : string = 'change',
+    tag : string = 'input',
   ) {
     this._timeStamp = Date.now();
 
     this._type = type;
 
-    const { keyboard, _otherProps } = (isObj(otherProps) === true)
+    const { keyboard, ..._otherProps } = (isObj(otherProps) === true)
       ? otherProps
       : {};
 
@@ -46,10 +46,11 @@ export default class FauxEvent {
         );
       }
 
-      this._iskeyboard = true;
+      this._isKeyboard = true;
     }
 
-    this.target = new FauxTarget(value, rawValue, validity, _otherProps, tag);
+    this._target = new FauxTarget(value, validity, _otherProps, tag);
+    console.groupEnd();
   }
 
   //  END:  Constructor
@@ -108,21 +109,21 @@ export default class FauxEvent {
    *
    * @throws {Error} If Event is not a keyboard event
    */
-  getModifierState(key) {
+  getModifierState(key : string) : boolean {
     try {
       switch (key) {
         case 'Alt':
         case 'AltGraph':
-          return this._getKeyboardProp('altKey');
+          return this._getKeyboardProp('altKey') === true;
 
         case 'Control':
-          return this._getKeyboardProp('ctrlKey');
+          return this._getKeyboardProp('ctrlKey') === true;
 
         case 'Meta':
-          return this._getKeyboardProp('metaKey');
+          return this._getKeyboardProp('metaKey') === true;
 
         case 'Shift':
-          return this._getKeyboardProp('shiftKey');
+          return this._getKeyboardProp('shiftKey') === true;
 
         default:
           // Other known modifier states:
@@ -132,10 +133,10 @@ export default class FauxEvent {
           // * "OS"
           // * "ScrollLock"
           // Anything else will always return FALSE
-          return this._getKeyboardProp(key);
+          return this._getKeyboardProp(key) === true;
       }
-    } catch (error) {
-      throw Error(error);
+    } catch (error : unknown) {
+      throw Error((error as Error).message);
     }
   }
 
@@ -143,7 +144,7 @@ export default class FauxEvent {
   // ----------------------------------------------------------------
   // START: Private methods
 
-  _getKeyboardProp(prop) {
+  _getKeyboardProp(prop : string) : string | number | boolean {
     if (this._isKeyboard === false) {
       throw new Error('FauxEvent is not a keyboard event');
     }

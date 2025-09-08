@@ -55,7 +55,7 @@ export class ProgramView extends LoggerElement {
   _ready : boolean = false;
 
   @state()
-  _edit : boolean = false;
+  _edit : boolean = true;
 
   @state()
   type : string = '';

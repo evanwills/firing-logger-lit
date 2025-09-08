@@ -1,6 +1,7 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { LoggerElement } from "./LoggerElement.ts";
+import type { FiringStep, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
 import {
   durationFromSteps,
   f2c,
@@ -8,10 +9,14 @@ import {
 } from '../utils/conversions.utils.ts';
 import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { programViewVars, tableStyles } from '../assets/program-view-style.ts';
-import type { FiringStep, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
+import { getTopCone } from "../utils/getCone.util.ts";
+import FauxEvent from "../utils/FauxEvent.class.ts";
 import './firing-plot.ts';
 import './program-view-meta.ts';
-import { getTopCone } from "../utils/getCone.util.ts";
+import './input-fields/accessible-number-field.ts';
+import './input-fields/accessible-select-field.ts';
+import './input-fields/accessible-text-field.ts';
+import './input-fields/accessible-textarea-field.ts';
 
 /**
  * An example element.
@@ -75,6 +80,9 @@ export class ProgramViewEdit extends LoggerElement {
 
   @state()
   _description : string = '';
+
+  @state()
+  _controllerIndex : number = 0;
 
   @state()
   _maxTemp : number = 0;
@@ -148,28 +156,31 @@ export class ProgramViewEdit extends LoggerElement {
     this._cone = getTopCone(this._tmpSteps, this._maxTemp);
   }
 
-  handleChange(event : InputEvent) : void {
-    const target = event.target as HTMLInputElement;
-    const { id, value } = target;
+  handleChange(event : CustomEvent) : void {
+    if (event.detail instanceof FauxEvent) {
+      const { target } = (event.detail as FauxEvent);
+      const value = target.value.toString();
 
-    if (target.checkValidity() === true) {
-      switch(id) {
-        case 'name':
-          this._name = value;
-          break;
+      if (target.checkValidity() === true) {
+        switch(target.id) {
+          case 'name':
+            this._name = value;
+            break;
 
-        case 'description':
-          this._description = value;
-          break;
+          case 'description':
+            this._description = value;
+            break;
 
-        case 'type':
-          this._type = value;
-          break;
+          case 'type':
+            this._type = value;
+            break;
 
-        default:
-          break;
+          default:
+            break;
+        }
       }
     }
+    console.groupEnd();
   }
 
   handleSave() : void {
@@ -246,36 +257,44 @@ export class ProgramViewEdit extends LoggerElement {
         <h2>Edit: ${this.name}</h2>
         <ul>
           <li>
-            <label for="name">Name:</label>
-            <input
+            <accessible-text-field
               id="name"
-              type="text"
-              .value="${this._name}"
+              label="Name"
               maxlength="50"
-              @keyup=${this.handleChange} />
+              validate-on-keyup
+              .value=${this.name}
+              @change=${this.handleChange}
+              @keyup=${this.handleChange}></accessible-text-field>
           </li>
           <li>
-            <label for="description">Description:</label>
-            <textarea
+            <accessible-textarea-field
               id="description"
+              label="Description"
               maxlength="255"
-              .value="${this._description}"
-              @keyup=${this.handleChange}></textarea>
+              validate-on-keyup
+              .value=${this.description}
+              @change=${this.handleChange}
+              @keyup=${this.handleChange}></accessible-textarea-field>
           </li>
           <li>
-            <label for="type">Firing type:</label>
-            <select
+            <accessible-select-field
               id="type"
-              @change=${this.handleChange}>
-              <option value="">Select type</option>
-              ${this.firingTypes.map((type) => html`
-                <option
-                  value="${type.value}"
-                  ?selected=${(this._type === type.value)}>
-                  ${type.label}
-                </option>
-              `)}
-            </select>
+              label="Firing type"
+              maxlength="255"
+              .options=${this.firingTypes}
+              .value=${this._type}
+              @change=${this.handleChange}></accessible-select-field>
+          </li>
+          <li>
+            <accessible-number-field
+              id="programIndex"
+              help-msg="The number this program is identified by in the kiln controller"
+              label="Controller program number"
+              min="1"
+              max="25"
+              step="1"
+              .value=${this._controllerIndex}
+              @change=${this.handleChange}></accessible-select-field>
           </li>
         </ul>
 
@@ -393,19 +412,13 @@ export class ProgramViewEdit extends LoggerElement {
       font-weight: bold;
     }
 
-    ul { list-style-type: none; padding: 0; margin: 1rem 0; }
-
-    li {
-      display: flex;
-      column-gap: 0.5rem;
-      margin-bottom: 1rem;
-      text-align: left;
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 1rem 0;
     }
 
-    li label {
-      font-weight: bold;
-      width: var(--label-width, 5.75rem);
-    }
+    li { margin-bottom: 1rem; }
 
     input, select, textarea {
       border-radius: 0.25rem;
@@ -417,21 +430,6 @@ export class ProgramViewEdit extends LoggerElement {
     input[type="number"] {
       width: 3.5rem;
       text-align: center;
-    }
-
-    input[type="text"] {
-      font-family: inherit;
-      font-size: inherit;
-      padding-right: 0.5rem;
-      width: calc(100% - var(--label-width, 5.75rem) - 0.5rem);
-    }
-
-    textarea {
-      font-family: inherit;
-      font-size: inherit;
-      min-height: 3rem;
-      padding-right: 0.5rem;
-      width: calc(100% - var(--label-width, 5.75rem) - 0.5rem);
     }
 
     ${tableStyles}
