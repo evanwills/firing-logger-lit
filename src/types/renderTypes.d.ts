@@ -18,3 +18,5 @@ export type TOptionValueLabel = {
   value: string,
   label: string,
 };
+
+export type FSanitise = (input: string) => string;

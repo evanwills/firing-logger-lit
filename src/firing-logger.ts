@@ -47,7 +47,7 @@ export class FiringLogger extends LitElement {
       <p>ID: <code>${nanoid(10)}</code></p>
 
       <program-view
-        program-uid="ZQfi3zS0Rt"
+        program-uid=""
         user-id="${this.userID}"></program-view>
       <!-- <div class="card">
         <log-entry-input

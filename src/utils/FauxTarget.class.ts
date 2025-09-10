@@ -1,5 +1,5 @@
 import type { IKeyValue } from "../types/data.d.ts";
-import { isNonEmptyStr, isObj } from './data.utils.ts';
+import { forceNum, isNonEmptyStr, isNum, isObj } from './data.utils.ts';
 
 export default class FauxTarget {
   // ----------------------------------------------------------------
@@ -84,6 +84,12 @@ export default class FauxTarget {
       : '';
   }
 
+  get name() {
+    return (typeof this._otherProps.name === 'string')
+      ? this._otherProps.name
+      : '';
+  }
+
   get faux() { return true; } // eslint-disable-line class-methods-use-this
 
   get nodeName() { return this._getTAG(); }
@@ -92,6 +98,34 @@ export default class FauxTarget {
     return (typeof this._otherProps.rawValue !== 'undefined')
       ? this._otherProps.rawValue
       : this.value;
+  }
+
+  get valueAsDate () : Date | null {
+    // see: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/valueAsDate
+
+    const input = this.rawValue;
+    let output;
+
+    try {
+      output = new Date(input);
+    } catch (_error) {
+      return null;
+    }
+
+    return (output.toString() === 'Invalid Date')
+      ? null
+      : output;
+  }
+
+  get valueAsNumber() : number {
+    // see: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/valueAsNumber
+    const output = this.rawValue;
+
+    if (isNum(output) === true) {
+      return forceNum(output, output.toString().includes('.'));
+    }
+
+    return parseInt('abc', 10);
   }
 
   get tagName() { return this._getTAG(); }

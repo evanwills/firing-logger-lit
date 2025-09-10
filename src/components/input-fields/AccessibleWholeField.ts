@@ -1,7 +1,7 @@
 import { LitElement, css, html, type TemplateResult } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js';
-import type { FValidationMessage } from '../../types/renderTypes.d.ts';
+import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 import type { IKeyValue } from '../../types/data.d.ts'
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import { ifDefined } from "lit/directives/if-defined.js";
@@ -35,8 +35,17 @@ export class AccessibleWholeField extends LitElement {
   @property({ type: Array })
   listOptions : string[] | null = null;
 
+  @property({ type: Function })
+  sanitiseInput : FSanitise | null = null;
+
   @property({ type: Boolean, attribute: 'validate-on-keyup'})
   validateOnKeyup : boolean = false;
+
+  @property({ type: Boolean, attribute: 'watch-overflow-x'})
+  watchOverflowX : boolean = false;
+
+  @property({ type: Boolean, attribute: 'watch-overflow-y'})
+  watchOverflowY : boolean = false;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // START: Standard HTML <input> properties
@@ -44,10 +53,10 @@ export class AccessibleWholeField extends LitElement {
   @property({ type: String, attribute: 'autocomplete' })
   autocomplete : string | null = null;
 
-  @property({ type: Number, attribute: 'disabled' })
-  disabled : string | null = null;
+  @property({ type: Boolean, attribute: 'disabled' })
+  disabled : boolean = false;
 
-  @property({ type: Number, attribute: 'placeholder' })
+  @property({ type: String, attribute: 'placeholder' })
   placeholder : string | null = null;
 
   @property({ type: Boolean, attribute: 'readonly' })
@@ -56,7 +65,7 @@ export class AccessibleWholeField extends LitElement {
   @property({ type: Boolean, attribute: 'required' })
   required : boolean = false;
 
-  @property({ type: String, attribute: 'required' })
+  @property({ type: String, attribute: 'value' })
   value : string | number | null = null;
 
   //  END:  Standard HTML <input> properties
@@ -70,10 +79,7 @@ export class AccessibleWholeField extends LitElement {
   _asGroup : boolean = false;
 
   @state()
-  _invalid : boolean = false;
-
-  @state()
-  _errorMsg : string = '';
+  _dataList : string[] | null = null;
 
   @state()
   _descIDs : IKeyValue = {
@@ -82,16 +88,28 @@ export class AccessibleWholeField extends LitElement {
   };
 
   @state()
+  _errorMsg : string = '';
+
+  @state()
+  _hadFocus : boolean = false;
+
+  @state()
   _innerClass : IKeyValue = {
     error: '',
     help: '',
   };
 
   @state()
-  _dataList : string[] | null = null;
+  _invalid : boolean = false;
 
   @state()
   _listID : string | null = null;
+
+  @state()
+  _overflowX : boolean = false;
+
+  @state()
+  _overflowY : boolean = false;
 
   @state()
   _value : string | number = '';
@@ -126,12 +144,13 @@ export class AccessibleWholeField extends LitElement {
   }
 
   validate(event : InputEvent | KeyboardEvent) {
-    console.group('AccessibleWholeField.validate()');
-    console.log('event:', event);
-    console.log('event.target.value:', (event.target as HTMLInputElement).value);
     event.preventDefault();
+
     const { target } = event;
-    this._invalid = (target as HTMLInputElement).checkValidity();
+    if (this.sanitiseInput !== null) {
+      (target as HTMLInputElement).value = this.sanitiseInput((target as HTMLInputElement).value);
+    }
+    this._invalid = !(target as HTMLInputElement).checkValidity();
 
     if (this.getErrorMsg !== null) {
       this._errorMsg = this.getErrorMsg(target as HTMLInputElement);
@@ -143,8 +162,9 @@ export class AccessibleWholeField extends LitElement {
       }
     }
 
-    console.log('target:', target);
-    console.log('(target as HTMLInputElement).value:', (target as HTMLInputElement).value);
+    this._innerClass.error = (this._invalid === true)
+      ? 'error'
+      : '';
 
     this.dispatchEvent(
       new CustomEvent(
@@ -183,19 +203,31 @@ export class AccessibleWholeField extends LitElement {
   // ------------------------------------------------------
   // START: event handlers
 
-  handleChange(event : InputEvent) {
+  handleChange(event : InputEvent) : void {
     console.group('AccessibleWholeField.handleChange()')
     this.validate(event);
     console.groupEnd();
   }
 
-  handleKeyup(event : InputEvent) {
+  handleKeyup(event : InputEvent) : void {
     console.group('AccessibleWholeField.handleKeyup()');
     console.log('this.validateOnKeyup:', this.validateOnKeyup);
     if (this.validateOnKeyup === true) {
       this.validate(event);
     }
+
+    if (this.watchOverflowX === true) {
+      this._overflowX = ((event.target as HTMLInputElement).scrollWidth > (event.target as HTMLInputElement).clientWidth);
+    }
+
+    if (this.watchOverflowY === true) {
+      this._overflowY = ((event.target as HTMLInputElement).scrollHeight > (event.target as HTMLInputElement).clientHeight);
+    }
     console.groupEnd();
+  }
+
+  handleFocus() : void {
+    this._hadFocus = true;
   }
 
   //  END:  event handlers
@@ -215,6 +247,9 @@ export class AccessibleWholeField extends LitElement {
 
       throw new Error(`${this.constructor.name} expects the "label" attribute to be a non-empty string`);
     }
+    console.group('<accessible-text-field>.renderField()');
+    console.log('this.required:', this.required)
+    console.groupEnd();
   }
 
   //  END:  lifecycle methods
@@ -289,6 +324,9 @@ export class AccessibleWholeField extends LitElement {
       : null;
 
     let cls = 'inner';
+    if (this._hadFocus === true) {
+      cls += ' had-focus';
+    }
     for (const key in this._innerClass) {
       if (this._innerClass[key] !== '') {
         cls += ` inner-${this._innerClass[key]}`;
@@ -300,7 +338,8 @@ export class AccessibleWholeField extends LitElement {
         <div
           aria-labeledby=${ifDefined(groupLabel)}
           class="${cls}"
-          role=${ifDefined((this._asGroup === true) ? 'group' : null)}>
+          role=${ifDefined((this._asGroup === true) ? 'group' : null)}
+          @focusin=${this.handleFocus}>
           ${(this._asGroup === true)
             ? html`<label for="${this.id}">${this.label}</label>`
             : html`<div class="label" id="${groupLabel}">${this.label}</div>`}
@@ -320,6 +359,8 @@ export class AccessibleWholeField extends LitElement {
   static styles = css`
   :host {
     --label-width: inherit;
+    --error-border-colour: inherit;
+    --error-colour: inherit;
   }
 
   .outer {
@@ -330,6 +371,7 @@ export class AccessibleWholeField extends LitElement {
     width : 100%;
   }
   .inner {
+    box-sizing: border-box;
     column-gap: 0.5rem;
     row-gap: 0.5rem;
     display: grid;
@@ -341,8 +383,13 @@ export class AccessibleWholeField extends LitElement {
     grid-template-areas: 'label input' 'label help';
   }
   .inner.inner-error {
-    grid-template-areas: 'label error' 'label input';
+    grid-template-areas: 'label input' 'label error';
   }
+  .inner.inner-error.inner-help {
+    grid-template-areas: 'label input' 'label error' 'label help;
+  }
+
+  .inner * { box-sizing: border-box; }
 
   .label, label {
     font-weight: bold;
@@ -350,7 +397,25 @@ export class AccessibleWholeField extends LitElement {
     grid-area: label
   }
   .error {
+    color: var(--error-colour, #f00);
+    font-size: 0.875rem;
+    font-weight: bold;
     grid-area: error;
+    text-indent: -1.65rem;
+    padding-inline-start: 1.65rem;
+  }
+  .error::before {
+    border: 0.2rem solid var(--error-border-colour, #f00);
+    border-radius: 1rem;
+    content: '!';
+    display: inline-block;
+    font-size: 0.75rem;
+    height: 0.8rem;
+    line-height: 0.75rem;
+    margin-inline-end: 0.5rem;
+    text-align: center;
+    text-indent: 0;
+    width: 0.8rem;
   }
   .help {
     grid-area: help;
@@ -374,6 +439,9 @@ export class AccessibleWholeField extends LitElement {
     padding: 0.25rem 0.5rem;
     justify-self: start;
     align-self: start;
+  }
+  .had-focus input:invalid, .had-focus select:invalid, .had-focus textarea:invalid {
+    border: 0.1rem solid var(--error-border-colour, #f00);
   }
   select {
     justify-self: start;

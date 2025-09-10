@@ -17,6 +17,8 @@ import './input-fields/accessible-number-field.ts';
 import './input-fields/accessible-select-field.ts';
 import './input-fields/accessible-text-field.ts';
 import './input-fields/accessible-textarea-field.ts';
+import { ifDefined } from "lit/directives/if-defined.js";
+import { getNameError, sanitiseName } from "./input-fields/accessible-field.utils.ts";
 
 /**
  * An example element.
@@ -50,6 +52,9 @@ export class ProgramViewEdit extends LoggerElement {
   @property({ type: String, attribute: 'description'})
   description : string = '';
 
+  @property({ type: Number, attribute: 'controller-id'})
+  controllerID : number | null = null;
+
   @property({ type: String, attribute: 'firing-type'})
   firingType : string = '';
 
@@ -82,7 +87,7 @@ export class ProgramViewEdit extends LoggerElement {
   _description : string = '';
 
   @state()
-  _controllerIndex : number = 0;
+  _controllerIndex : number | null = null;
 
   @state()
   _maxTemp : number = 0;
@@ -92,6 +97,9 @@ export class ProgramViewEdit extends LoggerElement {
 
   @state()
   _cone : string = '';
+
+  @state()
+  _isNew : boolean = false;
 
   stepsAsPath : TSvgPathItem[] = [];
 
@@ -180,7 +188,6 @@ export class ProgramViewEdit extends LoggerElement {
         }
       }
     }
-    console.groupEnd();
   }
 
   handleSave() : void {
@@ -209,8 +216,6 @@ export class ProgramViewEdit extends LoggerElement {
 
   connectedCallback() : void {
     super.connectedCallback();
-    console.info('<program-view-edit> connectedCallback()');
-    console.log('this.firingType:', this.firingType);
 
     if (this._store === null) {
       this._store = getDataStoreSingleton();
@@ -232,6 +237,12 @@ export class ProgramViewEdit extends LoggerElement {
     this._description = this.description;
     this._maxTemp = maxTempFromSteps(this.steps);
     this._duration = durationFromSteps(this.steps);
+    this._controllerIndex = this.controllerID;
+
+    if (this._tmpSteps.length === 0) {
+      this._isNew = true;
+      this.addStep();
+    }
   }
 
   //  END:  lifecycle methods
@@ -247,22 +258,27 @@ export class ProgramViewEdit extends LoggerElement {
       return html`<p>Loading...</p>`;
     }
 
-    console.group('<program-view-edit>.render()');
-    console.log('this._cone:', this._cone);
-    console.log('this.cone:', this.cone);
-    console.groupEnd();
-
     return html`
       <div>
-        <h2>Edit: ${this.name}</h2>
+        <h2>
+          ${(this._isNew === true)
+            ? 'New program'
+            : `Edit: ${this.name}`}
+        </h2>
         <ul>
           <li>
             <accessible-text-field
+              .getErrorMsg=${getNameError}
               id="name"
               label="Name"
               maxlength="50"
+              minlength="5"
+              required
+              spellcheck
+              .sanitiseInput=${sanitiseName}
               validate-on-keyup
-              .value=${this.name}
+              validation-type="name"
+              .value=${ifDefined((this.name !== '') ? this.name : null)}
               @change=${this.handleChange}
               @keyup=${this.handleChange}></accessible-text-field>
           </li>
@@ -289,7 +305,7 @@ export class ProgramViewEdit extends LoggerElement {
             <accessible-number-field
               id="programIndex"
               help-msg="The number this program is identified by in the kiln controller"
-              label="Controller program number"
+              label="Program #"
               min="1"
               max="25"
               step="1"
@@ -370,13 +386,16 @@ export class ProgramViewEdit extends LoggerElement {
                     @keyup=${this.updateStep} />
                 </td>
                 <td>
-                  <button
-                    class="delete"
-                    title="Delete step ${step.order}"
-                    value="${step.order}"
-                    @click=${this.deleteStep}>
-                    &times;
-                  </button>
+                  ${(this._tmpSteps.length > 1)
+                    ? html`<button
+                      class="delete"
+                      title="Delete step ${step.order}"
+                      value="${step.order}"
+                      @click=${this.deleteStep}>
+                      &times;
+                    </button>`
+                    : html`&nbsp;`}
+
                 </td>
               </tr>
             `)}

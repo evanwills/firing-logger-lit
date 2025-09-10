@@ -73,6 +73,9 @@ export class ProgramView extends LoggerElement {
   maxTemp : number = 0;
 
   @state()
+  controllerID : number = 0;
+
+  @state()
   duration : number = 0;
 
   @state()
@@ -103,6 +106,7 @@ export class ProgramView extends LoggerElement {
             this.programData = data;
             this.name = data.name;
             this.cone = data.cone;
+            this.controllerID = data.controllerProgramID;
             this.description = data.description;
             this.maxTemp = data.maxTemp;
             this.duration = data.duration;
@@ -237,6 +241,7 @@ export class ProgramView extends LoggerElement {
               .firingType=${this.type}
               .name=${this.name}
               .cone=${this.cone}
+              .controllerID=${this.controllerID}
               .description=${this.description}
               .notMetric=${this.notMetric}
               @cancel=${() => { this._edit = !this._edit }}

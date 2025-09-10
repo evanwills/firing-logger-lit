@@ -12,5 +12,34 @@
     <firing-logger>
       <h1>Vite + Lit</h1>
     </firing-logger>
+
+	<!-- <input
+		id="pattern-test"
+		pattern="\w+[\w\- .,\(\):\&\/]*"
+		style="display: block; position: sticky; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+		type="text" />
+
+
+	<script>
+		const node = document.getElementById('pattern-test');
+		console.group('inline script');
+		console.log('node:', node);
+		if (node !== null) {
+			node.addEventListener('keyup', (event) => {
+				console.group('keyupListener()');
+				console.log('event:', event);
+				console.log('event.target:', event.target);
+				const func = event.target.checkValidity()
+					? 'info'
+					: 'error';
+				console[func]('event.target.checkValidity():', event.target.checkValidity());
+				console[func]('event.target.validity:', event.target.validity);
+				console[func]('event.target.validity.patternMismatch:', event.target.validity.patternMismatch);
+				console[func]('event.target.pattern:', event.target.pattern);
+				console.groupEnd();
+			})
+		}
+		console.groupEnd();
+	</script> -->
   </body>
 </html>

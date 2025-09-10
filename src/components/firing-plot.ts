@@ -193,7 +193,7 @@ export class FiringPlot extends LitElement {
 
     const hLines = this.getLines(this._maxTemp + this._xOffset - 100);
     const vLines = this.getLines((this._maxTime + 250), 250);
-    console.log('this.open:', this.open);
+
     return html`
     <details ?open=${this.open}>
       <summary>View firing graph</summary>

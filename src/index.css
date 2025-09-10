@@ -12,26 +12,28 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --rect-fill: transparent;
-  --rect-stroke: #625a86;
-  --rect-stroke-width: 1;
+  --error-border-colour: #f00;
+  --error-colour: #f00;
   --grid-fill: none;
-  --grid-stroke: #fff;
-  --grid-stroke-width: 0.2;
-  --grid-dash:  5 10;
-  --primary-stroke: #cc5eff;
-  --primary-stroke-width: 10;
-  --secondary-stroke: #1da827;
-  --secondary-stroke-width: 7.5;
-  --secondary-dash: 15 15;
+  --delete-bg: #aa0000;
   --font-size: 3rem;
   --font-colour: #fff;
   --font-weight: bold;
   --font-height: 3rem;
+  --grid-stroke: #fff;
+  --grid-stroke-width: 0.2;
+  --grid-dash:  5 10;
+  --label-width: 5.75rem;
+  --primary-stroke: #cc5eff;
+  --primary-stroke-width: 10;
+  --rect-fill: transparent;
+  --rect-stroke: #625a86;
+  --rect-stroke-width: 1;
+  --secondary-stroke: #1da827;
+  --secondary-stroke-width: 7.5;
+  --secondary-dash: 15 15;
   --table-border-colour: #aaa;
   --table-cell-padding: 0.25em 0.5em;
-  --delete-bg: #aa0000;
-  --label-width: 5.75rem;
 }
 
 a {
@@ -48,15 +50,17 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --rect-stroke: #2b1b6f;
+    --error-border-colour: #900;
+    --error-colour: #900;
     --grid-stroke: #555;
     --log-stroke: #66195c;
     --program-stroke: #1d7527;
+    --rect-stroke: #2b1b6f;
+
     color: #213547;
     background-color: #ffffff;
   }

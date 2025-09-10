@@ -26,13 +26,32 @@ export class AccessibleTextField extends AccessibleWholeField {
   @property({ type: Boolean, attribute: 'spellcheck' })
   spellCheck : boolean | null = null;
 
+  @property({ type: String, attribute: 'validation-type'})
+  validationType : string = '';
+
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
 
+  regexes : {[key:string]:RegExp} = {
+    name: /\w[\w\- .,\(\):\&\/]{0,49}/
+  }
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
+
+  getPattern() {
+    if (this.pattern !== '' && this.pattern !== null) {
+      return this.pattern;
+    }
+
+    if (typeof this.regexes[this.validationType] !== 'undefined') {
+      return this.regexes[this.validationType].source;
+    }
+
+    return null;
+  }
 
   //  END:  helper methods
   // ------------------------------------------------------
@@ -48,21 +67,22 @@ export class AccessibleTextField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`<input
-      type="text"
-      .id="${this.id}"
-      .maxlength=${ifDefined(this.maxlength)}
-      .minlength=${ifDefined(this.minlength)}
-      .pattern=${ifDefined(this.pattern)}
-      ?spellcheck=${this.spellCheck}
       .autocomplete=${ifDefined(this.autocomplete)}
-      .list=${ifDefined(this._listID)}
       ?disabled=${this.disabled}
-      .placeholder=${ifDefined(this.placeholder)}
+      .id="${this.id}"
+      .list=${ifDefined(this._listID)}
+      maxlength="${ifDefined(this.maxlength)}"
+      minlength="${ifDefined(this.minlength)}"
+      pattern="${ifDefined(this.getPattern())}"
+      placeholder="${ifDefined(this.placeholder)}"
       ?readonly=${this.readonly}
       ?required=${this.required}
-      value=${ifDefined(this.value)}
+      ?spellcheck=${this.spellCheck}
+      type="text"
+      value="${ifDefined(this.value)}"
       @change=${this.handleChange}
-      @keyup=${this.handleKeyup} />`;
+      @keyup=${this.handleKeyup}
+      @blur=${this.validate} />`;
   }
 
   //  END:  helper render methods
