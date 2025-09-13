@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset indexedDB</title>
+    <link rel="stylesheet" href="./src/index.css" />
+	<style type="text/css">
+		#wrap {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		button {
+			display: inline-block;
+			text-align: center;
+			font-size: 2rem;
+			padding: 1rem 1.75rem;
+			margin: 1rem auto 0;
+			border-radius: 1.5rem;
+			background-color: #c00;
+			color: #fff;
+			border: 0.05rem solid #fff;
+			box-shadow: 0.25rem 0.25rem 1.5rem rgba(0, 0, 0, 0.7);
+		}
+		button:hover, button:focus {
+			font-weight: bold;
+			background-color: #900;
+			padding: 1rem 1.2rem;
+		}
+		button:active {
+			box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.7) inset;
+		}
+	</style>
+  </head>
+  <body>
+	<div id="wrap">
+		<h1>IndexedDB reset</h1>
+		<p>During development, it's not unusual to need to rebuild and repopulate the DB after a change to the schema. Click the button below (possibly twice) to delete the entire IndexedDB database.</p>
+		<button id="reset-btn">Reset DB</button>
+	</div>
+
+    <script>
+const resetDB = () => {
+	console.group('resetDB()');
+	const request = window.indexedDB.deleteDatabase('firingLogger');
+	console.log('request:', request);
+
+	request.onsuccess = function() {
+	  console.log('Database deleted successfully');
+	};
+	request.onerror = function(event) {
+	  console.error('Error deleting database:', event);
+	};
+	request.onblocked = function() {
+	  console.warn('Delete blocked: Please close all other tabs using this database.');
+	};
+	console.groupEnd();
+}
+const btn = document.getElementById('reset-btn');
+if (btn !== null) {
+	console.log('button found');
+	btn.addEventListener('click', resetDB);
+} else {
+	console.warn('No button found');
+}
+	</script>
+  </body>
+</html>

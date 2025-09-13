@@ -5,12 +5,14 @@ import './components/log-entry-primary-inputs.ts';
 import './components/firing-plot.ts';
 import './data/flWatcher.ts';
 import './components/program-view.ts';
+import './components/kiln-view.ts';
+import { getDataStoreSingleton } from "./data/IdbDataStore.class.ts";
+
+getDataStoreSingleton();
 
 /**
  * An example element.
  *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('firing-logger')
 export class FiringLogger extends LitElement {
@@ -23,20 +25,53 @@ export class FiringLogger extends LitElement {
   /**
    * The number of times the button has been clicked.
    */
-  @property({ type: Number })
-  count = 0;
+  @state()
+  ready : boolean = false;
 
   @state()
-  firingID = nanoid(10);
+  firingID : string = nanoid(10);
 
   @state()
-  userID = nanoid(10);
+  userID : string = nanoid(10);
+
+  @state()
+  _path : string = '';
+
+  updateReady() {
+    console.group('<firing-logger>.updateReady');
+    console.info('DB is now ready');
+    this.ready = true;
+    console.groupEnd();
+  }
+
+  routeLink(event: CustomEvent) {
+    event.preventDefault();
+    this._path = event.detail;
+    console.group('<firing-logger>.routLink()');
+    console.log('event:', event);
+    console.log('this._path:', this._path);
+    console.log('event.target:', event.target);
+    console.log('event.detail:', event.detail);
+    console.groupEnd();
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('routernav', this.routeLink);
+
+    this._path = globalThis.location.pathname;
+
+    console.log('this._path:', this._path);
+    const db = getDataStoreSingleton();
+    db.watchReady(this.updateReady.bind(this));
+  }
 
   render() {
-    console.group('<firing-logger>.render()');
-    console.log('this.firingID:', this.firingID);
-    console.log('this.userID:', this.userID);
-    console.groupEnd();
+    // console.group('<firing-logger>.render()');
+    // console.log('this.firingID:', this.firingID);
+    // console.log('this.firingID:', this.firingID);
+    // console.log('this.userID:', this.userID);
+    // console.groupEnd();
 
     const now = Date.now();
     const start = now - (3600 * 1000 * 1.5);
@@ -46,20 +81,25 @@ export class FiringLogger extends LitElement {
       <p>A kiln firing logger and plotter.</p>
       <p>ID: <code>${nanoid(10)}</code></p>
 
-      <program-view
-        program-uid=""
-        user-id="${this.userID}"></program-view>
-      <!-- <div class="card">
-        <log-entry-input
-          id="${this.firingID}"
-          time="${now}"
-          start-time=${start}
-          start-temp=${200}
-          ramp-rate=${150}
-          user-name="Evan"
-          user-id="${this.userID}"></log-entry-input>
-      </div>
-      <firing-plot></firing-plot> -->
+      ${(this.ready === true)
+        ? html`
+          <kiln-view kiln-uid="AXARcxcpZN"></kiln-view>
+          <!-- <program-view
+            program-uid=""
+            user-id="${this.userID}"></program-view> -->
+          <!-- <div class="card">
+            <log-entry-input
+              id="${this.firingID}"
+              time="${now}"
+              start-time=${start}
+              start-temp=${200}
+              ramp-rate=${150}
+              user-name="Evan"
+              user-id="${this.userID}"></log-entry-input>
+          </div>
+          <firing-plot></firing-plot> -->`
+        : ''
+      }
     `
   }
 
@@ -69,6 +109,7 @@ export class FiringLogger extends LitElement {
       margin: 0 auto;
       padding: 2rem;
       text-align: center;
+      width: calc(100% - 4rem);
     }
 
     .logo {

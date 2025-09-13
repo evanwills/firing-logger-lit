@@ -11,3 +11,5 @@ export const getISO8601time = (when : number) : string => {
     + `${twoDigit(_when.getMinutes())}:`
     + `${twoDigit(_when.getSeconds())}`;
 }
+
+export const getHumanDate = (date: Date) : string => date.toLocaleDateString();

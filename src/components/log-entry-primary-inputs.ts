@@ -12,9 +12,6 @@ import './log-time-input.ts';
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('log-entry-input')
 export class LogEntryInput extends LitElement {

@@ -8,6 +8,7 @@
  * @author Evan Wills <https://github.com/evanwills>
  */
 
+import type { IKeyValue } from "../types/data.d.ts";
 import type { IAnyObject, IStringObject } from '../types/fauxDom.d.ts';
 
 export const arrayRemoveValue = <t>(
@@ -304,3 +305,9 @@ export const calculateExpectedTemp = (
 );
 
 export const deepClone = <T>(input : T) : T => JSON.parse(JSON.stringify(input));
+
+export const getValFromKey = (obj : IKeyValue, key : string) => {
+  return (typeof obj[key] === 'string')
+    ? obj[key]
+    : '';
+}

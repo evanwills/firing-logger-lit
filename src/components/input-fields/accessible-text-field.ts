@@ -5,9 +5,6 @@ import { AccessibleWholeField } from "./AccessibleWholeField.ts";
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('accessible-text-field')
 export class AccessibleTextField extends AccessibleWholeField {

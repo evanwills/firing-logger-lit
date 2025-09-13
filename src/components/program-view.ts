@@ -14,9 +14,6 @@ import './program-view-edit.ts'
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('program-view')
 export class ProgramView extends LoggerElement {

@@ -162,3 +162,5 @@ export const plotPointsFromSteps = (
 
   return output;
 };
+
+export const bool2YN = (input : boolean) : string => (input === true) ? 'Yes' : 'No';

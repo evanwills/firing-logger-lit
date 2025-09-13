@@ -1,18 +1,19 @@
 import { html, type TemplateResult } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import { ifDefined } from "lit/directives/if-defined.js";
 import { AccessibleWholeField } from "./AccessibleWholeField.ts";
+import { round } from "../../utils/numeric.utils.ts";
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('accessible-textarea-field')
 export class AccessibleTextareaField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: properties/attributes
+
+  @property({ type: Boolean, attribute: 'auto-expand' })
+  autoExpand : boolean = false;
 
   @property({ type: Number, attribute: 'maxlength' })
   maxlength : number | null = null;
@@ -30,6 +31,12 @@ export class AccessibleTextareaField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: state
 
+  @state()
+  textStyle : string | null = '--textarea-height: 3.5rem;';
+
+  @state()
+  textHeight : number = 0;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -37,6 +44,23 @@ export class AccessibleTextareaField extends AccessibleWholeField {
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
+
+  handleKeyup(event: InputEvent): void {
+    super.handleKeyup(event);
+
+    const { clientHeight, scrollHeight} = (event.target as HTMLTextAreaElement);
+
+    if (scrollHeight > clientHeight) {
+      const oldHeight = this.textHeight;
+      const tmp = round((scrollHeight / 16), 2);
+
+      if (tmp > oldHeight) {
+        this.textHeight = tmp;
+
+        this.textStyle = `--textarea-height: ${this.textHeight}rem;`;
+      }
+    }
+  }
 
   //  END:  event handlers
   // ------------------------------------------------------
@@ -59,6 +83,7 @@ export class AccessibleTextareaField extends AccessibleWholeField {
       ?placeholder=${this.placeholder}
       ?readonly=${this.readonly}
       ?required=${this.required}
+      .style=${ifDefined(this.textStyle)}
       .value=${ifDefined(this.value)}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup}></textarea>`;

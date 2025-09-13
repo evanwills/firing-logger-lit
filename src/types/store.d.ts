@@ -14,23 +14,38 @@ import type { ID } from './data.d.ts';
  */
 export type TStoreSlice = string;
 
+export type TStoreAction = 'update' | 'replace' | 'append'
+
 export type TDataStore = {
   /**
    * Read data from the store
    *
-   * @param slice Dot separated string for hierrarchical store segment
+   * @param slice      Name of top level store slice
+   * @param selector   Dot separated string for hierrarchical store
+   *                   segment
+   * @param outputMode (for returned arrays),
+   *                   If `outputMode` is a string array, then output
+   *                   mode limits the properties included in the
+   *                   objects to only the ones listed in `outputMode`
+   *                   in the returned array.
+   *                   (Usefull when listing a collection items that
+   *                   link to detailed view of each item)
+   *                   If `outputMode` is `TRUE` then the value
+   *                   returned will be a key/value object.
    *
    * @returns What ever data is held within the store segment
    *
    * @throws {Error} If slice is a non-empty string and
    */
-  read: (slice : TStoreSlice) => Promise<any>,
+  read: (slice : string, selector : string = '', outputMode : string[] | boolean = false) => Promise<any>,
 
   /**
    * Write data to the store
    *
-   * @param action  Name of write action to be performed on the store
    * @param userID  ID of the user performing the write action
+   * @param action  Name of write action to be performed on the store
+   * @param slice   Dot separated string for hierrarchical store
+   *                segment
    * @param payload Data to be written to the store
    *
    * @returns Empty string if write action worked without issue.
@@ -38,8 +53,9 @@ export type TDataStore = {
    *          write action
    */
   write: (
-    action : string,
     userID: ID,
+    action : TStoreAction,
+    slice : TStoreAction,
     payload: any
   ) => Promise<string>,
 
@@ -74,6 +90,8 @@ export type TDataStore = {
    *          FALSE otherwise
    */
   ignore: (watchID: ID) => boolean,
+
+  watchReady : (callback : () => void) => void,
 };
 
 export type FDataStoreSingleton = () => TDataStore;

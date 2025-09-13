@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import type { TDataStore } from '../types/store.d.ts';
-import { splitSlice } from '../utils/store.utils.ts';
+import { getLimitedObjList, splitSlice } from '../utils/store.utils.ts';
 import { getDataFromSlice } from './fs-data-store.utils.ts';
 import FiringLoggerData from './firing-logger.json' with { type: 'json' };
 
@@ -20,12 +20,33 @@ class FsDataStore implements TDataStore {
    * @returns What ever data is held within the store segment
    * @throws {Error} If slice is a non-empty string and
    */
-  read(slice: string = '') : Promise<any> {
+  read(
+    slice: string = '',
+    selector : string = '',
+    outputMode : string[] | boolean = false,
+  ) : Promise<any> {
+    if (typeof this._data[slice] === 'undefined') {
+      console.group('FsDataStore.read() - ERROR');
+      console.log('slice:', slice);
+      console.log('selector:', selector);
+      console.log('filter:', filter);
+      console.groupEnd();
+      throw new Error('FsDataStore.read() expects first argument to be the property name for a store property')
+    }
+
     try {
-      return Promise.resolve(getDataFromSlice(this._data, splitSlice(slice)));
+      return Promise.resolve(
+        getLimitedObjList(
+          getDataFromSlice(
+            this._data[slice],
+            splitSlice(selector),
+          ),
+          outputMode,
+        ),
+      );
     } catch (e) {
       console.error(e);
-      throw new Error(`Error reading data from store at slice: '${slice}'`, e);
+      throw new Error(`Error reading data from store at slice: '${slice}'`, (e as Error));
     }
   }
 

@@ -15,8 +15,6 @@ import { isChangeLog, isRespLog, isTempLog } from '../types/data.type-guards.ts'
 /**
  * An example element.
  *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('firing-log-view')
 export class FiringLogView extends LoggerElement {

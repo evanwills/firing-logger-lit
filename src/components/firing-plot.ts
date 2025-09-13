@@ -5,9 +5,6 @@ import { getMax, plotPointsFromSteps } from '../utils/conversions.utils.ts';
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('firing-plot')
 export class FiringPlot extends LitElement {

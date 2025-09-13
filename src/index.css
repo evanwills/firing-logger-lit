@@ -34,6 +34,8 @@
   --secondary-dash: 15 15;
   --table-border-colour: #aaa;
   --table-cell-padding: 0.25em 0.5em;
+  --textarea-height: 3.5rem;
+  --textarea-height-trans-time: 0.25s;
 }
 
 a {

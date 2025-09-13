@@ -6,9 +6,6 @@ import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('accessible-select-field')
 export class AccessibleSelectField extends AccessibleWholeField {

@@ -8,9 +8,6 @@ import { dispatchCustomEvent, getTrueValidity } from '../utils/event.utils.ts';
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('time-input')
 export class TimeInput extends LitElement {

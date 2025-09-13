@@ -5,9 +5,6 @@ import { AccessibleWholeField } from "./AccessibleWholeField.ts";
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('accessible-password-field')
 export class AccessiblePasswordField extends AccessibleWholeField {

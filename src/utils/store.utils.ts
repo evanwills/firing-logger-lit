@@ -14,7 +14,7 @@ const parseKeyValue = (input : string) : string => {
 
 export const splitSlice = (input : string) : string[] => input
   .split('.')
-  .map((item) => {
+  .map((item : string) : string => {
     const output = item.trim();
 
     switch(output.substring(0,1)) {
@@ -28,7 +28,8 @@ export const splitSlice = (input : string) : string[] => input
       default:
         return parseKeyValue(output);
     }
-  });
+  })
+  .filter((item : string) : boolean => item !== '' );
 
 export const getPaginationSet = <T>(input : T[], pageSet: string) : T[] => {
   if (/^@\d+:\d*$/.test(pageSet) === false) {
@@ -98,4 +99,21 @@ export const getAllById = <T extends IKeyValue>(input : T[], keyValue : string) 
   }
 
   return [];
+}
+
+export const getLimitedObjList = (input : any, filter: string[]) : any => {
+  if (Array.isArray(input) === false || filter.length === 0) {
+    return input;
+  }
+
+  return input.map((item: IKeyValue) => {
+    const output : IKeyValue = {};
+
+    for (const key of filter) {
+      if (typeof item[key] !== 'undefined') {
+        output[key] = item[key];
+      }
+    }
+    return output;
+  })
 }

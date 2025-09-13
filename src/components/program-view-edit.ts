@@ -1,5 +1,6 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { ifDefined } from "lit/directives/if-defined.js";
 import { LoggerElement } from "./LoggerElement.ts";
 import type { FiringStep, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
 import {
@@ -10,6 +11,7 @@ import {
 import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
 import { programViewVars, tableStyles } from '../assets/program-view-style.ts';
 import { getTopCone } from "../utils/getCone.util.ts";
+import { getNameError, sanitiseName } from "./input-fields/accessible-field.utils.ts";
 import FauxEvent from "../utils/FauxEvent.class.ts";
 import './firing-plot.ts';
 import './program-view-meta.ts';
@@ -17,14 +19,9 @@ import './input-fields/accessible-number-field.ts';
 import './input-fields/accessible-select-field.ts';
 import './input-fields/accessible-text-field.ts';
 import './input-fields/accessible-textarea-field.ts';
-import { ifDefined } from "lit/directives/if-defined.js";
-import { getNameError, sanitiseName } from "./input-fields/accessible-field.utils.ts";
 
 /**
  * An example element.
- *
- * @slot - This element has a slot
- * @csspart button - The button
  */
 @customElement('program-view-edit')
 export class ProgramViewEdit extends LoggerElement {
@@ -181,6 +178,10 @@ export class ProgramViewEdit extends LoggerElement {
 
           case 'type':
             this._type = value;
+            break;
+
+          case 'programIndex':
+            this._controllerIndex = target.valueAsNumber;
             break;
 
           default:
