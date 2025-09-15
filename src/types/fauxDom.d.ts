@@ -2,7 +2,7 @@ import type { TemplateResult } from "lit";
 
 export interface IBoolObject { [key: string]: boolean,
 }
-export interface IStringObject { [key: string]: number };
+export interface IStringObject { [key: string]: string };
 export interface INumberObject { [key: string]: number };
 export interface IAnyObject { [key: string]: any };
 

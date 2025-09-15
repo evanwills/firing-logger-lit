@@ -23,8 +23,8 @@ import './input-fields/read-only-field.ts';
 /**
  * An example element.
  */
-@customElement('kiln-view')
-export class KilnView extends LoggerElement {
+@customElement('kiln-view-edit')
+export class KilnViewEdit extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -407,6 +407,6 @@ export class KilnView extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'kiln-view': KilnView,
+    'kiln-view-edit': KilnViewEdit,
   }
 };

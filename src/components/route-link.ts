@@ -12,6 +12,9 @@ export class RouterLink extends LitElement {
   @property({ type: String, attribute: 'label' })
   label : string = '';
 
+  @property({ type: String, attribute: 'uid' })
+  uid : string = '';
+
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
@@ -33,7 +36,7 @@ export class RouterLink extends LitElement {
         {
           bubbles: true,
           composed: true,
-          detail: this.url,
+          detail: { uid: this.uid, url: this.url},
         },
       ),
     );

@@ -1,12 +1,14 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
+import { getDataStoreSingleton } from "./data/IdbDataStore.class.ts";
 import './components/log-entry-primary-inputs.ts';
 import './components/firing-plot.ts';
 import './data/flWatcher.ts';
 import './components/program-view.ts';
 import './components/kiln-view.ts';
-import { getDataStoreSingleton } from "./data/IdbDataStore.class.ts";
+import './router/lit-router.ts'
+
 
 getDataStoreSingleton();
 
@@ -44,11 +46,13 @@ export class FiringLogger extends LitElement {
     console.groupEnd();
   }
 
-  routeLink(event: CustomEvent) {
+  handleRouteLink(event: CustomEvent) {
     event.preventDefault();
-    this._path = event.detail;
+    this._path = event.detail.url;
+    const { uid } = event.detail;
     console.group('<firing-logger>.routLink()');
     console.log('event:', event);
+    console.log('id:', uid);
     console.log('this._path:', this._path);
     console.log('event.target:', event.target);
     console.log('event.detail:', event.detail);
@@ -57,7 +61,7 @@ export class FiringLogger extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener('routernav', this.routeLink);
+    this.addEventListener('routernav', this.handleRouteLink);
 
     this._path = globalThis.location.pathname;
 
@@ -83,21 +87,7 @@ export class FiringLogger extends LitElement {
 
       ${(this.ready === true)
         ? html`
-          <kiln-view kiln-uid="AXARcxcpZN"></kiln-view>
-          <!-- <program-view
-            program-uid=""
-            user-id="${this.userID}"></program-view> -->
-          <!-- <div class="card">
-            <log-entry-input
-              id="${this.firingID}"
-              time="${now}"
-              start-time=${start}
-              start-temp=${200}
-              ramp-rate=${150}
-              user-name="Evan"
-              user-id="${this.userID}"></log-entry-input>
-          </div>
-          <firing-plot></firing-plot> -->`
+          <lit-router initial-route="${this._path}">`
         : ''
       }
     `
