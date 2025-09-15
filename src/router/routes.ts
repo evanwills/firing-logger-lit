@@ -77,7 +77,7 @@ export default [
   },
   {
     route: '/kilns/:kilnName/programs/:programName',
-    render: ({ kilnName, programName } : IKeyValue) => html`<program-view kilnName="${kilnName}" programName="${programName}"></program-view>`,
+    render: ({ kilnName, programName, _UID } : IKeyValue) => html`<program-view kilnName="${kilnName}" programName="${programName}" program-uid="${_UID}"></program-view>`,
   },
   {
     route: '/kilns/:kilnName/programs/:programName/edit',

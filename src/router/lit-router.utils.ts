@@ -37,26 +37,15 @@ export const getGetRouteArgs = (_route : string ) : FGetRouteArgs => {
   }
 
   return (path : string[]) : IKeyValue | null => {
-    console.group('getRouterArgs()');
-    console.log('path:', path);
-    console.log('route:', route);
     if (route.length !== path.length) {
-      console.groupEnd();
       return null;
     }
 
     for (let a = 0; a < route.length; a += 1) {
       if (wild.includes(a)) {
-        console.log('path part is wildcard');
-        console.log(`path[${a}]:`, path[a]);
-        console.log(`route[${a}]:`, route[a]);
         continue;
       }
       if (route[a] !== path[a]) {
-        console.log('path is different');
-        console.log(`path[${a}]:`, path[a]);
-        console.log(`route[${a}]:`, route[a]);
-        console.groupEnd();
         return null;
       }
     }

@@ -98,7 +98,7 @@ export class ProgramView extends LoggerElement {
 
     if (isNonEmptyStr(this.programID)) {
       if (this._store !== null) {
-        this._store.read(`programs.#${this.programID}`).then((data : IStoredFiringProgram) : void => {
+        this._store.read('programs', `#${this.programID}`).then((data : IStoredFiringProgram) : void => {
           if (data !== null) {
             this.programData = data;
             this.name = data.name;

@@ -23,7 +23,7 @@ export const keyValueStyle = css`
 export const tableStyles = css`
 table {
   border-collapse: collapse;
-  margin: 1rem 0;
+  margin: 1rem auto;
 }
 td, th {
   border-left: 0.05rem solid var(--table-border-colour, #ccc);
