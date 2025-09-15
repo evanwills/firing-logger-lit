@@ -1,15 +1,15 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { FiringStep, ID, IKiln, IStoredFiringProgram, TSvgPathItem } from '../types/data.d.ts';
-import { deepClone, isNonEmptyStr } from '../utils/data.utils.ts';
+import type { FiringStep, ID, IKiln, IStoredFiringProgram, TSvgPathItem } from '../../types/data.d.ts';
+import { deepClone, isNonEmptyStr } from '../../utils/data.utils.ts';
 import {
   durationFromStep,
   durationFromSteps,
   maxTempFromSteps,
-} from '../utils/conversions.utils.ts';
-import { keyValueStyle, programViewVars, tableStyles } from "../assets/program-view-style.ts";
-import { LoggerElement } from "./LoggerElement.ts";
-import './firing-plot.ts'
+} from '../../utils/conversions.utils.ts';
+import { keyValueStyle, programViewVars, tableStyles } from '../../assets/css/program-view-style.ts';
+import { LoggerElement } from '../LoggerElement.ts';
+import '../firing-plot.ts'
 import './program-view-edit.ts'
 
 /**

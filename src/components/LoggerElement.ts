@@ -1,6 +1,6 @@
 import { LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
-import type { ID } from '../types/data.d.ts';
+import { property, state } from 'lit/decorators.js';
+import type { IKeyValue } from '../types/data.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../utils/conversions.utils.ts';
 import type { TDataStore } from '../types/store.d.ts';
 import { getDataStoreSingleton } from '../data/IdbDataStore.class.ts';
@@ -20,18 +20,46 @@ export class LoggerElement extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  /**
+   * A list of key/value pairs that can be used to preset filter
+   * values
+   *
+   * @property
+   */
+  @property({ type: Object, attribute: 'filters' })
+  filters : IKeyValue | null = null;
+
+  /**
+   * Anchor link hash ID so the page can be scrolled into view
+   *
+   * @property
+   */
+  @property({ type: String, attribute: 'hash' })
+  hash : string = '';
+
+  /**
+   * Whether or not to render length and weight values in imperial
+   * units & values
+   *
+   * @property
+   */
   @property({ type: Boolean, attribute: 'not-metric' })
   notMetric : boolean = false;
 
-  @property({ type: String, attribute: 'user-uid' })
-  userID : ID = '';
-
+  /**
+   * Whether or not to prevent the user editing values
+   *
+   * @property
+   */
   @property({ type: Boolean, attribute: 'read-only' })
   readOnly : boolean = false;
 
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
+
+  @state()
+  _ready : boolean = false;
 
   /**
    * Convert temperature from Celcius to Fahrenheit

@@ -2,11 +2,11 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { classMap } from 'lit/directives/class-map.js';
-import type { TLogEntryOption, TUserEnteredOptions } from '../types/renderTypes.d.ts';
-import { logEntryInputStyle, logEntryInputVars } from '../assets/log-entry-styles.ts';
-import { dispatchFLaction } from '../utils/event.utils.ts';
-import { calculateExpectedTemp, forceNum } from '../utils/data.utils.ts';
-import InputValueClass from '../utils/InputValue.class.ts';
+import type { TLogEntryOption, TUserEnteredOptions } from '../../types/renderTypes.d.ts';
+import { logEntryInputStyle, logEntryInputVars } from '../../assets/css/log-entry-styles.ts';
+import { dispatchFLaction } from '../../utils/event.utils.ts';
+import { calculateExpectedTemp, forceNum } from '../../utils/data.utils.ts';
+import InputValueClass from '../../utils/InputValue.class.ts';
 import './log-temp-input.ts';
 import './log-time-input.ts';
 

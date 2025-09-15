@@ -1,7 +1,7 @@
 import { html, type TemplateResult } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { ifDefined } from "lit/directives/if-defined.js";
-import { AccessibleWholeField } from "./AccessibleWholeField.ts";
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { AccessibleWholeField } from './AccessibleWholeField.ts';
 
 /**
  * An example element.

@@ -1,5 +1,5 @@
-import type { TemplateResult } from "lit";
-import type { IKeyValue } from "../types/data.d.ts";
+import type { TemplateResult } from 'lit';
+import type { IKeyValue } from './data.d.ts';
 
 export interface IRouteArgs extends IKeyValue {
   _HASH: string,

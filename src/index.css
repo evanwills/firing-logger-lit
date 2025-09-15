@@ -36,6 +36,32 @@
   --table-cell-padding: 0.25em 0.5em;
   --textarea-height: 3.5rem;
   --textarea-height-trans-time: 0.25s;
+  --rl-background-colour: inherit;
+  --rl-border: inherit;
+  --rl-border-radius: inherit;
+  --rl-colour: #a7f;
+  --rl-font-family: inherit;
+  --rl-font-weight: bold;
+  --rl-line-height: inherit;
+  --rl-padding: inherit;
+  --rl-text-decoration: underline;
+  --rl-text-transform: inherit;
+  --rl-btn-background-colour: #009;
+  --rl-btn-border: 0.1rem solid var(--table-border-colour);
+  --rl-btn-border-radius: 0.5rem;
+  --rl-btn-colour: inherit;
+  --rl-btn-font-family: inherit;
+  --rl-btn-font-weight: bold;
+  --rl-btn-line-height: inherit;
+  --rl-btn-padding: 0.25rem 1rem;
+  --rl-btn-text-decoration: none;
+  --rl-btn-text-transform: inherit;
+  --rl-hover-background-colour: inherit;
+  --rl-hover-colour: inherit;
+  --rl-hover-text-transform: inherit;
+  --rl-btn-hover-background-colour: #040;
+  --rl-btn-hover-colour: inherit;
+  --rl-btn-hover-text-decoration: underline;
 }
 
 a {

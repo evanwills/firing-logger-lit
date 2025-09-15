@@ -2,12 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
 import { getDataStoreSingleton } from "./data/IdbDataStore.class.ts";
-import './components/log-entry-primary-inputs.ts';
-import './components/firing-plot.ts';
-import './data/flWatcher.ts';
-import './components/program-view.ts';
-import './components/kiln-view.ts';
-import './router/lit-router.ts'
+import './components/lit-router/lit-router.ts'
 
 
 getDataStoreSingleton();
@@ -40,32 +35,18 @@ export class FiringLogger extends LitElement {
   _path : string = '';
 
   updateReady() {
-    console.group('<firing-logger>.updateReady');
+    console.groupCollapsed('<firing-logger>.updateReady');
     console.info('DB is now ready');
     this.ready = true;
     console.groupEnd();
   }
 
-  handleRouteLink(event: CustomEvent) {
-    event.preventDefault();
-    this._path = event.detail.url;
-    const { uid } = event.detail;
-    console.group('<firing-logger>.routLink()');
-    console.log('event:', event);
-    console.log('id:', uid);
-    console.log('this._path:', this._path);
-    console.log('event.target:', event.target);
-    console.log('event.detail:', event.detail);
-    console.groupEnd();
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener('routernav', this.handleRouteLink);
 
     this._path = globalThis.location.pathname;
 
-    console.log('this._path:', this._path);
+    // console.log('this._path:', this._path);
     const db = getDataStoreSingleton();
     db.watchReady(this.updateReady.bind(this));
   }
@@ -76,9 +57,6 @@ export class FiringLogger extends LitElement {
     // console.log('this.firingID:', this.firingID);
     // console.log('this.userID:', this.userID);
     // console.groupEnd();
-
-    const now = Date.now();
-    const start = now - (3600 * 1000 * 1.5);
 
     return html`
       <h1>Firing Logger</h1>

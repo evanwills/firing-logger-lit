@@ -1,9 +1,9 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { IKeyValue } from "../types/data.d.ts";
-import type { TParsedRoute } from "./router-types.d.ts";
-import { parseRoutes, splitURL } from "./lit-router.utils.ts";
-import routes from "./routes.ts";
+import type { IKeyValue } from '../../types/data.d.ts';
+import type { TParsedRoute } from '../../types/router-types.d.ts';
+import { parseRoutes, splitURL } from './lit-router.utils.ts';
+import routes from '../../router/routes.ts';
 
 /**
  * An example element.
@@ -21,21 +21,22 @@ export class LitRouter extends LitElement {
   // START: state
 
   @state()
+  _data : IKeyValue = {};
+
+  @state()
   _url : string = '';
 
   @state()
-  _data : string = '';
+  _route : string[] = [];
 
   @state()
-  _route : string[] = [];
+  _search : IKeyValue = {};
 
   _parsedRoutes : TParsedRoute[] = [];
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
-
-
 
 
   //  END:  helper methods
@@ -51,12 +52,14 @@ export class LitRouter extends LitElement {
   handleRouteRewrite(event: CustomEvent) {
     event.preventDefault();
 
-    console.group('<firing-logger>.handleRouteRewrite()');
-    console.log('event:', event);
-    console.log('event.target:', event.target);
-    console.log('event.detail.data:', event.detail.data);
-    console.log('event.detail.url:', event.detail.url);
-    console.groupEnd();
+    globalThis.history.pushState({ ...event.detail.data }, '', event.detail.url);
+
+    // console.group('<lit-router>.handleRouteRewrite()');
+    // console.log('event:', event);
+    // console.log('event.target:', event.target);
+    // console.log('event.detail.data:', event.detail.data);
+    // console.log('event.detail.url:', event.detail.url);
+    // console.groupEnd();
   }
 
   /**
@@ -68,19 +71,35 @@ export class LitRouter extends LitElement {
   handleRouteLink(event: CustomEvent) {
     event.preventDefault();
 
-    console.group('<firing-logger>.handleRouteLink()');
+    // console.group('<lit-router>.handleRouteLink()');
+    // console.log('this._url (before):', this._url);
+    // console.log('this._data (before):', this._data);
 
     this._url = event.detail.url;
-    this._data = (typeof event.detail.data === 'string')
-      ? event.detail.uid.trim()
-      : '';
+    this._data = event.detail.data;
 
-    console.log('event:', event);
-    console.log('this._data:', this._data);
-    console.log('this._url:', this._url);
-    console.log('event.target:', event.target);
-    console.log('event.detail:', event.detail);
-    console.groupEnd();
+    globalThis.history.pushState({ ...event.detail.data }, '', event.detail.url);
+
+    // console.log('event:', event);
+    // console.log('event.target:', event.target);
+    // console.log('event.detail:', event.detail);
+    // console.log('event.detail.url:', event.detail.url);
+    // console.log('event.detail.data:', event.detail.data);
+    // console.log('this._data (after):', this._data);
+    // console.log('this._url (after):', this._url);
+    // console.groupEnd();
+  }
+
+  handlePopState(_event : PopStateEvent) {
+    // console.group('<lit-router>.handlePopState()');
+    // console.log('event:', event);
+    // console.log('event.target:', event.target);
+    // console.log('this._url (before):', this._url);
+    this._url = globalThis.location.pathname
+      + globalThis.location.search
+      + globalThis.location.hash;
+    // console.log('this._url (after):', this._url);
+    // console.groupEnd();
   }
 
   //  END:  event handlers
@@ -89,12 +108,17 @@ export class LitRouter extends LitElement {
 
     connectedCallback(): void {
       super.connectedCallback();
+      // console.group('<lit-router>.connectedCallback()');
       this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
       this.addEventListener('litrouternav', this.handleRouteLink);
+      globalThis.addEventListener('popstate', this.handlePopState);
 
       this._parsedRoutes = parseRoutes(routes);
 
+      // console.log('this._url (before):', this._url);
       this._url = this.initialRoute;
+      // console.log('this._url (before):', this._url);
+      // console.groupEnd();
     }
 
   //  END:  lifecycle methods
@@ -111,30 +135,32 @@ export class LitRouter extends LitElement {
 
   render() : TemplateResult {
     const { route, search, hash } = splitURL(this._url);
-    console.group('<lit-router>.render()');
-    console.log('route:', route);
-    console.log('search:', search);
-    console.log('hash:', hash);
+    // console.group('<lit-router>.render()');
+    // console.log('route:', route);
+    // console.log('search:', search);
+    // console.log('hash:', hash);
+    // console.log('this._data:', this._data);
+    // console.log('this._url:', this._url);
 
     for (const _route of this._parsedRoutes) {
-      console.log('_route:', _route);
+      // console.log('_route:', _route);
       const args = _route.getArgs(route);
 
       if (args === null) {
         continue;
       }
 
-      console.log('args (before):', args);
+      // console.log('args (before):', args);
       args._HASH = hash;
       args._SEARCH = search;
-      args._DETAIL = this._data;
-      console.log('args (after):', args);
+      args._DATA = this._data;
+      // console.log('args (after):', args);
 
-      console.groupEnd();
+      // console.groupEnd();
       return _route.render(args);
     }
 
-    console.groupEnd();
+    // console.groupEnd();
     return this.renderNotFound();
   }
 

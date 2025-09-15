@@ -1,4 +1,4 @@
-import type { SVGTemplateResult } from "lit";
+import type { SVGTemplateResult } from 'lit';
 
 export type ISO8601 = string;
 export type ID = string;

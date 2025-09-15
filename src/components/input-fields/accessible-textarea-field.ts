@@ -1,8 +1,8 @@
 import { html, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
-import { ifDefined } from "lit/directives/if-defined.js";
-import { AccessibleWholeField } from "./AccessibleWholeField.ts";
-import { round } from "../../utils/numeric.utils.ts";
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { AccessibleWholeField } from './AccessibleWholeField.ts';
+import { round } from '../../utils/numeric.utils.ts';
 
 /**
  * An example element.

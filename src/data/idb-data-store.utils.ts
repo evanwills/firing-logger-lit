@@ -56,7 +56,12 @@ export const getOnSuccess = (
   resolve : Fresolver,
   outputMode : string[] | boolean = false,
 ) => (event : Event) : void => {
+  // console.group('onSuccess() (read)');
+  // console.log('event:', event);
+  // console.log('event.target:', event.target);
   const output = (event.target as IDBRequest).result;
+  // console.log('output:', output);
+  // console.groupEnd();
 
   if (outputMode === true) {
     resolve(asObjKV(output));

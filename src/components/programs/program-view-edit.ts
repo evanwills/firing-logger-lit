@@ -1,25 +1,25 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ifDefined } from "lit/directives/if-defined.js";
-import { LoggerElement } from "./LoggerElement.ts";
-import type { FiringStep, ID, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { LoggerElement } from '../LoggerElement.ts';
+import type { FiringStep, ID, IKeyValue, TSvgPathItem } from '../../types/data.d.ts';
 import {
   durationFromSteps,
   f2c,
   maxTempFromSteps,
-} from '../utils/conversions.utils.ts';
-import { getDataStoreSingleton } from '../data/FsDataStore.class.ts';
-import { programViewVars, tableStyles } from '../assets/program-view-style.ts';
-import { getTopCone } from "../utils/getCone.util.ts";
-import { getNameError, sanitiseName } from "./input-fields/accessible-field.utils.ts";
-import FauxEvent from "../utils/FauxEvent.class.ts";
-import './firing-plot.ts';
+} from '../../utils/conversions.utils.ts';
+import { getDataStoreSingleton } from '../../data/IdbDataStore.class.ts';
+import { programViewVars, tableStyles } from '../../assets/css/program-view-style.ts';
+import { getTopCone } from '../../utils/getCone.util.ts';
+import { getNameError, sanitiseName } from '../input-fields/accessible-field.utils.ts';
+import FauxEvent from '../../utils/FauxEvent.class.ts';
+import '../firing-plot.ts';
 import './program-view-meta.ts';
-import './input-fields/accessible-number-field.ts';
-import './input-fields/accessible-select-field.ts';
-import './input-fields/accessible-text-field.ts';
-import './input-fields/accessible-textarea-field.ts';
-import './route-link.ts';
+import '../input-fields/accessible-number-field.ts';
+import '../input-fields/accessible-select-field.ts';
+import '../input-fields/accessible-text-field.ts';
+import '../input-fields/accessible-textarea-field.ts';
+import '../lit-router/route-link.ts';
 
 /**
  * An example element.

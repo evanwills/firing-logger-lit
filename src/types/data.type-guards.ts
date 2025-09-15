@@ -4,7 +4,7 @@ import type {
   ResponsibleLogEntry,
   StateChangeLogEntry,
   TemperatureLogEntry,
-} from "./data.d.ts";
+} from './data.d.ts';
 
 export const isTempLog = (item : IFiringLogEntry) : item is TemperatureLogEntry => (
     typeof (item as TemperatureLogEntry).timeOffset === 'number'

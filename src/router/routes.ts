@@ -1,13 +1,22 @@
 import { html } from 'lit';
 import type { IKeyValue } from '../types/data.d.ts';
-import '../components/program-view.ts';
-import '../components/program-view-edit.ts';
-import '../components/kiln-view.ts';
-import '../components/kiln-view-edit.ts';
+import '../components/programs/program-view.ts';
+import '../components/programs/program-view-edit.ts';
+import '../components/kilns/kilns-list.ts';
+import '../components/kilns/kiln-view.ts';
+import '../components/kilns/kiln-view-edit.ts';
+
+const home = ({ _SEARCH } : IKeyValue) => html`<kilns-list filters=${_SEARCH}></kilns-list>`
 
 export default [
   // ----------------------------------------------------------------
   // START: shortcut routes
+
+  {
+    route: '/',
+    render: home,
+  },
+
   {
     route: '/firing/:firingID',
     render: ({ firingID } : IKeyValue) => html`<firing-view firing-uid="${firingID}"></firing-view>`,
@@ -43,7 +52,7 @@ export default [
 
   {
     route: '/kilns',
-    render: ({ _SEARCH } : IKeyValue) => html`<kilns-list filters=${_SEARCH}></kilns-list>`,
+    render: home,
   },
   {
     route: '/kilns/new',
@@ -51,21 +60,21 @@ export default [
   },
   {
     route: '/kilns/:kilnName',
-    render: ({ kilnName, _UID } : IKeyValue) => html`<kiln-view
+    render: ({ kilnName, _DATA } : IKeyValue) => html`<kiln-view
       kiln-name="${kilnName}"
-      kiln-id="${_UID}"></kiln-view>`,
+      kiln-uid="${_DATA.uid}"></kiln-view>`,
   },
   {
     route: '/kilns/:kilnName/edit',
-    render: ({ kilnName, _UID } : IKeyValue) => html`<kiln-view-edit
+    render: ({ kilnName, _DATA } : IKeyValue) => html`<kiln-view-edit
       kiln-name="${kilnName}"
-      kiln-id="${_UID}"></kiln-view-edit>`,
+      kiln-uid="${_DATA.uid}"></kiln-view-edit>`,
   },
   {
     route: '/kilns/:kilnName/clone',
-    render: ({ kilnName, _UID } : IKeyValue) => html`<kiln-view-edit
+    render: ({ kilnName, _DATA } : IKeyValue) => html`<kiln-view-edit
       kiln-name="${kilnName}"
-      kiln-id="${_UID}"
+      kiln-uid="${_DATA.uid}"
       clone></kiln-view-edit>`,
   },
 
@@ -81,29 +90,29 @@ export default [
   },
   {
     route: '/kilns/:kilnName/firings/:firingName',
-    render: ({ kilnName, firingName, _UID } : IKeyValue) => html`<firing-view
+    render: ({ kilnName, firingName, _DATA } : IKeyValue) => html`<firing-view
       kiln-name="${kilnName}"
       firingName="${firingName}"
-      firing-id="${_UID}"></firing-view>`,
+      firing-uid="${_DATA.uid}"></firing-view>`,
   },
   {
     route: '/kilns/:kilnName/firings/:firingName/edit',
-    render: ({ kilnName, firingName, _UID } : IKeyValue) => html`<firing-view-edit
+    render: ({ kilnName, firingName, _DATA } : IKeyValue) => html`<firing-view-edit
       kiln-name="${kilnName}"
       firingName="${firingName}"
-      firing-id="${_UID}"></firing-view-edit>`,
+      firing-uid="${_DATA.uid}"></firing-view-edit>`,
   },
   {
     route: '/kilns/:kilnName/firings/new',
-    render: ({ kilnName, _UID } : IKeyValue) => html`<firing-view-edit
-      kiln-id="${_UID}"
+    render: ({ kilnName, _DATA } : IKeyValue) => html`<firing-view-edit
+      kiln-uid="${_DATA.uid}"
       kiln-name="${kilnName}" new></firing-view-edit>`,
   },
   {
     route: '/kilns/:kilnName/firings/:firingName/clone',
-    render: ({ firingName, kilnName, _UID } : IKeyValue) => html`<firing-view-edit
+    render: ({ firingName, kilnName, _DATA } : IKeyValue) => html`<firing-view-edit
       kiln-name="${kilnName}"
-      firing-id="${_UID}"
+      firing-uid="${_DATA.uid}"
       firing-name="${firingName}"
       clone></firing-view-edit>`,
   },
@@ -114,37 +123,37 @@ export default [
 
   {
     route: '/kilns/:kilnName/programs',
-    render: ({ kilnName, _UID, _SEARCH } : IKeyValue) => html`<programs-list
+    render: ({ kilnName, _DATA, _SEARCH } : IKeyValue) => html`<programs-list
       kiln-name="${kilnName}"
-      kiln-uid="${_UID}"
+      kiln-uid="${_DATA.uid}"
       filters="${_SEARCH}"></programs-list>`,
   },
   {
-    route: '/kilns/:kilnName/programs/new-program',
-    render: ({ kilnName, _UID } : IKeyValue) => html`<program-view
+    route: '/kilns/:kilnName/programs/new',
+    render: ({ kilnName, _DATA } : IKeyValue) => html`<program-view
       kiln-name="${kilnName}"
-      kiln-uid="${_UID}" new></program-view-edit>`,
+      kiln-uid="${_DATA.uid}" new></program-view-edit>`,
   },
   {
     route: '/kilns/:kilnName/programs/:programName',
-    render: ({ kilnName, programName, _UID } : IKeyValue) => html`<program-view
+    render: ({ kilnName, programName, _DATA } : IKeyValue) => html`<program-view
       kiln-name="${kilnName}"
       program-name="${programName}"
-      program-uid="${_UID}"></program-view>`,
+      program-uid="${_DATA.uid}"></program-view>`,
   },
   {
     route: '/kilns/:kilnName/programs/:programName/edit',
-    render: ({ kilnName, programName, _UID } : IKeyValue) => html`<program-view-edit
+    render: ({ kilnName, programName, _DATA } : IKeyValue) => html`<program-view-edit
       kiln-name="${kilnName}"
       program-name="${programName}"
-      program-uid="${_UID}"></program-view-edit>`,
+      program-uid="${_DATA.uid}"></program-view-edit>`,
   },
   {
     route: '/kilns/:kilnName/programs/:programName/firings',
-    render: ({ kilnName, programName, _SEARCH, _UID } : IKeyValue) => html`<firings-list
+    render: ({ kilnName, programName, _SEARCH, _DATA } : IKeyValue) => html`<firings-list
       kiln-name="${kilnName}"
       program-name="${programName}"
-      program-id="${_UID}"
+      program-uid="${_DATA.uid}"
       filters=${_SEARCH}></firings-list>`,
   },
 
@@ -162,23 +171,23 @@ export default [
   },
   {
     route: '/users/:userName',
-    render: ({ userName, _UID, _HASH } : IKeyValue) => html`<user-view
+    render: ({ userName, _DATA, _HASH } : IKeyValue) => html`<user-view
       user-name="${userName}"
-      user-uid="${_UID}"
+      user-uid="${_DATA.uid}"
       target="${_HASH}"></user-view>`,
   },
   {
     route: '/users/:userName/edit',
-    render: ({ userName, _UID, _HASH } : IKeyValue) => html`<user-view-edit
+    render: ({ userName, _DATA, _HASH } : IKeyValue) => html`<user-view-edit
       usesr-name="${userName}"
-      usesr-uid="${_UID}"
+      usesr-uid="${_DATA.uid}"
       target="${_HASH}"></user-view-edit>`,
   },
   {
     route: '/kilns/:kilnName/programs/:programName/firings',
-    render: ({ userName, _SEARCH, _UID, _HASH } : IKeyValue) => html`<firings-list
+    render: ({ userName, _SEARCH, _DATA, _HASH } : IKeyValue) => html`<firings-list
       usesr-name="${userName}"
-      user-id="${_UID}"
+      user-uid="${_DATA.uid}"
       filters=${_SEARCH}
       target="${_HASH}"></firings-list>`,
   },

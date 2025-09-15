@@ -1,5 +1,5 @@
 
-import type { FSanitise, FValidationMessage } from "../../types/renderTypes.d.ts";
+import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 
 export const getNameError : FValidationMessage = (target : HTMLInputElement) : string => {
   if (target.checkValidity() === true) {

@@ -1,24 +1,24 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ifDefined } from "lit/directives/if-defined.js";
-import { LoggerElement } from "./LoggerElement.ts";
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { LoggerElement } from '../LoggerElement.ts';
 import type {
   ID,
   IKeyValue,
   IKiln,
   IStoredFiringProgram,
-} from "../types/data.d.ts";
-import { getValFromKey, isNonEmptyStr } from "../utils/data.utils.ts";
-import { getHumanDate } from "../utils/date-time.utils.ts";
-import { hoursFromSeconds } from "../utils/conversions.utils.ts";
-import { tableStyles } from "../assets/program-view-style.ts";
-import { srOnly } from "../assets/sr-only.ts";
-import './route-link.ts';
-import './input-fields/accessible-number-field.ts';
-import './input-fields/accessible-select-field.ts';
-import './input-fields/accessible-text-field.ts';
-import './input-fields/accessible-textarea-field.ts';
-import './input-fields/read-only-field.ts';
+} from '../../types/data.d.ts';
+import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
+import { getHumanDate } from '../../utils/date-time.utils.ts';
+import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
+import { tableStyles } from '../../assets/css/program-view-style.ts';
+import { srOnly } from '../../assets/css/sr-only.ts';
+import '../lit-router/route-link.ts';
+import '../input-fields/accessible-number-field.ts';
+import '../input-fields/accessible-select-field.ts';
+import '../input-fields/accessible-text-field.ts';
+import '../input-fields/accessible-textarea-field.ts';
+import '../input-fields/read-only-field.ts';
 
 /**
  * An example element.

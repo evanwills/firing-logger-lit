@@ -24,9 +24,9 @@ export class IdbDataStore implements TDataStore {
       this._loading = true;
       const context = this;
       this._getDB().then(({ db, populate }) : void => {
-        console.group('IdbDataStore.constructor._getDB.then()');
-        console.log('db:', db);
-        console.log('populate:', populate);
+        // console.group('IdbDataStore.constructor._getDB.then()');
+        // console.log('db:', db);
+        // console.log('populate:', populate);
         context._db = db;
         let c = 0;
 
@@ -34,7 +34,7 @@ export class IdbDataStore implements TDataStore {
           globalThis.fetch('/data/firing-logger.json').then(async (response) => {
             if (response.ok === true)  {
               const data = await response.json();
-              console.log('data:', data);
+              // console.log('data:', data);
 
               populateSlice(db, data.users, 'users');
               populateSlice(db, data.kilns, 'kilns');
@@ -57,7 +57,7 @@ export class IdbDataStore implements TDataStore {
           globalThis.fetch('/data/orton-cones.json').then(async (response) => {
             if (response.ok === true)  {
               const data = await response.json();
-              console.log('data:', data);
+              // console.log('data:', data);
 
               populateSlice((db as IDBDatabase), data, 'cones');
 
@@ -69,7 +69,7 @@ export class IdbDataStore implements TDataStore {
         } else {
           context._callReadyWatchers(2);
         }
-        console.groupEnd();
+        // console.groupEnd();
       });
     }
   }
@@ -280,11 +280,11 @@ export class IdbDataStore implements TDataStore {
           //  END:  Eview
           // ----------------------------------------------------------
 
-          console.groupEnd();
+          // console.groupEnd();
 
           resolve({ db, populate: true });
         };
-        console.groupEnd();
+        // console.groupEnd();
       });
     }
 
@@ -307,6 +307,11 @@ export class IdbDataStore implements TDataStore {
 
     return new Promise((resolve, reject) => {
       this._getDB().then(({ db }) => {
+        // console.group('IdbDataStore.read()');
+        // console.log('slice:', slice);
+        // console.log('selector:', selector);
+        // console.log('outputMode:', outputMode);
+
         const store = db.transaction(slice, 'readonly').objectStore(slice);
 
         if (emptyOrNull(selector)) {
@@ -323,8 +328,15 @@ export class IdbDataStore implements TDataStore {
           request.onerror = getOnError(reject)
         } else if (selector.includes('=')) {
           const [key, value] = selector.split('=');
+          // console.log('slice:', slice);
+          // console.log('selector:', selector);
+          // console.log('key:', key);
+          // console.log('value:', value);
+          const index = store.index(key);
+          // console.log('index:', index);
 
-          const request = store.index(key).getAll(value);
+          const request = index.getAll(value);
+          // console.log('request:', request);
 
           request.onsuccess = getOnSuccess(resolve, outputMode);
 
@@ -332,11 +344,10 @@ export class IdbDataStore implements TDataStore {
         } else {
           console.group('IdbDataStore.read()');
           console.warn('Not sure how we got here');
-          console.log('slice:', slice);
-          console.log('selector:', selector);
           console.log('outputMode:', outputMode);
           console.groupEnd()
         }
+        // console.groupEnd();
       });
     });
   }
@@ -354,7 +365,12 @@ export class IdbDataStore implements TDataStore {
    *          Error message string if there was a problem with the
    *          write action
    */
-  write(userID : ID, action : TStoreAction, slice: TStoreSlice, payload: any) : Promise<any> {
+  write(
+    userID : ID,
+    action : TStoreAction,
+    slice: TStoreSlice,
+    payload: any,
+  ) : Promise<any> {
     return Promise.resolve();
   }
 

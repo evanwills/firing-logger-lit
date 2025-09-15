@@ -4,10 +4,10 @@ import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 import type { IKeyValue } from '../../types/data.d.ts'
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
-import { ifDefined } from "lit/directives/if-defined.js";
-import FauxEvent from "../../utils/FauxEvent.class.ts";
-import { inputFieldCSS } from "./input-field.css.ts";
-import { hasSlotContent } from "../../utils/lit.utils.ts";
+import { ifDefined } from 'lit/directives/if-defined.js';
+import FauxEvent from '../../utils/FauxEvent.class.ts';
+import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
+import { hasSlotContent } from '../../utils/lit.utils.ts';
 
 export class AccessibleWholeField extends LitElement {
   // ------------------------------------------------------
@@ -189,7 +189,7 @@ export class AccessibleWholeField extends LitElement {
         },
       ),
     );
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -199,12 +199,12 @@ export class AccessibleWholeField extends LitElement {
   handleChange(event : InputEvent) : void {
     console.group('AccessibleWholeField.handleChange()')
     this.validate(event);
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   handleKeyup(event : InputEvent) : void {
-    console.group('AccessibleWholeField.handleKeyup()');
-    console.log('this.validateOnKeyup:', this.validateOnKeyup);
+    // console.group('AccessibleWholeField.handleKeyup()');
+    // console.log('this.validateOnKeyup:', this.validateOnKeyup);
     if (this.validateOnKeyup === true) {
       this.validate(event);
     }
@@ -216,7 +216,7 @@ export class AccessibleWholeField extends LitElement {
     if (this.watchOverflowY === true) {
       this._overflowY = ((event.target as HTMLInputElement).scrollHeight > (event.target as HTMLInputElement).clientHeight);
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   handleFocus() : void {
@@ -235,14 +235,14 @@ export class AccessibleWholeField extends LitElement {
     }
 
     if (isNonEmptyStr(this.label) === false) {
-      console.log('this:', this);
-      console.log('this.label:', this.label);
+      // console.log('this:', this);
+      // console.log('this.label:', this.label);
 
       throw new Error(`${this.constructor.name} expects the "label" attribute to be a non-empty string`);
     }
-    console.group('<accessible-text-field>.renderField()');
-    console.log('this.required:', this.required)
-    console.groupEnd();
+    // console.group('<accessible-text-field>.renderField()');
+    // console.log('this.required:', this.required)
+    // console.groupEnd();
   }
 
   //  END:  lifecycle methods
