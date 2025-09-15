@@ -1,3 +1,4 @@
+import { LitElement } from 'lit';
 import type { IKeyValue } from "../types/data.d.ts";
 import type { FGetRouteArgs, IRouteArgs, TParsedRoute, TRoute } from "./router-types.d.ts";
 
@@ -72,3 +73,24 @@ const parsedRouteAdapter = (route : TRoute) : TParsedRoute => ({
 
 export const parseRoutes = (routes : TRoute[]) : TParsedRoute[] => routes.map(parsedRouteAdapter);
 
+export const dispatchRouterEvent = (
+  node : LitElement | HTMLElement,
+  url: string,
+  data: string = '',
+  rewrite : boolean = false,
+) : void => {
+  const type = (rewrite === true)
+    ? 'litrouterrewrite'
+    : 'litrouternav'
+
+  node.dispatchEvent(
+    new CustomEvent(
+      type,
+      {
+        bubbles: true,
+        composed: true,
+        detail: { data, url },
+      },
+    ),
+  );
+}

@@ -1,6 +1,6 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { FiringStep, ID, IStoredFiringProgram, TSvgPathItem } from '../types/data.d.ts';
+import type { FiringStep, ID, IKiln, IStoredFiringProgram, TSvgPathItem } from '../types/data.d.ts';
 import { deepClone, isNonEmptyStr } from '../utils/data.utils.ts';
 import {
   durationFromStep,
@@ -32,6 +32,12 @@ export class ProgramView extends LoggerElement {
   @property({ type: String, attribute: 'program-uid' })
   programID : ID = '';
 
+  @property({ type: String, attribute: 'kiln-name' })
+  kilnName : string = '';
+
+  @property({ type: String, attribute: 'program-name' })
+  programName : string = '';
+
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
@@ -59,6 +65,12 @@ export class ProgramView extends LoggerElement {
 
   @state()
   name : string = '';
+
+  @state()
+  kilnID : string = '';
+
+  @state()
+  _kilnName : string = '';
 
   @state()
   cone : string = '';
@@ -98,20 +110,29 @@ export class ProgramView extends LoggerElement {
 
     if (isNonEmptyStr(this.programID)) {
       if (this._store !== null) {
-        this._store.read('programs', `#${this.programID}`).then((data : IStoredFiringProgram) : void => {
-          if (data !== null) {
-            this.programData = data;
-            this.name = data.name;
-            this.cone = data.cone;
-            this.controllerID = data.controllerProgramID;
-            this.description = data.description;
-            this.maxTemp = data.maxTemp;
-            this.duration = data.duration;
-            this.steps = data.steps;
-            this.type = data.type;
-            this._ready = true
-          };
-        });
+        if (isNonEmptyStr(this.programID) === true) {
+          this._store.read('programs', `#${this.programID}`).then((data : IStoredFiringProgram) : void => {
+            if (data !== null) {
+              this.programData = data;
+              this.name = data.name;
+              this.kilnID = data.kilnID;
+              this.cone = data.cone;
+              this.controllerID = data.controllerProgramID;
+              this.description = data.description;
+              this.maxTemp = data.maxTemp;
+              this.duration = data.duration;
+              this.steps = data.steps;
+              this.type = data.type;
+              this._ready = true
+            };
+          });
+        } else if (isNonEmptyStr(this.kilnName) && (isNonEmptyStr(this.programName))) {
+          this._store.read('kilns', `kilnName=${this.kilnName}`).then((data : IKiln) : void => {
+            if (data !== null) {
+              console.log('data:', data);
+            }
+          });
+        }
       }
     } else {
       this._ready = true;
@@ -120,6 +141,10 @@ export class ProgramView extends LoggerElement {
   }
 
   //  END:  helper methods
+  // ------------------------------------------------------
+  // START: getters
+
+  //  END:  getters
   // ------------------------------------------------------
   // START: event handlers
 
@@ -215,8 +240,13 @@ export class ProgramView extends LoggerElement {
           `)}
         </tbody>
       </table>
+
       ${(this.readOnly === false)
-        ? html`<button @click=${() => { this._edit = !this._edit }}>Edit</button>`
+        ? html`<router-link
+          label="edit"
+          sr-label="${this.name} for ${this.kilnName}"
+          uid="${this.programID}"
+          url="/kilns/${this._kilnName}/programs/${this.name}/edit" ></router-link>`
         : ''}
     `;
   }
@@ -234,6 +264,7 @@ export class ProgramView extends LoggerElement {
         ${this._edit === false || this.readOnly === true
           ? this.readView()
           : html`<program-view-edit
+              program-uid="${this.programID}"
               .steps=${deepClone(this.steps)}
               .firingType=${this.type}
               .name=${this.name}

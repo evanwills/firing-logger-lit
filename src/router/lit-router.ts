@@ -24,13 +24,10 @@ export class LitRouter extends LitElement {
   _url : string = '';
 
   @state()
-  _uid : string = '';
+  _data : string = '';
 
   @state()
   _route : string[] = [];
-
-  @state()
-  _search : IKeyValue = {};
 
   _parsedRoutes : TParsedRoute[] = [];
 
@@ -39,20 +36,47 @@ export class LitRouter extends LitElement {
   // START: helper methods
 
 
+
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
 
+  /**
+   * Only rewrite the URL in the browser address bar.
+   * Do NOT force rerender of the app.
+   *
+   * @param event
+   */
+  handleRouteRewrite(event: CustomEvent) {
+    event.preventDefault();
+
+    console.group('<firing-logger>.handleRouteRewrite()');
+    console.log('event:', event);
+    console.log('event.target:', event.target);
+    console.log('event.detail.data:', event.detail.data);
+    console.log('event.detail.url:', event.detail.url);
+    console.groupEnd();
+  }
+
+  /**
+   * Rewrite the URL in the browser address bar and
+   * update the view to match the URL.
+   *
+   * @param event
+   */
   handleRouteLink(event: CustomEvent) {
     event.preventDefault();
+
+    console.group('<firing-logger>.handleRouteLink()');
+
     this._url = event.detail.url;
-    this._uid = (typeof event.detail.uid === 'string')
+    this._data = (typeof event.detail.data === 'string')
       ? event.detail.uid.trim()
       : '';
 
-    console.group('<firing-logger>.routLink()');
     console.log('event:', event);
-    console.log('this._uid:', this._uid);
+    console.log('this._data:', this._data);
     console.log('this._url:', this._url);
     console.log('event.target:', event.target);
     console.log('event.detail:', event.detail);
@@ -65,7 +89,8 @@ export class LitRouter extends LitElement {
 
     connectedCallback(): void {
       super.connectedCallback();
-      this.addEventListener('routernav', this.handleRouteLink);
+      this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
+      this.addEventListener('litrouternav', this.handleRouteLink);
 
       this._parsedRoutes = parseRoutes(routes);
 
@@ -102,7 +127,7 @@ export class LitRouter extends LitElement {
       console.log('args (before):', args);
       args._HASH = hash;
       args._SEARCH = search;
-      args._UID = this._uid;
+      args._DETAIL = this._data;
       console.log('args (after):', args);
 
       console.groupEnd();

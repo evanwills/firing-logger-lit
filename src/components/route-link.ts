@@ -1,5 +1,6 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { dispatchRouterEvent } from '../router/lit-router.utils';
 
 @customElement('route-link')
 export class RouterLink extends LitElement {
@@ -12,8 +13,11 @@ export class RouterLink extends LitElement {
   @property({ type: String, attribute: 'label' })
   label : string = '';
 
-  @property({ type: String, attribute: 'uid' })
-  uid : string = '';
+  @property({ type: String, attribute: 'sr-label' })
+  srLabel : string = '';
+
+  @property({ type: String, attribute: 'detail' })
+  detail : string = '';
 
   //  END:  properties/attributes
   // ------------------------------------------------------
@@ -30,16 +34,7 @@ export class RouterLink extends LitElement {
   navClick(event : Event): void {
     event.preventDefault();
 
-    this.dispatchEvent(
-      new CustomEvent(
-        'routernav',
-        {
-          bubbles: true,
-          composed: true,
-          detail: { uid: this.uid, url: this.url},
-        },
-      ),
-    );
+    dispatchRouterEvent(this, this.url, this.detail);
   }
 
   //  END:  event handlers
@@ -58,6 +53,7 @@ export class RouterLink extends LitElement {
     return html`<a
       href="${this.url}"
       class="router-link"
+      data-detail="${this.detail}"
       @click=${this.navClick}><slot>${this.label}</slot></a>`;
   }
 

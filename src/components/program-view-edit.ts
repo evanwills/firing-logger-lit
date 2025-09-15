@@ -2,7 +2,7 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from "lit/directives/if-defined.js";
 import { LoggerElement } from "./LoggerElement.ts";
-import type { FiringStep, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
+import type { FiringStep, ID, IKeyValue, TSvgPathItem } from '../types/data.d.ts';
 import {
   durationFromSteps,
   f2c,
@@ -19,6 +19,7 @@ import './input-fields/accessible-number-field.ts';
 import './input-fields/accessible-select-field.ts';
 import './input-fields/accessible-text-field.ts';
 import './input-fields/accessible-textarea-field.ts';
+import './route-link.ts';
 
 /**
  * An example element.
@@ -35,7 +36,17 @@ export class ProgramViewEdit extends LoggerElement {
   // userID : ID = '';
   // readOnly : boolean = false;
   //
+  //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  @property({ type: String, attribute: 'program-uid' })
+  programID : ID = '';
+
+  @property({ type: String, attribute: 'kiln-name' })
+  kilnName : string = '';
+
+  @property({ type: String, attribute: 'program-name' })
+  programName : string = '';
 
   @property({ type: Array, attribute: '' })
   steps : FiringStep[] = [];
@@ -411,7 +422,10 @@ export class ProgramViewEdit extends LoggerElement {
         </table>
         <p>
           <button @click=${this.handleSave}>Save</button>
-          <button @click=${() => this.dispatchEvent(new CustomEvent('cancel'))}>Cancel</button>
+          <router-link
+            label="Cancel"
+            uid="${this.programID}"
+            url="/kilns/${this.kilnName}/programs/${this.programName}" ></router-link>
         </p>
       </div>`;
   }

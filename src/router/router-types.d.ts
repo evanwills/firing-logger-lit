@@ -4,7 +4,7 @@ import type { IKeyValue } from "../types/data.d.ts";
 export interface IRouteArgs extends IKeyValue {
   _HASH: string,
   _SEARCH: IKeyValue
-  _UID: string,
+  _DETAIL: string,
 };
 
 export type FRouteRenderer = (IRouteArgs) => TemplateResult;
