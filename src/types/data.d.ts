@@ -1,18 +1,8 @@
 import type { SVGTemplateResult } from 'lit';
-
-export type ISO8601 = string;
-export type ID = string;
+import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601 } from './data-simple.d.ts';
 
 // ========================================================
 // START: REDUX types
-
-export interface IKeyValue {
-  [key: string]: any
-}
-
-export interface IIdObject implements IKeyValue {
-  id: ID,
-}
 
 export interface Action {
   type: string,
@@ -39,7 +29,7 @@ export interface FancyAction extends Action {
 // START: stored data types
 
 
-export interface IKiln implements IIdObject {
+export interface IKiln implements ILinkObject {
   id: ID,
   brand: string,
   model: string,
@@ -84,7 +74,7 @@ export interface  EquipmentLogEntry implements IIdObject {
   verifiedBy: string | null
 }
 
-export interface IFiringProgramData implements IIdObject {
+export interface IFiringProgramData implements ILinkObject {
   id: ID,
   kilnID: string,
   controllerProgramID: number,
@@ -195,8 +185,8 @@ export interface StateChangeLogEntry extends IFiringLogEntry {
 }
 
 export interface Kilns {
-  all: [Kiln],
-  tmp: Kiln
+  all: [IKiln],
+  tmp: IKiln
 }
 
 export interface AllFiringPrograms {
@@ -206,7 +196,6 @@ export interface AllFiringPrograms {
 
 export type FiringLogs = [FiringLog]
 export type equipmentLog = [EquipmentLogEntry]
-export type users = [User]
 export type calendar = [DiaryEntry]
 
 export interface DiaryEntry implements IIdObject {
@@ -222,7 +211,7 @@ export interface DiaryEntry implements IIdObject {
   started: boolean,
 }
 
-export interface User implements IIdObject {
+export interface TUser implements IIdObject {
   id: ID,
   username: string
   firstName: string
@@ -240,14 +229,19 @@ export interface User implements IIdObject {
 }
 
 export interface Studio implements IIdObject {
-  kilns: [kiln],
+  kilns: IKiln[],
   firingPrograms: AllFiringPrograms,
   firingLogs: FiringLogs,
   equipmentLogs: EquipmentLog,
-  users: Users,
+  users: TUser[],
   diary: Calendar
 }
 
+export type TConeData = {
+  cone: string,
+  rate: number,
+  temp: number
+};
 
 //  END:  stored data types
 // ========================================================
@@ -299,7 +293,7 @@ export interface App {
   currentUser: user,
   reports: [firingReport],
   view: Eview,
-  stateSlice: kilns | allFiringPrograms | firingLogs | maintenance | issues | users | diary
+  stateSlice: IKilns | allFiringPrograms | firingLogs | maintenance | issues | users | diary
 }
 
 function Fview (state: object, eHandler: function, routes: array) : html

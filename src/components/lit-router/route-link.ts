@@ -48,15 +48,15 @@ export class RouterLink extends LitElement {
   // START: main render method
 
   render() : TemplateResult {
-    console.group('<router-link>.render()');
-    console.log('this.dataset.uid:', this.dataset.uid);
-    console.log('this.url:', this.url);
+    // console.group('<router-link>.render()');
+    // console.log('this.dataset.uid:', this.dataset.uid);
+    // console.log('this.url:', this.url);
 
     const srlabel = (typeof this.srLabel === 'string' && this.srLabel.trim() !== '')
       ? html` <span class="sr-only">${this.srLabel}</span>`
       : '';
 
-    console.groupEnd();
+    // console.groupEnd();
     return html`<a
       href="${this.url}"
       class="router-link"

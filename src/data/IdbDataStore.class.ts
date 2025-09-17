@@ -1,21 +1,22 @@
 import { nanoid } from "nanoid";
-import type { TDataStore, TStoreAction, TStoreSlice } from "../types/store.d.ts";
-import { splitSlice } from "../utils/store.utils.ts";
-import type { ID } from "../types/data.d.ts";
+import type { CDataStoreClass, FReadyWatcher, TStoreAction, TStoreSlice } from "../types/store.d.ts";
+// import { splitSlice } from "../utils/store.utils.ts";
+import type { ID } from "../types/data-simple.d.ts";
 import { getOnError, getOnSuccess, populateEnumSlice, populateSlice } from "./idb-data-store.utils.ts";
 import { emptyOrNull } from "../utils/data.utils.ts";
 
-let store : TDataStore | null = null;
+let store : CDataStoreClass | null = null;
 
 type getDbOutput = {
   db : IDBDatabase, populate: boolean;
 };
 
-export class IdbDataStore implements TDataStore {
+export class IdbDataStore implements CDataStoreClass {
   _db : IDBDatabase | null = null;
   _loading : boolean = false;
+  _ready : boolean = false;
 
-  _readyWatchers : Array<{() : void}> | null = [];
+  _readyWatchers : FReadyWatcher[] = [];
 
   constructor(
   ) {
@@ -78,9 +79,10 @@ export class IdbDataStore implements TDataStore {
     console
     if (c === 2 && this._readyWatchers !== null) {
       for (const cb of this._readyWatchers) {
-        cb();
+        cb(true);
       }
-      this._readyWatchers = null;
+      this._ready = true;
+      this._readyWatchers = [];
     }
   }
 
@@ -291,6 +293,8 @@ export class IdbDataStore implements TDataStore {
 
     return Promise.resolve({ db: this._db, populate: false });
   }
+  get ready() { return this._ready; }
+  get loading() { return this._loading; }
 
   /**
    *
@@ -366,10 +370,10 @@ export class IdbDataStore implements TDataStore {
    *          write action
    */
   write(
-    userID : ID,
-    action : TStoreAction,
-    slice: TStoreSlice,
-    payload: any,
+    _userID: ID,
+    _action : TStoreAction,
+    _slice : TStoreAction,
+    _payload: any,
   ) : Promise<any> {
     return Promise.resolve();
   }
@@ -391,12 +395,12 @@ export class IdbDataStore implements TDataStore {
    *          that action
    */
   watch(
-    action: string,
-    handler : (payload: any) => void,
-    slice: string = '',
+    _action : string,
+    _handler: (slice: any) => void,
+    _slice: TStoreSlice,
   ) : string {
     const id = nanoid(10);
-    const _slice = splitSlice(slice);
+    // const _slice = splitSlice(slice);
 
     return id;
   }
@@ -409,23 +413,35 @@ export class IdbDataStore implements TDataStore {
    * @returns TRUE if watcher was removed.
    *          FALSE otherwise
    */
-  ignore(watchID : string) : boolean {
+  ignore(_watchID : string) : boolean {
     return false;
   }
 
-  get ready() {
-    return this._db !== null;
-  }
 
-  watchReady(callback : () => void) : void {
+  watchReady(callback : FReadyWatcher) : void {
     this._readyWatchers?.push(callback);
   }
 }
 
-export const getDataStoreSingleton = () : TDataStore => {
-  if (store === null) {
-    store = new IdbDataStore();
+export const getDataStoreClassSingleton = (
+  readyWatcher : FReadyWatcher | null = null,
+) : Promise<CDataStoreClass> => {
+  if (store !== null) {
+    return Promise.resolve(store);
   }
 
-  return store;
+  store = new IdbDataStore();
+
+  if (readyWatcher !== null) {
+    store.watchReady(readyWatcher);
+  }
+
+  return new Promise((resolve, _reject) => {
+    (store as IdbDataStore).watchReady((_isReady : boolean) => {
+      console.group('getDataStoreClassSingleton().readyWatcher()');
+      console.log('_isReady:', _isReady);
+      console.groupEnd();
+      resolve(store as IdbDataStore);
+    })
+  });
 };

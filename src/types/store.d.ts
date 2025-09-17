@@ -1,4 +1,5 @@
-import type { ID } from './data.d.ts';
+import type { ID, TEnumItem } from './data-simple.d.ts';
+import type { IKiln, IUser } from './data.d.ts';
 
 /**
  * TStoreSlice is a dot-separated string matching the following regular expression pattern
@@ -16,7 +17,20 @@ export type TStoreSlice = string;
 
 export type TStoreAction = 'update' | 'replace' | 'append'
 
-export type TDataStore = {
+/**
+ * CDataStoreClass calls FReadyWatchers when the data store is ready
+ * to use or when it knows it will never be ready because it was
+ * unnable to populate the data store with any values.
+ * (Probably due to a failed fetch request)
+ *
+ * @param isReady whether or not the store can be used at all
+ */
+export type FReadyWatcher = (isReady: boolean) => void;
+
+export type CDataStoreClass = {
+  ready: boolean,
+  loading: boolean,
+
   /**
    * Read data from the store
    *
@@ -56,7 +70,7 @@ export type TDataStore = {
     userID: ID,
     action : TStoreAction,
     slice : TStoreAction,
-    payload: any
+    payload: any,
   ) => Promise<string>,
 
   /**
@@ -91,7 +105,23 @@ export type TDataStore = {
    */
   ignore: (watchID: ID) => boolean,
 
-  watchReady : (callback : () => void) => void,
+  watchReady : (callback : FReadyWatcher) => void,
 };
 
-export type FDataStoreSingleton = () => TDataStore;
+export type FDataStoreSingleton = () => Promise<CDataStoreClass>;
+
+export type TDataStore = {
+  users: IUser[],
+  kilns: IKiln[],
+  programs: IStoredFiringProgram[],
+  firings: FiringLog[]
+  cones: TConeData[],
+  EfiringType: TEnumItem[],
+  EprogramState: TEnumItem[],
+  EkilnFiringState: TEnumItem[],
+  EtemperatureState: TEnumItem[],
+  EfuelSource: TEnumItem[],
+  EequipmentLogType: TEnumItem[],
+  EprogramStatus: TEnumItem[],
+  EAdminLevels: TEnumItem[],
+}

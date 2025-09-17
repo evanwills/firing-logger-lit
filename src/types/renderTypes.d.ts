@@ -1,3 +1,5 @@
+import type { TemplateResult } from "lit";
+
 export type TLogEntryOptionItem = {
   label: string,
   value: number,
@@ -20,3 +22,5 @@ export type TOptionValueLabel = {
 };
 
 export type FSanitise = (input: string) => string;
+
+export type FWrapOutput = (input : TemplateResult | string) => TemplateResult;

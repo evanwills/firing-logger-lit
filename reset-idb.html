@@ -43,23 +43,56 @@
 	</div>
 
     <script>
-const resetDB = () => {
+		const resetDB = async () => {
 	console.group('resetDB()');
-	const request = window.indexedDB.deleteDatabase('firingLogger');
-	console.log('request:', request);
 
-	request.onsuccess = function() {
-	  console.log('Database deleted successfully');
-	};
-	request.onerror = function(event) {
-	  console.error('Error deleting database:', event);
-	};
-	request.onblocked = function() {
-	  console.warn('Delete blocked: Please close all other tabs using this database.');
-	};
-	console.groupEnd();
-}
+	globalThis.indexedDB.databases().then((_dbs) => {
+		console.group(`Checking ${_dbs.length} DBs to see if they're belong to Firing Logger`);
+		const promises = [];
+
+		for (const db of _dbs) {
+			if (db.name.includes('firing')) {
+				console.group(`Deleting DB: "${db.name}"`);
+				const request = globalThis.indexedDB.deleteDatabase(db.name);
+				console.log('request:', request);
+
+				request.onsuccess = function() {
+					console.log(`"${db.name}" database deleted successfully`);
+				};
+				request.onerror = function(event) {
+					console.error(`Error deleting "${db.name}" database:`, event);
+				};
+				request.onblocked = function() {
+					console.warn(
+						`Delete is blocked for "${db.name}". Please close all `
+						+ `other tabs using this "${db.name}" database.`,
+					);
+				};
+				promises.push(request);
+				console.groupEnd();
+			}
+		}
+
+		const c = promises.length;
+
+		if (c > 0) {
+
+			const msg = (c > 1)
+				? `All ${c} Firing Logger DBs deleted.`
+				: 'One firing logger DB deleted'
+			Promise.all(promises).then(() => {
+				console.info(msg);
+				console.groupEnd();
+			});
+		} else {
+			console.info('No Firing Logger databases to delete');
+			console.groupEnd();
+		}
+	}).catch((reason) => { console.warn('failed:', reason); });
+};
+
 const btn = document.getElementById('reset-btn');
+
 if (btn !== null) {
 	console.log('button found');
 	btn.addEventListener('click', resetDB);

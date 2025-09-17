@@ -1,10 +1,14 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../../types/data.d.ts';
+import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TParsedRoute } from '../../types/router-types.d.ts';
 import { parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
+import type { FWrapOutput } from "../../types/renderTypes.d.ts";
 
+const wrapOutput : FWrapOutput = (input : TemplateResult | string) => (typeof input === 'string')
+  ? html`${input}`
+  : input;
 /**
  * An example element.
  */
@@ -15,6 +19,9 @@ export class LitRouter extends LitElement {
 
   @property({ type: String, attribute: 'initial-route'})
   initialRoute : string = '';
+
+  @property({ type: Function, attribute: 'wrapper'})
+  wrapperFunc : FWrapOutput | null = null;
 
   //  END:  properties/attributes
   // -----------------------------
@@ -27,12 +34,17 @@ export class LitRouter extends LitElement {
   _url : string = '';
 
   @state()
-  _route : string[] = [];
+  possibleRoute : string[] = [];
 
   @state()
   _search : IKeyValue = {};
 
+  @state()
+  _navHistory : IKeyValue = [];
+
   _parsedRoutes : TParsedRoute[] = [];
+
+  _wrap : FWrapOutput = wrapOutput;
 
   //  END:  state
   // ------------------------------------------------------
@@ -92,12 +104,14 @@ export class LitRouter extends LitElement {
 
   handlePopState(_event : PopStateEvent) {
     // console.group('<lit-router>.handlePopState()');
-    // console.log('event:', event);
-    // console.log('event.target:', event.target);
+    // console.log('_event:', _event);
+    // console.log('_event.target:', _event.target);
     // console.log('this._url (before):', this._url);
     this._url = globalThis.location.pathname
       + globalThis.location.search
       + globalThis.location.hash;
+
+    this._data = {};
     // console.log('this._url (after):', this._url);
     // console.groupEnd();
   }
@@ -106,20 +120,27 @@ export class LitRouter extends LitElement {
   // ------------------------------------------------------
   // START: lifecycle methods
 
-    connectedCallback(): void {
-      super.connectedCallback();
-      // console.group('<lit-router>.connectedCallback()');
-      this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
-      this.addEventListener('litrouternav', this.handleRouteLink);
-      globalThis.addEventListener('popstate', this.handlePopState);
+  connectedCallback(): void {
+    super.connectedCallback();
 
-      this._parsedRoutes = parseRoutes(routes);
+    // console.group('<lit-router>.connectedCallback()');
 
-      // console.log('this._url (before):', this._url);
-      this._url = this.initialRoute;
-      // console.log('this._url (before):', this._url);
-      // console.groupEnd();
-    }
+    this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
+    this.addEventListener('litrouternav', this.handleRouteLink);
+
+    globalThis.addEventListener('popstate', this.handlePopState);
+
+
+    this._wrap = (this.wrapperFunc !== null && typeof this.wrapperFunc === 'function')
+      ? this.wrapperFunc
+      : wrapOutput;
+    this._parsedRoutes = parseRoutes(routes);
+
+    // console.log('this._url (before):', this._url);
+    this._url = this.initialRoute;
+    // console.log('this._url (before):', this._url);
+    // console.groupEnd();
+  }
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
@@ -135,33 +156,35 @@ export class LitRouter extends LitElement {
 
   render() : TemplateResult {
     const { route, search, hash } = splitURL(this._url);
-    // console.group('<lit-router>.render()');
-    // console.log('route:', route);
-    // console.log('search:', search);
-    // console.log('hash:', hash);
-    // console.log('this._data:', this._data);
-    // console.log('this._url:', this._url);
 
-    for (const _route of this._parsedRoutes) {
-      // console.log('_route:', _route);
-      const args = _route.getArgs(route);
+    for (const possibleRoute of this._parsedRoutes) {
+      const args = possibleRoute.getArgs(route);
 
       if (args === null) {
         continue;
       }
 
+      // console.group('<lit-router>.render()');
+      // console.log('route:', route);
+      // console.log('possibleRoute:', possibleRoute);
+      // console.log('search:', search);
+      // console.log('hash:', hash);
+      // console.log('this._data:', this._data);
+      // console.log('this._url:', this._url);
       // console.log('args (before):', args);
+
       args._HASH = hash;
       args._SEARCH = search;
       args._DATA = this._data;
-      // console.log('args (after):', args);
 
+      // console.log('args (after):', args);
       // console.groupEnd();
-      return _route.render(args);
+
+      return this._wrap(possibleRoute.render(args));
     }
 
-    // console.groupEnd();
-    return this.renderNotFound();
+    console.groupEnd();
+    return this._wrap(this.renderNotFound());
   }
 
   //  END:  main render method

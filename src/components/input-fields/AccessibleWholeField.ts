@@ -2,7 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
-import type { IKeyValue } from '../../types/data.d.ts'
+import type { IKeyValue } from '../../types/data-simple.d.ts'
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import FauxEvent from '../../utils/FauxEvent.class.ts';

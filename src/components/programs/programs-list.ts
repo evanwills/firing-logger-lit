@@ -5,11 +5,14 @@ import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/data.d.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import '../lit-router/route-link.ts';
-import { getValFromKey } from "../../utils/data.utils.ts";
-import { storeCatch } from "../../data/idb-data-store.utils.ts";
+import { getValFromKey } from '../../utils/data.utils.ts';
+import { storeCatch } from '../../data/idb-data-store.utils.ts';
+import type { IStoredFiringProgram } from '../../types/data.d.ts';
+import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
+import { getLinkProps } from '../../utils/lit.utils.ts';
 
-@customElement('kilns-list')
-export class KilnsList extends LoggerElement {
+@customElement('programs-list')
+export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes`;
 
@@ -45,21 +48,37 @@ export class KilnsList extends LoggerElement {
     _kilnList : IKiln[] = [];
 
     @state()
+    _programList : IStoredFiringProgram[] = [];
+
+    @state()
     _kilnTypes : IKeyValue = {};
 
     @state()
     _fuelSources : IKeyValue = {};
+
+    @state()
+    _firingTypes : IKeyValue = {};
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
   _setKilnTypes(data : IKeyValue) : void {
+    // console.group('<kilns-list>._setKilnTypes()');
+    // console.log('data:', data);
     this._kilnTypes = data;
+    // console.groupEnd()
   }
 
   _setFuelSources(data : IKeyValue) : void {
+    // console.group('<kilns-list>._setFuelSources()');
+    // console.log('data:', data);
     this._fuelSources = data;
+    // console.groupEnd()
+  }
+
+  _setFiringTypes(data : IKeyValue) : void {
+    this._firingTypes = data;
   }
 
   _setKilnList(data : IKiln[]) : void {
@@ -67,28 +86,29 @@ export class KilnsList extends LoggerElement {
     this._ready = true;
   }
 
+  _setProgramList(data : IStoredFiringProgram[]) : void {
+    this._programList = data;
+    this._ready = true;
+  }
+
   _setData(_ok : boolean) : void {
     if (this._store !== null) {
-      this._store.read('EkilnType', '', true)
-        .then(this._setKilnTypes.bind(this))
-        .catch(storeCatch);
-      this._store.read('EfuelSource', '', true)
-        .then(this._setFuelSources.bind(this))
-        .catch(storeCatch);
-      this._store.read('kilns')
-        .then(this._setKilnList.bind(this))
-        .catch(storeCatch);
+      this._store.read('EfiringType', '', true).then(this._setFiringTypes.bind(this)).catch(storeCatch);
+      this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this)).catch(storeCatch);
+      this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this)).catch(storeCatch);
+      this._store.read('kilns').then(this._setKilnList.bind(this)).catch(storeCatch);
+      this._store.read('programs').then(this._setProgramList.bind(this)).catch(storeCatch);
     }
   }
 
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
 
-    if (this._ready === false && this._store !== null) {
+    if (this._store !== null) {
       if (this._store.ready === false) {
         this._store.watchReady(this._setData.bind(this));
       } else {
-        this._setData(true);
+        this._setData(true)
       }
     }
   }
@@ -107,25 +127,25 @@ export class KilnsList extends LoggerElement {
     this._getFromStore();
   }
 
-  // attributeChangedCallback() : void {
-  //   this._getFromStore();
-  // }
-
   //  END:  lifecycle methods
   // ------------------------------------------------------
   // START: helper render methods
 
-  _renderTableRow(kilnData : IKeyValue) : TemplateResult {
+  _renderTableRow(programData : IKeyValue) : TemplateResult {
+    const { name, urlPart, id } = getLinkProps(this._kilnList, programData.kilnID);
     return html`<tr>
       <th><route-link
-        data-uid="${kilnData.id}"
-        url="/kilns/${kilnData.urlPart}"
-        label="${kilnData.name}"></route-link></th>
-      <td>${getValFromKey(this._fuelSources, kilnData.fuel)}</td>
-      <td>${this._tConverter(kilnData.maxTemp)}&deg;${this._tUnit}</td>
-      <td>${this._lConverter(kilnData.height)}${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.depth)}${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.width)}${this._lUnit}</td>
+        data-uid="${programData.id}"
+        url="/kilns/${urlPart}/programs/${programData.urlPart}"
+        label="${programData.name}"></route-link></th>
+      <td>${getValFromKey(this._firingTypes, programData.type)}</td>
+      <td><route-link
+        data-uid="${id}"
+        url="/kilns/${urlPart}"
+        label="${name}"></route-link></td>
+      <td>${this._tConverter(programData.maxTemp)}&deg;${this._tUnit}</td>
+      <td>${programData.cone}</td>
+      <td>${hoursFromSeconds(programData.duration)}</td>
     </tr>`;
   }
 
@@ -134,32 +154,26 @@ export class KilnsList extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    // console.group('<kilns-list>.render()');
-    // console.log('this._ready:', this._ready);
-    // console.log('this._kilnList:', this._kilnList);
-    // console.groupEnd()
+    return html`<h2>Programs list</h2>
 
-    return html`<h2>Kiln list</h2>
-
-    ${(this._ready === true && this._kilnList !== null)
+    ${(this._ready === true && this._programList !== null)
       ? html`<table>
         <thead>
           <tr>
             <th>Name</th>
-            <th>Energy source</th>
-            <th>Max temp</th>
-            <th>Height</th>
-            <th>Depth</th>
-            <th>Width</th>
+            <th>Type</th>
+            <th>Kiln</th>
+            <th>Top temp</th>
+            <th>Cone</th>
+            <th>Duration</th>
           </tr>
         </thead>
         <tbody>
-          ${this._kilnList.map(this._renderTableRow.bind(this))}
+          ${this._programList.map(this._renderTableRow.bind(this))}
         </tbody>
       </table>`
       : html`<p>Loading...</p>`
-    }
-    `;
+    }`;
   }
 
   //  END:  main render method
@@ -174,6 +188,6 @@ export class KilnsList extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'kilns-list': KilnsList,
+    'programs-list': ProgramsList,
   }
 };

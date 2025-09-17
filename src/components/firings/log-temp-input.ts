@@ -76,7 +76,7 @@ export class TemperatureInput extends LoggerElement {
   // State inherited from LoggerElement
   //
   // _converter : (T : number) => number = x2x;
-  // _store : TDataStore | null = null;
+  // _store : CDataStoreClass | null = null;
   // _unit : string = 'C';
   //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -

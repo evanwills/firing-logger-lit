@@ -2,12 +2,8 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { LoggerElement } from '../LoggerElement.ts';
-import type {
-  ID,
-  IKeyValue,
-  IKiln,
-  IStoredFiringProgram,
-} from '../../types/data.d.ts';
+import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
+import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
@@ -221,8 +217,8 @@ export class KilnView extends LoggerElement {
     this._fuelSources = data;
   }
 
-  _getFromStore() : void {
-    super._getFromStore();
+  async _getFromStore() : Promise<void> {
+    await super._getFromStore();
     let ok = false;
 
     if (this._store !== null) {

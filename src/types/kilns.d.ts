@@ -1,4 +1,4 @@
-import { ID, ISO8601 } from './data.d.ts'
+import { ID, ISO8601 } from './data-simple.d.ts'
 
 // --------------------------------------------------------
 // START: Enums

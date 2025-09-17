@@ -2,13 +2,14 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { LoggerElement } from '../LoggerElement.ts';
-import type { FiringStep, ID, IKeyValue, TSvgPathItem } from '../../types/data.d.ts';
+import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
+import type { FiringStep, TSvgPathItem } from '../../types/data.d.ts';
 import {
   durationFromSteps,
   f2c,
   maxTempFromSteps,
 } from '../../utils/conversions.utils.ts';
-import { getDataStoreSingleton } from '../../data/IdbDataStore.class.ts';
+import { getDataStoreClassSingleton } from '../../data/IdbDataStore.class.ts';
 import { programViewVars, tableStyles } from '../../assets/css/program-view-style.ts';
 import { getTopCone } from '../../utils/getCone.util.ts';
 import { getNameError, sanitiseName } from '../input-fields/accessible-field.utils.ts';
@@ -230,7 +231,7 @@ export class ProgramViewEdit extends LoggerElement {
     super.connectedCallback();
 
     if (this._store === null) {
-      this._store = getDataStoreSingleton();
+      this._store = getDataStoreClassSingleton();
     }
 
     if (this._store !== null) {

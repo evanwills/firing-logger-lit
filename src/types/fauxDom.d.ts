@@ -1,12 +1,7 @@
 import type { TemplateResult } from 'lit';
+import type { IKeyBool } from "./data-simple.d.ts";
 
-export interface IBoolObject { [key: string]: boolean,
-}
-export interface IStringObject { [key: string]: string };
-export interface INumberObject { [key: string]: number };
-export interface IAnyObject { [key: string]: any };
-
-export interface TFauxValidity extends IBoolObject {
+export interface TFauxValidity extends IKeyBool {
   badInput ? : boolean,
   customError ? : boolean,
   patternMismatch ? : boolean,

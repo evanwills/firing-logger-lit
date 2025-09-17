@@ -1,4 +1,4 @@
-import type { IIdObject, IKeyValue } from '../types/data.d.ts';
+import type { IIdObject, IKeyValue } from '../types/data-simple.d.ts';
 
 const parseKeyValue = (input : string) : string => {
   if (input.includes('=') === false)  {

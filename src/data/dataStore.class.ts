@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid';
-import type { FDataStoreSingleton, TDataStore } from '../types/store.d.ts';
+import type { FDataStoreSingleton, CDataStoreClass } from '../types/store.d.ts';
 import { splitSlice } from '../utils/store.utils.ts';
 
-let store : TDataStore | null = null;
+let store : CDataStoreClass | null = null;
 
-class IdbDataStore implements TDataStore {
+class IdbDataStore implements CDataStoreClass {
   constructor(
     schema : any,
     reducers : any,
@@ -18,7 +18,11 @@ class IdbDataStore implements TDataStore {
    * @returns What ever data is held within the store segment
    * @throws {Error} If slice is a non-empty string and
    */
-  read(slice: string = '') : any {
+  read(
+    slice : string,
+    selector : string = '',
+    outputMode : string[] | boolean = false,
+  ) : Promise<any> => {
 
   }
 
@@ -77,7 +81,7 @@ class IdbDataStore implements TDataStore {
   }
 }
 
-export const getSingletonStore : FDataStoreSingleton = () : TDataStore => {
+export const getSingletonStore : FDataStoreSingleton = () : CDataStoreClass => {
   if (store === null) {
     store = new IdbDataStore({}, {});
   }

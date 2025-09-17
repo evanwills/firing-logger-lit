@@ -1,9 +1,9 @@
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../types/data.d.ts';
+import type { IKeyValue } from '../types/data-simple.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../utils/conversions.utils.ts';
-import type { TDataStore } from '../types/store.d.ts';
-import { getDataStoreSingleton } from '../data/IdbDataStore.class.ts';
+import type { CDataStoreClass } from '../types/store.d.ts';
+import { getDataStoreClassSingleton } from '../data/PidbDataStore.class.ts';
 
 /**
  * `LoggerElement` is a renderless extension of `LitElement`. It
@@ -59,6 +59,9 @@ export class LoggerElement extends LitElement {
   // START: state
 
   @state()
+  _dbReady : boolean = false;
+
+  @state()
   _ready : boolean = false;
 
   /**
@@ -99,7 +102,7 @@ export class LoggerElement extends LitElement {
    *
    * @var _store
    */
-  _store : TDataStore | null = null;
+  _store : CDataStoreClass | null = null;
 
   /**
    * @var _tUnit Temperature unit indicator to match user's preference
@@ -115,9 +118,13 @@ export class LoggerElement extends LitElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _getFromStore() : void {
+  _watchReady(_isReady : boolean) : void {
+    this._dbReady = true;
+  }
+
+  async _getFromStore() : Promise<void> {
     if (this._store === null) {
-      this._store = getDataStoreSingleton();
+      this._store = await getDataStoreClassSingleton(this._watchReady.bind(this));
     }
   }
 

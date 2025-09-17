@@ -2,6 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { hoursFromSeconds, x2x } from '../../utils/conversions.utils.ts';
 import { keyValueStyle, programViewVars } from '../../assets/css/program-view-style.ts';
+import '../lit-router/route-link.ts';
 
 @customElement('program-view-meta')
 export class ProgramViewMeta extends LitElement {
@@ -19,6 +20,18 @@ export class ProgramViewMeta extends LitElement {
 
   @property({ type: String, attribute: 'type' })
   type : string = '';
+
+  @property({ type: String, attribute: 'cone' })
+  cone : string = '';
+
+  @property({ type: String, attribute: 'kiln-id' })
+  kilnID : string = '';
+
+  @property({ type: String, attribute: 'kiln-name' })
+  kilnName : string = '';
+
+  @property({ type: String, attribute: 'kiln-url-part' })
+  kilnUrlPart : string = '';
 
   @property({ type: String, attribute: 'cone' })
   cone : string = '';
@@ -54,8 +67,22 @@ export class ProgramViewMeta extends LitElement {
   // START: main render method
 
   render() : TemplateResult{
+    console.group('<program-view-meta>.render()');
+    console.log('this.kilnName:', this.kilnName);
+    console.log('this.kilnID:', this.kilnID);
+    console.log('this.kilnUrlPart:', this.kilnUrlPart);
+    console.groupEnd();
     return html`
       <div>
+        ${(this.kilnName !== '' && this.kilnID !== '')
+          ? html`<p class="key-value">
+            <strong>Kiln:</strong>
+            <route-link
+            data-uid="${this.kilnID}"
+            label="${this.kilnName}"
+            url="/kilns/${this.kilnUrlPart}"></route-link>`
+          : ''
+        }
         ${(this.type !== '')
           ? html`<p class="key-value">
             <strong>Type:</strong>

@@ -1,13 +1,15 @@
 import { nanoid } from 'nanoid';
-import type { TDataStore } from '../types/store.d.ts';
+import type { CDataStoreClass, FReadyWatcher } from '../types/store.d.ts';
 import { getLimitedObjList, splitSlice } from '../utils/store.utils.ts';
 import { getDataFromSlice } from './fs-data-store.utils.ts';
 import FiringLoggerData from './firing-logger.json' with { type: 'json' };
 
-let store : TDataStore | null = null;
+let store : CDataStoreClass | null = null;
 
-class FsDataStore implements TDataStore {
+class FsDataStore implements CDataStoreClass {
   _data = {};
+
+  _readyWatchers : FReadyWatcher[] = [];
 
   constructor(
   ) {
@@ -118,9 +120,13 @@ class FsDataStore implements TDataStore {
     console.groupEnd();
     return false;
   }
+
+  watchReady(callback: FReadyWatcher) : void {
+    this._readyWatchers.push(callback)
+  };
 }
 
-export const getDataStoreSingleton = () : TDataStore => {
+export const getDataStoreClassSingleton = () : CDataStoreClass => {
   if (store === null) {
     store = new FsDataStore();
   }

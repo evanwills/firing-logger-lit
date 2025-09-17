@@ -4,12 +4,12 @@ import { LoggerElement } from "../LoggerElement.ts";
 import type {
   FiringLog,
   IFiringLogEntry,
-  ID,
   ResponsibleLogEntry,
   StateChangeLogEntry,
   TemperatureLogEntry,
   IStoredFiringProgram,
 } from "../../types/data.d.ts";
+import type { ID } from "../../types/data-simple.d.ts";
 import { isChangeLog, isRespLog, isTempLog } from '../../types/data.type-guards.ts';
 
 /**
@@ -45,7 +45,7 @@ export class FiringLogView extends LoggerElement {
   // _lConverterRev : (T : number) => number = x2x;
   // _tUnit : string = 'C';
   // _lUnit : string = 'mm';
-  // _store : TDataStore | null = null;
+  // _store : CDataStoreClass | null = null;
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @state()

@@ -8,8 +8,8 @@ import '../lit-router/route-link.ts';
 import { getValFromKey } from "../../utils/data.utils.ts";
 import { storeCatch } from "../../data/idb-data-store.utils.ts";
 
-@customElement('kilns-list')
-export class KilnsList extends LoggerElement {
+@customElement('firing-list')
+export class FiringsList extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes`;
 
@@ -42,10 +42,10 @@ export class KilnsList extends LoggerElement {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     @state()
-    _kilnList : IKiln[] = [];
+    _firingList : IKiln[] = [];
 
     @state()
-    _kilnTypes : IKeyValue = {};
+    _firingTypes : IKeyValue = {};
 
     @state()
     _fuelSources : IKeyValue = {};
@@ -55,42 +55,52 @@ export class KilnsList extends LoggerElement {
   // START: helper methods
 
   _setKilnTypes(data : IKeyValue) : void {
-    this._kilnTypes = data;
+    // console.group('<kilns-list>._setKilnTypes()');
+    // console.log('data:', data);
+    this._firingTypes = data;
+    // console.groupEnd()
   }
 
   _setFuelSources(data : IKeyValue) : void {
+    // console.group('<kilns-list>._setFuelSources()');
+    // console.log('data:', data);
     this._fuelSources = data;
+    // console.groupEnd()
   }
 
   _setKilnList(data : IKiln[]) : void {
-    this._kilnList = data;
+    console.group('<kilns-list>._setKilnList()');
+    console.log('data:', data);
+    console.log('this._firingList (after):', this._firingList);
+    console.log('this._ready (before):', this._ready);
+    this._firingList = data;
     this._ready = true;
+
+    console.log('this._ready (before):', this._ready);
+    console.log('this._firingList (after):', this._firingList);
+    console.groupEnd();
   }
 
   _setData(_ok : boolean) : void {
     if (this._store !== null) {
-      this._store.read('EkilnType', '', true)
-        .then(this._setKilnTypes.bind(this))
-        .catch(storeCatch);
-      this._store.read('EfuelSource', '', true)
-        .then(this._setFuelSources.bind(this))
-        .catch(storeCatch);
-      this._store.read('kilns')
-        .then(this._setKilnList.bind(this))
-        .catch(storeCatch);
+      this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this)).catch(storeCatch);
+      this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this)).catch(storeCatch);
+      this._store.read('kilns').then(this._setKilnList.bind(this)).catch(storeCatch);
     }
   }
 
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
+    console.group('<firings-list>._getFromStore()');
 
-    if (this._ready === false && this._store !== null) {
+    if (this._store !== null) {
       if (this._store.ready === false) {
         this._store.watchReady(this._setData.bind(this));
       } else {
-        this._setData(true);
+        this._setData(true)
       }
     }
+    console.groupEnd();
   }
 
   //  END:  helper methods
@@ -107,15 +117,14 @@ export class KilnsList extends LoggerElement {
     this._getFromStore();
   }
 
-  // attributeChangedCallback() : void {
-  //   this._getFromStore();
-  // }
-
   //  END:  lifecycle methods
   // ------------------------------------------------------
   // START: helper render methods
 
   _renderTableRow(kilnData : IKeyValue) : TemplateResult {
+    console.group('<firings-list>._renderTableRow()');
+    console.log('kilnData:', kilnData);
+    console.groupEnd();
     return html`<tr>
       <th><route-link
         data-uid="${kilnData.id}"
@@ -134,27 +143,27 @@ export class KilnsList extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    // console.group('<kilns-list>.render()');
-    // console.log('this._ready:', this._ready);
-    // console.log('this._kilnList:', this._kilnList);
-    // console.groupEnd()
+    console.group('<firings-list>.render()');
+    console.log('this._ready:', this._ready);
+    console.log('this._firingList:', this._firingList);
+    console.groupEnd();
 
-    return html`<h2>Kiln list</h2>
+    return html`<h2>Firings list</h2>
 
-    ${(this._ready === true && this._kilnList !== null)
+    ${(this._ready === true && this._firingList !== null)
       ? html`<table>
         <thead>
           <tr>
             <th>Name</th>
             <th>Energy source</th>
-            <th>Max temp</th>
-            <th>Height</th>
-            <th>Depth</th>
+            <th>Top temp</th>
+            <th>Cone</th>
+            <th>Duration</th>
             <th>Width</th>
           </tr>
         </thead>
         <tbody>
-          ${this._kilnList.map(this._renderTableRow.bind(this))}
+          ${this._firingList.map(this._renderTableRow.bind(this))}
         </tbody>
       </table>`
       : html`<p>Loading...</p>`
@@ -174,6 +183,6 @@ export class KilnsList extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'kilns-list': KilnsList,
+    'firing-list': FiringsList,
   }
 };

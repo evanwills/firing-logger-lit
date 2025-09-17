@@ -1,5 +1,5 @@
 import { LitElement } from 'lit';
-import type { IKeyValue } from '../../types/data.d.ts';
+import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { FGetRouteArgs, IRouteArgs, TParsedRoute, TRoute } from '../../types/router-types.d.ts';
 
 export const splitURL = (path : string) : { route: string[], search: IKeyValue, hash: string }=> {

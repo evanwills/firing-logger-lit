@@ -1,4 +1,5 @@
-import type { IKeyValue } from "../types/data.d.ts";
+import { type IDBPDatabase } from 'idb';
+import type { IKeyStr, IKeyValue } from "../types/data-simple.d.ts";
 
 type Fresolver = (value: unknown) => void;
 type kv = {
@@ -7,27 +8,47 @@ type kv = {
 }
 
 export const populateSlice = (
-  db : IDBDatabase,
+  db : IDBPDatabase,
   items : Array<any>,
   slice : string,
-) : void => {
-  const store = db.transaction(slice, 'readwrite').objectStore(slice);
+) : Promise<(void | IDBValidKey)[]> => {
+  const tx = db.transaction(slice, 'readwrite');
+
+  const rows = [];
 
   for (const item of items) {
-    store.add(item);
+    rows.push(tx.store.add(item));
   }
+  rows.push(tx.done);
+
+  return Promise.all(rows);
 };
 
+/**
+ * Insert Enum type data into data store
+ *
+ * @param db    Database connection object
+ * @param obj   Data to be stored
+ * @param slice Name of ObjectStore of the data is to be inserted
+ *              into.
+ * @returns
+ */
 export const populateEnumSlice = (
-  db : IDBDatabase,
+  db : IDBPDatabase,
   obj : IKeyValue,
   slice : string,
-) : void => {
-  const store = db.transaction(slice, 'readwrite').objectStore(slice);
+) : Promise<(void | IDBValidKey)[]> => {
+  const tx = db.transaction(slice, 'readwrite');
+
+  const rows = [];
 
   for (const key of Object.keys(obj)) {
-    store.add({ key, value: obj[key] });
+    rows.push(tx.store.add({ key, value: obj[key] }));
   }
+
+  rows.push(tx.done);
+
+  return Promise.all(rows);
 };
 
 const asObjKV = (data : kv[]) : IKeyValue => {
@@ -76,3 +97,84 @@ export const getOnError = (reject: Fresolver) => (e : Event) : void => {
   console.error('Error:', e);
   reject(e);
 };
+
+export const outputAs = async (
+  input : Promise<any>,
+  outputMode : string[] | boolean = false,
+) : Promise<any> => {
+  // console.group('outputAs()');
+  // console.log('input:', input);
+  // console.log('outputMode:', outputMode);
+  const output = await input;
+  // console.log('output:', output);
+  // console.groupEnd();
+  if (outputMode === true) {
+    return asObjKV(output);
+  }
+
+  if (Array.isArray(output) && Array.isArray(outputMode)) {
+    return output.map(filterObj(outputMode as string[]));
+  }
+
+  return output;
+};
+
+export const storeCatch = (reason: any) => { console.error('Error:', reason); };
+
+export const parseKeyValSelector = (selector : string) : IKeyStr[] => selector
+  .split(/(?:\|\||\&\&)/)
+  .map((item) => {
+    const [indexName, value] = item.split('=').map((kv) => kv.trim());
+
+    return { indexName, value };
+  });
+
+export const getByKeyValue = async (
+  db : IDBPDatabase,
+  storeName: string,
+  selector : string,
+) : Promise<any> => {
+  console.group('getByKeyValue()');
+  console.log('db:', db);
+  console.log('storeName:', storeName);
+  console.log('selector:', selector);
+  const selectors : IKeyStr[] = parseKeyValSelector(selector);
+  const primary = selectors.shift();
+  console.log('selectors:', selectors);
+  console.log('primary:', primary);
+
+  if (typeof primary !== 'undefined') {
+    const tx = await db.transaction(storeName, 'readonly');
+    console.log('tx:', tx);
+    const index = tx.store.index(primary.indexName);
+    console.log('index:', index);
+
+    const output = await index.getAll(primary.value);
+
+    if (selectors.length === 0) {
+      console.log('output:', output);
+      console.groupEnd();
+
+      return output;
+    }
+
+    return output.filter((item : IKeyValue) : boolean => {
+      console.group('getByKeyValue().filter()');
+      console.log('item:', item);
+      for (const kv of selectors) {
+        console.log('kv.indexName:', kv.indexName);
+        console.log('kv.value:', kv.value);
+        console.log(`item[${kv.indexName}]:`, item[kv.indexName]);
+
+        if (typeof item[kv.indexName] === 'undefined' || item[kv.indexName] !== kv.value) {
+          console.groupEnd();
+          console.groupEnd();
+          return false;
+        }
+      }
+      console.groupEnd();
+      console.groupEnd();
+      return true;
+    })
+  }
+}

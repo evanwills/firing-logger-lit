@@ -1,4 +1,4 @@
-import type { IKeyValue } from "../types/data.d.ts";
+import type { IKeyValue } from "../types/data-simple.d.ts";
 import { isObj } from './data.utils.ts';
 import FauxTarget from './FauxTarget.class.ts';
 

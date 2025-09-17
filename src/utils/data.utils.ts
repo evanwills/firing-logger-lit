@@ -1,3 +1,5 @@
+import type { IKeyValue, IKeyStr } from "../types/data-simple.d.ts";
+
 /**
  * This file contains a collection of "pure" function that help with
  * testing and modifying data from the server.
@@ -7,9 +9,6 @@
  * @file data.utils.js
  * @author Evan Wills <https://github.com/evanwills>
  */
-
-import type { IKeyValue } from "../types/data.d.ts";
-import type { IAnyObject, IStringObject } from '../types/fauxDom.d.ts';
 
 export const arrayRemoveValue = <t>(
   arr : Array<t>,
@@ -179,7 +178,7 @@ export const isStrOrNull = (input : unknown) : boolean => (input === null
  * @returns TRUE if property is string and non-empty.
  */
 export const isNonEmptyStr = (
-  obj : string | IStringObject,
+  obj : string | IKeyStr,
   prop : string | null = null,
 ) : boolean => {
   if (prop === null && typeof obj === 'string') {
@@ -188,11 +187,11 @@ export const isNonEmptyStr = (
 
   return (isObj(obj)
     && typeof prop === 'string'
-    && typeof (obj as IAnyObject)[prop] === 'string'
-    && (obj as IAnyObject)[prop].trim() !== '');
+    && typeof (obj as IKeyValue)[prop] === 'string'
+    && (obj as IKeyValue)[prop].trim() !== '');
 };
 
-const _objectsAreSameArray = (obj1 : IAnyObject, obj2 : IAnyObject) : boolean => {
+const _objectsAreSameArray = (obj1 : IKeyValue, obj2 : IKeyValue) : boolean => {
   if (!Array.isArray(obj2)) {
     return false;
   }
@@ -213,7 +212,7 @@ const _objectsAreSameArray = (obj1 : IAnyObject, obj2 : IAnyObject) : boolean =>
   return true;
 };
 
-const _objectsAreSameObject = (obj1 : IAnyObject, obj2 : IAnyObject) : boolean => {
+const _objectsAreSameObject = (obj1 : IKeyValue, obj2 : IKeyValue) : boolean => {
   if (!isObj(obj2)) {
     return false;
   }

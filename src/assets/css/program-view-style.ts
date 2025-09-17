@@ -22,6 +22,7 @@ export const keyValueStyle = css`
 
 export const tableStyles = css`
 table {
+  --rl-font-weight: normal;
   border-collapse: collapse;
   margin: 1rem auto;
 }
@@ -46,6 +47,9 @@ thead tr:first-child td, thead tr:first-child th {
 }
 thead th, thead td {
   vertical-align: bottom;
+}
+tbody th {
+  text-align: left;
 }
 tbody th, tbody td {
   border-left: 0.05rem solid var(--table-border-colour, #ccc);

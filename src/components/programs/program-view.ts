@@ -1,6 +1,7 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { FiringStep, ID, IKiln, IStoredFiringProgram, TSvgPathItem } from '../../types/data.d.ts';
+import type { ID } from '../../types/data-simple.d.ts';
+import type { FiringStep, IKiln, IStoredFiringProgram, TSvgPathItem } from '../../types/data.d.ts';
 import { deepClone, isNonEmptyStr } from '../../utils/data.utils.ts';
 import {
   durationFromStep,
@@ -58,7 +59,7 @@ export class ProgramView extends LoggerElement {
   _ready : boolean = false;
 
   @state()
-  _edit : boolean = true;
+  _edit : boolean = false;
 
   @state()
   type : string = '';
@@ -67,10 +68,13 @@ export class ProgramView extends LoggerElement {
   name : string = '';
 
   @state()
-  kilnID : string = '';
+  _kilnID : string = '';
 
   @state()
   _kilnName : string = '';
+
+  @state()
+  _kilnUrlPart : string = '';
 
   @state()
   cone : string = '';
@@ -105,38 +109,65 @@ export class ProgramView extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _getFromStore() : void {
-    super._getFromStore();
+  _setKilnData(data : IKiln | null) : void {
+    if (data !== null) {
+      this._kilnName = data.name;
+      this._kilnUrlPart = data.urlPart;
+      this._kilnID = data.id;
+      this._ready = true;
+    }
+  }
 
-    if (isNonEmptyStr(this.programID)) {
+  _setKilnByURL(data : IKiln[]) : void {
+    if (data !== null) {
+      this._kilnName = data[0].name
+      this._kilnUrlPart = data[0].urlPart
+      this._kilnID = data[0].id
+
       if (this._store !== null) {
-        if (isNonEmptyStr(this.programID) === true) {
-          this._store.read('programs', `#${this.programID}`).then((data : IStoredFiringProgram) : void => {
-            if (data !== null) {
-              this.programData = data;
-              this.name = data.name;
-              this.kilnID = data.kilnID;
-              this.cone = data.cone;
-              this.controllerID = data.controllerProgramID;
-              this.description = data.description;
-              this.maxTemp = data.maxTemp;
-              this.duration = data.duration;
-              this.steps = data.steps;
-              this.type = data.type;
-              this._ready = true
-            };
-          });
-        } else if (isNonEmptyStr(this.kilnName) && (isNonEmptyStr(this.programName))) {
-          this._store.read('kilns', `kilnName=${this.kilnName}`).then((data : IKiln) : void => {
-            if (data !== null) {
-              console.log('data:', data);
-            }
-          });
-        }
+        this._store
+          .read('programs', `kilnID=${this._kilnID}&&urlPart=${this.programName}`)
+          .then(this._setProgramData.bind(this));
+
+      }
+    }
+  }
+
+  _setProgramData(data : IStoredFiringProgram) : void {
+    if (data !== null) {
+      const _data = (Array.isArray(data))
+        ? data[0]
+        : data;
+      this.programData = _data;
+      this.name = _data.name;
+      this._kilnID = _data.kilnID;
+      this.cone = _data.cone;
+      this.controllerID = _data.controllerProgramID;
+      this.description = _data.description;
+      this.maxTemp = _data.maxTemp;
+      this.duration = _data.duration;
+      this.steps = _data.steps;
+      this.type = _data.type;
+      this._ready = true;
+
+      if (this._kilnName === '') {
+        this._store?.read('kilns', `#${this._kilnID}`).then(this._setKilnData.bind(this));
+      }
+    };
+  }
+
+  async _getFromStore() : Promise<void> {
+    await super._getFromStore();
+
+    if (this._store !== null) {
+      if (isNonEmptyStr(this.programID)) {
+        this._store.read('programs', `#${this.programID}`).then(this._setProgramData.bind(this));
+      } else if (isNonEmptyStr(this.kilnName) && (isNonEmptyStr(this.programName))) {
+        this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnByURL.bind(this));
+
       }
     } else {
       this._ready = true;
-      this._edit = true;
     }
   }
 
@@ -173,6 +204,9 @@ export class ProgramView extends LoggerElement {
     super.connectedCallback();
 
     this._getFromStore();
+    console.log('this.programID', this.programID);
+    console.log('this.programID', this.programID);
+    console.log('this.programID', this.programID);
   }
 
   //  END:  lifecycle methods
@@ -180,6 +214,12 @@ export class ProgramView extends LoggerElement {
   // START: helper render methods
 
   readView() : TemplateResult {
+    console.group('<program-view>.readView()');
+    console.log('this.kilnName:', this.kilnName);
+    console.log('this._kilnName:', this._kilnName);
+    console.log('this._kilnUrlPart:', this._kilnUrlPart);
+    console.log('this.kilnID:', this._kilnID);
+    console.groupEnd();
     return html`
       <h2>${this.name}</h2>
 
@@ -188,12 +228,15 @@ export class ProgramView extends LoggerElement {
           <p>${this.description}</p>
           <program-view-meta
             .converter=${this._tConverter}
-            .duration=${this.duration}
-            .cone=${this.cone}
+            duration="${this.duration}"
+            cone="${this.cone}"
+            kiln-id="${this._kilnID}"
+            kiln-name="${this._kilnName}"
+            kiln-url-part="${this._kilnUrlPart}"
             .maxTemp=${this.maxTemp}
-            .notMetric=${this.notMetric}
-            .type=${this.type}
-            .unit=${this._tUnit}>
+            ?notMetric=${this.notMetric}
+            type="${this.type}"
+            unit="${this._tUnit}">
           </program-view-meta>
         </div>
       </div>

@@ -1,5 +1,4 @@
-import type { TSvgPathItem } from "../types/data.d.ts";
-import type { FiringStep } from "../types/data.d.ts";
+import type { TSvgPathItem, FiringStep } from "../types/data.d.ts";
 import { round } from "./numeric.utils.ts";
 
 /**

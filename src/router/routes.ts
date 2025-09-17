@@ -1,10 +1,12 @@
 import { html } from 'lit';
-import type { IKeyValue } from '../types/data.d.ts';
+import type { IKeyValue } from '../types/data-simple.d.ts';
+import '../components/programs/programs-list.ts';
 import '../components/programs/program-view.ts';
 import '../components/programs/program-view-edit.ts';
 import '../components/kilns/kilns-list.ts';
 import '../components/kilns/kiln-view.ts';
 import '../components/kilns/kiln-view-edit.ts';
+import '../components/fl-wrap.ts';
 
 const home = ({ _SEARCH } : IKeyValue) => html`<kilns-list filters=${_SEARCH}></kilns-list>`
 
@@ -30,10 +32,6 @@ export default [
     render: ({ _SEARCH } : IKeyValue) => html`<firings-list filters=${_SEARCH}></firings-list>`,
   },
   {
-    route: '/kiln/:kilnID',
-    render: ({ kilnID } : IKeyValue) => html`<kiln-view kiln-uid="${kilnID}"></kiln-view>`,
-  },
-  {
     route: '/program/:programID',
     render: ({ programID } : IKeyValue) => html`<program-view programID="${programID}"></program-view>`,
   },
@@ -53,6 +51,10 @@ export default [
   {
     route: '/kilns',
     render: home,
+  },
+  {
+    route: '/kiln/:kilnID',
+    render: ({ kilnID } : IKeyValue) => html`<kiln-view kiln-uid="${kilnID}"></kiln-view>`,
   },
   {
     route: '/kilns/new',
