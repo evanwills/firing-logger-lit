@@ -33,9 +33,6 @@ export class ProgramViewMeta extends LitElement {
   @property({ type: String, attribute: 'kiln-url-part' })
   kilnUrlPart : string = '';
 
-  @property({ type: String, attribute: 'cone' })
-  cone : string = '';
-
   @property({ type: Function, attribute: 'converter' })
   converter : (T : number) => number = x2x;
 
