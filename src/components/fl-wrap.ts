@@ -52,9 +52,12 @@ export class FiringLoggerWrapper extends LitElement {
           </ul>
         </nav>
       </header>
-      <p>ID: <code>${nanoid(10)}</code></p>
 
       <main><slot></slot></main>
+
+      <footer>
+        <p>ID: <code>${nanoid(10)}</code></p>
+      </footer>
     </div>
     `;
   }
@@ -66,6 +69,10 @@ export class FiringLoggerWrapper extends LitElement {
     div.wrap {
       container-type: inline-size;
       container-name: firing-logger;
+      margin: 0 auto;
+      padding: 6rem 0 2rem;
+      text-align: center;
+      width: 100%;
     }
     header {
       box-sizing: border-box;
@@ -84,7 +91,7 @@ export class FiringLoggerWrapper extends LitElement {
       --rl-text-decoration: none;
       --rl-hover-text-decoration: underline;
       flex-grow: 1;
-      font-family: 'Harlow Solid', cursive;
+      font-family: var(--title-font, 'Harlow Solid', cursive);
       line-height: 1.5rem;
       margin: 0 0 0.5rem;
       text-align: center;
@@ -128,6 +135,13 @@ export class FiringLoggerWrapper extends LitElement {
         flex-grow: 1;
         margin: 0;
       }
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
     }
 
     .card {

@@ -1,23 +1,33 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { ID } from '../../types/data-simple.d.ts';
-import type { FiringStep, IKiln, IStoredFiringProgram, TSvgPathItem } from '../../types/data.d.ts';
-import { deepClone, isNonEmptyStr } from '../../utils/data.utils.ts';
+import type {
+  FiringStep,
+  IKiln,
+  IStoredFiringProgram,
+  TSvgPathItem,
+} from '../../types/data.d.ts';
+import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import {
   durationFromStep,
   durationFromSteps,
   maxTempFromSteps,
 } from '../../utils/conversions.utils.ts';
-import { keyValueStyle, programViewVars, tableStyles } from '../../assets/css/program-view-style.ts';
+import {
+  keyValueStyle,
+  programViewVars,
+  tableStyles,
+} from '../../assets/css/program-view-style.ts';
 import { LoggerElement } from '../LoggerElement.ts';
-import '../firing-plot.ts'
-import './program-view-edit.ts'
+import '../firing-plot.ts';
+import './program-view-meta.ts';
+
 
 /**
  * An example element.
  */
-@customElement('program-view')
-export class ProgramView extends LoggerElement {
+@customElement('program-details')
+export class ProgramDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -179,23 +189,6 @@ export class ProgramView extends LoggerElement {
   // ------------------------------------------------------
   // START: event handlers
 
-  toggleEdit() : void {
-    this._edit = !this._edit;
-  }
-
-  saveSteps(event : CustomEvent) : void {
-    if (this.readOnly === false) {
-      this.steps = event.detail.steps;
-      this.duration = durationFromSteps(this.steps);
-      this.maxTemp = maxTempFromSteps(this.steps);
-      this.type = event.detail.type;
-      this.name = event.detail.name;
-      this.cone = event.detail.cone;
-      this.description = event.detail.description;
-      this._edit = false;
-    }
-  }
-
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
@@ -213,110 +206,88 @@ export class ProgramView extends LoggerElement {
   // ------------------------------------------------------
   // START: helper render methods
 
-  readView() : TemplateResult {
-    console.group('<program-view>.readView()');
-    console.log('this.kilnName:', this.kilnName);
-    console.log('this._kilnName:', this._kilnName);
-    console.log('this._kilnUrlPart:', this._kilnUrlPart);
-    console.log('this.kilnID:', this._kilnID);
-    console.groupEnd();
-    return html`
-      <h2>${this.name}</h2>
-
-      <div class="summary-outer">
-        <div class="summary">
-          <p>${this.description}</p>
-          <program-view-meta
-            .converter=${this._tConverter}
-            duration="${this.duration}"
-            cone="${this.cone}"
-            kiln-id="${this._kilnID}"
-            kiln-name="${this._kilnName}"
-            kiln-url-part="${this._kilnUrlPart}"
-            .maxTemp=${this.maxTemp}
-            ?notMetric=${this.notMetric}
-            type="${this.type}"
-            unit="${this._tUnit}">
-          </program-view-meta>
-        </div>
-      </div>
-
-      <h3>Program steps</h3>
-
-      <firing-plot
-        ?notMetric=${this.notMetric}
-        .primary=${[
-          { order: 0, endTemp: 0, rate: 0, hold: 0 },
-          ...this.steps,
-        ]}
-        primary-is-program></firing-plot>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>
-              End Temp<br />
-              <span class="unit">(°${this._tUnit})
-              </span>
-            </th>
-            <th>
-              Rate<br />
-              <span class="unit">(°${this._tUnit}/hr)</span>
-            </th>
-            <th>
-              Hold<br />
-              <span class="unit">(min)</span>
-            </th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${this.steps.map((step, i) => html`
-            <tr>
-              <th>${step.order}</th>
-              <td>${this._tConverter(step.endTemp)}</td>
-              <td>${step.rate}</td>
-              <td>${step.hold}</td>
-              <td>${durationFromStep(this.steps, i)}</td>
-            </tr>
-          `)}
-        </tbody>
-      </table>
-
-      ${(this.readOnly === false)
-        ? html`<router-link
-          label="edit"
-          sr-label="${this.name} for ${this.kilnName}"
-          uid="${this.programID}"
-          url="/kilns/${this._kilnName}/programs/${this.name}/edit" ></router-link>`
-        : ''}
-    `;
-  }
-
   //  END:  helper render methods
   // ------------------------------------------------------
   // START: main render method
 
   render() : TemplateResult{
     if (this._ready === false) {
-      return html`<p>Loading...</p>`;
+      return html`<loading-spinner label="program details"></loading-spinner>`;
     }
+
     return html`
       <div class="program-view">
-        ${this._edit === false || this.readOnly === true
-          ? this.readView()
-          : html`<program-view-edit
-              program-uid="${this.programID}"
-              .steps=${deepClone(this.steps)}
-              .firingType=${this.type}
-              .name=${this.name}
-              .cone=${this.cone}
-              .controllerID=${this.controllerID}
-              .description=${this.description}
-              .notMetric=${this.notMetric}
-              @cancel=${() => { this._edit = !this._edit }}
-              @save=${this.saveSteps}></program-view-edit>`}
+        <h2>${this.name}</h2>
+
+        <div class="summary-outer">
+          <div class="summary">
+            <p>${this.description}</p>
+            <program-view-meta
+              .converter=${this._tConverter}
+              duration="${this.duration}"
+              cone="${this.cone}"
+              kiln-id="${this._kilnID}"
+              kiln-name="${this._kilnName}"
+              kiln-url-part="${this._kilnUrlPart}"
+              .maxTemp=${this.maxTemp}
+              ?notMetric=${this.notMetric}
+              type="${this.type}"
+              unit="${this._tUnit}">
+            </program-view-meta>
+          </div>
+        </div>
+
+        <h3>Program steps</h3>
+
+        <firing-plot
+          ?notMetric=${this.notMetric}
+          .primary=${[
+            { order: 0, endTemp: 0, rate: 0, hold: 0 },
+            ...this.steps,
+          ]}
+          primary-is-program></firing-plot>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>
+                End Temp<br />
+                <span class="unit">(°${this._tUnit})
+                </span>
+              </th>
+              <th>
+                Rate<br />
+                <span class="unit">(°${this._tUnit}/hr)</span>
+              </th>
+              <th>
+                Hold<br />
+                <span class="unit">(min)</span>
+              </th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${this.steps.map((step, i) => html`
+              <tr>
+                <th>${step.order}</th>
+                <td>${this._tConverter(step.endTemp)}</td>
+                <td>${step.rate}</td>
+                <td>${step.hold}</td>
+                <td>${durationFromStep(this.steps, i)}</td>
+              </tr>
+            `)}
+          </tbody>
+        </table>
+
+        ${(this.readOnly === false)
+          ? html`<router-link
+            label="edit"
+            sr-label="${this.name} for ${this.kilnName}"
+            uid="${this.programID}"
+            url="/kilns/${this._kilnName}/programs/${this.name}/edit" ></router-link>`
+          : ''}
+
       </div>`;
   }
 
@@ -360,6 +331,6 @@ export class ProgramView extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'program-view': ProgramView,
+    'program-details': ProgramDetails,
   }
 };

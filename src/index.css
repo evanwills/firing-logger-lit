@@ -12,6 +12,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --title-font: 'Harlow Solid', cursive;
+  --subtitle-feature-font: var(--title-font);
+  --subtitle-feature-font-size: 2rem;
   --error-border-colour: #f00;
   --error-colour: #f00;
   --grid-fill: none;

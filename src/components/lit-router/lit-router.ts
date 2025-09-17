@@ -23,6 +23,9 @@ export class LitRouter extends LitElement {
   @property({ type: Function, attribute: 'wrapper'})
   wrapperFunc : FWrapOutput | null = null;
 
+  @property({ type: Function, attribute: 'globals'})
+  globals : IKeyValue | null = null;
+
   //  END:  properties/attributes
   // -----------------------------
   // START: state

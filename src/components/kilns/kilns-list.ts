@@ -5,7 +5,7 @@ import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/data.d.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import '../lit-router/route-link.ts';
-import { getValFromKey } from "../../utils/data.utils.ts";
+import { getValFromKey, isNonEmptyStr } from "../../utils/data.utils.ts";
 import { storeCatch } from "../../data/idb-data-store.utils.ts";
 
 @customElement('kilns-list')
@@ -139,7 +139,11 @@ export class KilnsList extends LoggerElement {
     // console.log('this._kilnList:', this._kilnList);
     // console.groupEnd()
 
-    return html`<h2>Kiln list</h2>
+    const studio = isNonEmptyStr(import.meta.env, 'VITE_STUDIO_NAME')
+      ? html`s at <span class="studio">${import.meta.env.VITE_STUDIO_NAME}</span>`
+      : ' list'
+
+    return html`<h2>Kiln${studio}</h2>
 
     ${(this._ready === true && this._kilnList !== null)
       ? html`<table>
@@ -166,7 +170,11 @@ export class KilnsList extends LoggerElement {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css`${tableStyles}`;
+  static styles = css`${tableStyles}
+  .studio {
+    font-family: var(--subtitle-feature-font);
+    font-size: var(--subtitle-feature-font-size, 2rem);
+  }`;
 
 //  END:  styles
 // ------------------------------------------------------

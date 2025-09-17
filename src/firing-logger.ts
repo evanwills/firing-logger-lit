@@ -1,5 +1,5 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { getDataStoreClassSingleton } from './data/PidbDataStore.class.ts';
 import { wrapApp } from './utils/lit.utils.ts';
 import './components/lit-router/lit-router.ts';
@@ -72,8 +72,6 @@ export class FiringLogger extends LitElement {
     :host {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 6rem 2rem 2rem;
-      text-align: center;
       width: calc(100% - 4rem);
       container-type: inline-size;
       container-name: firing-logger;
