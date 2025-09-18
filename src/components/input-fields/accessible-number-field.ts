@@ -49,17 +49,17 @@ export class AccessibleNumberField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`<input
-      type="number"
+      .autocomplete=${ifDefined(this.autocomplete)}
+      ?disabled=${ifDefined(this.disabled)}
       .id="${this.id}"
-      .step=${ifDefined(this.step)}
       .max=${ifDefined(this.max)}
       .min=${ifDefined(this.min)}
-      .autocomplete=${ifDefined(this.autocomplete)}
       .list=${ifDefined(this._listID)}
-      ?disabled=${ifDefined(this.disabled)}
       ?placeholder=${this.placeholder}
       ?readonly=${this.readonly}
       ?required=${this.required}
+      .step=${ifDefined(this.step)}
+      type="number"
       .value=${ifDefined(this.value)}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup} />`;

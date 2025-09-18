@@ -64,17 +64,17 @@ export class AccessibleTemporalField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`<input
-      .type=${this.type}
+      .autocomplete=${ifDefined(this.autocomplete)}
+      ?disabled=${ifDefined(this.disabled)}
       .id="${this.id}"
-      .step=${ifDefined(this.step)}
+      .list=${ifDefined(this._listID)}
       .max=${ifDefined(this.max)}
       .min=${ifDefined(this.min)}
-      .autocomplete=${ifDefined(this.autocomplete)}
-      .list=${ifDefined(this._listID)}
-      ?disabled=${ifDefined(this.disabled)}
       ?placeholder=${this.placeholder}
       ?readonly=${this.readonly}
       ?required=${this.required}
+      .step=${ifDefined(this.step)}
+      .type=${this.type}
       .value=${ifDefined(this.value)}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup} />`;

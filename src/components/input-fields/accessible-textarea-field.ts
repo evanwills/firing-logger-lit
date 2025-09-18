@@ -72,18 +72,18 @@ export class AccessibleTextareaField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`<textarea
+      ?disabled=${this.disabled}
+      .autocomplete=${ifDefined(this.autocomplete)}
       .id="${this.id}"
       .maxlength=${ifDefined(this.maxlength)}
       .minlength=${ifDefined(this.minlength)}
-      .pattern=${ifDefined(this.pattern)}
-      ?spellcheck=${this.spellCheck}
-      .autocomplete=${ifDefined(this.autocomplete)}
       .list=${ifDefined(this._listID)}
-      ?disabled=${this.disabled}
+      .pattern=${ifDefined(this.pattern)}
       ?placeholder=${this.placeholder}
+      ?spellcheck=${this.spellCheck}
+      .style=${ifDefined(this.textStyle)}
       ?readonly=${this.readonly}
       ?required=${this.required}
-      .style=${ifDefined(this.textStyle)}
       .value=${ifDefined(this.value)}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup}></textarea>`;

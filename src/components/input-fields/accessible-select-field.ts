@@ -46,9 +46,9 @@ export class AccessibleSelectField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`<select
-      .id="${this.id}"
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
+      .id="${this.id}"
       ?placeholder=${this.placeholder}
       ?readonly=${this.readonly}
       ?required=${this.required}

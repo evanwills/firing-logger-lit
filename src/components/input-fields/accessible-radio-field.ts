@@ -53,13 +53,13 @@ export class AccessibleSelectField extends AccessibleWholeField {
       ${this.options.map((option) => html`
       <li>
         <input
-          type="radio"
-          name="${this.id}-radio"
+          ?disabled=${ifDefined(this.disabled)}
           ?checked=${option.value === this.value}
           .id="${this.getID(option)}"
-          ?disabled=${ifDefined(this.disabled)}
+          name="${this.id}-radio"
           ?readonly=${this.readonly}
           ?required=${this.required}
+          type="radio"
           .value=${option.value}
           @change=${this.handleChange}
           @keyup=${this.handleKeyup} />

@@ -67,15 +67,15 @@ export class AccessiblePasswordField extends AccessibleWholeField {
     return html`
       <span class="input">
         <input
-        .type="${this._type}"
+        ?disabled=${ifDefined(this.disabled)}
         .id="${this.id}"
         .maxlength=${ifDefined(this.maxlength)}
         .minlength=${ifDefined(this.minlength)}
         .pattern=${ifDefined(this.pattern)}
-        ?disabled=${ifDefined(this.disabled)}
         ?placeholder=${this.placeholder}
         ?readonly=${this.readonly}
         ?required=${this.required}
+        .type="${this._type}"
         .value=${ifDefined(this.value)}
         @change=${this.handleChange}
         @keyup=${this.handleKeyup} />
