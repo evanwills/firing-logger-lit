@@ -260,6 +260,15 @@ class PidbDataStore implements CDataStoreClass {
 
     //  END:  EprogramStatus
     // ----------------------------------------------------------
+    // START: UserPreferences
+
+    if (!db.objectStoreNames.contains('UserPreferences')) {
+      this._populate = true;
+      db.createObjectStore('UserPreferences', { keyPath: 'key' });
+    }
+
+    //  END:  UserPreferences
+    // ----------------------------------------------------------
     // START: EAdminLevels
 
     // if (!db.objectStoreNames.contains('programs')) {
@@ -295,6 +304,8 @@ class PidbDataStore implements CDataStoreClass {
       populateEnumSlice(db, data.EkilnType, 'EkilnType');
       populateEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
       populateEnumSlice(db, data.EprogramStatus, 'EprogramStatus');
+
+      populateEnumSlice(db, data.UserPreferences, 'UserPreferences');
       // populateEnumSlice(db, data.EAdminLevels, 'EAdminLevels');
     }
 

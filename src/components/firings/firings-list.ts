@@ -1,12 +1,12 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { LoggerElement } from '../LoggerElement.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/data.d.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
-import '../lit-router/route-link.ts';
 import { getValFromKey } from "../../utils/data.utils.ts";
-import { storeCatch } from "../../data/idb-data-store.utils.ts";
+import { storeCatch } from "../../store/idb-data-store.utils.ts";
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import '../lit-router/router-link.ts';
 
 @customElement('firing-list')
 export class FiringsList extends LoggerElement {
@@ -126,10 +126,10 @@ export class FiringsList extends LoggerElement {
     console.log('kilnData:', kilnData);
     console.groupEnd();
     return html`<tr>
-      <th><route-link
+      <th><router-link
         data-uid="${kilnData.id}"
         url="/kilns/${kilnData.urlPart}"
-        label="${kilnData.name}"></route-link></th>
+        label="${kilnData.name}"></router-link></th>
       <td>${getValFromKey(this._fuelSources, kilnData.fuel)}</td>
       <td>${this._tConverter(kilnData.maxTemp)}&deg;${this._tUnit}</td>
       <td>${this._lConverter(kilnData.height)}${this._lUnit}</td>

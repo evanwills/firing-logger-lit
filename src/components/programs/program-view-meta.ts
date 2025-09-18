@@ -2,7 +2,9 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { hoursFromSeconds, x2x } from '../../utils/conversions.utils.ts';
 import { keyValueStyle, programViewVars } from '../../assets/css/program-view-style.ts';
-import '../lit-router/route-link.ts';
+import type { IKeyValUrl } from "../../types/data-simple.d.ts";
+import '../lit-router/router-link.ts';
+import '../shared-components/item-details.ts';
 
 @customElement('program-view-meta')
 export class ProgramViewMeta extends LitElement {
@@ -69,15 +71,42 @@ export class ProgramViewMeta extends LitElement {
     console.log('this.kilnID:', this.kilnID);
     console.log('this.kilnUrlPart:', this.kilnUrlPart);
     console.groupEnd();
+    const data : IKeyValUrl[] = [
+      {
+        key: 'Kiln',
+        value: this.kilnName,
+        uid: this.kilnID,
+        url: `/kilns/${this.kilnUrlPart}`,
+      },
+      {
+        key: 'Type',
+        value: this.type,
+        noEmpty: true,
+      },
+      {
+        key: 'Max temp',
+        value: `${this.converter(this.maxTemp)}°${this.unit}`,
+      },
+      {
+        key: 'Duration',
+        value: hoursFromSeconds(this.duration),
+      },
+      {
+        key: 'Cone',
+        value: this.cone,
+        noEmpty: true,
+      },
+    ];
     return html`
-      <div>
+      <key-value-list .pairs=${data}></key-value-list>
+      <!-- <div>
         ${(this.kilnName !== '' && this.kilnID !== '')
           ? html`<p class="key-value">
             <strong>Kiln:</strong>
-            <route-link
+            <router-link
             data-uid="${this.kilnID}"
             label="${this.kilnName}"
-            url="/kilns/${this.kilnUrlPart}"></route-link>`
+            url="/kilns/${this.kilnUrlPart}"></router-link>`
           : ''
         }
         ${(this.type !== '')
@@ -101,7 +130,7 @@ export class ProgramViewMeta extends LitElement {
             <span>${this.cone}</span>
           </p>`
           : ''}
-      </div>
+      </div> -->
     `;
   }
 

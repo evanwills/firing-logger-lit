@@ -2,6 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
+import { isNonEmptyStr } from "../../utils/data.utils.ts";
 
 @customElement('read-only-field')
 export class ReadOnlyField extends LitElement {
@@ -16,6 +17,9 @@ export class ReadOnlyField extends LitElement {
 
   @property({ type: String, attribute: 'help-text' })
   helpMsg : string = '';
+
+  @property({ type: String, attribute: 'url' })
+  url : string = '';
 
 
   //  END:  properties/attributes
@@ -76,7 +80,13 @@ export class ReadOnlyField extends LitElement {
       <div class="outer">
         <div class="inner ${this._innerClass}">
           <span class="label">${this.label}:</span>
-          <span class="input"><slot name="value">${val}</slot></span>
+          ${isNonEmptyStr(this.url)
+            ? html`<router-link
+                label="${val}"
+                url="${this.url}"></router-link>`
+            : html`<span class="input"><slot name="value">${val}</slot></span>`
+          }
+
           ${this.renderHelp()}
         </div>
       </div>

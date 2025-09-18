@@ -5,7 +5,11 @@ export const inputFieldCSS = css`
   --label-width: inherit;
   --error-border-colour: inherit;
   --error-colour: inherit;
-  --textarea-height: inherit
+  --textarea-height: inherit;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .outer {
@@ -17,7 +21,7 @@ export const inputFieldCSS = css`
 }
 .inner {
   box-sizing: border-box;
-  column-gap: 0.5rem;
+  column-gap: var(--label-gap, 0.5rem);
   row-gap: 0.5rem;
   display: grid;
   grid-template-areas: 'label input';
@@ -39,8 +43,9 @@ export const inputFieldCSS = css`
 .label, label {
   font-weight: bold;
   grid-area: label;
-  padding-top: 0.25rem;
+  padding-top: var(--label-padding, 0.25rem);
   text-align: var(--label-align, left);
+  transform: translateY(var(--label-y-translate, 0));
   width: var(--label-width, 5.75rem);
 }
 .error {
@@ -78,10 +83,14 @@ export const inputFieldCSS = css`
   display: inline-block;
 }
 
+.input {
+  white-space: var(--input-white-space, wrap);
+}
+
 .input, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
-  padding: 0.25rem 0.5rem;
+  padding: var(--input-padding, 0.25rem 0.5rem);
   justify-self: start;
   align-self: start;
 }
@@ -89,11 +98,6 @@ export const inputFieldCSS = css`
 input, select, textarea {
   border: 0.05rem solid #ccc;
   border-radius: 0.25rem;
-  font-family: inherit;
-  font-size: inherit;
-  padding: 0.25rem 0.5rem;
-  justify-self: start;
-  align-self: start;
 }
 .had-focus input:invalid, .had-focus select:invalid, .had-focus textarea:invalid {
   border: 0.1rem solid var(--error-border-colour, #f00);

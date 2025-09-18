@@ -1,34 +1,31 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { ID, IKeyValUrl } from '../../types/data-simple.d.ts';
+import type { ID } from '../../types/data-simple.d.ts';
 import type {
   FiringStep,
-  IKiln,
+  // IKiln,
   IStoredFiringProgram,
   TSvgPathItem,
 } from '../../types/data.d.ts';
-import { isNonEmptyStr } from '../../utils/data.utils.ts';
+// import { deepClone, isNonEmptyStr } from '../../utils/data.utils.ts';
 import {
   durationFromStep,
-  hoursFromSeconds,
-  // durationFromSteps,
-  // maxTempFromSteps,
+  durationFromSteps,
+  maxTempFromSteps,
 } from '../../utils/conversions.utils.ts';
-import {
-  keyValueStyle,
-  programViewVars,
-  tableStyles,
-} from '../../assets/css/program-view-style.ts';
-import { LoggerElement } from '..//shared-components/LoggerElement.ts';
-import '../shared-components/firing-plot.ts';
-import './program-view-meta.ts';
-import '../shared-components/item-details.ts';
+import { keyValueStyle, programViewVars, tableStyles } from '../../assets/css/program-view-style.ts';
+import { ProgramDetails } from './program-details.ts';
+import '../shared-components/firing-plot.ts'
+import '../input-fields/accessible-number-field.ts';
+import '../input-fields/accessible-select-field.ts';
+import '../input-fields/accessible-text-field.ts';
+import '../input-fields/accessible-textarea-field.ts';
 
 /**
  * An example element.
  */
-@customElement('program-details')
-export class ProgramDetails extends LoggerElement {
+@customElement('program-details-edit')
+export class ProgramDetailsEdit extends ProgramDetails {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -120,68 +117,6 @@ export class ProgramDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnData(data : IKiln | null) : void {
-    if (data !== null) {
-      this._kilnName = data.name;
-      this._kilnUrlPart = data.urlPart;
-      this._kilnID = data.id;
-      this._ready = true;
-    }
-  }
-
-  _setKilnByURL(data : IKiln[]) : void {
-    if (data !== null) {
-      this._kilnName = data[0].name
-      this._kilnUrlPart = data[0].urlPart
-      this._kilnID = data[0].id
-
-      if (this._store !== null) {
-        this._store
-          .read('programs', `kilnID=${this._kilnID}&&urlPart=${this.programName}`)
-          .then(this._setProgramData.bind(this));
-
-      }
-    }
-  }
-
-  _setProgramData(data : IStoredFiringProgram) : void {
-    if (data !== null) {
-      const _data = (Array.isArray(data))
-        ? data[0]
-        : data;
-      this.programData = _data;
-      this.name = _data.name;
-      this._kilnID = _data.kilnID;
-      this.cone = _data.cone;
-      this.controllerID = _data.controllerProgramID;
-      this.description = _data.description;
-      this.maxTemp = _data.maxTemp;
-      this.duration = _data.duration;
-      this.steps = _data.steps;
-      this.type = _data.type;
-      this._ready = true;
-
-      if (this._kilnName === '') {
-        this._store?.read('kilns', `#${this._kilnID}`).then(this._setKilnData.bind(this));
-      }
-    };
-  }
-
-  async _getFromStore() : Promise<void> {
-    await super._getFromStore();
-
-    if (this._store !== null) {
-      if (isNonEmptyStr(this.programID)) {
-        this._store.read('programs', `#${this.programID}`).then(this._setProgramData.bind(this));
-      } else if (isNonEmptyStr(this.kilnName) && (isNonEmptyStr(this.programName))) {
-        this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnByURL.bind(this));
-
-      }
-    } else {
-      this._ready = true;
-    }
-  }
-
   //  END:  helper methods
   // ------------------------------------------------------
   // START: getters
@@ -190,22 +125,37 @@ export class ProgramDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: event handlers
 
+  saveSteps(event : CustomEvent) : void {
+    if (this.readOnly === false) {
+      this.steps = event.detail.steps;
+      this.duration = durationFromSteps(this.steps);
+      this.maxTemp = maxTempFromSteps(this.steps);
+      this.type = event.detail.type;
+      this.name = event.detail.name;
+      this.cone = event.detail.cone;
+      this.description = event.detail.description;
+      this._edit = false;
+    }
+  }
+
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
 
-  connectedCallback() : void {
-    super.connectedCallback();
-
-    this._getFromStore();
-    console.log('this.programID', this.programID);
-    console.log('this.programID', this.programID);
-    console.log('this.programID', this.programID);
-  }
-
   //  END:  lifecycle methods
   // ------------------------------------------------------
   // START: helper render methods
+
+  readView() : TemplateResult {
+    console.group('<program-view>.readView()');
+    console.log('this.kilnName:', this.kilnName);
+    console.log('this._kilnName:', this._kilnName);
+    console.log('this._kilnUrlPart:', this._kilnUrlPart);
+    console.log('this.kilnID:', this._kilnID);
+    console.groupEnd();
+    return html`
+    `;
+  }
 
   //  END:  helper render methods
   // ------------------------------------------------------
@@ -213,43 +163,29 @@ export class ProgramDetails extends LoggerElement {
 
   render() : TemplateResult{
     if (this._ready === false) {
-      return html`<loading-spinner label="program details"></loading-spinner>`;
+      return html`<p>Loading...</p>`;
     }
-
-    const data : IKeyValUrl[] = [
-      {
-        key: 'Kiln',
-        value: this._kilnName,
-        uid: this._kilnID,
-        url: `/kilns/${this._kilnUrlPart}`,
-      },
-      {
-        key: 'Type',
-        value: this.type,
-        noEmpty: true,
-      },
-      {
-        key: 'Max temp',
-        value: `${this._tConverter(this.maxTemp)}°${this._tUnit}`,
-      },
-      {
-        key: 'Duration',
-        value: hoursFromSeconds(this.duration),
-      },
-      {
-        key: 'Cone',
-        value: this.cone,
-        noEmpty: true,
-      },
-    ];
-
     return html`
-      <div class="program-view">
-        <h2>${this.name}</h2>
+      <div class="program-details-edit">
+        <h2>Edit ${this.name}</h2>
 
-        <item-details
-          description="${this.description}"
-          .pairs=${data}></item-details>
+        <div class="summary-outer">
+          <div class="summary">
+            <p>${this.description}</p>
+            <program-view-meta
+              .converter=${this._tConverter}
+              duration="${this.duration}"
+              cone="${this.cone}"
+              kiln-id="${this._kilnID}"
+              kiln-name="${this._kilnName}"
+              kiln-url-part="${this._kilnUrlPart}"
+              .maxTemp=${this.maxTemp}
+              ?notMetric=${this.notMetric}
+              type="${this.type}"
+              unit="${this._tUnit}">
+            </program-view-meta>
+          </div>
+        </div>
 
         <h3>Program steps</h3>
 
@@ -301,7 +237,6 @@ export class ProgramDetails extends LoggerElement {
             uid="${this.programID}"
             url="/kilns/${this._kilnName}/programs/${this.name}/edit" ></router-link>`
           : ''}
-
       </div>`;
   }
 
@@ -313,6 +248,29 @@ export class ProgramDetails extends LoggerElement {
     ${programViewVars}
     .program-view h3, .program-view p { text-align: left; }
 
+    .summary-outer {
+      container-name: summary-block;
+      container-type: inline-size;
+    }
+
+    .summary {
+      display: flex;
+      flex-direction: column;
+      align-self: flex-end;
+    }
+
+    @container summary-block (width > 24rem) {
+      .summary {
+        flex-direction: row;
+        column-gap: 1rem;
+        align-items: stretch;
+      }
+      .summary > p {
+        padding-right: 1rem;
+        border-right: 0.05rem solid var(--table-border-colour, #ccc);
+      }
+    }
+
     ${tableStyles}
     ${keyValueStyle}`;
 
@@ -322,6 +280,6 @@ export class ProgramDetails extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'program-details': ProgramDetails,
+    'program-details-edit': ProgramDetailsEdit,
   }
 };

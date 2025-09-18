@@ -2,7 +2,7 @@ import { html, type LitElement, type TemplateResult } from 'lit';
 import { isNonEmptyStr } from './data.utils.ts';
 import type { ID, IIdNameObject, IIdObject, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
 import type { FWrapOutput } from "../types/renderTypes.d.ts";
-import '../components/fl-wrap.ts'
+import '../components//shared-components/fl-wrap.ts';
 
 export const hasSlotContent = (
   component : LitElement,

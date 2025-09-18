@@ -36,19 +36,19 @@ export class FiringLoggerWrapper extends LitElement {
     return html`
     <div class="wrap">
       <header>
-        <h1><route-link url="/">Firing Logger</route-link></h1>
+        <h1><router-link url="/">Firing Logger</router-link></h1>
         <p>A kiln firing logger and plotter.</p>
         <nav>
           <ul>
-            <li><route-link
+            <li><router-link
               url="/kilns"
-              label="Kilns"></route-link></li>
-            <li><route-link
+              label="Kilns"></router-link></li>
+            <li><router-link
               url="/programs"
-              label="Programs"></route-link></li>
-            <li><route-link
+              label="Programs"></router-link></li>
+            <li><router-link
               url="/firings"
-              label="Firings"></route-link></li>
+              label="Firings"></router-link></li>
           </ul>
         </nav>
       </header>

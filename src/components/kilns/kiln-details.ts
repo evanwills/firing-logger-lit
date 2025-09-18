@@ -1,7 +1,7 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { LoggerElement } from '../LoggerElement.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
 import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
@@ -9,7 +9,7 @@ import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
-import '../lit-router/route-link.ts';
+import '../lit-router/router-link.ts';
 import '../input-fields/accessible-number-field.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-text-field.ts';
@@ -19,22 +19,26 @@ import '../input-fields/read-only-field.ts';
 /**
  * An example element.
  */
-@customElement('kiln-view-edit')
-export class KilnViewEdit extends LoggerElement {
+@customElement('kiln-details')
+export class KilnDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // Properties/Attributes inherited from LoggerElement
   //
+  // filters : IKeyValue | null = null;
+  // hash : string = '';
   // notMetric : boolean = false;
-  // userID : ID = '';
   // readOnly : boolean = false;
   //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @property({ type: String, attribute: 'kiln-uid' })
   kilnID : ID = '';
+
+  @property({ type: String, attribute: 'kiln-name' })
+  kilnName : string = '';
 
   //  END:  properties/attributes
   // -----------------------------
@@ -59,6 +63,9 @@ export class KilnViewEdit extends LoggerElement {
 
   @state()
   _brand : string = '';
+
+  @state()
+  _id : string = '';
 
   @state()
   _model : string = '';
@@ -149,36 +156,53 @@ export class KilnViewEdit extends LoggerElement {
   // START: helper methods
 
   _setKilnData(data : IKiln) : void {
+    const _data = (Array.isArray(data))
+      ? data[0]
+      : data;
     console.log('data:', data);
-    this._brand = data.brand;
-    this._model = data.model;
-    this._name = data.name;
-    this._path = data.urlPart;
-    this._installDate = (data.installDate !== null)
-      ? new Date(data.installDate)
-      : null;
-    this._fuel = data.fuel.toString();
-    this._type = data.type.toString();
-    this._maxTemp = data.maxTemp;
-    this._maxProgramCount = data.maxProgramCount;
-    this._width = data.width;
-    this._depth = data.depth;
-    this._height = data.height;
-    this._glaze = data.glaze;
-    this._bisque = data.bisque;
-    this._luster = data.luster;
-    this._onglaze = data.onglaze;
-    this._saggar = data.saggar;
-    this._raku = data.raku;
-    this._pit = data.pit;
-    this._black = data.black;
-    this._rawGlaze = data.rawGlaze;
-    this._saltGlaze = data.saltGlaze;
-    this._useCount = data.useCount;
-    this._isRetired = data.isRetired;
-    this._isWorking = data.isWorking;
-    this._isInUse = data.isInUse;
-    this._isHot = data.isHot;
+
+    if (isNonEmptyStr(_data, 'id')) {
+      this._id  = _data.id;
+      this._brand = _data.brand;
+      this._model = _data.model;
+      this._name = _data.name;
+      this._path = _data.urlPart;
+      this._installDate = (_data.installDate !== null)
+        ? new Date(_data.installDate)
+        : null;
+      this._fuel = _data.fuel.toString();
+      this._type = _data.type.toString();
+      this._maxTemp = _data.maxTemp;
+      this._maxProgramCount = _data.maxProgramCount;
+      this._width = _data.width;
+      this._depth = _data.depth;
+      this._height = _data.height;
+      this._glaze = _data.glaze;
+      this._bisque = _data.bisque;
+      this._luster = _data.luster;
+      this._onglaze = _data.onglaze;
+      this._saggar = _data.saggar;
+      this._raku = _data.raku;
+      this._pit = _data.pit;
+      this._black = _data.black;
+      this._rawGlaze = _data.rawGlaze;
+      this._saltGlaze = _data.saltGlaze;
+      this._useCount = _data.useCount;
+      this._isRetired = _data.isRetired;
+      this._isWorking = _data.isWorking;
+      this._isInUse = _data.isInUse;
+      this._isHot = _data.isHot;
+
+      if (this._store !== null) {
+        this._store.read(
+          'programs',
+          `kilnID=${this._id}`,
+          ['id', 'type', 'name', 'urlPart', 'controllerProgramID', 'maxTemp', 'cone', 'duration'],
+        ).then(this._setProgramData.bind(this)).catch((msg) => { console.error(msg)});
+
+      }
+
+    }
   }
 
   _setProgramData(data : IStoredFiringProgram[]) : void {
@@ -193,19 +217,29 @@ export class KilnViewEdit extends LoggerElement {
     this._fuelSources = data;
   }
 
-  _getFromStore() : void {
-    super._getFromStore();
+  async _getFromStore() : Promise<void> {
+    await super._getFromStore();
+    // let ok = false;
 
-    if (isNonEmptyStr(this.kilnID)) {
-      if (this._store !== null) {
-        this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this))
-        this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this))
+    if (this._store !== null) {
+      this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this));
+      this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this));
+
+      // const keys = [
+      //   'id',
+      //   'type',
+      //   'name',
+      //   'urlPart',
+      //   'controllerProgramID',
+      //   'maxTemp',
+      //   'cone',
+      //   'duration',
+      // ];
+
+      if (isNonEmptyStr(this.kilnID)) {
         this._store.read('kilns', `#${this.kilnID}`).then(this._setKilnData.bind(this));
-        this._store.read(
-          'programs',
-          `kilnID=${this.kilnID}`,
-          ['id', 'type', 'name', 'urlPart', 'controllerProgramID', 'maxTemp', 'cone', 'duration'],
-        ).then(this._setProgramData.bind(this)).catch((msg) => { console.error(msg)});
+      } else if (isNonEmptyStr(this.kilnName)) {
+        this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnData.bind(this));
       }
     }
   }
@@ -230,11 +264,44 @@ export class KilnViewEdit extends LoggerElement {
     super.connectedCallback();
 
     this._getFromStore();
+    console.log('this.kilnID:', this.kilnID);
+    console.log('this.kilnName:', this.kilnName);
   }
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
   // START: helper render methods
+
+  renderSingleProgram(program : IStoredFiringProgram) : TemplateResult {
+    console.group('<kiln-view>.renderSingleProgram()');
+    console.log('program:', program);
+    console.log('this._path:', this._path);
+    console.log('this._tUnit:', this._tUnit);
+    console.log('this._name:', this._name);
+    console.log('url:', `/kilns/${this._path}/programs/${program.urlPart}`)
+    console.groupEnd();
+    return html`
+      <tr>
+        <th>
+          <router-link
+            data-uid="${program.id}"
+            label="${program.name}"
+            sr-label="for ${this._name}"
+            url="/kilns/${this._path}/programs/${program.urlPart}"></router-link>
+        </th>
+        <td>${program.controllerProgramID}</td>
+        <td>${program.maxTemp}&deg;${this._tUnit}</td>
+        <td>${program.cone}</td>
+        <td>${hoursFromSeconds(program.duration)}</td>
+        <!-- <td>
+          <router-link .url="/kilns/${this._path}/programs/new/${program.id}" title="Duplicate ${program.name}">
+            &boxbox;
+            <span class="sr-only">Duplicae ${program.name}</span>
+          </rout-link>
+        </td> -->
+      </tr>
+        `;
+  }
 
   renderProgramList() : TemplateResult | string {
     if (this._programs.length === 0) {
@@ -253,50 +320,54 @@ export class KilnViewEdit extends LoggerElement {
         </tr>
       </thead>
       <tbody>
-        ${this._programs.map((program : IStoredFiringProgram) : TemplateResult => html`
-          <tr>
-            <th>
-              <route-link
-                .uid="${program.id}"
-                .url="/kilns/${this._path}/programs/${program.urlPart}">
-                ${program.name}
-              </route-link>
-            </th>
-            <td>${program.controllerProgramID}</td>
-            <td>${program.maxTemp}&deg;${this._tUnit}</td>
-            <td>${program.cone}</td>
-            <td>${hoursFromSeconds(program.duration)}</td>
-            <!-- <td>
-              <route-link .url="/kilns/${this._path}/programs/new/${program.id}" title="Duplicate ${program.name}">
-                &boxbox;
-                <span class="sr-only">Duplicae ${program.name}</span>
-              </rout-link>
-            </td> -->
-          </tr>
-            `)}
+        ${this._programs.map(this.renderSingleProgram.bind(this))}
       </tbody>
     </table>`;
   }
 
   renderReadOnly() : TemplateResult {
-    const button = (this.readOnly === false && isNonEmptyStr(this.kilnID) === true)
-      ? html`<button @click=${this.toggleEdit}>Edit</button>`
-      : '';
+    let editBtn : TemplateResult | string = '';
+    let newProgramBtn : TemplateResult | string = '';
 
-    return html`<ul>
-      <li><read-only-field label="Name" value="${this._name}"></read-only-field></li>
-      <li><read-only-field label="Brand" value="${this._brand}"></read-only-field></li>
-      <li><read-only-field label="Model" value="${this._model}"></read-only-field></li>
-      <li><read-only-field label="Fuel" value="${getValFromKey(this._fuelSources, this._fuel)}"></read-only-field></li>
-      <li><read-only-field label="Type" value="${getValFromKey(this._kilnTypes, this._type)}"></read-only-field></li>
-      <li><read-only-field label="Max temp" value="${this._tConverter(this._maxTemp)}&deg;${this._tUnit}"></read-only-field></li>
-    </ul>
+    if (this.readOnly === false && isNonEmptyStr(this.kilnID) === true) {
+      editBtn = html`<router-link
+        class="btn"
+        data-uid="${this.kilnID}"
+        label="Edit"
+        sr-label="${this._name}"
+        url="/kilns/${this._path}/programs/edit"></router-link>`;
+
+      newProgramBtn = html`<p><router-link
+          class="btn"
+          data-uid="${this._id}"
+          data-max-temp="${this._maxTemp}"
+          label="Add new program"
+          sr-label="for ${this._name}"
+          .url="/kilns/${this._path}/programs/new"></router-link></p>`;
+    }
+
+    const title = isNonEmptyStr(this._name)
+      ? this._name
+      : 'Kiln';
+
+    return html`
+    <h2>${title}</h2>
+    <div>
+      <ul>
+        <li><read-only-field label="Name" value="${this._name}"></read-only-field></li>
+        <li><read-only-field label="Brand" value="${this._brand}"></read-only-field></li>
+        <li><read-only-field label="Model" value="${this._model}"></read-only-field></li>
+        <li><read-only-field label="Fuel" value="${getValFromKey(this._fuelSources, this._fuel)}"></read-only-field></li>
+        <li><read-only-field label="Type" value="${getValFromKey(this._kilnTypes, this._type)}"></read-only-field></li>
+        <li><read-only-field label="Max temp" value="${this._tConverter(this._maxTemp)}&deg;${this._tUnit}"></read-only-field></li>
+      </ul>
+    </div>
     <details open name="kiln">
       <summary>Programs</summary>
 
       ${this.renderProgramList()}
 
-      <p><route-link .url="/kilns/${this._path}/programs/new/${this.kilnID}">Add new program</route-link></p>
+      ${newProgramBtn}
     </details>
     <details name="kiln">
       <summary>Internal dimensions</summary>
@@ -332,7 +403,7 @@ export class KilnViewEdit extends LoggerElement {
         <li><read-only-field label="Salt Glaze" .value="${this._saltGlaze}"></read-only-field></li>
       </ul>
     </details>
-    ${button}`;
+    ${editBtn}`;
   }
 
   //  END:  helper render methods
@@ -403,6 +474,6 @@ export class KilnViewEdit extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'kiln-view-edit': KilnViewEdit,
+    'kiln-details': KilnDetails,
   }
 };

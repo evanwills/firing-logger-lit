@@ -5,6 +5,7 @@ import type { TParsedRoute } from '../../types/router-types.d.ts';
 import { parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
 import type { FWrapOutput } from "../../types/renderTypes.d.ts";
+import { isObj } from "../../utils/data.utils.ts";
 
 const wrapOutput : FWrapOutput = (input : TemplateResult | string) => (typeof input === 'string')
   ? html`${input}`
@@ -179,6 +180,9 @@ export class LitRouter extends LitElement {
       args._HASH = hash;
       args._SEARCH = search;
       args._DATA = this._data;
+      args._GLOBALS = isObj(this.globals)
+        ? this.globals
+        : {};
 
       // console.log('args (after):', args);
       // console.groupEnd();

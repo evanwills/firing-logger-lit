@@ -1,6 +1,5 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { LoggerElement } from "../LoggerElement.ts";
 import type {
   FiringLog,
   IFiringLogEntry,
@@ -11,6 +10,7 @@ import type {
 } from "../../types/data.d.ts";
 import type { ID } from "../../types/data-simple.d.ts";
 import { isChangeLog, isRespLog, isTempLog } from '../../types/data.type-guards.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
 
 /**
  * An example element.

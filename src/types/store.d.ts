@@ -1,4 +1,4 @@
-import type { ID, TEnumItem } from './data-simple.d.ts';
+import type { ID, IKeyValPair } from './data-simple.d.ts';
 import type { IKiln, IUser } from './data.d.ts';
 
 /**
@@ -116,12 +116,12 @@ export type TDataStore = {
   programs: IStoredFiringProgram[],
   firings: FiringLog[]
   cones: TConeData[],
-  EfiringType: TEnumItem[],
-  EprogramState: TEnumItem[],
-  EkilnFiringState: TEnumItem[],
-  EtemperatureState: TEnumItem[],
-  EfuelSource: TEnumItem[],
-  EequipmentLogType: TEnumItem[],
-  EprogramStatus: TEnumItem[],
-  EAdminLevels: TEnumItem[],
+  EfiringType: IKeyValPair[],
+  EprogramState: IKeyValPair[],
+  EkilnFiringState: IKeyValPair[],
+  EtemperatureState: IKeyValPair[],
+  EfuelSource: IKeyValPair[],
+  EequipmentLogType: IKeyValPair[],
+  EprogramStatus: IKeyValPair[],
+  EAdminLevels: IKeyValPair[],
 }

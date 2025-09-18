@@ -1,6 +1,6 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getDataStoreClassSingleton } from './data/PidbDataStore.class.ts';
+import { getDataStoreClassSingleton } from './store/PidbDataStore.class.ts';
 import { wrapApp } from './utils/lit.utils.ts';
 import './components/lit-router/lit-router.ts';
 import type { CDataStoreClass } from "./types/store.d.ts";
@@ -64,7 +64,9 @@ export class FiringLogger extends LitElement {
     // console.groupEnd();
 
     return (this._ready === true)
-      ? html`<lit-router initial-route="${this._path}" .wrapperFunc=${wrapApp}></lit-router>`
+      ? html`<lit-router
+        initial-route="${this._path}"
+        .wrapperFunc=${wrapApp}></lit-router>`
       : 'Not ready yet';
   }
 

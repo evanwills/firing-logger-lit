@@ -6,6 +6,7 @@ export const programViewVars = css`
   --table-cell-padding: inherit;
   --delete-bg: inherit;
   --label-width: inherit;
+  --input-white-space: nowrap;
 }
 button:hover { cursor: pointer; }`;
 

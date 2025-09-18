@@ -1,4 +1,5 @@
 import type { IIdObject, IKeyValue } from '../types/data-simple.d.ts';
+import type { CDataStoreClass } from "../types/store.d.ts";
 
 const parseKeyValue = (input : string) : string => {
   if (input.includes('=') === false)  {
@@ -116,4 +117,14 @@ export const getLimitedObjList = (input : any, filter: string[]) : any => {
     }
     return output;
   })
+}
+
+export const getUserPrefs = (db : CDataStoreClass) => () : IKeyValue => {
+  const prefs = db.read('UserPreferences');
+  const output : IKeyValue = {
+    colourScheme: 'auto',
+    notMetric: false,
+  }
+
+  return output;
 }

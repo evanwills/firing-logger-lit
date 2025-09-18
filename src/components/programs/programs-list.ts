@@ -1,12 +1,12 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { LoggerElement } from '../LoggerElement.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/data.d.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
-import '../lit-router/route-link.ts';
+import '../lit-router/router-link.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
-import { storeCatch } from '../../data/idb-data-store.utils.ts';
+import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import type { IStoredFiringProgram } from '../../types/data.d.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { getLinkProps } from '../../utils/lit.utils.ts';
@@ -134,15 +134,15 @@ export class ProgramsList extends LoggerElement {
   _renderTableRow(programData : IKeyValue) : TemplateResult {
     const { name, urlPart, id } = getLinkProps(this._kilnList, programData.kilnID);
     return html`<tr>
-      <th><route-link
+      <th><router-link
         data-uid="${programData.id}"
         url="/kilns/${urlPart}/programs/${programData.urlPart}"
-        label="${programData.name}"></route-link></th>
+        label="${programData.name}"></router-link></th>
       <td>${getValFromKey(this._firingTypes, programData.type)}</td>
-      <td><route-link
+      <td><router-link
         data-uid="${id}"
         url="/kilns/${urlPart}"
-        label="${name}"></route-link></td>
+        label="${name}"></router-link></td>
       <td>${this._tConverter(programData.maxTemp)}&deg;${this._tUnit}</td>
       <td>${programData.cone}</td>
       <td>${hoursFromSeconds(programData.duration)}</td>

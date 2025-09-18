@@ -1,7 +1,7 @@
 import { LitElement, css, html, svg, type SVGTemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { FiringStep, TSvgPathItem, TSvgUnit } from '../types/data.d.ts';
-import { getMax, plotPointsFromSteps } from '../utils/conversions.utils.ts';
+import type { FiringStep, TSvgPathItem, TSvgUnit } from '../../types/data.d.ts';
+import { getMax, plotPointsFromSteps } from '../../utils/conversions.utils.ts';
 
 /**
  * An example element.

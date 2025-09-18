@@ -1,9 +1,9 @@
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../types/data-simple.d.ts';
-import { c2f, f2c, i2m, m2i, x2x } from '../utils/conversions.utils.ts';
-import type { CDataStoreClass } from '../types/store.d.ts';
-import { getDataStoreClassSingleton } from '../data/PidbDataStore.class.ts';
+import type { IKeyValue } from '../../types/data-simple.d.ts';
+import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
+import type { CDataStoreClass } from '../../types/store.d.ts';
+import { getDataStoreClassSingleton } from '../../store/PidbDataStore.class.ts';
 import './loading-spinner.ts';
 
 /**

@@ -1,7 +1,7 @@
 {
-  "activeUserID": "wfj_myxTAV",
   "firings": [
   ],
+
   "kilns": [
     {
       "id": "AXARcxcpZN",
@@ -64,8 +64,10 @@
       "isHot": false
     }
   ],
+
   "logs": [
   ],
+
   "programs": [
     {
       "id": "ZQfi3zS0Rt",
@@ -164,6 +166,7 @@
       ]
     }
   ],
+
   "users": [
     {
       "id": "wfj_myxTAV",
@@ -176,8 +179,9 @@
       "canFire": true,
       "canLog": true,
       "canPack": true,
-      "canUnpack": true,
       "canPrice": true,
+      "canProgram": true,
+      "canUnpack": true,
       "adminLevel": 3
     },
     {
@@ -191,8 +195,9 @@
       "canFire": true,
       "canLog": true,
       "canPack": true,
-      "canUnpack": true,
       "canPrice": true,
+      "canProgram": false,
+      "canUnpack": true,
       "adminLevel": 2
     },
     {
@@ -206,8 +211,9 @@
       "canFire": false,
       "canLog": true,
       "canPack": false,
-      "canUnpack": true,
       "canPrice": true,
+      "canProgram": false,
+      "canUnpack": true,
       "adminLevel": 2
     },
     {
@@ -221,11 +227,31 @@
       "canFire": false,
       "canLog": true,
       "canPack": false,
-      "canUnpack": true,
       "canPrice": true,
+      "canProgram": false,
+      "canUnpack": true,
       "adminLevel": 1
     }
   ],
+
+  "UserPreferences": {
+    "id": "wfj_myxTAV",
+    "username": "evanwills",
+    "firstName": "Evan",
+    "lastName": "Wills",
+    "preferredName": "Evan",
+    "phone": "+610412345678",
+    "email": "evanwills@example.com",
+    "canFire": true,
+    "canLog": true,
+    "canPack": true,
+    "canPrice": true,
+    "canProgram": true,
+    "canUnpack": true,
+    "adminLevel": 3,
+    "notMetric": false,
+    "colourScheme": "auto"
+  },
 
   "EfiringType": {
     "bisque": "Bisque",

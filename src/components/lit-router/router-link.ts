@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { dispatchRouterEvent } from './lit-router.utils.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
 
-@customElement('route-link')
+@customElement('router-link')
 export class RouterLink extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
@@ -94,6 +94,7 @@ export class RouterLink extends LitElement {
       padding: var(--rl-padding);
       text-decoration: var(--rl-text-decoration);
       text-transform: var(--rl-text-transform);
+      white-space: var(--rl-white-space, normal);
     }
     a:hover, a:focus {
       background-color: var(--rl-hover-background-colour);
@@ -109,6 +110,6 @@ export class RouterLink extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'route-link': RouterLink,
+    'router-link': RouterLink,
   }
 };

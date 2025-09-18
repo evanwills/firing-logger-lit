@@ -1,24 +1,8 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  --title-font: 'Harlow Solid', cursive;
-  --subtitle-feature-font: var(--title-font);
-  --subtitle-feature-font-size: 2rem;
+  --delete-bg: #aa0000;
   --error-border-colour: #f00;
   --error-colour: #f00;
   --grid-fill: none;
-  --delete-bg: #aa0000;
   --font-size: 3rem;
   --font-colour: #fff;
   --font-weight: bold;
@@ -26,19 +10,17 @@
   --grid-stroke: #fff;
   --grid-stroke-width: 0.2;
   --grid-dash:  5 10;
+  --input-padding: 0.25rem 0.5rem;
+  --input-white-space: auto;
+  --label-align: left;
+  --label-padding: 0.25rem 0 0;
   --label-width: 5.75rem;
+  --label-y-translate: 0;
   --primary-stroke: #cc5eff;
   --primary-stroke-width: 10;
   --rect-fill: transparent;
   --rect-stroke: #625a86;
   --rect-stroke-width: 1;
-  --secondary-stroke: #1da827;
-  --secondary-stroke-width: 7.5;
-  --secondary-dash: 15 15;
-  --table-border-colour: #aaa;
-  --table-cell-padding: 0.25em 0.5em;
-  --textarea-height: 3.5rem;
-  --textarea-height-trans-time: 0.25s;
   --rl-background-colour: inherit;
   --rl-border: inherit;
   --rl-border-radius: inherit;
@@ -49,6 +31,7 @@
   --rl-padding: inherit;
   --rl-text-decoration: underline;
   --rl-text-transform: inherit;
+  --rl-white-space: normal;
   --rl-btn-background-colour: #009;
   --rl-btn-border: 0.1rem solid var(--table-border-colour);
   --rl-btn-border-radius: 0.5rem;
@@ -65,6 +48,29 @@
   --rl-btn-hover-background-colour: #040;
   --rl-btn-hover-colour: inherit;
   --rl-btn-hover-text-decoration: underline;
+  --secondary-stroke: #1da827;
+  --secondary-stroke-width: 7.5;
+  --secondary-dash: 15 15;
+  --subtitle-feature-font: var(--title-font);
+  --subtitle-feature-font-size: 2rem;
+  --table-border-colour: #aaa;
+  --table-cell-padding: 0.25em 0.5em;
+  --textarea-height: 3.5rem;
+  --textarea-height-trans-time: 0.25s;
+  --title-font: 'Harlow Solid', cursive;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 
