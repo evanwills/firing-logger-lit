@@ -1,18 +1,15 @@
-import { toRaw } from 'vue';
-import { isNonEmptyStr, isObj } from './data-utils';
+import { isNonEmptyStr, isObj } from './data.utils.ts';
 import {
   consoleMsg,
   getOrderedKeys,
   logDeepObjProps,
   logLocalObjProps,
   logObjDeepKeyVal,
-} from './console-logger-utils';
-import ConsoleLoggerDummy from './ConsoleLoggerDummy.class';
-
-/**
- * @typedef {import('../../types/console-logger').TKeys} TKeys;
- * @typedef {import('../../types/console-logger').TLoggableVars} TLoggableVars;
- */
+  // logObjDeepKeyVal,
+} from './console-logger.utils.ts';
+import ConsoleLoggerDummy from './ConsoleLoggerDummy.class.ts';
+import type { IKeyValue } from "../types/data-simple.d.ts";
+import type { TKeys, TInitLoggable, TLoggableVars, TCmethod } from "../types/console-logger.d.ts";
 
 /**
  * ConsoleLogger is a collection of methods for making console
@@ -42,24 +39,28 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
   _groupName = '';
 
   /**
-   * @property {Object} _props Vue component's props object
-   */
-  _props = {};
-
-  /**
-   * An object containing a Vue component's `ref` variables
+   * If the client code is a Class, `_this` is the client's `this`
+   * value
    *
-   * @property {object} _props
+   * @property
    */
-  _refs = {};
+  _props : IKeyValue = {};
 
   /**
    * If the client code is a Class, `_this` is the client's `this`
    * value
    *
-   * @property {object} _this
+   * @property
    */
-  _this = {};
+  _refs : IKeyValue = {};
+
+  /**
+   * If the client code is a Class, `_this` is the client's `this`
+   * value
+   *
+   * @property
+   */
+  _this : IKeyValue = {};
 
   /**
    * Name of `console` function used to render the opening of a
@@ -67,9 +68,9 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    *
    * Is either "group" or "groupCollapsed"
    *
-   * @property {string} _groupFunc
+   * @property
    */
-  _groupFunc = 'groupCollapsed';
+  _groupFunc : 'group' | 'groupCollapsed' = 'groupCollapsed';
 
   //  END:  Private properties
   // ----------------------------------------------------------------
@@ -85,17 +86,22 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    * @param {boolean} collapsed Whether or not all console groups
    *                            should be collapsed
    */
-  constructor(name, id, { props, refs, _this }, collapsed = true) {
+  constructor(
+    name : string,
+    id : string,
+    { props, refs, _this } : TInitLoggable,
+    collapsed : boolean = true
+  ) {
     super(name, id, { props, refs, _this }, collapsed);
 
     this._groupName = name;
-    this._props = isObj(props)
+    this._props = (typeof props !== 'undefined')
       ? props
       : {};
-    this._refs = isObj(refs)
+    this._refs = (typeof refs !== 'undefined')
       ? refs
       : {};
-    this._this = isObj(_this)
+    this._this = (typeof _this !== 'undefined')
       ? _this
       : {};
 
@@ -124,24 +130,24 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    * Log selected selected Vue component property name/value pairs to
    * the console
    *
-   * @param {TKeys?}  keys List of Vue component property names to be
-   *                       logged to console
-   * @param {boolean} rev  Whether or not to log the property
-   *                       name/value pairs in reverse order
-   *
-   * @returns {void}
+   * @param keys List of Vue component property names to be logged to
+   *             console
+   * @param rev  Whether or not to log the property name/value pairs
+   *             in reverse order
    */
-  _logProps(keys, rev = false) {
-    const _keys = getOrderedKeys(this._props, keys, rev);
+  _logProps(keys? : TKeys, rev : boolean = false) : void {
+    if (typeof keys !== 'undefined') {
+      const _keys = getOrderedKeys(this._props, keys, rev);
 
-    if (Array.isArray(_keys) && _keys.length > 0) {
-      for (const deepKeys of _keys) {
-        const key0 = deepKeys.shift();
+      if (Array.isArray(_keys) && _keys.length > 0) {
+        for (const deepKeys of _keys) {
+          const key0 = deepKeys.shift();
 
-        if (typeof this._props[key0] !== 'undefined') {
-          logObjDeepKeyVal(toRaw(this._props[key0]), `props.${key0}`, deepKeys);
-        } else {
-          console.warn(`props.${key0}:`, '[undefined]');
+          if (typeof this._props[key0] !== 'undefined') {
+            logObjDeepKeyVal(this._props[key0], `props.${key0}`, deepKeys);
+          } else {
+            console.warn(`props.${key0}:`, '[undefined]');
+          }
         }
       }
     }
@@ -151,33 +157,33 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    * Log selected selected Vue component `ref` variable name/value
    * pairs to the console
    *
-   * @param {TKeys?}  keys List of Vue component `ref` variable names
-   *                       to be logged to console
-   * @param {boolean} rev  Whether or not to log the `ref` variable
-   *                       name/value pairs in reverse order
-   *
-   * @returns {void}
+   * @param keys List of Vue component property names to be logged to
+   *             console
+   * @param rev  Whether or not to log the property name/value pairs
+   *             in reverse order
    */
-  _logRefs(keys, rev = false) {
-    const _keys = getOrderedKeys(this._refs, keys, rev);
+  _logRefs(keys? : TKeys | undefined, rev : boolean  = false) : void {
+    if (typeof keys !== 'undefined') {
+      const _keys = getOrderedKeys(this._refs, keys, rev);
 
-    if (Array.isArray(_keys) && _keys.length > 0) {
-      for (const deepKeys of _keys) {
-        const key0 = deepKeys.shift();
+      if (Array.isArray(_keys) && _keys.length > 0) {
+        for (const deepKeys of _keys) {
+          const key0 = deepKeys.shift();
 
-        if (typeof this._refs[key0] !== 'undefined') {
-          if (isObj(this._refs[key0])
-            && typeof this._refs[key0].value !== 'undefined'
-          ) {
-            // This value is definitely a Vue Ref/Computed object
-            logObjDeepKeyVal(toRaw(this._refs[key0].value), `${key0}.value`, deepKeys);
+          if (typeof this._refs[key0] !== 'undefined') {
+            if (isObj(this._refs[key0])
+              && typeof this._refs[key0].value !== 'undefined'
+            ) {
+              // This value is definitely a Vue Ref/Computed object
+              logObjDeepKeyVal(this._refs[key0].value, `${key0}.value`, deepKeys);
+            } else {
+              // It's unclear what this is,
+              // so we'll just render it as is
+              console.log(`${key0}:`, this._refs[key0]);
+            }
           } else {
-            // It's unclear what this is,
-            // so we'll just render it as is
-            console.log(`${key0}:`, this._refs[key0]);
+            console.warn(`(Ref/Computed) ${key0}.value: [undefined]`);
           }
-        } else {
-          console.warn(`(Ref/Computed) ${key0}.value: [undefined]`);
         }
       }
     }
@@ -187,15 +193,18 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    * Log selected selected Class property name/value pairs to the
    * console
    *
-   * @param {TKeys?}  keys List of Class property names to be logged
+   * @param keys List of Class property names to be logged
    *                       to console
-   * @param {boolean} rev  Whether or not to log the Class property
+   * @param rev  Whether or not to log the Class property
    *                       name/value pairs in reverse order
-   *
-   * @returns {void}
    */
-  _logThis(keys, rev = false) {
-    logDeepObjProps(this._this, getOrderedKeys(this._this, keys, rev), 'this.');
+  _logThis(keys? : TKeys, rev : boolean = false) : void {
+    console.log('keys:', keys);
+    console.log('ref:', rev);
+    console.log('this._this:', this._this);
+    if (typeof keys !== 'undefined') {
+      logDeepObjProps(this._this, getOrderedKeys(this._this, keys, rev), 'this.');
+    }
   }
 
   /**
@@ -222,9 +231,9 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
       log,
       warn,
       error,
-    },
-    method,
-  ) {
+    } : TLoggableVars,
+    method : string,
+  ) : void {
     logLocalObjProps(local, this.groupName(method));
     this._logThis(_this);
     this._logProps(props);
@@ -261,9 +270,9 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
       log,
       warn,
       error,
-    },
-    method,
-  ) {
+    } : TLoggableVars,
+    method : string,
+  ) : void {
     consoleMsg('error', error);
     consoleMsg('warn', warn);
     consoleMsg('info', info);
@@ -291,12 +300,12 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    * @returns {void}
    */
   _message(
-    method,
-    message,
-    logableVars = {},
-    cMethod = 'error',
-    typeStr = '( ERROR )',
-  ) {
+    method : string,
+    message : string ,
+    logableVars : TLoggableVars = {},
+    cMethod : TCmethod  = 'error',
+    typeStr : string = '( ERROR )',
+  ) : void {
     const grpFunc = this._groupFunc;
 
     // force group to be expanded
@@ -318,7 +327,7 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
   /**
    *
    */
-  _swapGroup(swap) {
+  _swapGroup(swap : boolean) : void {
     if (swap === true) {
       this._groupFunc = (this._groupFunc === 'group')
         ? 'groupCollapsed'
@@ -342,7 +351,7 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    *
    * @returns {void}
    */
-  group(method, suffix = null) {
+  group(method : string, suffix : string | null = null) : void {
     if (isNonEmptyStr(suffix) === true) {
       console[this._groupFunc](this.groupName(method), suffix);
     } else {
@@ -350,7 +359,7 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
     }
   }
 
-  groupName(method) {
+  groupName(method : string) : string {
     const tmp = (method !== '')
       ? `.${method}()`
       : '';
@@ -361,27 +370,24 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
   /**
    * Log values to the console after some change has happened
    *
-   * @param {string}        method      Name of method logging is
-   *                                    called from
-   * @param {TLoggableVars} logableVars List of variable names to be
-   *                                    logged
-   * @param {boolean}       endTwice    Whether or not to call
-   *                                    console.groupEnd() twice
-   * @param {boolean}       swapGroup   Whether or not to use the
-   *                                    other console group method.
-   *                                    i.e. if the current group
-   *                                    method is `group()` then call
-   *                                    `groupCollapsed()` or vise
-   *                                    versa
+   * @param method      Name of method logging is called from
+   * @param logableVars List of variable names to be logged
+   * @param endTwice    Whether or not to call console.groupEnd()
+   *                    twice
+   * @param swapGroup   Whether or not to use the other console
+   *                    group method.
+   *                    i.e. if the current group method is
+   *                    `group()` then call `groupCollapsed()`
+   *                    or vise versa
    *
    * @returns {void}
    */
   after(
-    method,
-    logableVars = {},
-    endTwice = true,
-    swapGroup = false,
-  ) {
+    method : string,
+    logableVars : TLoggableVars = {},
+    endTwice : boolean = true,
+    swapGroup : boolean = false,
+  ) : void {
     this._swapGroup(swapGroup);
     this.group(method, '(after)');
     this._swapGroup(swapGroup);
@@ -398,27 +404,22 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
   /**
    * Log values to the console after some change has happened
    *
-   * @param {string}        method      Name of method logging is
-   *                                    called from
-   * @param {TLoggableVars} logableVars List of variable names to be
-   *                                    logged
-   * @param {boolean}       endTwice    Whether or not to call
-   *                                    console.groupEnd() twice
-   * @param {boolean}       swapGroup   Whether or not to use the
-   *                                    other console group method.
-   *                                    i.e. if the current group
-   *                                    method is `group()` then call
-   *                                    `groupCollapsed()` or vise
-   *                                    versa
-   *
-   * @returns {void}
+   * @param method      Name of method logging is called from
+   * @param logableVars List of variable names to be logged
+   * @param startTwice  Whether or not to call console.groupEnd()
+   *                    twice
+   * @param swapGroup  Whether or not to use the other console
+   *                    group method.
+   *                    i.e. if the current group method is
+   *                    `group()` then call `groupCollapsed()`
+   *                    or vise versa
    */
   before(
-    method,
-    logableVars = {},
-    startTwice = true,
-    swapGroup = false,
-  ) {
+    method : string,
+    logableVars : TLoggableVars = {},
+    startTwice : boolean = true,
+    swapGroup : boolean = false,
+  ) : void {
     this._swapGroup(swapGroup);
 
     if (startTwice !== false) {
@@ -444,7 +445,11 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    *
    * @returns {void}
    */
-  error(method, message, logableVars = {}) {
+  error(
+    method : string,
+    message : string,
+    logableVars : IKeyValue = {}, // eslint-disable-line no-unused-vars
+  ) : void {
     this._message(method, message, logableVars, 'error', '( ERROR )');
   }
 
@@ -459,7 +464,11 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    *
    * @returns {void}
    */
-  warn(method, message, logableVars = {}) {
+  warn(
+    method : string,
+    message : string,
+    logableVars : IKeyValue = {}, // eslint-disable-line no-unused-vars
+  ) : void {
     this._message(method, message, logableVars, 'warn', '( WARNING )');
   }
 
@@ -474,7 +483,11 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    *
    * @returns {void}
    */
-  info(method, message, logableVars = {}) {
+  info(
+    method : string,
+    message : string,
+    logableVars : IKeyValue = {}, // eslint-disable-line no-unused-vars
+  ) : void {
     this._message(method, message, logableVars, 'info', '( INFO )');
   }
 
@@ -497,11 +510,11 @@ export default class ConsoleLogger extends ConsoleLoggerDummy {
    * @returns {void}
    */
   only(
-    method,
-    logableVars = {},
-    noEnd = false,
-    swapGroup = false,
-  ) {
+    method : string,
+    logableVars : TLoggableVars = {},
+    noEnd : boolean = false,
+    swapGroup : boolean = false,
+  ) : void {
     this._swapGroup(swapGroup);
     this.group(method);
     this._swapGroup(swapGroup);

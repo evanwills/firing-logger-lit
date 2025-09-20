@@ -9,7 +9,7 @@ export interface Action {
   payload: object
 }
 
-export interface FancyPayload implements IIdObject, IKeyValue {
+export interface FancyPayload implements IKeyValue, IIdObject {
   id: ID,
   value: any,
   isChecked: boolean,
@@ -29,7 +29,7 @@ export interface FancyAction extends Action {
 // START: stored data types
 
 
-export interface IKiln implements ILinkObject {
+export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObject {
   id: ID,
   brand: string,
   model: string,
@@ -61,7 +61,7 @@ export interface IKiln implements ILinkObject {
   isHot: boolean
 }
 
-export interface  EquipmentLogEntry implements IIdObject {
+export interface  EquipmentLogEntry implements IKeyValue, IIdObject {
   id: ID,
   equipmentID: string,
   date: number,
@@ -74,7 +74,7 @@ export interface  EquipmentLogEntry implements IIdObject {
   verifiedBy: string | null
 }
 
-export interface IFiringProgramData implements ILinkObject {
+export interface IFiringProgramData implements IKeyValue, IIdObject, IIdNameObject, ILinkObject {
   id: ID,
   kilnID: string,
   controllerProgramID: number,
@@ -94,7 +94,7 @@ export interface IFiringProgramData implements ILinkObject {
   locked: boolean
 }
 
-export interface IStoredFiringProgram extends IFiringProgramData {
+export interface IStoredFiringProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObject, IFiringProgramData {
   id: ID,
   kilnID: ID,
   controllerProgramID: number,
@@ -118,7 +118,7 @@ export interface IStoredFiringProgram extends IFiringProgramData {
   locked: boolean
 }
 
-export interface FiringProgramTmp implements IStoredFiringProgram {
+export interface FiringProgramTmp implements IKeyValue, IIdObject, IIdNameObject, ILinkObject, IStoredFiringProgram {
   confirmed: boolean,
   errors: object,
   lastField: string,
@@ -132,7 +132,7 @@ export type FiringStep = {
   hold: number     // minutes to hold at end temperature
 }
 
-export interface FiringLog implements IIdObject {
+export interface FiringLog implements IKeyValue, IIdObject {
   id: ID,
   kilnID: ID,
   programID: ID,
@@ -198,7 +198,7 @@ export type FiringLogs = [FiringLog]
 export type equipmentLog = [EquipmentLogEntry]
 export type calendar = [DiaryEntry]
 
-export interface DiaryEntry implements IIdObject {
+export interface DiaryEntry implements IKeyValue, IIdObject {
   id: ID,
   date: Date,
   kilnID: string,
@@ -211,7 +211,7 @@ export interface DiaryEntry implements IIdObject {
   started: boolean,
 }
 
-export interface TUser implements IIdObject {
+export interface TUser implements IKeyValue, IIdObject {
   id: ID,
   username: string
   firstName: string
@@ -226,9 +226,11 @@ export interface TUser implements IIdObject {
   canUnpack: boolean,
   canPrice: boolean,
   adminLevel: number,
+  notMetric: boolean,
+  colourScheme: 'auto' | 'light' | 'dark',
 }
 
-export interface Studio implements IIdObject {
+export interface Studio implements IKeyValue {
   kilns: IKiln[],
   firingPrograms: AllFiringPrograms,
   firingLogs: FiringLogs,

@@ -1,4 +1,4 @@
-import type { IKeyValue, IKeyStr } from "../types/data-simple.d.ts";
+import type { IKeyValue } from "../types/data-simple.d.ts";
 
 /**
  * This file contains a collection of "pure" function that help with
@@ -178,7 +178,7 @@ export const isStrOrNull = (input : unknown) : boolean => (input === null
  * @returns TRUE if property is string and non-empty.
  */
 export const isNonEmptyStr = (
-  obj : string | IKeyStr,
+  obj : unknown,
   prop : string | null = null,
 ) : boolean => {
   if (prop === null && typeof obj === 'string') {

@@ -162,7 +162,8 @@ export class PidbDataStore implements CDataStoreClass {
 
       if (selector.includes('=')) {
         const selectors = parseKeyValSelector(selector);
-        const primary = selectors.shift();
+        selectors.shift();
+        // const primary = selectors.shift();
         // console.group('PidbDataStore.read() (kv)');
         // console.log('selectors:', selectors);
         // console.log('primary:', primary);
@@ -259,6 +260,8 @@ export class PidbDataStore implements CDataStoreClass {
   }
 
   watchReady(readyWatcher : FReadyWatcher) : void {
-    this._readyWatchers.push(readyWatcher);
+    if (this._ready === false) {
+      this._readyWatchers.push(readyWatcher);
+    }
   }
 }

@@ -72,13 +72,17 @@ export class KilnsList extends LoggerElement {
       this._store.read('EkilnType', '', true)
         .then(this._setKilnTypes.bind(this))
         .catch(storeCatch);
+
       this._store.read('EfuelSource', '', true)
         .then(this._setFuelSources.bind(this))
         .catch(storeCatch);
+
       this._store.read('kilns')
         .then(this._setKilnList.bind(this))
         .catch(storeCatch);
     }
+
+    console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {
@@ -134,11 +138,6 @@ export class KilnsList extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    // console.group('<kilns-list>.render()');
-    // console.log('this._ready:', this._ready);
-    // console.log('this._kilnList:', this._kilnList);
-    // console.groupEnd()
-
     const studio = isNonEmptyStr(import.meta.env, 'VITE_STUDIO_NAME')
       ? html`s at <span class="studio">${import.meta.env.VITE_STUDIO_NAME}</span>`
       : ' list'
@@ -160,7 +159,14 @@ export class KilnsList extends LoggerElement {
         <tbody>
           ${this._kilnList.map(this._renderTableRow.bind(this))}
         </tbody>
-      </table>`
+      </table>
+
+      ${(this._userHasAuth(2) === true)
+        ? html`<p><router-link
+            label="Add a new kiln"
+            url="/kilns/new"></router-link></p>`
+        : ''
+      }`
       : html`<p>Loading...</p>`
     }
     `;

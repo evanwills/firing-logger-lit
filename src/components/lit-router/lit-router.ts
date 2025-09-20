@@ -1,11 +1,10 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { TParsedRoute } from '../../types/router-types.d.ts';
+import type { FGlobalsGet, TParsedRoute } from '../../types/router-types.d.ts';
 import { parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
 import type { FWrapOutput } from "../../types/renderTypes.d.ts";
-import { isObj } from "../../utils/data.utils.ts";
 
 const wrapOutput : FWrapOutput = (input : TemplateResult | string) => (typeof input === 'string')
   ? html`${input}`
@@ -21,11 +20,11 @@ export class LitRouter extends LitElement {
   @property({ type: String, attribute: 'initial-route'})
   initialRoute : string = '';
 
-  @property({ type: Function, attribute: 'wrapper'})
+  @property({ type: Function, attribute: 'wrapperFunc'})
   wrapperFunc : FWrapOutput | null = null;
 
-  @property({ type: Function, attribute: 'globals'})
-  globals : IKeyValue | null = null;
+  @property({ type: Function, attribute: 'getGlobals'})
+  getGlobals : FGlobalsGet | null = null;
 
   //  END:  properties/attributes
   // -----------------------------
@@ -120,6 +119,20 @@ export class LitRouter extends LitElement {
     // console.groupEnd();
   }
 
+  handleRefresh(event : CustomEvent) {
+    const url = this._url;
+    const data = this._data;
+    this._url = event.detail.url;
+    this._data = event.detail.data;
+
+    const later = () => {
+      this._url = url;
+      this._data = data;
+    }
+
+    setTimeout(later.bind(this), 750);
+  }
+
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
@@ -129,8 +142,9 @@ export class LitRouter extends LitElement {
 
     // console.group('<lit-router>.connectedCallback()');
 
-    this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
     this.addEventListener('litrouternav', this.handleRouteLink);
+    this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
+    this.addEventListener('litrouterrefresh', this.handleRefresh);
 
     globalThis.addEventListener('popstate', this.handlePopState);
 
@@ -180,8 +194,8 @@ export class LitRouter extends LitElement {
       args._HASH = hash;
       args._SEARCH = search;
       args._DATA = this._data;
-      args._GLOBALS = isObj(this.globals)
-        ? this.globals
+      args._GLOBALS = typeof this.getGlobals === 'function'
+        ? this.getGlobals()
         : {};
 
       // console.log('args (after):', args);

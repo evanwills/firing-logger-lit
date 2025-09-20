@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { getDataStoreClassSingleton } from './store/FiringLoggerStore.class.ts';
 import { wrapApp } from './utils/lit.utils.ts';
 import './components/lit-router/lit-router.ts';
-import type { CDataStoreClass } from "./types/store.d.ts";
+import type { CDataStoreClass } from './types/store.d.ts';
 import { getCookie } from "./utils/cookie.utils.ts";
 
 // We want to initialise the data store as soon as possible
@@ -39,6 +39,7 @@ export class FiringLogger extends LitElement {
 
   _addReadyWatcher(db: CDataStoreClass) : void {
     // console.group('<firing-logger>._addReadyWatcher()');
+    this._db = db;
     if (db.ready === false) {
       db.watchReady(this._updateReady.bind(this));
     } else {

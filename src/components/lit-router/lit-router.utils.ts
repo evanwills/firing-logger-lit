@@ -66,7 +66,7 @@ const dummyRedirect = (_args: IRouteArgs) => '';
 const parsedRouteAdapter = (route : TRoute) : TParsedRoute => ({
   ...route,
   getArgs: getGetRouteArgs(route.route),
-  redirect: (typeof route === 'function')
+  redirect: (typeof route.redirect === 'function')
     ? route.redirect
     : dummyRedirect,
 });
@@ -88,15 +88,13 @@ export const dispatchRouterEvent = (
   node : LitElement | HTMLElement,
   url: string,
   data: IKeyValue = {},
-  rewrite : boolean = false,
+  type : 'nav' | 'rewrite' | 'refresh' = 'nav',
 ) : void => {
-  const type = (rewrite === true)
-    ? 'litrouterrewrite'
-    : 'litrouternav'
+  const _type = `litrouter${type}`;
 
   node.dispatchEvent(
     new CustomEvent(
-      type,
+      _type,
       {
         bubbles: true,
         composed: true,

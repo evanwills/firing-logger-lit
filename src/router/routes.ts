@@ -12,6 +12,14 @@ const home = ({ _SEARCH, _GLOBALS } : IKeyValue) => html`<kilns-list
   filters=${_SEARCH}
   .user=${ifDefined(_GLOBALS)}></kilns-list>`
 
+const authChange = ({ _DATA } : IKeyValue) => {
+  const msg = (typeof _DATA.userName === 'string')
+    ? html`are now logged in as <code>${_DATA.userName}</code>`
+    : 'have been logged out';
+
+  return html`<h2>You ${msg}</h2>`;
+}
+
 export default [
   // ----------------------------------------------------------------
   // START: shortcut routes
@@ -19,6 +27,14 @@ export default [
   {
     route: '/',
     render: home,
+  },
+  {
+    route: '/logout',
+    render: authChange,
+  },
+  {
+    route: '/login',
+    render: authChange,
   },
 
   {

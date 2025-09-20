@@ -244,6 +244,8 @@ export class KilnDetails extends LoggerElement {
     }
   }
 
+
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -262,8 +264,8 @@ export class KilnDetails extends LoggerElement {
 
   connectedCallback() : void {
     super.connectedCallback();
-
     this._getFromStore();
+    console.log('this._user:', this._user);
     console.log('this.kilnID:', this.kilnID);
     console.log('this.kilnName:', this.kilnName);
   }
@@ -325,11 +327,16 @@ export class KilnDetails extends LoggerElement {
     </table>`;
   }
 
-  renderReadOnly() : TemplateResult {
+  //  END:  helper render methods
+  // ------------------------------------------------------
+  // START: main render method
+
+  render() : TemplateResult {
     let editBtn : TemplateResult | string = '';
     let newProgramBtn : TemplateResult | string = '';
+    console.group('')
 
-    if (this.readOnly === false && isNonEmptyStr(this.kilnID) === true) {
+    if (this._userCan('program') && isNonEmptyStr(this.kilnID) === true) {
       editBtn = html`<router-link
         class="btn"
         data-uid="${this.kilnID}"
@@ -404,17 +411,6 @@ export class KilnDetails extends LoggerElement {
       </ul>
     </details>
     ${editBtn}`;
-  }
-
-  //  END:  helper render methods
-  // ------------------------------------------------------
-  // START: main render method
-
-  render() : TemplateResult {
-
-    return (this._edit === true)
-      ? html`<kiln-view-edit></kiln-view-edit>`
-      : this.renderReadOnly();
   }
 
   //  END:  main render method

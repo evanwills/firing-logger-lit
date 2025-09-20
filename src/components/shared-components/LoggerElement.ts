@@ -1,10 +1,14 @@
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
+import type { TUser } from "../../types/data.d.ts";
 import type { CDataStoreClass } from '../../types/store.d.ts';
+import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
 import { getDataStoreClassSingleton } from '../../store/FiringLoggerStore.class.ts';
 import './loading-spinner.ts';
+import { storeCatch } from "../../store/idb-data-store.utils.ts";
+import { isUser } from "../../types/data.type-guards.ts";
+import { getCookie } from "../../utils/cookie.utils.ts";
 
 /**
  * `LoggerElement` is a renderless extension of `LitElement`. It
@@ -58,6 +62,13 @@ export class LoggerElement extends LitElement {
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
+
+  /**
+   * Whether or not to render length and weight values in imperial
+   * units & values
+   */
+  @state()
+  _notMetric : boolean = false;
 
   @state()
   _dbReady : boolean = false;
@@ -115,17 +126,82 @@ export class LoggerElement extends LitElement {
    */
   _lUnit : string = 'mm';
 
+  _user : TUser | null = null;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
-  _watchReady(_isReady : boolean) : void {
-    this._dbReady = true;
+  _userHasAuth(level: number) : boolean {
+    if (this._user === null || isUser(this._user) === false) {
+      return false;
+    }
+
+    const sessionID = getCookie('SessionID');
+    if (sessionID === null || this._user.id !== sessionID || this._user.adminLevel < level)  {
+      return false;
+    }
+
+    return true;
+  }
+
+  _userCan(key: string, level : number = 1) : boolean {
+    if (this._user !== null && isUser(this._user) && this._userHasAuth(level)) {
+      switch(key) {
+        case 'canFire':
+          return this._user.canFire;
+
+        case 'canLog':
+          return this._user.canLog;
+
+        case 'canPack':
+          return this._user.canPack;
+
+        case 'canPrice':
+          return this._user.canPrice;
+
+        case 'canProgram':
+          return this._user.canProgram;
+
+        case 'canUnpack':
+          return this._user.canUnpack;
+      }
+    }
+
+    return false;
+  }
+
+
+  _setUser(user: TUser | null) : void {
+    if (user !== null && isUser(user) === true) {
+      this._user = user;
+      this._notMetric = (typeof this._user?.notMetric === 'boolean')
+        ? this._user.notMetric
+        : false;
+
+      if (this._notMetric === true) {
+        this._tConverter = c2f;
+        this._tConverterRev = f2c;
+        this._tUnit = 'F';
+        this._lConverter = m2i;
+        this._lConverterRev = i2m;
+        this._tUnit = 'in';
+      } else {
+        this._tConverter = x2x;
+        this._tConverterRev = x2x;
+        this._tUnit = 'C';
+        this._lConverter = x2x;
+        this._lConverterRev = x2x;
+        this._tUnit = 'mm';
+      }
+    }
   }
 
   async _getFromStore() : Promise<void> {
     if (this._store === null) {
-      this._store = await getDataStoreClassSingleton(this._watchReady.bind(this));
+      this._store = await getDataStoreClassSingleton();
+      this._store.read('UserPreferences', '', true).then(this._setUser.bind(this)).catch(storeCatch);
+      this._dbReady = true;
     }
   }
 
@@ -135,15 +211,6 @@ export class LoggerElement extends LitElement {
 
   connectedCallback() : void {
     super.connectedCallback();
-
-    if (this.notMetric === true) {
-      this._tConverter = c2f;
-      this._tConverterRev = f2c;
-      this._tUnit = 'F';
-      this._lConverter = m2i;
-      this._lConverterRev = i2m;
-      this._tUnit = 'in';
-    }
   }
 
   //  END:  lifecycle methods

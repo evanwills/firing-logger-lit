@@ -19,12 +19,12 @@ export interface IIdObject implements IKeyValue {
   id: ID,
 };
 
-export interface IIdNameObject implements IIdObject {
+export interface IIdNameObject implements IKeyValue, IIdObject {
   id: ID,
   name: string,
 };
 
-export interface ILinkObject implements IIdNameObject {
+export interface ILinkObject implements IKeyValue, IIdObject, IIdNameObject {
   id: ID,
   name: string,
   urlPart: string,

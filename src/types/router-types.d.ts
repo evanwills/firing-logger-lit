@@ -23,3 +23,5 @@ export type TParsedRoute = {
   redirect: (args : IRouteArgs) => string,
   render: FRouteRenderer,
 };
+
+export type FGlobalsGet = () => IKeyValue;

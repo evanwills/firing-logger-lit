@@ -1,7 +1,7 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import { KilnDetails } from './kiln-details.ts';
 import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
 import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
@@ -20,7 +20,7 @@ import '../input-fields/read-only-field.ts';
  * An example element.
  */
 @customElement('kiln-details-edit')
-export class KilnDetailsEdit extends LoggerElement {
+export class KilnDetailsEdit extends KilnDetails {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -193,23 +193,6 @@ export class KilnDetailsEdit extends LoggerElement {
     this._fuelSources = data;
   }
 
-  async _getFromStore() : Promise<void> {
-    await super._getFromStore();
-
-    if (isNonEmptyStr(this.kilnID)) {
-      if (this._store !== null) {
-        this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this))
-        this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this))
-        this._store.read('kilns', `#${this.kilnID}`).then(this._setKilnData.bind(this));
-        this._store.read(
-          'programs',
-          `kilnID=${this.kilnID}`,
-          ['id', 'type', 'name', 'urlPart', 'controllerProgramID', 'maxTemp', 'cone', 'duration'],
-        ).then(this._setProgramData.bind(this)).catch((msg) => { console.error(msg)});
-      }
-    }
-  }
-
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -225,12 +208,6 @@ export class KilnDetailsEdit extends LoggerElement {
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
-
-  connectedCallback() : void {
-    super.connectedCallback();
-
-    this._getFromStore();
-  }
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
@@ -403,6 +380,6 @@ export class KilnDetailsEdit extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'kiln-details-edit': KilnDetailsEdit,
+    'kiln-details-edit': KilnDetails,
   }
 };

@@ -3,12 +3,11 @@
  * performing common actions that are shared across components
  */
 
-import { isBoolTrue, isNonEmptyStr, isObj } from './data-utils';
+import type { TCmethod, TKeys } from "../types/console-logger.d.ts";
+import type { IKeyValue } from "../types/data-simple.d.ts";
+import type FauxEvent from "./FauxEvent.class.ts";
+import { isBoolTrue, isNonEmptyStr, isObj } from './data.utils.ts';
 
-/**
- * @typedef {import('../../types/console-logger').TKeys} TKeys;
- * @typedef {import('../../types/console-logger').TLoggableVars} TLoggableVars;
- */
 
 /**
  * Get a 2D array of strings that where each top level item
@@ -21,7 +20,11 @@ import { isBoolTrue, isNonEmptyStr, isObj } from './data-utils';
  *                              first level represents a branch of
  *                              an object properties.
  */
-const splitKeys = (keys) => keys.map((key) => key.split('.').map((_key) => _key.trim()));
+const splitKeys = (keys : string[]) : TKeys[] => (keys as Array<string>).map(
+  (key : string) : TKeys => key.split('.').map(
+    (_key : string) : string => _key.trim()
+  ),
+);
 
 /**
  *
@@ -29,7 +32,7 @@ const splitKeys = (keys) => keys.map((key) => key.split('.').map((_key) => _key.
  *
  * @returns {Array<{string[]}>}
  */
-const splitMultiKeys = (key) => splitKeys(
+const splitMultiKeys = (key : string) : TKeys[] => splitKeys(
   key.replace(/(?:^\[|\]$)/g, '')
     .split(',')
     .map((_key) => _key.trim()),
@@ -43,13 +46,13 @@ const splitMultiKeys = (key) => splitKeys(
  *
  * @returns {string[]}
  */
-export const orderKeys = (keys, rev) => { // eslint-disable-line arrow-body-style
+export const orderKeys = (keys : string[], rev : boolean) : string[] => { // eslint-disable-line arrow-body-style
   return (Array.isArray(keys) && rev === true)
     ? keys.reverse()
     : keys;
 };
 
-const getKeysInner = (objKeys, keys, includes = true) => {
+const getKeysInner = (objKeys : string[], keys : string[], includes : boolean = true) : TKeys[] => {
   const deepKeys = splitKeys(keys);
   const topKeys = deepKeys.map((key) => key[0]);
 
@@ -75,7 +78,7 @@ const getKeysInner = (objKeys, keys, includes = true) => {
  *
  * @returns {string[]}
  */
-const getKeys = (obj, keys) => {
+const getKeys = (obj : IKeyValue, keys : TKeys ) : TKeys[] => {
   const objKeys = Object.keys(obj);
 
   if (isObj(obj)) {
@@ -107,7 +110,7 @@ const getKeys = (obj, keys) => {
   return [];
 };
 
-export const getOrderedKeys = (obj, keys, rev) => orderKeys(getKeys(obj, keys), rev);
+export const getOrderedKeys = (obj : IKeyValue, keys : TKeys, rev : boolean) => orderKeys(getKeys(obj, keys), rev);
 
 /**
  * Log object's deep key/value pair to console
@@ -116,13 +119,17 @@ export const getOrderedKeys = (obj, keys, rev) => orderKeys(getKeys(obj, keys), 
  * deepest one we need to log, then output its full property branch
  * name and its value.
  *
- * @param {object|any} input    Object to find deep value in
+ * @param {IKeyValue|function|string|number} input    Object to find deep value in
  * @param {string}     baseKey  Console log label for value
  * @param {string[]}   deepKeys List of deep keys
  *
  * @returns {void}
  */
-export const logObjDeepKeyVal = (input, baseKey, deepKeys) => {
+export const logObjDeepKeyVal = (
+  input : unknown,
+  baseKey : string,
+  deepKeys : string[],
+) : void => {
   if (isObj(input) === false || deepKeys.length === 0) {
     // There's nothing more we can do,
     // so we'll just log what we've got
@@ -133,7 +140,7 @@ export const logObjDeepKeyVal = (input, baseKey, deepKeys) => {
     }
   } else {
     const _deep = [...deepKeys];
-    const key0 = _deep.shift();
+    const key0 : string = _deep.shift();
 
     if (key0.startsWith('[')) {
       // Looks like there are multiple sub keys at this level we need
@@ -163,7 +170,12 @@ export const logObjDeepKeyVal = (input, baseKey, deepKeys) => {
  *
  * @returns {void}
  */
-export const logDeepObjProps = (obj, keys, extra = '', isPre = true) => {
+export const logDeepObjProps = (
+  obj : IKeyValue,
+  keys : string[],
+  extra : string = '',
+  isPre : boolean = true,
+) : void => {
   let pre = '';
   let post = '';
 
@@ -199,20 +211,23 @@ export const logDeepObjProps = (obj, keys, extra = '', isPre = true) => {
  *
  * @returns {void}
  */
-const logFormEvent = (target, grpName) => {
+const logFormEvent = (
+  target : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | FauxEvent,
+  grpName : string,
+) : void => {
   if (typeof target !== 'undefined'
-    && (isBoolTrue(target.faux) === true
+    && (isBoolTrue((target as FauxEvent).faux) === true
       || target instanceof HTMLInputElement
       || target instanceof HTMLTextAreaElement
       || target instanceof HTMLSelectElement)
   ) {
     console.groupCollapsed(`${grpName} - form event`);
-    console.log('event.target.value:', target.value);
-    console.log('event.target.validity:', target.validity);
+    console.log('event.target.value:', (target as HTMLInputElement).value);
+    console.log('event.target.validity:', (target as HTMLInputElement).validity);
 
-    if (typeof target.reportValidity === 'function') {
-      console.log('event.target.checkValidity():', target.checkValidity());
-      console.log('event.target.reportValidity():', target.reportValidity());
+    if (typeof (target as HTMLInputElement).reportValidity === 'function') {
+      console.log('event.target.checkValidity():', (target as HTMLInputElement).checkValidity());
+      console.log('event.target.reportValidity():', (target as HTMLInputElement).reportValidity());
     }
     console.groupEnd();
   }
@@ -228,7 +243,7 @@ const logFormEvent = (target, grpName) => {
  *
  * @returns {void}
  */
-const logKeyEvent = (event, grpName) => {
+const logKeyEvent = (event : KeyboardEvent|FauxEvent, grpName : string) : void => {
   if (event instanceof KeyboardEvent) {
     console.groupCollapsed(`${grpName} - keyboard event`);
     console.log('event.altKey:', event.altKey);
@@ -255,7 +270,7 @@ const logKeyEvent = (event, grpName) => {
  *
  * @returns {void}
  */
-const logEventObjProps = (propVal, grpName) => {
+const logEventObjProps = (propVal : Event | FauxEvent, grpName : string) : void => {
   let extra = 'event';
 
   if (typeof propVal.target !== 'undefined') {
@@ -284,7 +299,11 @@ const logEventObjProps = (propVal, grpName) => {
  *
  * @returns {void}
  */
-export const logLocalObjProps = (local, grpName, rev = false) => {
+export const logLocalObjProps = (
+  local : IKeyValue,
+  grpName : string,
+  rev : boolean = false,
+) : void => {
   if (isObj(local)) {
     for (const key of orderKeys(Object.keys(local), rev)) {
       const propVal = local[key];
@@ -306,7 +325,7 @@ export const logLocalObjProps = (local, grpName, rev = false) => {
  * @param {string}          method Name of the console method to call
  * @param {string|string[]} msg    Value to pass to the console method
  */
-export const consoleMsg = (method, msg) => {
+export const consoleMsg = (method : TCmethod, msg : string | string[]) : void => {
   if (isNonEmptyStr(msg)) {
     console[method](msg);
   } else if (Array.isArray(msg)) {

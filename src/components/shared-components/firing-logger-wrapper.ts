@@ -1,10 +1,11 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
-import { deleteCookie, getCookie, setCookie } from '../../utils/cookie.utils.ts';
+import { deleteCookie, getCookie } from '../../utils/cookie.utils.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
 // import { isNonEmptyStr } from "../../utils/data.utils.ts";
 import './login-ui.ts';
+import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
 
 @customElement('firing-logger-wrapper')
 export class FiringLoggerWrapper extends LitElement {
@@ -61,8 +62,11 @@ export class FiringLoggerWrapper extends LitElement {
       this._showLogin = true;
     } else {
       deleteCookie('SessionID');
+
       this._isLoggedIn = false;
       this._showLogin = false;
+
+      dispatchRouterEvent(this, '/logout', {}, 'refresh');
     }
   }
 

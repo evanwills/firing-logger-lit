@@ -10,6 +10,7 @@ import { isNonEmptyStr, isObj } from "../../utils/data.utils.ts";
 import { LoggerElement } from "./LoggerElement.ts";
 import { fieldListStyles } from "../../assets/css/input-field.css.ts";
 import { dialogStyles } from "../../assets/css/dialog.css.ts";
+import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
 
 @customElement('login-ui')
 export class LoginUI extends LoggerElement {
@@ -93,7 +94,10 @@ export class LoginUI extends LoggerElement {
 
         if (user.length > 0) {
           const userID = await this._store.write('setLoggedInUser', user[0]);
+
           setCookie('SessionID', userID, 30);
+
+          dispatchRouterEvent(this, '/login', { userName : user[0].username }, 'refresh');
         }
       }
 
