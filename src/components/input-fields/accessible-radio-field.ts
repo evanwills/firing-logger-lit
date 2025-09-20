@@ -33,7 +33,7 @@ export class AccessibleSelectField extends AccessibleWholeField {
   // START: helper methods
 
   getID(option: TOptionValueLabel) : string {
-    return `${this.id}-${option.value}`;
+    return `${this.fieldID}-${option.value}`;
   }
 
   //  END:  helper methods
@@ -56,7 +56,7 @@ export class AccessibleSelectField extends AccessibleWholeField {
           ?disabled=${ifDefined(this.disabled)}
           ?checked=${option.value === this.value}
           .id="${this.getID(option)}"
-          name="${this.id}-radio"
+          name="${this.fieldID}-radio"
           ?readonly=${this.readonly}
           ?required=${this.required}
           type="radio"

@@ -1,4 +1,5 @@
-import type { ID, IKeyValPair } from './data-simple.d.ts';
+import type { IDBPDatabase } from "idb";
+import type { ID, IKeyValPair, IKeyValue } from './data-simple.d.ts';
 import type { IKiln, IUser } from './data.d.ts';
 
 /**
@@ -15,18 +16,81 @@ import type { IKiln, IUser } from './data.d.ts';
  */
 export type TStoreSlice = string;
 
-export type TStoreAction = 'update' | 'replace' | 'append'
+export type TStoreAction = 'setLoggedInUser' | 'replace' | 'append'
 
 /**
- * CDataStoreClass calls FReadyWatchers when the data store is ready
- * to use or when it knows it will never be ready because it was
- * unnable to populate the data store with any values.
+ * CDataStoreClass calls `FReadyWatcher()`s when the data store is
+ * ready to use or when it knows it will never be ready because it
+ * was unnable to populate the data store with any values.
  * (Probably due to a failed fetch request)
  *
  * @param isReady whether or not the store can be used at all
  */
 export type FReadyWatcher = (isReady: boolean) => void;
 
+/**
+ * Write data to the store
+ *
+ * @param action  Name of write action to be performed on the store
+ * @param payload Data to be written to the store
+ *
+ * @returns Empty string if write action worked without issue.
+ *          Error message string if there was a problem with the
+ *          write action
+ */
+export type FWriteAction = (
+  action : TStoreAction,
+  payload: any,
+) => Promise<string>;
+
+export type FActionHandler = (payload: any) => Promise<string>
+
+export interface TActionList extends IKeyValue {
+  [key:TStoreAction] : FActionHandler
+};
+
+// --------------------------------------------------------
+// START: IndexedDB only types
+
+/**
+ * FIdbUpgrade() is a function that is called when IndexedDB fires
+ * an `onupgradeneeded` event
+ *
+ * @param db IndexedDB database connection
+ *
+ * @returns `TRUE` if the database needs to be populated and
+ *          `FALSE` if the DB is already populated.
+ */
+export type FIdbUpgrade = (db : IDBDatabase | IDBPDatabase) => boolean
+
+/**
+ * FIdbPopulate() populates an IndexedDB data store
+ *
+ * It is only called after `FIdbUpgrade()` has executed and only if
+ * `FIdbUpgrade()` returned `TRUE` (indicating that the store needs
+ * to be populated)
+ *
+ * It does whatever is needed (includinng fetching data from the
+ * server) to populate the store created by `FIdbUpgrade()`.
+ *
+ * @param db IndexedDB database connection
+ *
+ * @returns `TRUE` if the database has been successfully populated.
+ *          `FALSE` if not.
+ */
+export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
+
+//  END:  IndexedDB only types
+// --------------------------------------------------------
+
+/**
+ * CDataStoreClass provides access to a local database with wa
+ *
+ * It is intended to be used as a singleton, with no public access
+ * to the CDataStoreClass constructor.
+ *
+ * @class CDataStoreClass
+ */
 export type CDataStoreClass = {
   ready: boolean,
   loading: boolean,
@@ -51,27 +115,23 @@ export type CDataStoreClass = {
    *
    * @throws {Error} If slice is a non-empty string and
    */
-  read: (slice : string, selector : string = '', outputMode : string[] | boolean = false) => Promise<any>,
+  read: (
+    slice : TStoreSlice,
+    selector : string = '',
+    outputMode : string[] | boolean = false
+  ) => Promise<any>,
 
   /**
    * Write data to the store
    *
-   * @param userID  ID of the user performing the write action
    * @param action  Name of write action to be performed on the store
-   * @param slice   Dot separated string for hierrarchical store
-   *                segment
    * @param payload Data to be written to the store
    *
    * @returns Empty string if write action worked without issue.
    *          Error message string if there was a problem with the
    *          write action
    */
-  write: (
-    userID: ID,
-    action : TStoreAction,
-    slice : TStoreAction,
-    payload: any,
-  ) => Promise<string>,
+  write : FWriteAction,
 
   /**
    * Add watcher to do something after a successful write action
@@ -90,7 +150,7 @@ export type CDataStoreClass = {
    *          that action
    */
   watch: (
-    action : string,
+    action : TStoreAction,
     handler: (slice: any) => void,
     slice: TStoreSlice,
   ) => ID,
@@ -125,3 +185,37 @@ export type TDataStore = {
   EprogramStatus: IKeyValPair[],
   EAdminLevels: IKeyValPair[],
 }
+
+// --------------------------------------------------------
+// START: IndexedDB only types
+
+/**
+ * FIdbUpgrade() is a function that is called when IndexedDB fires
+ * an `onupgradeneeded` event
+ *
+ * @param db IndexedDB database connection
+ *
+ * @returns `TRUE` if the database needs to be populated and
+ *          `FALSE` if the DB is already populated.
+ */
+export type FIdbUpgrade = (db : IDBDatabase | IDBPDatabase) => boolean
+
+/**
+ * FIdbPopulate() populates an IndexedDB data store
+ *
+ * It is only called after `FIdbUpgrade()` has executed and only if
+ * `FIdbUpgrade()` returned `TRUE` (indicating that the store needs
+ * to be populated)
+ *
+ * It does whatever is needed (includinng fetching data from the
+ * server) to populate the store created by `FIdbUpgrade()`.
+ *
+ * @param db IndexedDB database connection
+ *
+ * @returns `TRUE` if the database has been successfully populated.
+ *          `FALSE` if not.
+ */
+export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
+
+//  END:  IndexedDB only types
+// --------------------------------------------------------

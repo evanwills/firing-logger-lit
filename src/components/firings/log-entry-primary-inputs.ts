@@ -9,6 +9,7 @@ import { calculateExpectedTemp, forceNum } from '../../utils/data.utils.ts';
 import InputValueClass from '../../utils/InputValue.class.ts';
 import './log-temp-input.ts';
 import './log-time-input.ts';
+import { dialogStyles } from "../../assets/css/dialog.css.ts";
 
 /**
  * An example element.
@@ -295,21 +296,12 @@ export class LogEntryInput extends LitElement {
   }
 
   static styles = css`
-  ${logEntryInputVars}
   :host {
     --border-coluor: #ccc;
     --back-drop: rgba(0, 0, 0, 0.75);
   }
-  dialog {
-    padding: 0 0 1rem;
-    border-radius: 0.5rem;
-    border-color: var(--border-colour, #ccc);
-    border-width: 0.1rem;
-    width: calc(100% - 4rem);
-  }
-  dialog::backdrop {
-    background-color: var(--back-drop, rgba(0, 0, 0, 0.75));
-  }
+  ${dialogStyles}
+  ${logEntryInputVars}
   h3 {
     margin-top: 0;
     padding: 0.5rem 1rem;

@@ -37,13 +37,17 @@ export const populateEnumSlice = (
   db : IDBPDatabase,
   obj : IKeyValue,
   slice : string,
+  put : boolean = false,
 ) : Promise<(void | IDBValidKey)[]> => {
   const tx = db.transaction(slice, 'readwrite');
+  const method = (put === true)
+    ? 'put'
+    : 'add';
 
   const rows = [];
 
   for (const key of Object.keys(obj)) {
-    rows.push(tx.store.add({ key, value: obj[key] }));
+    rows.push(tx.store[method]({ key, value: obj[key] }));
   }
 
   rows.push(tx.done);
@@ -134,14 +138,14 @@ export const getByKeyValue = async (
   storeName: string,
   selector : string,
 ) : Promise<any> => {
-  console.group('getByKeyValue()');
-  console.log('db:', db);
-  console.log('storeName:', storeName);
-  console.log('selector:', selector);
+  // console.group('getByKeyValue()');
+  // console.log('db:', db);
+  // console.log('storeName:', storeName);
+  // console.log('selector:', selector);
   const selectors : IKeyStr[] = parseKeyValSelector(selector);
   const primary = selectors.shift();
-  console.log('selectors:', selectors);
-  console.log('primary:', primary);
+  // console.log('selectors:', selectors);
+  // console.log('primary:', primary);
 
   if (typeof primary !== 'undefined') {
     const tx = await db.transaction(storeName, 'readonly');
@@ -149,7 +153,9 @@ export const getByKeyValue = async (
     const index = tx.store.index(primary.indexName);
     console.log('index:', index);
 
-    const output = await index.getAll(primary.value);
+    const output = (primary.value.startsWith('#'))
+      ? [await index.get(primary.value)]
+      : await index.getAll(primary.value)
 
     if (selectors.length === 0) {
       console.log('output:', output);

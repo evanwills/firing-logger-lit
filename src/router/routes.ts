@@ -7,7 +7,6 @@ import '../components/programs/program-details-edit.ts';
 import '../components/kilns/kilns-list.ts';
 import '../components/kilns/kiln-details.ts';
 import '../components/kilns/kiln-details-edit.ts';
-import '../components/shared-components/fl-wrap.ts';
 
 const home = ({ _SEARCH, _GLOBALS } : IKeyValue) => html`<kilns-list
   filters=${_SEARCH}

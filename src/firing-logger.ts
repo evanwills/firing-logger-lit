@@ -1,9 +1,10 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getDataStoreClassSingleton } from './store/PidbDataStore.class.ts';
+import { getDataStoreClassSingleton } from './store/FiringLoggerStore.class.ts';
 import { wrapApp } from './utils/lit.utils.ts';
 import './components/lit-router/lit-router.ts';
 import type { CDataStoreClass } from "./types/store.d.ts";
+import { getCookie } from "./utils/cookie.utils.ts";
 
 // We want to initialise the data store as soon as possible
 getDataStoreClassSingleton();
@@ -55,6 +56,14 @@ export class FiringLogger extends LitElement {
 
     getDataStoreClassSingleton().then(this._addReadyWatcher.bind(this));
     // console.groupEnd();
+
+    // Usage:
+    const value = getCookie('sessionId');
+    if (value !== null) {
+      console.log('sessionId:', value);
+    } else {
+      console.log('Cookie does not exist or has expired.');
+    }
   }
 
   render() : TemplateResult | string {

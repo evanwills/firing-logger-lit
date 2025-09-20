@@ -74,7 +74,7 @@ export class AccessibleTextareaField extends AccessibleWholeField {
     return html`<textarea
       ?disabled=${this.disabled}
       .autocomplete=${ifDefined(this.autocomplete)}
-      .id="${this.id}"
+      .id="${this.fieldID}"
       .maxlength=${ifDefined(this.maxlength)}
       .minlength=${ifDefined(this.minlength)}
       .list=${ifDefined(this._listID)}

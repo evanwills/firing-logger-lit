@@ -13,8 +13,8 @@ export class AccessibleWholeField extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: String, attribute: 'id' })
-  id : string = '';
+  @property({ type: String, attribute: 'field-id' })
+  fieldID : string = '';
 
   @property({ type: String, attribute: 'label' })
   label : string = '';
@@ -136,6 +136,39 @@ export class AccessibleWholeField extends LitElement {
       : undefined;
   }
 
+  _dispatch(event : InputEvent | KeyboardEvent) : void {
+    this.dispatchEvent(
+      new CustomEvent(
+        event.type,
+        {
+          bubbles: true,
+          composed: true,
+          detail: new FauxEvent(
+            (event.target as HTMLInputElement).value,
+            (event.target as HTMLInputElement).validity,
+            (event.type.startsWith('key'))
+              ? {
+                id: this.fieldID,
+                keyboard: {
+                  altKey: (event as KeyboardEvent).altKey,
+                  code: (event as KeyboardEvent).code,
+                  ctrlKey: (event as KeyboardEvent).ctrlKey,
+                  key: (event as KeyboardEvent).key,
+                  location: (event as KeyboardEvent).location,
+                  metaKey: (event as KeyboardEvent).metaKey,
+                  repeat: (event as KeyboardEvent).repeat,
+                  shiftKey: (event as KeyboardEvent).shiftKey,
+                },
+              }
+              : { id: this.fieldID },
+            event.type,
+            (event.target as HTMLInputElement).tagName.toLowerCase()
+          ),
+        },
+      ),
+    );
+  }
+
   validate(event : InputEvent | KeyboardEvent) {
     event.preventDefault();
 
@@ -159,36 +192,7 @@ export class AccessibleWholeField extends LitElement {
       ? 'error'
       : '';
 
-    this.dispatchEvent(
-      new CustomEvent(
-        event.type,
-        {
-          bubbles: true,
-          composed: true,
-          detail: new FauxEvent(
-            (target as HTMLInputElement).value,
-            (target as HTMLInputElement).validity,
-            (event.type.startsWith('key'))
-              ? {
-                id: this.id,
-                keyboard: {
-                  altKey: (event as KeyboardEvent).altKey,
-                  code: (event as KeyboardEvent).code,
-                  ctrlKey: (event as KeyboardEvent).ctrlKey,
-                  key: (event as KeyboardEvent).key,
-                  location: (event as KeyboardEvent).location,
-                  metaKey: (event as KeyboardEvent).metaKey,
-                  repeat: (event as KeyboardEvent).repeat,
-                  shiftKey: (event as KeyboardEvent).shiftKey,
-                },
-              }
-              : { id: this.id },
-            event.type,
-            (target as HTMLInputElement).tagName.toLowerCase()
-          ),
-        },
-      ),
-    );
+    this._dispatch(event);
     // console.groupEnd();
   }
 
@@ -202,11 +206,13 @@ export class AccessibleWholeField extends LitElement {
     // console.groupEnd();
   }
 
-  handleKeyup(event : InputEvent) : void {
+  handleKeyup(event : KeyboardEvent) : void {
     // console.group('AccessibleWholeField.handleKeyup()');
     // console.log('this.validateOnKeyup:', this.validateOnKeyup);
     if (this.validateOnKeyup === true) {
       this.validate(event);
+    } else {
+      this._dispatch(event);
     }
 
     if (this.watchOverflowX === true) {
@@ -230,7 +236,7 @@ export class AccessibleWholeField extends LitElement {
   connectedCallback() : void {
     super.connectedCallback();
 
-    if (isNonEmptyStr(this.id) === false) {
+    if (isNonEmptyStr(this.fieldID) === false) {
       throw new Error(`${this.constructor.name} expects the "id" attribute to be a non-empty string`);
     }
 
@@ -257,7 +263,7 @@ export class AccessibleWholeField extends LitElement {
       return '';
     }
 
-    const id = `${this.id}--error`;
+    const id = `${this.fieldID}--error`;
     this._descIDs.error = id;
     this._innerClass.error = 'error';
 
@@ -270,7 +276,7 @@ export class AccessibleWholeField extends LitElement {
 
   renderHelp() : TemplateResult | string {
     if (hasSlotContent(this, 'help', 'helpMsg')) {
-      const id = `${this.id}--help`;
+      const id = `${this.fieldID}--help`;
       this._descIDs.help = id;
       this._innerClass.help = 'help';
 
@@ -291,7 +297,7 @@ export class AccessibleWholeField extends LitElement {
       return '';
     }
 
-    this._listID = `${this.id}--list`;
+    this._listID = `${this.fieldID}--list`;
 
     return html`<datalist id="${this._listID}">
       ${repeat(
@@ -313,7 +319,7 @@ export class AccessibleWholeField extends LitElement {
     const help = this.renderHelp();
     const list = this.renderDataList();
     const groupLabel = (this._asGroup === true)
-      ? `${this.id}--group`
+      ? `${this.fieldID}--group`
       : null;
 
     let cls = 'inner';
@@ -333,8 +339,8 @@ export class AccessibleWholeField extends LitElement {
           class="${cls}"
           role=${ifDefined((this._asGroup === true) ? 'group' : null)}
           @focusin=${this.handleFocus}>
-          ${(this._asGroup === true)
-            ? html`<label for="${this.id}">${this.label}</label>`
+          ${(this._asGroup === false)
+            ? html`<label for="${this.fieldID}">${this.label}</label>`
             : html`<div class="label" id="${groupLabel}">${this.label}</div>`}
           ${this.renderError()}
           ${this.renderField()}

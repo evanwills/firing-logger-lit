@@ -51,7 +51,7 @@ export class AccessibleNumberField extends AccessibleWholeField {
     return html`<input
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
-      .id="${this.id}"
+      .id="${this.fieldID}"
       .max=${ifDefined(this.max)}
       .min=${ifDefined(this.min)}
       .list=${ifDefined(this._listID)}

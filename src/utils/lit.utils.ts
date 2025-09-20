@@ -2,7 +2,7 @@ import { html, type LitElement, type TemplateResult } from 'lit';
 import { isNonEmptyStr } from './data.utils.ts';
 import type { ID, IIdNameObject, IIdObject, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
 import type { FWrapOutput } from "../types/renderTypes.d.ts";
-import '../components//shared-components/fl-wrap.ts';
+import '../components/shared-components/firing-logger-wrapper.ts';
 
 export const hasSlotContent = (
   component : LitElement,
@@ -26,7 +26,7 @@ export const hasSlotContent = (
   return !!slot && (slot as HTMLSlotElement).assignedNodes({ flatten: true }).length > 0;
 };
 
-export const wrapApp : FWrapOutput = (input : TemplateResult | string) : TemplateResult => html`<fl-wrap data-wrap-app>${input}</fl-wrap>`
+export const wrapApp : FWrapOutput = (input : TemplateResult | string) : TemplateResult => html`<firing-logger-wrapper data-wrap-app>${input}</firing-logger-wrapper>`
 
 export const getNameByID = <Type>(input : Type[], id: ID) : string => {
   const output = input.find((item) => (item as IIdNameObject).id === id);

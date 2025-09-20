@@ -94,6 +94,9 @@ export const inputFieldCSS = css`
   justify-self: start;
   align-self: start;
 }
+.input.password {
+  padding: 0;
+}
 
 input, select, textarea {
   border: 0.05rem solid #ccc;
@@ -132,3 +135,17 @@ textarea {
                           '. help';
   }
 }`;
+
+export const fieldListStyles = css`
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    padding: 1rem 0;
+  }
+  ul.border li + li {
+    border-top: 0.05rem solid var(--border-colour, #aaa);
+  }
+`;

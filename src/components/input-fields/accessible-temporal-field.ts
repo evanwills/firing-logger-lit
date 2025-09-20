@@ -49,7 +49,7 @@ export class AccessibleTemporalField extends AccessibleWholeField {
     connectedCallback() : void {
       super.connectedCallback();
 
-      if (['date', 'time', 'datetime-local'].includes(this.id) === false) {
+      if (['date', 'time', 'datetime-local'].includes(this.fieldID) === false) {
         throw new Error(
           '<accessible-temporal-field> expects the "type" attribute '
           + 'to be either "date", "time" or "datetime-local". "'
@@ -66,7 +66,7 @@ export class AccessibleTemporalField extends AccessibleWholeField {
     return html`<input
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
-      .id="${this.id}"
+      .id="${this.fieldID}"
       .list=${ifDefined(this._listID)}
       .max=${ifDefined(this.max)}
       .min=${ifDefined(this.min)}

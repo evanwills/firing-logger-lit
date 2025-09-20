@@ -36,6 +36,9 @@ export class AccessiblePasswordField extends AccessibleWholeField {
   @state()
   _btnTxt : string = 'show';
 
+  @state()
+  _btnIcon : string = 'show';
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -46,12 +49,15 @@ export class AccessiblePasswordField extends AccessibleWholeField {
 
   toggleVisibility() {
     this._show = !this._show;
+
     if (this._show === true) {
-      this._btnTxt = 'text';
+      this._type = 'text';
       this._btnTxt = 'hide';
+      this._btnIcon = 'hide';
     } else {
-      this._btnTxt = 'password';
+      this._type = 'password';
       this._btnTxt = 'show';
+      this._btnIcon = 'show';
     }
   }
 
@@ -65,10 +71,10 @@ export class AccessiblePasswordField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`
-      <span class="input">
+      <span class="input password">
         <input
         ?disabled=${ifDefined(this.disabled)}
-        .id="${this.id}"
+        .id="${this.fieldID}"
         .maxlength=${ifDefined(this.maxlength)}
         .minlength=${ifDefined(this.minlength)}
         .pattern=${ifDefined(this.pattern)}
@@ -81,6 +87,7 @@ export class AccessiblePasswordField extends AccessibleWholeField {
         @keyup=${this.handleKeyup} />
 
         <button @click=${this.toggleVisibility}>
+          ${this._btnIcon}
           <span class="sr-only">${this._btnTxt} password</span>
         </button>
       </span>`;

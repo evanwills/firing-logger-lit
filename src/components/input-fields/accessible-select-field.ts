@@ -48,7 +48,7 @@ export class AccessibleSelectField extends AccessibleWholeField {
     return html`<select
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
-      .id="${this.id}"
+      .id="${this.fieldID}"
       ?placeholder=${this.placeholder}
       ?readonly=${this.readonly}
       ?required=${this.required}

@@ -2,6 +2,7 @@ import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { dispatchRouterEvent } from './lit-router.utils.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
+import { linkStyle } from "../../assets/css/link-style.ts";
 
 @customElement('router-link')
 export class RouterLink extends LitElement {
@@ -83,24 +84,7 @@ export class RouterLink extends LitElement {
       --rl-hover-colour: var(--rl-btn-hover-colour);
       --rl-hover-text-decoration: var(--rl-btn-hover-text-decoration);
     }
-    a {
-      background-color: var(--rl-background-colour);
-      border: var(--rl-border);
-      border-radius: var(--rl-border-radius);
-      color: var(--rl-colour);
-      font-family: var(--rl-font-family);
-      font-weight: var(--rl-font-weight);
-      line-height: var(--rl-line-height);
-      padding: var(--rl-padding);
-      text-decoration: var(--rl-text-decoration);
-      text-transform: var(--rl-text-transform);
-      white-space: var(--rl-white-space, normal);
-    }
-    a:hover, a:focus {
-      background-color: var(--rl-hover-background-colour);
-      color: var(--rl-hover-colour);
-      text-decoration: var(--rl-hover-text-decoration);
-    }
+    ${linkStyle}
     ${srOnly}
   `;
 

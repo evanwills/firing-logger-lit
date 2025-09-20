@@ -1,5 +1,9 @@
 :root {
+  --border-colour: #aaa;
   --delete-bg: #aa0000;
+  --dialog-max-width: 30rem;
+  --dialog-width: calc(100% - 4rem);
+  --dialog-padding: 2rem;
   --error-border-colour: #f00;
   --error-colour: #f00;
   --grid-fill: none;
@@ -18,6 +22,7 @@
   --label-y-translate: 0;
   --primary-stroke: #cc5eff;
   --primary-stroke-width: 10;
+  --text-underline-offset: 0.2em;
   --rect-fill: transparent;
   --rect-stroke: #625a86;
   --rect-stroke-width: 1;
@@ -41,6 +46,7 @@
   --rl-btn-line-height: inherit;
   --rl-btn-padding: 0.25rem 1rem;
   --rl-btn-text-decoration: none;
+  --rl-btn-text-underline-offset: var(--text-underline-offset);
   --rl-btn-text-transform: inherit;
   --rl-hover-background-colour: inherit;
   --rl-hover-colour: inherit;
@@ -53,7 +59,7 @@
   --secondary-dash: 15 15;
   --subtitle-feature-font: var(--title-font);
   --subtitle-feature-font-size: 2rem;
-  --table-border-colour: #aaa;
+  --table-border-colour: var(--border-colour, #aaa);
   --table-cell-padding: 0.25em 0.5em;
   --textarea-height: 3.5rem;
   --textarea-height-trans-time: 0.25s;
@@ -72,8 +78,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-
 
 a {
   font-weight: 500;

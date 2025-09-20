@@ -1,9 +1,12 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
+import { deleteCookie, getCookie, setCookie } from '../../utils/cookie.utils.ts';
+import { linkStyle } from '../../assets/css/link-style.ts';
+// import { isNonEmptyStr } from "../../utils/data.utils.ts";
+import './login-ui.ts';
 
-
-@customElement('fl-wrap')
+@customElement('firing-logger-wrapper')
 export class FiringLoggerWrapper extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes`;
@@ -12,17 +15,36 @@ export class FiringLoggerWrapper extends LitElement {
   // ------------------------------------------------------
   // START: state
 
+  @state()
+  _isLoggedIn : boolean = false;
+
+  @state()
+  _showLogin : boolean = false;
+
+  @state()
+  _loginUI : HTMLDialogElement | null = null;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
+  _watchAuthExpire() {
+    this._isLoggedIn = (getCookie('SessionID') !== null);
+
+    if (this._isLoggedIn === true) {
+      setTimeout(this._watchAuthExpire.bind(this), 1000);
+    }
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
-  // START: event handlers
-
-  //  END:  event handlers
-  // ------------------------------------------------------
   // START: lifecycle methods
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this._watchAuthExpire();
+  }
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
@@ -30,13 +52,38 @@ export class FiringLoggerWrapper extends LitElement {
 
   //  END:  helper render methods
   // ------------------------------------------------------
+  // START: event handlers
+
+  loginLogout(event : Event) {
+    event.preventDefault();
+
+    if (getCookie('SessionID') === null) {
+      this._showLogin = true;
+    } else {
+      deleteCookie('SessionID');
+      this._isLoggedIn = false;
+      this._showLogin = false;
+    }
+  }
+
+  _handleLogin() {
+    this._showLogin = false;
+    this._watchAuthExpire();
+  }
+
+  //  END:  event handlers
+  // ------------------------------------------------------
   // START: main render method
 
   render() : TemplateResult {
+    const dir = (this._isLoggedIn === false)
+      ? 'in'
+      : 'out';
+
     return html`
     <div class="wrap">
       <header>
-        <h1><router-link url="/">Firing Logger</router-link></h1>
+        <h1 class="title"><router-link url="/">Firing Logger</router-link></h1>
         <p>A kiln firing logger and plotter.</p>
         <nav>
           <ul>
@@ -49,11 +96,17 @@ export class FiringLoggerWrapper extends LitElement {
             <li><router-link
               url="/firings"
               label="Firings"></router-link></li>
+            <li><a href="/log${dir}" @click=${this.loginLogout}>Log${dir}</a></li>
           </ul>
         </nav>
       </header>
 
       <main><slot></slot></main>
+
+      <login-ui
+        .open=${this._showLogin}
+        @close=${this._handleLogin}
+        @loggedin=${this._handleLogin}></login-ui>
 
       <footer>
         <p>ID: <code>${nanoid(10)}</code></p>
@@ -91,7 +144,6 @@ export class FiringLoggerWrapper extends LitElement {
       --rl-text-decoration: none;
       --rl-hover-text-decoration: underline;
       flex-grow: 1;
-      font-family: var(--title-font, 'Harlow Solid', cursive);
       line-height: 1.5rem;
       margin: 0 0 0.5rem;
       text-align: center;
@@ -110,6 +162,9 @@ export class FiringLoggerWrapper extends LitElement {
       justify-content: space-around;
       column-gap: 1rem;
       grid-area: nav;
+    }
+    .title {
+      font-family: var(--title-font, 'Harlow Solid', cursive);
     }
 
     @container firing-logger (inline-size > 28rem) {
@@ -157,14 +212,7 @@ export class FiringLoggerWrapper extends LitElement {
       line-height: 1.1;
     }
 
-    a {
-      font-weight: 500;
-      color: #646cff;
-      text-decoration: inherit;
-    }
-    a:hover {
-      color: #535bf2;
-    }
+    ${linkStyle}
 
     button {
       border-radius: 8px;
@@ -201,6 +249,6 @@ export class FiringLoggerWrapper extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'fl-wrap': FiringLoggerWrapper,
+    'firing-logger-wrapper': FiringLoggerWrapper,
   }
 };
