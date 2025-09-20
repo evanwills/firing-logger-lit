@@ -246,7 +246,11 @@ export class FiringPlot extends LitElement {
       --font-weight: inherit;
       --font-height: inherit;
     }
-    svg { margin-top: 0.5rem; }
+    svg {
+      margin-top: 0.5rem;
+      max-height: 30rem;
+      max-width: 30rem;
+    }
     rect {
       fill: var(--rect-fill, transparent);
       stroke: var(--rect-stroke, #625a86);

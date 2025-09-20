@@ -1,4 +1,5 @@
 :root {
+  --bg-colour: #242424;
   --border-colour: #aaa;
   --delete-bg: #aa0000;
   --dialog-max-width: 30rem;
@@ -8,7 +9,7 @@
   --error-colour: #f00;
   --grid-fill: none;
   --font-size: 3rem;
-  --font-colour: #fff;
+  --font-colour: rgba(255, 255, 255, 0.87);
   --font-weight: bold;
   --font-height: 3rem;
   --grid-stroke: #fff;
@@ -70,8 +71,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--font-colour, rgba(255, 255, 255, 0.87));
+  background-color: var(--bg-colour, #242424);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -97,14 +98,13 @@ body {
 
 @media (prefers-color-scheme: light) {
   :root {
+    --bg-colour: #ffffff;
+    --font-colour: #213547;
     --error-border-colour: #900;
     --error-colour: #900;
     --grid-stroke: #555;
     --log-stroke: #66195c;
     --program-stroke: #1d7527;
     --rect-stroke: #2b1b6f;
-
-    color: #213547;
-    background-color: #ffffff;
   }
 }

@@ -185,14 +185,14 @@ export class LoggerElement extends LitElement {
         this._tUnit = 'F';
         this._lConverter = m2i;
         this._lConverterRev = i2m;
-        this._tUnit = 'in';
+        this._lUnit = 'in';
       } else {
         this._tConverter = x2x;
         this._tConverterRev = x2x;
         this._tUnit = 'C';
         this._lConverter = x2x;
         this._lConverterRev = x2x;
-        this._tUnit = 'mm';
+        this._lUnit = 'mm';
       }
     }
   }

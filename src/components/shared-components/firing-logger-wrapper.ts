@@ -132,16 +132,18 @@ export class FiringLoggerWrapper extends LitElement {
       width: 100%;
     }
     header {
+      background-color: var(--bg-colour, #242424);
+      border-bottom: 0.05rem solid;
       box-sizing: border-box;
-      position: fixed;
-      top: 0;
-      right: 0;
-      left: 0;
       display: flex;
       flex-direction: column;
-      width: 100%;
+      left: 0;
       padding: 0.5rem 2rem 0.5rem;
-      border-bottom: 0.05rem solid
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 100%;
+      z-index: 10;
     }
     header h1 {
       --rl-colour: var(--font-colour, #fff);
@@ -171,7 +173,7 @@ export class FiringLoggerWrapper extends LitElement {
       font-family: var(--title-font, 'Harlow Solid', cursive);
     }
 
-    @container firing-logger (inline-size > 28rem) {
+    @container firing-logger (inline-size > 30rem) {
       header {
         align-items: center;
         flex-direction: row;
@@ -185,7 +187,7 @@ export class FiringLoggerWrapper extends LitElement {
       }
     }
 
-    @container firing-logger (inline-size > 45rem) {
+    @container firing-logger (inline-size > 50rem) {
       header h1 {
         flex-grow: 0;
       }
