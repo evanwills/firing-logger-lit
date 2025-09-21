@@ -2,7 +2,7 @@ import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TUser } from '../../types/data.d.ts';
-import type { CDataStoreClass } from '../../types/store.d.ts';
+import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
 import { getDataStoreClassSingleton } from '../../store/FiringLogger.store.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
@@ -201,9 +201,11 @@ export class LoggerElement extends LitElement {
   async _getFromStore() : Promise<void> {
     if (this._store === null) {
       this._store = await getDataStoreClassSingleton();
-      getAuthUser(this._store.db)
+
+      this._store.action('getLoggedInUser' as TStoreAction)
         .then(this._setUser.bind(this))
         .catch(storeCatch);
+
       this._dbReady = true;
     }
   }

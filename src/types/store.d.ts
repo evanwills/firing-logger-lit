@@ -38,12 +38,12 @@ export type FReadyWatcher = (isReady: boolean) => void;
  *          Error message string if there was a problem with the
  *          write action
  */
-export type FWriteAction = (
+export type FDataStoreAction = (
   action : TStoreAction,
-  payload: any,
-) => Promise<string>;
+  payload: any = null,
+) => Promise<any>;
 
-export type FActionHandler = (payload: any) => Promise<string>
+export type FActionHandler = (payload: any) => Promise<any>
 
 export interface TActionList extends IKeyValue {
   [key:TStoreAction] : FActionHandler
@@ -94,7 +94,7 @@ export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
 export type CDataStoreClass = {
   ready: boolean,
   loading: boolean,
-  db: IDBPDatabase,
+  db: IDBPDatabase | null,
 
   /**
    * Read data from the store
@@ -135,7 +135,7 @@ export type CDataStoreClass = {
    *          Error message string if there was a problem with the
    *          write action
    */
-  action : FWriteAction,
+  action : FDataStoreAction,
 
   /**
    * Add watcher to do something after a successful write action

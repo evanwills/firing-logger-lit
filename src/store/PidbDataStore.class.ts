@@ -27,6 +27,9 @@ const emptyOrNull = (input : unknown) : boolean => (typeof input === 'undefined'
   || (typeof input === 'string' && input.trim() === ''));
 
 export default class PidbDataStore implements CDataStoreClass {
+  // ------------------------------------------------------
+  // START: class private properties
+
   _db : IDBPDatabase | null = null;
   _loading : boolean = false;
   _populate: boolean = false;
@@ -36,6 +39,10 @@ export default class PidbDataStore implements CDataStoreClass {
 
   _readyWatchers : FReadyWatcher[] = [];
   _actions : TActionList = {};
+
+  //  END:  class private properties
+  // ------------------------------------------------------
+  // START: class constructor
 
   constructor(
     dbName : string,
@@ -55,6 +62,10 @@ export default class PidbDataStore implements CDataStoreClass {
     this._actions = { ...actions };
   }
 
+  //  END:  class constructor
+  // ------------------------------------------------------
+  // START: private methods
+
   _callReadyWatchers(isReady: boolean) : void {
     for (const readyWatcher of this._readyWatchers) {
       readyWatcher(isReady);
@@ -69,7 +80,7 @@ export default class PidbDataStore implements CDataStoreClass {
       this._db = await openDB(
         this._dbName,
         this._dbVersion,
-        { upgrade: upgradeSchema }
+        { upgrade: upgradeSchema },
       );
 
       await migrateData(this._db, this._dbVersion);
@@ -87,11 +98,19 @@ export default class PidbDataStore implements CDataStoreClass {
     }
   }
 
-  get ready() { return this._ready; }
+  //  END:  private methods
+  // ------------------------------------------------------
+  // START: class getters
 
-  get loading() { return this._loading; }
+  get ready() : boolean { return this._ready; }
 
-  get db() : IDBPDatabase { return this._db as IDBPDatabase; }
+  get loading() : boolean { return this._loading; }
+
+  get db() : IDBPDatabase | null { return this._db; }
+
+  //  END:  class getters
+  // ------------------------------------------------------
+  // START: public methods
 
   /**
    * Read data from the store
@@ -175,8 +194,8 @@ export default class PidbDataStore implements CDataStoreClass {
    */
   action(
     action : TStoreAction,
-    payload: any
-  ) : Promise<string> {
+    payload: any = null,
+  ) : Promise<any> {
     console.group('PidbDataStore.write');
     console.log('action:', action);
     console.log('payload:', payload);
@@ -236,4 +255,7 @@ export default class PidbDataStore implements CDataStoreClass {
       this._readyWatchers.push(readyWatcher);
     }
   }
+
+  //  END:  public methods
+  // ------------------------------------------------------
 }
