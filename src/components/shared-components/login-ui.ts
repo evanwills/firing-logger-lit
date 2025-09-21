@@ -11,6 +11,7 @@ import { LoggerElement } from "./LoggerElement.ts";
 import { fieldListStyles } from "../../assets/css/input-field.css.ts";
 import { dialogStyles } from "../../assets/css/dialog.css.ts";
 import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
+import type { TUser } from "../../types/data.d.ts";
 
 @customElement('login-ui')
 export class LoginUI extends LoggerElement {
@@ -90,12 +91,10 @@ export class LoginUI extends LoggerElement {
     //   this._passwordField?.focus();
     } else {
       if (this._store !== null) {
-        const user = await this._store.read('users', `username=${this._username}`);
+        const user : TUser[] = await this._store.read('users', `username=${this._username}`);
 
         if (user.length > 0) {
-          const userID = await this._store.write('setLoggedInUser', user[0]);
-
-          setCookie('SessionID', userID, 30);
+          setCookie('UserID', user[0].id, 30);
 
           dispatchRouterEvent(this, '/login', { userName : user[0].username }, 'refresh');
         }

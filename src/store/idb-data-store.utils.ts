@@ -1,5 +1,5 @@
 import { type IDBPDatabase } from 'idb';
-import type { IKeyStr, IKeyValue } from "../types/data-simple.d.ts";
+import type { ID, IIdObject, IKeyStr, IKeyValPair, IKeyValue } from "../types/data-simple.d.ts";
 
 type Fresolver = (value: unknown) => void;
 type kv = {
@@ -9,7 +9,7 @@ type kv = {
 
 export const populateSlice = (
   db : IDBPDatabase,
-  items : Array<any>,
+  items : IIdObject[],
   slice : string,
 ) : Promise<(void | IDBValidKey)[]> => {
   const tx = db.transaction(slice, 'readwrite');
@@ -22,6 +22,39 @@ export const populateSlice = (
   rows.push(tx.done);
 
   return Promise.all(rows);
+};
+
+/**
+ * Populate an empty (or differently sized) IndexedDB DataStore
+ *
+ * @param db    IndexedDB database connection
+ * @param items Items to be added to the DB
+ * @param slice IndexedDB DataStore name
+ * @param force If there are already the same number of items in the
+ *              DB, check to see if there new items not already in
+ *              the DB
+ * @returns
+ */
+export const populateEmptySlice = async (
+  db : IDBPDatabase,
+  items : IIdObject[],
+  slice : string,
+  force : boolean = false,
+) : Promise<(void | IDBValidKey)[]> => {
+  const inDB : IIdObject[] = await db.getAll(slice);
+
+  let newItems : IIdObject[] = [];
+
+  if (inDB.length === 0) {
+    newItems = items;
+  } else if (force === true || items.length !== inDB.length) {
+    const existing : ID[] = inDB.map((item : IIdObject) : ID => item.id);
+    newItems = items.filter((item : IIdObject) : boolean => !existing.includes(item.id));
+  }
+
+  return (newItems.length > 0)
+    ? populateSlice(db, items, slice)
+    : Promise.resolve([]);
 };
 
 /**
@@ -53,6 +86,42 @@ export const populateEnumSlice = (
   rows.push(tx.done);
 
   return Promise.all(rows);
+};
+
+
+/**
+ * Insert Enum type data into an empty data store
+ *
+ * @param db     Database connection object
+ * @param obj    Data to be stored
+ * @param slice  Name of ObjectStore of the data is to be inserted
+ *               into.
+ * @param force
+ * @returns
+ */
+export const populateEmptyEnumSlice = async(
+  db : IDBPDatabase,
+  obj : IKeyValue,
+  slice : string,
+  force : boolean = false,
+) => {
+  const inDB : IKeyValPair[] = await db.getAll(slice);
+  let newObj : IKeyValue = {};
+
+  if (inDB.length === 0) {
+    newObj = obj;
+  } else if (force === true || Object.keys(obj).length !== inDB.length) {
+    const existing : string[] = inDB.map((item : IKeyValPair) : string => item.key);
+    for (const key of Object.keys(obj)) {
+      if (existing.includes(key) === false) {
+        newObj[key] = obj[key]
+      }
+    }
+  }
+
+  return (Object.keys(newObj).length > 0)
+    ? populateEnumSlice(db, newObj, slice)
+    : Promise.resolve([]);
 };
 
 const asObjKV = (data : kv[]) : IKeyValue => {

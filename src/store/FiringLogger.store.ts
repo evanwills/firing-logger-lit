@@ -2,43 +2,26 @@ import { type IDBPDatabase, type IDBPTransaction } from 'idb';
 import type {
   CDataStoreClass,
   FReadyWatcher,
-  TActionList,
-  TStoreAction,
-  TStoreSlice,
 } from '../types/store.d.ts';
-import type { TUser } from '../types/data.d.ts';
-import { PidbDataStore } from './PidbDataStore.class.ts';
+import PidbDataStore from './PidbDataStore.class.ts';
 import {
-  populateEnumSlice,
-  populateSlice,
+  populateEmptyEnumSlice,
+  populateEmptySlice,
   // storeCatch,
 } from './idb-data-store.utils.ts';
+import { getAuthUser, updateAuthUser } from "./user-data.utils.ts";
+import type { IDBPpopulate, IDBPupgrade } from "../types/pidb.d.ts";
 
 let store : CDataStoreClass | null = null;
 
-class FileLoggerStore extends PidbDataStore {
-  _db : IDBPDatabase | null = null;
-  _loading : boolean = false;
-  _populate: boolean = false;
-  _ready: boolean = false;
-
-  _readyWatchers : FReadyWatcher[] = [];
-  _actions : TActionList = {};
-
-  constructor(_dbName : string = '') {
-    super(_dbName);
-
-    this._initActions();
-  }
-
-  _upgradeDB(
-    db : IDBPDatabase,
+const upgradeDB : IDBPupgrade = (
+    db : IDBPDatabase<unknown>,
     oldV : number,
-    newV : number,
-    transaction: IDBPTransaction,
+    newV : number | null,
+    transaction: IDBPTransaction<unknown, string[], 'versionchange'>,
     event : Event,
-  ) : void {
-    console.group('FileLoggerStore._upgradeDB()');
+  ) : void => {
+    console.group('upgradeDB()');
     console.log('db:', db);
     console.log('oldV:', oldV);
     console.log('newV:', newV);
@@ -48,7 +31,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: users
 
     if (!db.objectStoreNames.contains('users')) {
-      this._populate = true;
       const users = db.createObjectStore('users', { keyPath: 'id' });
 
       users.createIndex('username', 'username', { unique: true });
@@ -71,7 +53,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: kilns
 
     if (!db.objectStoreNames.contains('kilns')) {
-      this._populate = true;
       const kilns = db.createObjectStore('kilns', { keyPath: 'id' });
 
       kilns.createIndex('brand', 'brand', { unique: false });
@@ -108,7 +89,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: programs
 
     if (!db.objectStoreNames.contains('programs')) {
-      this._populate = true;
       const programs = db.createObjectStore('programs', { keyPath: 'id' });
 
       programs.createIndex('kilnID', 'kilnID', { unique: false });
@@ -130,7 +110,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: firings
 
     if (!db.objectStoreNames.contains('firings')) {
-      this._populate = true;
       const firings = db.createObjectStore('firings', { keyPath: 'id' });
 
       firings.createIndex('kilnID', 'kilnID', { unique: false });
@@ -148,7 +127,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: cones
 
     if (!db.objectStoreNames.contains('cones')) {
-      this._populate = true;
       const cones = db.createObjectStore('cones', { keyPath: 'id' });
 
       cones.createIndex('cone', 'cone', { unique: false });
@@ -161,7 +139,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EfiringType
 
     if (!db.objectStoreNames.contains('EfiringType')) {
-      this._populate = true;
       const ftype = db.createObjectStore('EfiringType', { keyPath: 'key' });
 
       ftype.createIndex('value', 'value', { unique: true });
@@ -172,7 +149,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EprogramState
 
     if (!db.objectStoreNames.contains('EprogramState')) {
-      this._populate = true;
       const pState = db.createObjectStore('EprogramState', { keyPath: 'key' });
 
       pState.createIndex('value', 'value', { unique: true });
@@ -183,7 +159,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EkilnFiringState
 
     if (!db.objectStoreNames.contains('EkilnFiringState')) {
-      this._populate = true;
       const kfState = db.createObjectStore('EkilnFiringState', { keyPath: 'key' });
 
       kfState.createIndex('value', 'value', { unique: true });
@@ -194,7 +169,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EtemperatureState
 
     if (!db.objectStoreNames.contains('EtemperatureState')) {
-      this._populate = true;
       const tState = db.createObjectStore('EtemperatureState', { keyPath: 'key' });
 
       tState.createIndex('value', 'value', { unique: true });
@@ -205,7 +179,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EfuelSource
 
     if (!db.objectStoreNames.contains('EfuelSource')) {
-      this._populate = true;
       const fSource = db.createObjectStore('EfuelSource', { keyPath: 'key' });
 
       fSource.createIndex('value', 'value', { unique: true });
@@ -216,7 +189,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EkilnType
 
     if (!db.objectStoreNames.contains('EkilnType')) {
-      this._populate = true;
       const kType = db.createObjectStore('EkilnType', { keyPath: 'key' });
 
       kType.createIndex('value', 'value', { unique: true });
@@ -227,7 +199,6 @@ class FileLoggerStore extends PidbDataStore {
     // START: EequipmentLogType
 
     if (!db.objectStoreNames.contains('EequipmentLogType')) {
-      this._populate = true;
       const elType = db.createObjectStore('EequipmentLogType', { keyPath: 'key' });
 
       elType.createIndex('value', 'value', { unique: true });
@@ -238,22 +209,12 @@ class FileLoggerStore extends PidbDataStore {
     // START: EprogramStatus
 
     if (!db.objectStoreNames.contains('EprogramStatus')) {
-      this._populate = true;
       const prState = db.createObjectStore('EprogramStatus', { keyPath: 'key' });
 
       prState.createIndex('value', 'value', { unique: true });
     }
 
     //  END:  EprogramStatus
-    // ----------------------------------------------------------
-    // START: UserPreferences
-
-    if (!db.objectStoreNames.contains('UserPreferences')) {
-      this._populate = true;
-      db.createObjectStore('UserPreferences', { keyPath: 'key' });
-    }
-
-    //  END:  UserPreferences
     // ----------------------------------------------------------
     // START: EAdminLevels
 
@@ -266,33 +227,31 @@ class FileLoggerStore extends PidbDataStore {
     //  END:  EAdminLevels
     // ----------------------------------------------------------
 
-    this._ready = !this._populate;
-    console.log('this._populate:', this._populate);
     console.groupEnd();
-  }
+};
 
-  async _populateDB(db : IDBPDatabase) : Promise<void> {
+const populateDB : IDBPpopulate = async (db : IDBPDatabase) : Promise<void> => {
+  const testData = await db.get('EfiringType', 'bisque');
+  console.log('testData:', testData);
+
+  if (typeof testData !== 'string') {
     const loggerData = await globalThis.fetch('/data/firing-logger.json');
 
     if (loggerData.ok === true)  {
       const data = await loggerData.json();
       // console.log('data:', data);
 
-      populateSlice(db, data.users, 'users');
-      populateSlice(db, data.kilns, 'kilns');
-      populateSlice(db, data.programs, 'programs');
-      populateEnumSlice(db, data.EfiringType, 'EfiringType');
-      populateEnumSlice(db, data.EprogramState, 'EprogramState');
-      populateEnumSlice(db, data.EkilnFiringState, 'EkilnFiringState');
-      populateEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
-      // populateEnumSlice(db, data.Eview, 'Eview');
-      populateEnumSlice(db, data.EfuelSource, 'EfuelSource');
-      populateEnumSlice(db, data.EkilnType, 'EkilnType');
-      populateEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
-      populateEnumSlice(db, data.EprogramStatus, 'EprogramStatus');
-
-      populateEnumSlice(db, data.UserPreferences, 'UserPreferences');
-      // populateEnumSlice(db, data.EAdminLevels, 'EAdminLevels');
+      populateEmptySlice(db, data.users, 'users');
+      populateEmptySlice(db, data.kilns, 'kilns');
+      populateEmptySlice(db, data.programs, 'programs');
+      populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
+      populateEmptyEnumSlice(db, data.EprogramState, 'EprogramState');
+      populateEmptyEnumSlice(db, data.EkilnFiringState, 'EkilnFiringState');
+      populateEmptyEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
+      populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
+      populateEmptyEnumSlice(db, data.EkilnType, 'EkilnType');
+      populateEmptyEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
+      populateEmptyEnumSlice(db, data.EprogramStatus, 'EprogramStatus');
     }
 
     const coneData = await globalThis.fetch('/data/orton-cones.json');
@@ -301,45 +260,15 @@ class FileLoggerStore extends PidbDataStore {
       const data = await coneData.json();
       // console.log('data:', data);
 
-      populateSlice(db, data, 'cones');
+      populateEmptySlice(db, data, 'cones');
     }
-
-    this._ready = true;
   }
-
-  _initActions(): void {
-    // super._initActions();
-    this._actions = {
-      ...this._actions,
-      setLoggedInUser: async (db :IDBPDatabase, user : TUser) : Promise<string> => {
-        await populateEnumSlice(db, user, 'UserPreferences', true);
-        return user.id;
-      }
-    }
-    console.group('FileLoggerStore._initActions');
-    console.log('this._actions:', this._actions);
-    console.groupEnd();
-  }
-
-//   write(action: TStoreAction, payload: any): Promise<string> {
-//     console.group('FileLoggerStore.write');
-//     console.log('action:', action);
-//     console.log('payload:', payload);
-//     console.log('this._actions:', this._actions);
-//     console.log(`this._actions.${action}:`, this._actions[action]);
-//     console.log(`typeof this._actions.${action}:`, typeof this._actions[action]);
-
-//     if (typeof this._actions[action] === 'function') {
-//       console.info('Yay!!! We found an action');
-//       console.groupEnd();
-//       return this._actions[action](payload);
-//     }
-
-//     console.error(`Boo!!! No action found for "${action}"`)
-//     console.groupEnd();
-//     return Promise.reject(`No action found for "${action}"`);
-//   }
 }
+
+const actions = {
+  getLoggedInUser: getAuthUser,
+  updateLoggedInUser: updateAuthUser,
+};
 
 export const getDataStoreClassSingleton = (
   readyWatcher : FReadyWatcher | null = null,
@@ -348,7 +277,17 @@ export const getDataStoreClassSingleton = (
     return Promise.resolve(store);
   }
 
-  store = new FileLoggerStore();
+  store = new PidbDataStore(
+    (typeof import.meta.env?.VITE_DB_NAME === 'string' && import.meta.env.VITE_DB_NAME.trim() !== '')
+      ? import.meta.env.VITE_DB_NAME
+      : 'firing-logger',
+    (typeof import.meta.env?.VITE_DB_VERSION === 'string' && /^\d+$/.test(import.meta.env.VITE_DB_VERSION))
+      ? parseInt(import.meta.env.VITE_DB_VERSION, 10)
+      : 1,
+    upgradeDB,
+    populateDB,
+    actions,
+  );
 
   if (readyWatcher !== null) {
     store.watchReady(readyWatcher);

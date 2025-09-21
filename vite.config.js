@@ -1,5 +1,5 @@
 
-// import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid';
 
 // const offset = -60000; // 1 minute in the past
 // const offset = 10000; // 10 seconds in the future
@@ -25,7 +25,9 @@ export default {
           res.setHeader(
             'Set-Cookie',
             [
-              `${cookieName}=${userID}; expires=${expires}; Path=/;`,
+              `UserID=${userID}; expires=${expires}; Path=/; SameSite=Strict`,
+              `${cookieName}=${nanoid()}; expires=${expires}; Path=/; HttpOnly; SameSite=Strict`,
+
               // `${cookieName}Kilns=${userID}; expires=${expires}; Path=/kilns;`,
               // `${cookieName}Firings=${userID}; expires=${expires}; Path=/firings;`,
               // `${cookieName}Programs=${userID}; expires=${expires}; Path=/programs;`,

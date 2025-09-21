@@ -94,6 +94,7 @@ export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
 export type CDataStoreClass = {
   ready: boolean,
   loading: boolean,
+  db: IDBPDatabase,
 
   /**
    * Read data from the store
@@ -122,16 +123,19 @@ export type CDataStoreClass = {
   ) => Promise<any>,
 
   /**
-   * Write data to the store
+   * action() runs a predefined action against the store. Normally,
+   * this is used for write actions but it can also be used for
+   * complex read requests.
    *
-   * @param action  Name of write action to be performed on the store
+   * @param action  Name of predefined action to be performed on the
+   *                store
    * @param payload Data to be written to the store
    *
    * @returns Empty string if write action worked without issue.
    *          Error message string if there was a problem with the
    *          write action
    */
-  write : FWriteAction,
+  action : FWriteAction,
 
   /**
    * Add watcher to do something after a successful write action

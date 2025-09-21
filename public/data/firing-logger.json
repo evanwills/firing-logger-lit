@@ -182,7 +182,9 @@
       "canPrice": true,
       "canProgram": true,
       "canUnpack": true,
-      "adminLevel": 3
+      "adminLevel": 3,
+      "notMetric": false,
+      "colourScheme": "auto"
     },
     {
       "id": "BVfKmdlaXp",
@@ -198,7 +200,9 @@
       "canPrice": true,
       "canProgram": false,
       "canUnpack": true,
-      "adminLevel": 2
+      "adminLevel": 2,
+      "notMetric": false,
+      "colourScheme": "auto"
     },
     {
       "id": "5sHhf2UxqG",
@@ -214,7 +218,9 @@
       "canPrice": true,
       "canProgram": false,
       "canUnpack": true,
-      "adminLevel": 2
+      "adminLevel": 2,
+      "notMetric": false,
+      "colourScheme": "auto"
     },
     {
       "id": "oZlPz9aeW9",
@@ -230,28 +236,11 @@
       "canPrice": true,
       "canProgram": false,
       "canUnpack": true,
-      "adminLevel": 1
+      "adminLevel": 1,
+      "notMetric": false,
+      "colourScheme": "auto"
     }
   ],
-
-  "UserPreferences": {
-    "id": "wfj_myxTAV",
-    "username": "evanwills",
-    "firstName": "Evan",
-    "lastName": "Wills",
-    "preferredName": "Evan",
-    "phone": "+610412345678",
-    "email": "evanwills@example.com",
-    "canFire": true,
-    "canLog": true,
-    "canPack": true,
-    "canPrice": true,
-    "canProgram": true,
-    "canUnpack": true,
-    "adminLevel": 3,
-    "notMetric": false,
-    "colourScheme": "auto"
-  },
 
   "EfiringType": {
     "bisque": "Bisque",
@@ -287,15 +276,6 @@
     "overError": "OverError",
     "under": "Under",
     "underError": "UnderError"
-  },
-
-  "Eview": {
-    "diary": "Diary",
-    "firings": "Firings",
-    "kilns": "Kilns",
-    "programs": "Programs",
-    "report": "Report",
-    "users": "Users"
   },
 
   "EfuelSource": {

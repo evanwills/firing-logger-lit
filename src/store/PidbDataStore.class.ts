@@ -1,4 +1,4 @@
-import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb';
+import { openDB, type IDBPDatabase } from 'idb';
 import type {
   CDataStoreClass,
   FReadyWatcher,
@@ -12,6 +12,7 @@ import {
   outputAs,
   parseKeyValSelector,
 } from './idb-data-store.utils.ts';
+import type { IDBPpopulate, IDBPupgrade } from "../types/pidb.d.ts";
 
 /**
  * Check whether a value is empty or null
@@ -25,15 +26,7 @@ const emptyOrNull = (input : unknown) : boolean => (typeof input === 'undefined'
   || input === 0
   || (typeof input === 'string' && input.trim() === ''));
 
-const defaultDbName = (typeof import.meta.env?.VITE_DB_NAME === 'string' && import.meta.env.VITE_DB_NAME.trim() !== '')
-  ? import.meta.env.VITE_DB_NAME
-  : 'unknown-db';
-
-const defaultDbVersion = (typeof import.meta.env?.VITE_DB_VERSION === 'string' && /^\d+$/.test(import.meta.env.VITE_DB_VERSION))
-  ? parseInt(import.meta.env.VITE_DB_VERSION, 10)
-  : 1;
-
-export class PidbDataStore implements CDataStoreClass {
+export default class PidbDataStore implements CDataStoreClass {
   _db : IDBPDatabase | null = null;
   _loading : boolean = false;
   _populate: boolean = false;
@@ -44,19 +37,21 @@ export class PidbDataStore implements CDataStoreClass {
   _readyWatchers : FReadyWatcher[] = [];
   _actions : TActionList = {};
 
-  constructor(dbName : string = '', dbVerion : number = 0) {
+  constructor(
+    dbName : string,
+    dbVerion : number,
+    upgrade : IDBPupgrade,
+    populate : IDBPpopulate,
+    actions : TActionList,
+  ) {
     this._readyWatchers = [];
     this._populate = false;
-    this._dbName = (dbName.trim() !== '')
-      ? dbName
-      : defaultDbName;
+    this._dbName = dbName;
 
-    this._dbVersion = (dbVerion > 0)
-      ? dbVerion
-      : defaultDbVersion;
+    this._dbVersion = dbVerion;
 
-    this._initDB();
-    this._initActions();
+    this._initDB(upgrade, populate);
+    this._initActions(actions);
   }
 
   _callReadyWatchers(isReady: boolean) : void {
@@ -66,45 +61,32 @@ export class PidbDataStore implements CDataStoreClass {
     this._readyWatchers = [];
   }
 
-  _upgradeDB(
-    db : IDBPDatabase,
-    oldV : number,
-    newV : number,
-    transaction: IDBPTransaction,
-    event : Event,
-  ) : void {
-    console.group('PidbDataStore._upgradeDB()');
-    console.log('db:', db);
-    console.log('oldV:', oldV);
-    console.log('newV:', newV);
-    console.log('transaction:', transaction);
-    console.log('event:', event);
-    console.log('this._populate:', this._populate);
-    console.groupEnd();
-  }
-
-  async _populateDB(_db : IDBPDatabase) : Promise<void> {
-  }
-
-  _initActions() {
+  _initActions(actions : TActionList) {
     console.group('PidbDataStore._initAction()');
+
+    this._actions = {
+      ...this._actions,
+      ...actions,
+    }
+
     console.log('this._actions:', this._actions);
     console.groupEnd();
   }
 
-  async _initDB() : Promise<void> {
+  async _initDB(upgrade : IDBPupgrade, populate : IDBPpopulate) : Promise<void> {
     if (this._db === null && this._loading !== true) {
       this._loading = true;
 
       this._db = await openDB(
         this._dbName,
         this._dbVersion,
-        { upgrade: this._upgradeDB.bind(this) }
+        { upgrade }
       );
 
-      if (this._populate === true) {
-        await this._populateDB(this._db);
-      }
+      console.group('PidbDataStore._initDB()');
+      console.log('this._db:', this._db);
+      await populate(this._db);
+      console.groupEnd();
 
       this._loading = false;
       this._ready = true;
@@ -120,7 +102,10 @@ export class PidbDataStore implements CDataStoreClass {
   }
 
   get ready() { return this._ready; }
+
   get loading() { return this._loading; }
+
+  get db() : IDBPDatabase { return this._db as IDBPDatabase; }
 
   /**
    * Read data from the store
@@ -147,8 +132,6 @@ export class PidbDataStore implements CDataStoreClass {
     selector : string = '',
     outputMode : string[] | boolean = false,
   ) : Promise<any> {
-    await this._initDB();
-
     if (this._db !== null) {
       if (emptyOrNull(selector)) {
         return outputAs(this._db.getAll(storeName), outputMode);
@@ -192,16 +175,19 @@ export class PidbDataStore implements CDataStoreClass {
   }
 
   /**
-   * Write data to the store
+   * action() runs a predefined action against the store. Normally,
+   * this is used for write actions but it can also be used for
+   * complex read requests.
    *
-   * @param action  Name of write action to be performed on the store
+   * @param action  Name of predefined action to be performed on the
+   *                store
    * @param payload Data to be written to the store
    *
    * @returns Empty string if write action worked without issue.
    *          Error message string if there was a problem with the
    *          write action
    */
-  write(
+  action(
     action : TStoreAction,
     payload: any
   ) : Promise<string> {

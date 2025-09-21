@@ -1,14 +1,15 @@
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { TUser } from "../../types/data.d.ts";
+import type { TUser } from '../../types/data.d.ts';
 import type { CDataStoreClass } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
-import { getDataStoreClassSingleton } from '../../store/FiringLoggerStore.class.ts';
+import { getDataStoreClassSingleton } from '../../store/FiringLogger.store.ts';
+import { storeCatch } from '../../store/idb-data-store.utils.ts';
+import { isUser } from '../../types/data.type-guards.ts';
+import { getCookie } from '../../utils/cookie.utils.ts';
+import { getAuthUser } from '../../store/user-data.utils.ts';
 import './loading-spinner.ts';
-import { storeCatch } from "../../store/idb-data-store.utils.ts";
-import { isUser } from "../../types/data.type-guards.ts";
-import { getCookie } from "../../utils/cookie.utils.ts";
 
 /**
  * `LoggerElement` is a renderless extension of `LitElement`. It
@@ -200,7 +201,9 @@ export class LoggerElement extends LitElement {
   async _getFromStore() : Promise<void> {
     if (this._store === null) {
       this._store = await getDataStoreClassSingleton();
-      this._store.read('UserPreferences', '', true).then(this._setUser.bind(this)).catch(storeCatch);
+      getAuthUser(this._store.db)
+        .then(this._setUser.bind(this))
+        .catch(storeCatch);
       this._dbReady = true;
     }
   }
