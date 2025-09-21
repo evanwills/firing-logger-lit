@@ -39,15 +39,16 @@ export const populateEmptySlice = async (
   db : IDBPDatabase,
   items : IIdObject[],
   slice : string,
-  force : boolean = false,
+  action : '' | 'update' | 'replace' = '',
 ) : Promise<(void | IDBValidKey)[]> => {
   const inDB : IIdObject[] = await db.getAll(slice);
 
   let newItems : IIdObject[] = [];
 
-  if (inDB.length === 0) {
+  if (inDB.length === 0 || action === 'replace') {
     newItems = items;
-  } else if (force === true || items.length !== inDB.length) {
+    db.clear(slice)
+  } else if (action === 'update' || items.length !== inDB.length) {
     const existing : ID[] = inDB.map((item : IIdObject) : ID => item.id);
     newItems = items.filter((item : IIdObject) : boolean => !existing.includes(item.id));
   }
@@ -103,14 +104,15 @@ export const populateEmptyEnumSlice = async(
   db : IDBPDatabase,
   obj : IKeyValue,
   slice : string,
-  force : boolean = false,
+  action : '' | 'update' | 'replace' = '',
 ) => {
   const inDB : IKeyValPair[] = await db.getAll(slice);
   let newObj : IKeyValue = {};
 
-  if (inDB.length === 0) {
+  if (inDB.length === 0 || action === 'replace') {
     newObj = obj;
-  } else if (force === true || Object.keys(obj).length !== inDB.length) {
+    db.clear(slice)
+  } else if (action === 'update' || Object.keys(obj).length !== inDB.length) {
     const existing : string[] = inDB.map((item : IKeyValPair) : string => item.key);
     for (const key of Object.keys(obj)) {
       if (existing.includes(key) === false) {

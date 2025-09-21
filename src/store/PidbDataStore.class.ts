@@ -12,7 +12,7 @@ import {
   outputAs,
   parseKeyValSelector,
 } from './idb-data-store.utils.ts';
-import type { IDBPpopulate, IDBPupgrade } from "../types/pidb.d.ts";
+import type { IDBPmigrate, IDBPupgrade } from "../types/pidb.d.ts";
 
 /**
  * Check whether a value is empty or null
@@ -40,8 +40,8 @@ export default class PidbDataStore implements CDataStoreClass {
   constructor(
     dbName : string,
     dbVerion : number,
-    upgrade : IDBPupgrade,
-    populate : IDBPpopulate,
+    upgradeSchema : IDBPupgrade,
+    migrateData : IDBPmigrate,
     actions : TActionList,
   ) {
     this._readyWatchers = [];
@@ -50,8 +50,9 @@ export default class PidbDataStore implements CDataStoreClass {
 
     this._dbVersion = dbVerion;
 
-    this._initDB(upgrade, populate);
-    this._initActions(actions);
+    this._initDB(upgradeSchema, migrateData);
+
+    this._actions = { ...actions };
   }
 
   _callReadyWatchers(isReady: boolean) : void {
@@ -61,32 +62,17 @@ export default class PidbDataStore implements CDataStoreClass {
     this._readyWatchers = [];
   }
 
-  _initActions(actions : TActionList) {
-    console.group('PidbDataStore._initAction()');
-
-    this._actions = {
-      ...this._actions,
-      ...actions,
-    }
-
-    console.log('this._actions:', this._actions);
-    console.groupEnd();
-  }
-
-  async _initDB(upgrade : IDBPupgrade, populate : IDBPpopulate) : Promise<void> {
+  async _initDB(upgradeSchema : IDBPupgrade, migrateData : IDBPmigrate) : Promise<void> {
     if (this._db === null && this._loading !== true) {
       this._loading = true;
 
       this._db = await openDB(
         this._dbName,
         this._dbVersion,
-        { upgrade }
+        { upgrade: upgradeSchema }
       );
 
-      console.group('PidbDataStore._initDB()');
-      console.log('this._db:', this._db);
-      await populate(this._db);
-      console.groupEnd();
+      await migrateData(this._db, this._dbVersion);
 
       this._loading = false;
       this._ready = true;

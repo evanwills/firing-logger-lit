@@ -6,4 +6,4 @@ export type IDBPupgrade = (
   event: IDBVersionChangeEvent
 ) => void;
 
-export type IDBPpopulate = (db : IDBPDatabase) => Promise<void>;
+export type IDBPmigrate = (db : IDBPDatabase, version: number) => Promise<void>;

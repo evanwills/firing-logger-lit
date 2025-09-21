@@ -4,12 +4,7 @@ import type { TUser } from '../types/data.d.ts';
 import { getCookie } from '../utils/cookie.utils.ts';
 
 export const getAuthUser = (db : IDBPDatabase) : Promise<TUser|null> => {
-  console.group('getAuthUser()');
-  console.log('db:', db)
-  console.log('db:', db)
   const userID = getCookie('UserID');
-  console.log('userID:', userID);
-  console.groupEnd();
 
   if (userID === null) {
     return Promise.resolve(null);

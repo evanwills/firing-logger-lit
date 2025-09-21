@@ -7,26 +7,35 @@ import PidbDataStore from './PidbDataStore.class.ts';
 import {
   populateEmptyEnumSlice,
   populateEmptySlice,
+  populateEnumSlice,
   // storeCatch,
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from "./user-data.utils.ts";
-import type { IDBPpopulate, IDBPupgrade } from "../types/pidb.d.ts";
+import type { IDBPmigrate, IDBPupgrade } from "../types/pidb.d.ts";
 
 let store : CDataStoreClass | null = null;
 
-const upgradeDB : IDBPupgrade = (
+const upgradeSchema : IDBPupgrade = (
     db : IDBPDatabase<unknown>,
     oldV : number,
     newV : number | null,
     transaction: IDBPTransaction<unknown, string[], 'versionchange'>,
     event : Event,
   ) : void => {
-    console.group('upgradeDB()');
+    console.group('upgradeSchema()');
     console.log('db:', db);
     console.log('oldV:', oldV);
     console.log('newV:', newV);
     console.log('transaction:', transaction);
     console.log('event:', event);
+    // ----------------------------------------------------------
+    // START: _meta
+
+    if (!db.objectStoreNames.contains('_meta')) {
+      db.createObjectStore('_meta', { keyPath: 'key' });
+    }
+
+    //  END:  _meta
     // ----------------------------------------------------------
     // START: users
 
@@ -48,7 +57,7 @@ const upgradeDB : IDBPupgrade = (
       users.createIndex('adminLevel', 'adminLevel', { unique: false });
     }
 
-    //  END:  firings
+    //  END:  users
     // ----------------------------------------------------------
     // START: kilns
 
@@ -230,16 +239,25 @@ const upgradeDB : IDBPupgrade = (
     console.groupEnd();
 };
 
-const populateDB : IDBPpopulate = async (db : IDBPDatabase) : Promise<void> => {
-  const testData = await db.get('EfiringType', 'bisque');
-  console.log('testData:', testData);
+const migrateData : IDBPmigrate = async (
+  db : IDBPDatabase,
+  version : number,
+) : Promise<void> => {
+  const dbVersion = await db.get('_meta', 'version');
 
-  if (typeof testData !== 'string') {
+  if (typeof dbVersion !== 'string' || parseInt(dbVersion, 10) < version) {
     const loggerData = await globalThis.fetch('/data/firing-logger.json');
 
     if (loggerData.ok === true)  {
       const data = await loggerData.json();
       // console.log('data:', data);
+
+      populateEmptyEnumSlice(
+        db,
+        { version, date: new Date().toISOString() },
+        '_meta',
+        'replace',
+      );
 
       populateEmptySlice(db, data.users, 'users');
       populateEmptySlice(db, data.kilns, 'kilns');
@@ -284,8 +302,8 @@ export const getDataStoreClassSingleton = (
     (typeof import.meta.env?.VITE_DB_VERSION === 'string' && /^\d+$/.test(import.meta.env.VITE_DB_VERSION))
       ? parseInt(import.meta.env.VITE_DB_VERSION, 10)
       : 1,
-    upgradeDB,
-    populateDB,
+    upgradeSchema,
+    migrateData,
     actions,
   );
 
