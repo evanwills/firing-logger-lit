@@ -1,4 +1,13 @@
-import { css } from "lit";
+import { css } from 'lit';
+
+export const labelWidths = css`
+.label-6 { --label-width: 6rem; }
+.label-7 { --label-width: 7rem; }
+.label-8 { --label-width: 8rem; }
+.label-9 { --label-width: 9rem; }
+.label-10 { --label-width: 10rem; }
+.label-12 { --label-width: 12rem; }
+`;
 
 export const inputFieldCSS = css`
 :host {
@@ -133,6 +142,11 @@ textarea {
   padding-right: 0.5rem;
   width: 100%;
   transition: min-height ease-in-out var(--textarea-height-trans-time);
+}
+.required {
+  font-size: 0.875rem;
+  font-weight: normal;
+  font-style: italic;
 }
 @container whole-field (width > 24rem) {
   .inner.inner-help {

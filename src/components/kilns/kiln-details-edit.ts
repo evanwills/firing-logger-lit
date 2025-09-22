@@ -1,12 +1,7 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
 import { KilnDetails } from './kiln-details.ts';
-import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
-import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
-import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
-import { getHumanDate, getISO8601date } from '../../utils/date-time.utils.ts';
-import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
+import { getISO8601date } from '../../utils/date-time.utils.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
 import { ucFirst } from "../../utils/string.utils.ts";
@@ -20,6 +15,7 @@ import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
 import { enumToOptions } from "../../utils/lit.utils.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
  * An example element.
@@ -113,6 +109,12 @@ export class KilnDetailsEdit extends KilnDetails {
       this._kilnOptions = enumToOptions(this._kilnTypes);
     }
 
+    const detailName : string | null = (this.mode === 'edit')
+      ? 'kiln-blocks'
+      : null
+
+    const openOthers : boolean  = (this.mode !== 'edit')
+
     return (this._userHasAuth(2))
       ? html`<div>
           <h2>${(this.mode === 'add')
@@ -120,77 +122,88 @@ export class KilnDetailsEdit extends KilnDetails {
             : `${ucFirst(this.mode)} ${this._name}`
           }</h2>
 
-          <ul>
-            <li>
-              <accessible-text-field
-                field-id="name"
-                label="Name"
-                required
-                value="${this._name}"
-                validation-type="name"></accessible-text-field>
-            </li>
-            <li>
-              <accessible-text-field
-                field-id="brand"
-                label="Brand"
-                required
-                value="${this._brand}"
-                validation-type="name"></accessible-text-field>
-            </li>
-            <li>
-              <accessible-text-field
-                field-id="model"
-                label="Model"
-                required
-                value="${this._model}"
-                validation-type="name"></accessible-text-field>
-            </li>
-            <li>
-              <accessible-select-field
-                field-id="type"
-                label="Kiln type"
-                .options=${this._kilnOptions}
-                value="${this._type}"></accessible-select-field>
-            </li>
-            <li>
-              <accessible-select-field
-                field-id="fuel"
-                label="Energy source"
-                .options=${this._fuelOptions}
-                value="${this._fuel}"></accessible-select-field>
-            </li>
-            <li>
-              <accessible-temporal-field
-                field-id="installDate"
-                label="Install date"
-                type="date"
-                step="1"
-                value="${getISO8601date(this._installDate)}"
-                validation-type="name"></accessible-temporal-field>
-            </li>
-            <li>
-              <accessible-number-field
-                field-id="maxTemp"
-                label="Max temp"
-                max="1400"
-                required
-                step="1"
-                unit="°${this._tUnit}"
-                value="${this._tConverter(this._maxTemp)}"></accessible-number-field>
-            </li>
-            <li>
-              <accessible-number-field
-                field-id="maxProgramCount"
-                label="Max program count"
-                max="100"
-                required
-                step="1"
-                value="${this._maxProgramCount}"></accessible-number-field>
-            </li>
-          </ul>
-          <details>
-            <summary>Internal dimensions</summary>
-            <ul>
+          <details
+            aria-labeledby="primary-kiln-details"
+            .name=${ifDefined(detailName)}
+            open
+            role="group">
+            <summary id="primary-kiln-details">Name & type</summary>
+            <ul class="label-8">
+              <li>
+                <accessible-text-field
+                  field-id="name"
+                  label="Name"
+                  required
+                  value="${this._name}"
+                  validation-type="name"></accessible-text-field>
+              </li>
+              <li>
+                <accessible-text-field
+                  field-id="brand"
+                  label="Brand"
+                  required
+                  value="${this._brand}"
+                  validation-type="name"></accessible-text-field>
+              </li>
+              <li>
+                <accessible-text-field
+                  field-id="model"
+                  label="Model"
+                  required
+                  value="${this._model}"
+                  validation-type="name"></accessible-text-field>
+              </li>
+            </ul>
+          </details>
+          <details
+            aria-labeledby="kiln-details"
+            .name=${ifDefined(detailName)}
+            ?open=${openOthers}
+            role="group">
+            <summary id="kiln-details">Details</summary>
+            <ul class="label-12">
+              <li>
+                <accessible-select-field
+                  field-id="type"
+                  label="Kiln type"
+                  .options=${this._kilnOptions}
+                  value="${this._type}"></accessible-select-field>
+              </li>
+              <li>
+                <accessible-select-field
+                  field-id="fuel"
+                  label="Energy source"
+                  .options=${this._fuelOptions}
+                  value="${this._fuel}"></accessible-select-field>
+              </li>
+              <li>
+                <accessible-number-field
+                  field-id="maxTemp"
+                  label="Max temp"
+                  max="1400"
+                  required
+                  step="1"
+                  unit="°${this._tUnit}"
+                  value="${this._tConverter(this._maxTemp)}"></accessible-number-field>
+              </li>
+              <li>
+                <accessible-number-field
+                  field-id="maxProgramCount"
+                  label="Max programs"
+                  max="100"
+                  required
+                  step="1"
+                  value="${this._maxProgramCount}"></accessible-number-field>
+              </li>
+            </ul>
+          </details>
+          <details
+            aria-labeledby="internal-kiln-dimensions"
+            .name=${ifDefined(detailName)}
+            ?open=${openOthers}
+            role="group">
+            <summary id="internal-kiln-dimensions">Internal dimensions</summary>
+            <ul class="label-8">
               <li>
                 <accessible-number-field
                   field-id="width"
@@ -223,9 +236,33 @@ export class KilnDetailsEdit extends KilnDetails {
               </li>
             </ul>
           </details>
-          <details>
-            <summary>Allowed firing types:</summary>
+          <details
+            aria-labeledby="allowed-firing-types"
+            .name=${ifDefined(detailName)}
+            ?open=${openOthers}
+            role="group">
+            <summary id="allowed-firing-types">Allowed firing types:</summary>
+            <ul class="label-12">
+              <li>
+              </li>
+            </ul>
+          </details>
+          <details
+            aria-labeledby="kiln-status"
+            .name=${ifDefined(detailName)}
+            ?open=${openOthers}
+            role="group">
+            <summary id="kiln-status">Status</summary>
             <ul>
+              <li>
+                <accessible-temporal-field
+                  field-id="installDate"
+                  label="Install date"
+                  type="date"
+                  step="1"
+                  value="${getISO8601date(this._installDate)}"
+                  validation-type="name"></accessible-temporal-field>
+              </li>
               <li>
               </li>
             </ul>
@@ -240,54 +277,6 @@ export class KilnDetailsEdit extends KilnDetails {
   //  END:  main render method
   // ------------------------------------------------------
   // START: styles
-
-  static styles = css`
-  h3 { text-align: left; }
-  ul {
-    --label-width: 6rem;
-    list-style: none;
-    margin: 1rem auto;
-    max-width: 30rem;
-    padding: 0;
-  }
-  li {
-    margin: 0;
-    padding: 0.25rem 0;
-  }
-  .kv-list {
-    --label-width: 6.5rem;
-    --label-align: right;
-    column-width: 10rem;
-    column-gap: 3rem;
-  }
-  details {
-    text-align: start;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 0.05rem solid #ccc;
-  }
-  details > summary {
-    font-weight: bold;
-  }
-  details > summary:hover {
-    cursor: pointer;
-  }
-  details .kv-list {
-    margin-bottom: 0.5rem;
-  }
-  details p {
-    margin-bottom: 0.5rem;
-    margin-top: 1.5rem;
-    text-align: end;
-    }
-
-  ${tableStyles}
-  ${srOnly}
-
-  tbody th { text-align: start; }
-  tbody td { text-align: center; }
-  table { margin: 0 auto; }
-  `;
 
   //  END:  styles
   // ------------------------------------------------------

@@ -332,6 +332,10 @@ export class AccessibleWholeField extends LitElement {
       }
     }
 
+    const requiredTxt = (this.required === true)
+      ? html` <span class="required">(required)</span>`
+      : '';
+
     return html`
       <div class="outer">
         <div
@@ -340,8 +344,8 @@ export class AccessibleWholeField extends LitElement {
           role=${ifDefined((this._asGroup === true) ? 'group' : null)}
           @focusin=${this.handleFocus}>
           ${(this._asGroup === false)
-            ? html`<label for="${this.fieldID}">${this.label}</label>`
-            : html`<div class="label" id="${groupLabel}">${this.label}</div>`}
+            ? html`<label for="${this.fieldID}">${this.label}${requiredTxt}:</label>`
+            : html`<div class="label" id="${groupLabel}">${this.label}${requiredTxt}:</div>`}
           ${this.renderError()}
           ${this.renderField()}
           ${help}

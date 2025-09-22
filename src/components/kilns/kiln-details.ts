@@ -15,6 +15,8 @@ import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
+import { detailsStyle } from "../../assets/css/details.css.ts";
+import { labelWidths } from "../../assets/css/input-field.css.ts";
 
 /**
  * An example element.
@@ -364,12 +366,12 @@ export class KilnDetails extends LoggerElement {
     if (isNonEmptyStr(this._id) === true) {
       if (this._userHasAuth(2)) {
         showBtns = true;
-        editBtn = html`<router-link
+        editBtn = html`<p class="last-btn"><router-link
         class="btn"
         data-uid="${this.kilnID}"
         label="Edit"
         sr-label="${this._name}"
-        url="/kilns/${this._path}/edit"></router-link>`;
+        url="/kilns/${this._path}/edit"></router-link></p>`;
       }
 
       if (this._userCan('program')) {
@@ -446,10 +448,7 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Salt Glaze" .value="${this._saltGlaze}"></read-only-field></li>
       </ul>
     </details>
-    ${(showBtns === true)
-      ? html`<p>${editBtn} ${newProgramBtn}</p>`
-      : ''
-    }
+    ${editBtn}
     `;
   }
 
@@ -460,7 +459,6 @@ export class KilnDetails extends LoggerElement {
   static styles = css`
   h3 { text-align: left; }
   ul {
-    --label-width: 6rem;
     list-style: none;
     margin: 1rem 0;
     padding: 0;
@@ -475,27 +473,14 @@ export class KilnDetails extends LoggerElement {
     column-width: 10rem;
     column-gap: 3rem;
   }
-  details {
-    text-align: start;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 0.05rem solid #ccc;
-  }
-  details > summary {
-    font-weight: bold;
-  }
-  details > summary:hover {
-    cursor: pointer;
-  }
-  details .kv-list {
-    margin-bottom: 0.5rem;
-  }
-  details p {
-    margin-bottom: 0.5rem;
+  p.last-btn {
+    margin-bottom: 0;
     margin-top: 1.5rem;
-    text-align: end;
-    }
+    text-align: left;
+  }
 
+  ${detailsStyle}
+  ${labelWidths}
   ${tableStyles}
   ${srOnly}
 
