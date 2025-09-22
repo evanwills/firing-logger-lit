@@ -4,8 +4,26 @@ const twoDigit = (input: number) : string => {
     : input.toString();
 };
 
-export const getISO8601time = (when : number) : string => {
-  const _when = new Date(when);
+export const getISO8601date = (when : number | Date | null) : string => {
+  if (when === null) {
+    return '';
+  }
+  const _when = (typeof when === 'number')
+    ? new Date(when)
+    : when;
+
+  return `${_when.getFullYear()}-`
+    + `${twoDigit(_when.getMonth() + 1)}-`
+    + `${twoDigit(_when.getDate())}`;
+}
+
+export const getISO8601time = (when : number | Date | null) : string => {
+  if (when === null) {
+    return '';
+  }
+  const _when = (typeof when === 'number')
+    ? new Date(when)
+    : when;
 
   return `${twoDigit(_when.getHours())}:`
     + `${twoDigit(_when.getMinutes())}:`

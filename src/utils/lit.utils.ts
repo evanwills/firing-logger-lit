@@ -1,7 +1,7 @@
 import { html, type LitElement, type TemplateResult } from 'lit';
 import { isNonEmptyStr } from './data.utils.ts';
-import type { ID, IIdNameObject, IIdObject, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
-import type { FWrapOutput } from "../types/renderTypes.d.ts";
+import type { ID, IIdNameObject, IIdObject, IKeyStr, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
+import type { FWrapOutput, TOptionValueLabel } from "../types/renderTypes.d.ts";
 import '../components/shared-components/firing-logger-wrapper.ts';
 
 export const hasSlotContent = (
@@ -59,3 +59,16 @@ export const getByID = <Type>(input : Type[], id: ID) : Type | null => {
     ? output
     : null;
 };
+
+export const enumToOptions = (input : IKeyStr) : TOptionValueLabel[] => {
+  const output : TOptionValueLabel[] = [];
+
+  for (const key of Object.keys(input)) {
+    output.push({
+      value: key,
+      label: input[key],
+    });
+  }
+
+  return output;
+}

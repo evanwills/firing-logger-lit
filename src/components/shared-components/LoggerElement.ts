@@ -8,7 +8,6 @@ import { getDataStoreClassSingleton } from '../../store/FiringLogger.store.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { isUser } from '../../types/data.type-guards.ts';
 import { getCookie } from '../../utils/cookie.utils.ts';
-import { getAuthUser } from '../../store/user-data.utils.ts';
 import './loading-spinner.ts';
 
 /**
@@ -134,40 +133,64 @@ export class LoggerElement extends LitElement {
   // START: helper methods
 
   _userHasAuth(level: number) : boolean {
+    // console.group('LoggerElement._userHasAuth()');
+    // console.log('level:', level);
+    // console.log('this._user:', this._user);
     if (this._user === null || isUser(this._user) === false) {
+      // console.warn('No user data to work with');
+      // console.groupEnd();
       return false;
     }
 
-    const sessionID = getCookie('SessionID');
-    if (sessionID === null || this._user.id !== sessionID || this._user.adminLevel < level)  {
+    // console.log('isUser(this._user):', isUser(this._user));
+    const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
+    // console.log('userID:', userID);
+    // console.log('this._user.id:', this._user.id);
+    // console.log('this._user.adminLevel:', this._user.adminLevel);
+    // console.log('userID === null:', userID === null);
+    // console.log('this._user.id !== userID:', this._user.id !== userID);
+    // console.log('this._user.adminLevel < level:', this._user.adminLevel < level);
+    if (userID === null || this._user.id !== userID || this._user.adminLevel < level)  {
+      // console.warn('User is not logged or doesn\'t have permission');
+      // console.groupEnd();
       return false;
     }
+    // console.info('Yes! User has authorisation.');
+    // console.groupEnd();
 
     return true;
   }
 
   _userCan(key: string, level : number = 1) : boolean {
-    if (this._user !== null && isUser(this._user) && this._userHasAuth(level)) {
-      switch(key) {
-        case 'canFire':
+    // console.group('LoggerElement._userCan()');
+    // console.log('key:', key);
+    // console.log('level:', level);
+    // console.log(`this._userHasAuth(${level}):`, this._userHasAuth(level));
+    // console.log('this._user !== null:', this._user !== null);
+    if (this._user !== null && this._userHasAuth(level)) {
+      switch(key.toLowerCase()) {
+        case 'fire':
           return this._user.canFire;
 
-        case 'canLog':
+        case 'log':
           return this._user.canLog;
 
-        case 'canPack':
+        case 'pack':
           return this._user.canPack;
 
-        case 'canPrice':
+        case 'price':
           return this._user.canPrice;
 
-        case 'canProgram':
+        case 'program':
           return this._user.canProgram;
 
-        case 'canUnpack':
+        case 'unpack':
           return this._user.canUnpack;
       }
     }
+
+    // console.warn('unknown key:', key);
+    // console.groupEnd();
 
     return false;
   }

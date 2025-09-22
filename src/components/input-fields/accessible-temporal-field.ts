@@ -49,7 +49,7 @@ export class AccessibleTemporalField extends AccessibleWholeField {
     connectedCallback() : void {
       super.connectedCallback();
 
-      if (['date', 'time', 'datetime-local'].includes(this.fieldID) === false) {
+      if (['date', 'time', 'datetime-local'].includes(this.type) === false) {
         throw new Error(
           '<accessible-temporal-field> expects the "type" attribute '
           + 'to be either "date", "time" or "datetime-local". "'

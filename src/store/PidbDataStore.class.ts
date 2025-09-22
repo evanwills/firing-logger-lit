@@ -196,21 +196,21 @@ export default class PidbDataStore implements CDataStoreClass {
     action : TStoreAction,
     payload: any = null,
   ) : Promise<any> {
-    console.group('PidbDataStore.write');
-    console.log('action:', action);
-    console.log('payload:', payload);
-    console.log('this._actions:', this._actions);
-    console.log(`this._actions.${action}:`, this._actions[action]);
-    console.log(`typeof this._actions.${action}:`, typeof this._actions[action]);
+    // console.group('PidbDataStore.action');
+    // console.log('action:', action);
+    // console.log('payload:', payload);
+    // console.log('this._actions:', this._actions);
+    // console.log(`this._actions.${action}:`, this._actions[action]);
+    // console.log(`typeof this._actions.${action}:`, typeof this._actions[action]);
 
     if (typeof this._actions[action] === 'function') {
-      console.info('Yay!!! We found an action');
-      console.groupEnd();
+      // console.info('Yay!!! We found an action');
+      // console.groupEnd();
       return this._actions[action](this._db, payload);
     }
 
-    console.error(`Boo!!! No action found for "${action}"`)
-    console.groupEnd();
+    // console.error(`Boo!!! No action found for "${action}"`)
+    // console.groupEnd();
     return Promise.reject(`No action found for "${action}"`);
   }
 

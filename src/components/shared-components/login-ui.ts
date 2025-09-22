@@ -94,7 +94,7 @@ export class LoginUI extends LoggerElement {
         const user : TUser[] = await this._store.read('users', `username=${this._username}`);
 
         if (user.length > 0) {
-          setCookie('UserID', user[0].id, 30);
+          setCookie(import.meta.env.VITE_AUTH_COOKIE, user[0].id, 30);
 
           dispatchRouterEvent(this, '/login', { userName : user[0].username }, 'refresh');
         }

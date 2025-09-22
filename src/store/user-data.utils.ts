@@ -4,7 +4,7 @@ import type { TUser } from '../types/data.d.ts';
 import { getCookie } from '../utils/cookie.utils.ts';
 
 export const getAuthUser = (db : IDBPDatabase) : Promise<TUser|null> => {
-  const userID = getCookie('UserID');
+  const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
 
   if (userID === null) {
     return Promise.resolve(null);

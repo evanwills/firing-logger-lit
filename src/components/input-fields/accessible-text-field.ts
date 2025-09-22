@@ -66,7 +66,7 @@ export class AccessibleTextField extends AccessibleWholeField {
     return html`<input
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${this.disabled}
-      .id="${this.fieldID}"
+      id="${this.fieldID}"
       .list=${ifDefined(this._listID)}
       maxlength="${ifDefined(this.maxlength)}"
       minlength="${ifDefined(this.minlength)}"

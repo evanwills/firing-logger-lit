@@ -220,37 +220,37 @@ export const getByKeyValue = async (
 
   if (typeof primary !== 'undefined') {
     const tx = await db.transaction(storeName, 'readonly');
-    console.log('tx:', tx);
+    // console.log('tx:', tx);
     const index = tx.store.index(primary.indexName);
-    console.log('index:', index);
+    // console.log('index:', index);
 
     const output = (primary.value.startsWith('#'))
       ? [await index.get(primary.value)]
       : await index.getAll(primary.value)
 
     if (selectors.length === 0) {
-      console.log('output:', output);
-      console.groupEnd();
+      // console.log('output:', output);
+      // console.groupEnd();
 
       return output;
     }
 
     return output.filter((item : IKeyValue) : boolean => {
-      console.group('getByKeyValue().filter()');
-      console.log('item:', item);
+      // console.group('getByKeyValue().filter()');
+      // console.log('item:', item);
       for (const kv of selectors) {
-        console.log('kv.indexName:', kv.indexName);
-        console.log('kv.value:', kv.value);
-        console.log(`item[${kv.indexName}]:`, item[kv.indexName]);
+        // console.log('kv.indexName:', kv.indexName);
+        // console.log('kv.value:', kv.value);
+        // console.log(`item[${kv.indexName}]:`, item[kv.indexName]);
 
         if (typeof item[kv.indexName] === 'undefined' || item[kv.indexName] !== kv.value) {
-          console.groupEnd();
-          console.groupEnd();
+          // console.groupEnd();
+          // console.groupEnd();
           return false;
         }
       }
-      console.groupEnd();
-      console.groupEnd();
+      // console.groupEnd();
+      // console.groupEnd();
       return true;
     })
   }

@@ -71,7 +71,7 @@ export class AccessiblePasswordField extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     return html`
-      <span class="input password">
+      <span class="input-flex">
         <input
         ?disabled=${ifDefined(this.disabled)}
         .id="${this.fieldID}"

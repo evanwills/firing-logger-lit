@@ -156,10 +156,13 @@ export class KilnDetails extends LoggerElement {
   // START: helper methods
 
   _setKilnData(data : IKiln) : void {
+    console.group('<kiln-details>._setKilnData()');
     const _data = (Array.isArray(data))
       ? data[0]
       : data;
     console.log('data:', data);
+    console.log('_data:', _data);
+    console.log('_data.installDate:', _data.installDate);
 
     if (isNonEmptyStr(_data, 'id')) {
       this._id  = _data.id;
@@ -193,6 +196,7 @@ export class KilnDetails extends LoggerElement {
       this._isInUse = _data.isInUse;
       this._isHot = _data.isHot;
 
+      console.log('this._installDate:', this._installDate);
       if (this._store !== null) {
         this._store.read(
           'programs',
@@ -203,25 +207,36 @@ export class KilnDetails extends LoggerElement {
       }
 
     }
+    console.groupEnd();
   }
 
   _setProgramData(data : IStoredFiringProgram[]) : void {
+    console.group('<kiln-details>._setProgramData()');
     this._programs = data;
+    console.groupEnd();
   }
 
   _setKilnTypes(data : IKeyValue) : void {
+    console.group('<kiln-details>._setKilnTypes()');
+    console.log('data:', data);
     this._kilnTypes = data;
+    console.groupEnd();
   }
 
   _setFuelSources(data : IKeyValue) : void {
+    console.group('<kiln-details>._setFuelSources()');
+    console.log('data:', data);
     this._fuelSources = data;
+    console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {
+    console.group('<kiln-details>._getFromStore()');
     await super._getFromStore();
     // let ok = false;
 
-    if (this._store !== null) {
+    console.log('this._store:', this._store);
+    if (this._store !== null && Object.keys(this._fuelSources).length === 0) {
       this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this));
       this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this));
 
@@ -242,6 +257,7 @@ export class KilnDetails extends LoggerElement {
         this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnData.bind(this));
       }
     }
+    console.groupEnd();
   }
 
 
@@ -263,11 +279,13 @@ export class KilnDetails extends LoggerElement {
   // START: lifecycle methods
 
   connectedCallback() : void {
+    // console.group('<kiln-details>.connectedCallback()');
     super.connectedCallback();
     this._getFromStore();
-    console.log('this._user:', this._user);
-    console.log('this.kilnID:', this.kilnID);
-    console.log('this.kilnName:', this.kilnName);
+    // console.log('this._user:', this._user);
+    // console.log('this.kilnID:', this.kilnID);
+    // console.log('this.kilnName:', this.kilnName);
+    // console.groupEnd();
   }
 
   //  END:  lifecycle methods
@@ -275,13 +293,13 @@ export class KilnDetails extends LoggerElement {
   // START: helper render methods
 
   renderSingleProgram(program : IStoredFiringProgram) : TemplateResult {
-    console.group('<kiln-view>.renderSingleProgram()');
-    console.log('program:', program);
-    console.log('this._path:', this._path);
-    console.log('this._tUnit:', this._tUnit);
-    console.log('this._name:', this._name);
-    console.log('url:', `/kilns/${this._path}/programs/${program.urlPart}`)
-    console.groupEnd();
+    // console.group('<kiln-details>.renderSingleProgram()');
+    // console.log('program:', program);
+    // console.log('this._path:', this._path);
+    // console.log('this._tUnit:', this._tUnit);
+    // console.log('this._name:', this._name);
+    // console.log('url:', `/kilns/${this._path}/programs/${program.urlPart}`)
+    // console.groupEnd();
     return html`
       <tr>
         <th>
@@ -334,28 +352,46 @@ export class KilnDetails extends LoggerElement {
   render() : TemplateResult {
     let editBtn : TemplateResult | string = '';
     let newProgramBtn : TemplateResult | string = '';
-    console.group('')
+    let showBtns : boolean = false;
+    console.group('<kiln-details>.render()');
+    console.log('this._user:', this._user);
+    console.log('this._id:', this._id);
+    console.log('this._name:', this._name);
+    console.log('this._store:', this._store);
+    console.log('this._userHasAuth(2):', this._userHasAuth(2));
+    console.log('this._userCan("program"):', this._userCan('program'));
 
-    if (this._userCan('program') && isNonEmptyStr(this.kilnID) === true) {
-      editBtn = html`<router-link
+    if (isNonEmptyStr(this._id) === true) {
+      if (this._userHasAuth(2)) {
+        showBtns = true;
+        editBtn = html`<router-link
         class="btn"
         data-uid="${this.kilnID}"
         label="Edit"
         sr-label="${this._name}"
-        url="/kilns/${this._path}/programs/edit"></router-link>`;
+        url="/kilns/${this._path}/edit"></router-link>`;
+      }
 
-      newProgramBtn = html`<p><router-link
+      if (this._userCan('program')) {
+        showBtns = true;
+        newProgramBtn = html`<p><router-link
           class="btn"
           data-uid="${this._id}"
           data-max-temp="${this._maxTemp}"
           label="Add new program"
           sr-label="for ${this._name}"
           .url="/kilns/${this._path}/programs/new"></router-link></p>`;
+      }
     }
 
     const title = isNonEmptyStr(this._name)
       ? this._name
       : 'Kiln';
+    console.log('showBtns:', showBtns);
+    console.log('editBtn:', editBtn);
+    console.log('newProgramBtn:', newProgramBtn);
+    console.log('title:', title);
+    console.groupEnd();
 
     return html`
     <h2>${title}</h2>
@@ -410,7 +446,11 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Salt Glaze" .value="${this._saltGlaze}"></read-only-field></li>
       </ul>
     </details>
-    ${editBtn}`;
+    ${(showBtns === true)
+      ? html`<p>${editBtn} ${newProgramBtn}</p>`
+      : ''
+    }
+    `;
   }
 
   //  END:  main render method

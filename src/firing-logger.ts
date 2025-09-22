@@ -59,9 +59,9 @@ export class FiringLogger extends LitElement {
     // console.groupEnd();
 
     // Usage:
-    const value = getCookie('sessionId');
+    const value = getCookie(import.meta.env.VITE_AUTH_COOKIE);
     if (value !== null) {
-      console.log('sessionId:', value);
+      console.log(`Cookie - ${import.meta.env.VITE_AUTH_COOKIE}:`, value);
     } else {
       console.log('Cookie does not exist or has expired.');
     }

@@ -30,7 +30,7 @@ export class FiringLoggerWrapper extends LitElement {
   // START: helper methods
 
   _watchAuthExpire() {
-    this._isLoggedIn = (getCookie('SessionID') !== null);
+    this._isLoggedIn = (getCookie(import.meta.env.VITE_AUTH_COOKIE) !== null);
 
     if (this._isLoggedIn === true) {
       setTimeout(this._watchAuthExpire.bind(this), 1000);
@@ -58,10 +58,10 @@ export class FiringLoggerWrapper extends LitElement {
   loginLogout(event : Event) {
     event.preventDefault();
 
-    if (getCookie('SessionID') === null) {
+    if (getCookie(import.meta.env.VITE_AUTH_COOKIE) === null) {
       this._showLogin = true;
     } else {
-      deleteCookie('SessionID');
+      deleteCookie(import.meta.env.VITE_AUTH_COOKIE);
 
       this._isLoggedIn = false;
       this._showLogin = false;

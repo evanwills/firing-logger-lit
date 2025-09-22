@@ -82,6 +82,10 @@ export const inputFieldCSS = css`
   grid-area: input;
   display: inline-block;
 }
+.inner > .input-flex,
+  grid-area: input;
+  display: flex;
+}
 
 .input {
   white-space: var(--input-white-space, wrap);
@@ -110,8 +114,9 @@ select {
 }
 
 input[type="number"] {
-  width: 3.5rem;
+  width: 5rem;
   text-align: center;
+  padding-right: 0;
 }
 
 input[type="text"] {

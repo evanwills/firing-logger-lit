@@ -7,8 +7,6 @@ import PidbDataStore from './PidbDataStore.class.ts';
 import {
   populateEmptyEnumSlice,
   populateEmptySlice,
-  populateEnumSlice,
-  // storeCatch,
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from "./user-data.utils.ts";
 import type { IDBPmigrate, IDBPupgrade } from "../types/pidb.d.ts";
