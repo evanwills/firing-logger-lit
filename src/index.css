@@ -40,7 +40,7 @@
   --rl-white-space: normal;
   --rl-btn-background-colour: #009;
   --rl-btn-border: 0.1rem solid var(--table-border-colour);
-  --rl-btn-border-radius: 0.5rem;
+  --rl-btn-border-radius: 0.25rem;
   --rl-btn-colour: inherit;
   --rl-btn-font-family: inherit;
   --rl-btn-font-weight: bold;

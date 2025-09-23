@@ -1,42 +1,22 @@
 import { html, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
-import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
-import { getRenderCheckable } from '../../utils/render.utils.ts';
+import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import { getRenderCheckable } from "../../utils/render.utils.ts";
 
 /**
  * An example element.
  */
-@customElement('accessible-radio-field')
-export class AccessibleRadioField extends AccessibleWholeField {
+@customElement('accessible-checkbox-list')
+export class AccessibleCheckboxList extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: properties/attributes
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // START: Standard HTML <input type="number"> properties
 
-  @property({ type: Boolean, attribute: 'bool' })
-  bool : boolean = false;
-
-  @property({ type: Boolean, attribute: 'bool-null' })
-  boolNull : boolean = false;
-
-  @property({ type: String, attribute: 'false-label' })
-  falseLabel  : string = 'No';
-
-  @property({ type: String, attribute: 'null-label' })
-  nullLabel  : string = 'Auto';
-
   @property({ type: Array, attribute: 'options' })
-  options : TOptionValueLabel[] = [];
-
-  @property({ type: Boolean, attribute: 'as-toggle' })
-  toggle  : boolean = false;
-
-  @property({ type: String, attribute: 'true-label' })
-  trueLabel  : string = 'Yes';
-
-
+  options : TCheckboxValueLabel[] = [];
 
   //  END:  Standard HTML <input type="number"> properties
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -56,32 +36,6 @@ export class AccessibleRadioField extends AccessibleWholeField {
     return `${this.fieldID}-${option.value}`;
   }
 
-  _getOptions(toggle : boolean) : TOptionValueLabel[] {
-    const options : TOptionValueLabel[] = (toggle === false)
-      ? this.options
-      : [];
-
-    if (this.boolNull === true) {
-      options.push({
-        value: 'null',
-        label: this.nullLabel,
-      });
-    }
-
-    if (toggle === true) {
-      options.push({
-        value: 'true',
-        label: this.trueLabel,
-      });
-      options.push({
-        value: 'false',
-        label: this.falseLabel,
-      });
-    }
-
-    return options;
-  }
-
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -95,28 +49,16 @@ export class AccessibleRadioField extends AccessibleWholeField {
   // START: helper render methods
 
   renderField() : TemplateResult {
-    const toggle = (this.bool === true || this.boolNull === true);
+    console.group('<accessible-checkbox-list>.renderField()');
+    console.groupEnd();
 
-    const renderCheckable = getRenderCheckable(this, true, toggle);
+    const renderCheckable = getRenderCheckable(this);
 
-    const options : TOptionValueLabel[] = this._getOptions(toggle);
-
-    const toggleClass = (toggle === true || this.toggle === true)
-      ? ' toggle'
-      : '';
-
-    return html`<ul class="input-flex${toggleClass}">
-      ${options.map((option) => html`
+    return html`<ul class="input-flex">
+      ${this.options.map((option) => html`
       <li>
-        ${(toggle === false)
-          ? renderCheckable(option)
-          : ''
-        }
+        ${renderCheckable(option)}
         <label for="${this.getID(option)}">
-          ${(toggle === true)
-          ? renderCheckable(option)
-          : ''
-          }
           ${option.label}
         </label>
       </li>
@@ -142,6 +84,6 @@ export class AccessibleRadioField extends AccessibleWholeField {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'accessible-radio-field': AccessibleRadioField
+    'accessible-checkbox-list': AccessibleCheckboxList
   }
 }

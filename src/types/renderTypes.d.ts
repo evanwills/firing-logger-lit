@@ -20,7 +20,16 @@ export type TOptionValueLabel = {
   value: string,
   label: string,
 };
+export type TCheckboxValueLabel = {
+  value: string,
+  label: string,
+  checked: boolean,
+};
 
 export type FSanitise = (input: string) => string;
 
 export type FWrapOutput = (input : TemplateResult | string) => TemplateResult;
+
+export type FIsChecked = (option : TCheckboxValueLabel | TOptionValueLabel) => boolean;
+
+export type FGetID = (option : TCheckboxValueLabel | TOptionValueLabel) => string;

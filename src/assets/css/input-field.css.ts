@@ -17,9 +17,7 @@ export const inputFieldCSS = css`
   --textarea-height: inherit;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 .outer {
   container-name: whole-field;
@@ -148,6 +146,45 @@ textarea {
   font-weight: normal;
   font-style: italic;
 }
+
+.toggle {
+  border-radius: 2rem;
+  border: 0.05rem solid #cccccccc;
+  padding: 0.2rem;
+  margin: 0;
+  list-style-type: none;
+  display: inline-flex;
+  justify-self: start;
+
+  input {
+    transition: opacity ease-in-out 0.3s;
+    transition-delay: 0.1s;
+  }
+  input:not(:checked) {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+
+  li {
+    border-width: 0.1rem;
+    border-style: solid;
+    border-color: rgba(200, 200, 200, 0);
+    border-radius: 2rem;
+    padding: 0 0.75rem 0.1rem 0.2rem;
+    transition: border-color ease-in-out 0.1s;
+    transition-delay: 0s;
+  }
+  li:has(:checked) {
+    border-color: var(--border-colour, rgba(200, 200, 200, 1));
+    transition-delay: 0.2s;
+  }
+  /* li:has(:checked):focus-within {
+    outline: 0.2rem solid #00f;
+    outline-offset: 0.1;
+  } */
+  label { padding-top: 0; }
+}
+
 @container whole-field (width > 24rem) {
   .inner.inner-help {
     grid-template-areas: 'label input'
