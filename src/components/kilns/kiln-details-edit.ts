@@ -128,7 +128,7 @@ export class KilnDetailsEdit extends KilnDetails {
             open
             role="group">
             <summary id="primary-kiln-details">Name & type</summary>
-            <ul class="label-8">
+            <ul class="label-8 details">
               <li>
                 <accessible-text-field
                   field-id="name"
@@ -161,7 +161,7 @@ export class KilnDetailsEdit extends KilnDetails {
             ?open=${openOthers}
             role="group">
             <summary id="kiln-details">Details</summary>
-            <ul class="label-12">
+            <ul class="label-12 details">
               <li>
                 <accessible-select-field
                   field-id="type"
@@ -203,7 +203,7 @@ export class KilnDetailsEdit extends KilnDetails {
             ?open=${openOthers}
             role="group">
             <summary id="internal-kiln-dimensions">Internal dimensions</summary>
-            <ul class="label-8">
+            <ul class="label-8 details">
               <li>
                 <accessible-number-field
                   field-id="width"
@@ -242,7 +242,7 @@ export class KilnDetailsEdit extends KilnDetails {
             ?open=${openOthers}
             role="group">
             <summary id="allowed-firing-types">Allowed firing types:</summary>
-            <ul class="label-12">
+            <ul class="label-12 details">
               <li>
               </li>
             </ul>
@@ -253,7 +253,7 @@ export class KilnDetailsEdit extends KilnDetails {
             ?open=${openOthers}
             role="group">
             <summary id="kiln-status">Status</summary>
-            <ul>
+            <ul class="details">
               <li>
                 <accessible-temporal-field
                   field-id="installDate"
