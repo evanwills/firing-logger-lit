@@ -71,4 +71,4 @@ export const enumToOptions = (input : IKeyStr) : TOptionValueLabel[] => {
   }
 
   return output;
-}
+};
