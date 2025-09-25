@@ -1,15 +1,16 @@
-import { LitElement, css, html, type TemplateResult } from 'lit'
+import { css, html, type TemplateResult } from 'lit'
 import { property, state } from 'lit/decorators.js'
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts'
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
-import { ifDefined } from 'lit/directives/if-defined.js';
 import FauxEvent from '../../utils/FauxEvent.class.ts';
+import FocusableInside from './FocusableInside.ts';
 import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
 
-export class AccessibleWholeField extends LitElement {
+export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -337,7 +338,7 @@ export class AccessibleWholeField extends LitElement {
       : '';
 
     return html`
-      <div class="outer">
+      <div class="outer" id="${this.fieldID}--outer">
         <div
           aria-labeledby=${ifDefined(groupLabel)}
           class="${cls}"
