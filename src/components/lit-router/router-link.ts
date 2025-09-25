@@ -9,6 +9,9 @@ export class RouterLink extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  @property({ type: Boolean, attribute: 'button' })
+  asBtn : boolean = false;
+
   @property({ type: String, attribute: 'url' })
   url : string = '';
 
@@ -44,6 +47,24 @@ export class RouterLink extends LitElement {
   // ------------------------------------------------------
   // START: helper render methods
 
+  renderLabel() {
+    return (typeof this.srLabel === 'string' && this.srLabel.trim() !== '')
+      ? html`${this.label} <span class="sr-only">${this.srLabel}</span>`
+      : this.label;
+  }
+
+  renderLink() {
+    return html`<a
+      href="${this.url}"
+      class="router-link"
+      @click=${this.navClick}><slot>${this.renderLabel()}</slot></a>`;
+  }
+  renderBtn() {
+    return html`<button
+      class="router-link"
+      @click=${this.navClick}><slot>${this.renderLabel()}</slot></a>`;
+  }
+
   //  END:  helper render methods
   // ------------------------------------------------------
   // START: main render method
@@ -52,16 +73,10 @@ export class RouterLink extends LitElement {
     // console.group('<router-link>.render()');
     // console.log('this.dataset.uid:', this.dataset.uid);
     // console.log('this.url:', this.url);
-
-    const srlabel = (typeof this.srLabel === 'string' && this.srLabel.trim() !== '')
-      ? html` <span class="sr-only">${this.srLabel}</span>`
-      : '';
-
     // console.groupEnd();
-    return html`<a
-      href="${this.url}"
-      class="router-link"
-      @click=${this.navClick}><slot>${this.label}${srlabel}</slot></a>`;
+    return (this.asBtn === true)
+      ? this.renderBtn()
+      : this.renderLink();
   }
 
   //  END:  main render method
@@ -75,6 +90,7 @@ export class RouterLink extends LitElement {
       --rl-border-radius: var(--rl-btn-border-radius);
       --rl-colour: var(--rl-btn-colour);
       --rl-font-family: var(--rl-btn-font-family);
+      --rl-font-size: var(--rl-btn-font-size);
       --rl-font-weight: var(--rl-btn-font-weight);
       --rl-line-height: var(--rl-btn-line-height);
       --rl-padding: var(--rl-btn-padding);

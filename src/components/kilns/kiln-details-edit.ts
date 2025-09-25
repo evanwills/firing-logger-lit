@@ -1,12 +1,13 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { getISO8601date } from '../../utils/date-time.utils.ts';
-import { enumToOptions } from '../../utils/lit.utils.ts';
+import { renderDetails } from '../../utils/render.utils.ts';
+import { enumToOptions, getCheckableOptions } from '../../utils/lit.utils.ts';
 import { ucFirst } from '../../utils/string.utils.ts';
 import { KilnDetails } from './kiln-details.ts';
 import '../lit-router/router-link.ts';
+import '../input-fields/accessible-checkbox-list.ts';
 import '../input-fields/accessible-number-field.ts';
 import '../input-fields/accessible-radio-field.ts';
 import '../input-fields/accessible-select-field.ts';
@@ -91,59 +92,55 @@ export class KilnDetailsEdit extends KilnDetails {
   // START: helper render methods
 
   _renderDetails(detailName : string | null, openOthers : boolean) : TemplateResult {
-    return html`
-      <details
-        aria-labeledby="kiln-details"
-        .name=${ifDefined(detailName)}
-        ?open=${openOthers}
-        role="group">
-        <summary id="kiln-details">Details</summary>
-        <ul class="label-12 details">
-          <li>
-            <accessible-select-field
-              field-id="type"
-              label="Kiln type"
-              .options=${this._kilnOptions}
-              value="${this._type}"></accessible-select-field>
-          </li>
-          <li>
-            <accessible-select-field
-              field-id="fuel"
-              label="Energy source"
-              .options=${this._fuelOptions}
-              value="${this._fuel}"></accessible-select-field>
-          </li>
-          <li>
-            <accessible-number-field
-              field-id="maxTemp"
-              label="Max temp"
-              max="1400"
-              required
-              step="1"
-              unit="°${this._tUnit}"
-              value="${this._tConverter(this._maxTemp)}"></accessible-number-field>
-          </li>
-          <li>
-            <accessible-number-field
-              field-id="maxProgramCount"
-              label="Max programs"
-              max="100"
-              required
-              step="1"
-              value="${this._maxProgramCount}"></accessible-number-field>
-          </li>
-        </ul>
-      </details>`;
+    const output = html`
+      <ul class="label-12 details">
+        <li>
+          <accessible-select-field
+            field-id="type"
+            label="Kiln type"
+            .options=${this._kilnOptions}
+            value="${this._type}"></accessible-select-field>
+        </li>
+        <li>
+          <accessible-select-field
+            field-id="fuel"
+            label="Energy source"
+            .options=${this._fuelOptions}
+            value="${this._fuel}"></accessible-select-field>
+        </li>
+        <li>
+          <accessible-number-field
+            field-id="maxTemp"
+            label="Max temp"
+            max="1400"
+            required
+            step="1"
+            unit="°${this._tUnit}"
+            value="${this._tConverter(this._maxTemp)}"></accessible-number-field>
+        </li>
+        <li>
+          <accessible-number-field
+            field-id="maxProgramCount"
+            label="Max programs"
+            max="100"
+            required
+            step="1"
+            value="${this._maxProgramCount}"></accessible-number-field>
+        </li>
+      </ul>`;
+
+    return renderDetails(
+      'kiln-details',
+      'Details',
+      output,
+      openOthers,
+      detailName,
+      true,
+    );
   }
 
   _renderDimensions(detailName : string | null, openOthers : boolean) : TemplateResult {
-    return html`
-      <details
-        aria-labeledby="internal-kiln-dimensions"
-        .name=${ifDefined(detailName)}
-        ?open=${openOthers}
-        role="group">
-        <summary id="internal-kiln-dimensions">Internal dimensions</summary>
+    const output = html`
         <ul class="label-8 details">
           <li>
             <accessible-number-field
@@ -175,69 +172,101 @@ export class KilnDetailsEdit extends KilnDetails {
               unit="${this._lUnit}"
               value="${this._lConverter(this._height)}"></accessible-number-field>
           </li>
-        </ul>
-      </details>`;
+        </ul>`;
+
+    return renderDetails(
+      'internal-kiln-dimensions',
+      'Internal dimensions',
+      output,
+      openOthers,
+      detailName,
+      true,
+    );
+  }
+
+  _renderFiringTypes(detailName : string | null, openOthers : boolean) : TemplateResult {
+    return renderDetails(
+      'kiln-firing-types',
+      'Allowed firing types',
+      html`
+      <ul class="details">
+        <li>
+          <accessible-checkbox-list
+            field-id="firing-types"
+            label="Allowed firing types"
+            .options=${getCheckableOptions(this._firingTypes)}
+            validation-type="name"></accessible-checkbox-list>
+        </li>
+      </ul>`,
+      openOthers,
+      detailName,
+      true
+    );
   }
 
   _renderNameType(detailName : string | null) : TemplateResult {
-    return html`
-      <details
-        aria-labeledby="primary-kiln-details"
-        .name=${ifDefined(detailName)}
-        open
-        role="group">
-        <summary id="primary-kiln-details">Name & type</summary>
-        <ul class="label-8 details">
-          <li>
-            <accessible-text-field
-              field-id="name"
-              label="Name"
-              required
-              value="${this._name}"
-              validation-type="name"></accessible-text-field>
-          </li>
-          <li>
-            <accessible-text-field
-              field-id="brand"
-              label="Brand"
-              required
-              value="${this._brand}"
-              validation-type="name"></accessible-text-field>
-          </li>
-          <li>
-            <accessible-text-field
-              field-id="model"
-              label="Model"
-              required
-              value="${this._model}"
-              validation-type="name"></accessible-text-field>
-          </li>
-        </ul>
-      </details>`;
+    const output = html`
+      <ul class="label-8 details">
+        <li>
+          <accessible-text-field
+            field-id="name"
+            label="Name"
+            required
+            value="${this._name}"
+            validation-type="name"></accessible-text-field>
+        </li>
+        <li>
+          <accessible-text-field
+            field-id="brand"
+            label="Brand"
+            required
+            value="${this._brand}"
+            validation-type="name"></accessible-text-field>
+        </li>
+        <li>
+          <accessible-text-field
+            field-id="model"
+            label="Model"
+            required
+            value="${this._model}"
+            validation-type="name"></accessible-text-field>
+        </li>
+      </ul>`;
+
+    return renderDetails(
+      'primary-kiln-details',
+      'Name & type',
+      output,
+      true,
+      detailName,
+      true,
+    );
   }
 
   _renderStatus(detailName : string | null, openOthers : boolean) : TemplateResult {
-    return html`
-      <details
-        aria-labeledby="kiln-status"
-        .name=${ifDefined(detailName)}
-        ?open=${openOthers}
-        role="group">
-        <summary id="kiln-status">Status</summary>
-        <ul class="details">
-          <li>
-            <accessible-temporal-field
-              field-id="installDate"
-              label="Install date"
-              type="date"
-              step="1"
-              value="${getISO8601date(this._installDate)}"
-              validation-type="name"></accessible-temporal-field>
-          </li>
-          <li>
-          </li>
-        </ul>
-      </details>`;
+    const output = html`
+      <ul class="details">
+        <li>
+          <accessible-temporal-field
+            field-id="installDate"
+            label="Install date"
+            type="date"
+            step="1"
+            value="${getISO8601date(this._installDate)}"
+            validation-type="name"></accessible-temporal-field>
+        </li>
+        <li>
+        </li>
+      </ul>`;
+
+    return renderDetails(
+      'kiln-status',
+      'Status',
+      output,
+      openOthers,
+      detailName,
+      true
+    );
   }
 
   //  END:  helper render methods
@@ -274,8 +303,22 @@ export class KilnDetailsEdit extends KilnDetails {
           ${this._renderNameType(detailName)}
           ${this._renderDetails(detailName, openOthers)}
           ${this._renderDimensions(detailName, openOthers)}
+          ${this._renderFiringTypes(detailName, openOthers)}
           ${this._renderStatus(detailName, openOthers)}
-          </div>`
+          <p>
+            <router-link
+              button
+              class="btn"
+              label="Save"
+              srLabel="changes to ${this._name}"
+              url="/kilns/${this._path}"></router-link>
+            <router-link
+              class="btn"
+              label="Cancel"
+              srLabel="editing ${this._name}"
+              url="/kilns/${this._path}"></router-link>
+          </p>
+        </div>`
       : html`<not-allowed
               mode="${this.mode}"
               name="${this._name}"

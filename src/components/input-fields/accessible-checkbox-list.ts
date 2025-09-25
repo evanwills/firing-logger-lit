@@ -50,6 +50,7 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
 
   renderField() : TemplateResult {
     console.group('<accessible-checkbox-list>.renderField()');
+    console.log('this.options:', this.options);
     console.groupEnd();
 
     const renderCheckable = getRenderCheckable(this);

@@ -2,7 +2,7 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
-import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
+import type { ID, IKeyBool, IKeyValue } from '../../types/data-simple.d.ts';
 import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
@@ -17,6 +17,7 @@ import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import { detailsStyle } from "../../assets/css/details.css.ts";
 import { labelWidths } from "../../assets/css/input-field.css.ts";
+import { getAllowedFiringTypes } from "../../utils/kiln-data.utils.ts";
 
 /**
  * An example element.
@@ -41,6 +42,9 @@ export class KilnDetails extends LoggerElement {
 
   @property({ type: String, attribute: 'kiln-name' })
   kilnName : string = '';
+
+  @property({ type: String, attribute: 'mode' })
+  mode : string = '';
 
   //  END:  properties/attributes
   // -----------------------------
@@ -106,31 +110,17 @@ export class KilnDetails extends LoggerElement {
   _glaze: boolean = false;
 
   @state()
-  _bisque: boolean = false;
-
-  @state()
-  _luster: boolean = false;
-
-  @state()
-  _onglaze: boolean = false;
-
-  @state()
-  _saggar: boolean = false;
-
-  @state()
-  _raku: boolean = false;
-
-  @state()
-  _pit: boolean = false;
-
-  @state()
-  _black: boolean = false;
-
-  @state()
-  _rawGlaze: boolean = false;
-
-  @state()
-  _saltGlaze: boolean = false;
+  _firingTypes: IKeyBool = {
+    bisque: false,
+    glaze: false,
+    luster: false,
+    onglaze: false,
+    saggar: false,
+    raku: false,
+    blackFiring: false,
+    rawGlaze: false,
+    saltGlaze: false,
+  };
 
   @state()
   _isRetired: boolean = false;
@@ -182,16 +172,12 @@ export class KilnDetails extends LoggerElement {
       this._width = _data.width;
       this._depth = _data.depth;
       this._height = _data.height;
-      this._glaze = _data.glaze;
-      this._bisque = _data.bisque;
-      this._luster = _data.luster;
-      this._onglaze = _data.onglaze;
-      this._saggar = _data.saggar;
-      this._raku = _data.raku;
-      this._pit = _data.pit;
-      this._black = _data.black;
-      this._rawGlaze = _data.rawGlaze;
-      this._saltGlaze = _data.saltGlaze;
+
+      this._firingTypes = getAllowedFiringTypes(
+        _data,
+        (this.mode === 'new'),
+      );
+
       this._useCount = _data.useCount;
       this._isRetired = _data.isRetired;
       this._isWorking = _data.isWorking;

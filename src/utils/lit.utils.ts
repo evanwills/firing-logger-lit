@@ -1,7 +1,7 @@
 import { html, type LitElement, type TemplateResult } from 'lit';
 import { isNonEmptyStr } from './data.utils.ts';
-import type { ID, IIdNameObject, IIdObject, IKeyStr, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
-import type { FWrapOutput, TOptionValueLabel } from "../types/renderTypes.d.ts";
+import type { ID, IIdNameObject, IIdObject, IKeyBool, IKeyStr, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
+import type { FWrapOutput, TCheckboxValueLabel, TOptionValueLabel } from "../types/renderTypes.d.ts";
 import '../components/shared-components/firing-logger-wrapper.ts';
 
 export const hasSlotContent = (
@@ -72,3 +72,17 @@ export const enumToOptions = (input : IKeyStr) : TOptionValueLabel[] => {
 
   return output;
 };
+
+export const getCheckableOptions = (options: IKeyBool) : TCheckboxValueLabel[] => {
+  const output : TCheckboxValueLabel[] = [];
+
+  for (const key of Object.keys(options)) {
+    output.push({
+      value: key,
+      label: key,
+      checked: options[key],
+    })
+  }
+
+  return output;
+}

@@ -14,29 +14,32 @@ export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: String, attribute: 'field-id' })
-  fieldID : string = '';
-
-  @property({ type: String, attribute: 'label' })
-  label : string = '';
-
-  @property({ type: Function })
-  getErrorMsg : FValidationMessage | null = null;
+  @property({ type: Number, attribute: 'container-width' })
+  containerWidth : number = 0;
 
   @property({ type: String, attribute: 'erorr-msg' })
   errorMsg : string = '';
 
-  @property({ type: Number, attribute: 'label-width' })
-  labelWidth : number = 0;
+  @property({ type: Function })
+  getErrorMsg : FValidationMessage | null = null;
 
-  @property({ type: Number, attribute: 'container-width' })
-  containerWidth : number = 0;
+  @property({ type: String, attribute: 'field-id' })
+  fieldID : string = '';
 
   @property({ type: String, attribute: 'help-msg' })
   helpMsg : string = '';
 
+  @property({ type: String, attribute: 'label' })
+  label : string = '';
+
+  @property({ type: Number, attribute: 'label-width' })
+  labelWidth : number = 0;
+
   @property({ type: Array })
   listOptions : string[] | null = null;
+
+  @property({ type: Boolean, attribute: 'no-label'})
+  noLabel : boolean = false;
 
   @property({ type: Function })
   sanitiseInput : FSanitise | null = null;
@@ -337,6 +340,10 @@ export class AccessibleWholeField extends FocusableInside {
       ? html` <span class="required">(required)</span>`
       : '';
 
+    const label = (this._asGroup === false)
+      ? html`<label for="${this.fieldID}">${this.label}${requiredTxt}:</label>`
+      : html`<div class="label" id="${groupLabel}">${this.label}${requiredTxt}:</div>`;
+
     return html`
       <div class="outer" id="${this.fieldID}--outer">
         <div
@@ -344,9 +351,10 @@ export class AccessibleWholeField extends FocusableInside {
           class="${cls}"
           role=${ifDefined((this._asGroup === true) ? 'group' : null)}
           @focusin=${this.handleFocus}>
-          ${(this._asGroup === false)
-            ? html`<label for="${this.fieldID}">${this.label}${requiredTxt}:</label>`
-            : html`<div class="label" id="${groupLabel}">${this.label}${requiredTxt}:</div>`}
+          ${(this.noLabel === false)
+            ? label
+            : ''
+          }
           ${this.renderError()}
           ${this.renderField()}
           ${help}

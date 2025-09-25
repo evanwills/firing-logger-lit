@@ -33,6 +33,7 @@
   --rl-colour: #a7f;
   --rl-font-family: inherit;
   --rl-font-weight: bold;
+  --rl-font-size: inherit;
   --rl-line-height: inherit;
   --rl-padding: inherit;
   --rl-text-decoration: underline;
@@ -43,8 +44,9 @@
   --rl-btn-border-radius: 0.25rem;
   --rl-btn-colour: inherit;
   --rl-btn-font-family: inherit;
+  --rl-btn-font-size: 1rem;
   --rl-btn-font-weight: bold;
-  --rl-btn-line-height: inherit;
+  --rl-btn-line-height: 1.25rem;
   --rl-btn-padding: 0.25rem 1rem;
   --rl-btn-text-decoration: none;
   --rl-btn-text-underline-offset: var(--text-underline-offset);

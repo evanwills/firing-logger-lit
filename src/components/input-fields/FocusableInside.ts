@@ -22,7 +22,7 @@ export default class FocusableInside extends LitElement {
   // ------------------------------------------------------
   // START: public methods
 
-  public focusInside() {
+  public focusInside(selector : string = '') {
     if (this._fieldElement === null) {
       this._fieldElement = this.renderRoot.querySelector('input,textarea,select');
     }
@@ -30,7 +30,7 @@ export default class FocusableInside extends LitElement {
     if (this._fieldElement !== null) {
       if (this._fieldElement instanceof FocusableInside) {
         if (typeof this._fieldElement.focusInside === 'function') {
-          this._fieldElement.focusInside();
+          this._fieldElement.focusInside(selector);
         } else {
           console.warn(
             `<${this._fieldElement.tagName}> does not support `
