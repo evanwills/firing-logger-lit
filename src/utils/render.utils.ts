@@ -72,4 +72,24 @@ export const getRenderCheckable = (
       .value=${option.value}
       @change=${component.handleChange}
       @keyup=${component.handleKeyup} />`;
-}
+};
+
+export const renderDetails = (
+  id: string,
+  label : string,
+  contents : TemplateResult,
+  open : boolean = false,
+  name : string | null = null,
+  group : boolean = false,
+) : TemplateResult => {
+  return html`
+      <details
+        aria-labeledby="${id}"
+        .name=${ifDefined(name)}
+        ?open=${open}
+        .role=${ifDefined((group === true) ? 'group' : null)}>
+        <summary id="${id}">${label}</summary>
+
+        ${contents}
+      </details>`
+};
