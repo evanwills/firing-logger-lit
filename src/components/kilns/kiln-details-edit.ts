@@ -16,7 +16,7 @@ import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
-import type { IKeyBool, IKeyValue } from "../../types/data-simple.d.ts";
+import type { IKeyValue } from "../../types/data-simple.d.ts";
 import { addRemoveField } from "../../utils/validation.utils.ts";
 
 /**
@@ -66,13 +66,21 @@ export class KilnDetailsEdit extends KilnDetails {
   @state()
   _changedFields : string[] = [];
 
+  @state()
   _errorFields : string[] = [];
 
   _changes : IKeyValue = {};
 
+  @state()
+  _canSave : boolean = false;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
+
+  _setCanSave() : void {
+    this._canSave = (this._changedFields.length > 0 && this._errorFields.length === 0);
+  }
 
   //  END:  helper methods
   // ------------------------------------------------------
@@ -92,14 +100,16 @@ export class KilnDetailsEdit extends KilnDetails {
     };
 
     // Because these are checkbox fields and there are no other
-    // requirements on this field, checkValidity() return false only
-    // means that the value has gone back to what it was originally.
+    // requirements on this field, checkValidity() returning false
+    // only means that the value has gone back to what it was
+    // originally.
     this._changedFields = addRemoveField(
       this._changedFields,
       key,
       event.detail.checkValidity(),
     );
 
+    this._setCanSave();
     console.log('this._changedFields:', this._changedFields);
     console.groupEnd();
   }
@@ -130,26 +140,34 @@ export class KilnDetailsEdit extends KilnDetails {
         break;
     }
 
-    this._changedFields = addRemoveField(this._changedFields, field.id, field.valueAsNumber !== initial);
+    this._changedFields = addRemoveField(
+      this._changedFields,
+      field.id,
+      (field.valueAsNumber !== initial),
+    );
+
+    this._setCanSave();
   }
 
   handleSave() : void {
-    this._edit = false;
+    if (this._errorFields.length === 0) {
+      // All good!!! No errors
+      if (this._changedFields.length > 0) {
+        // Something has changed. We can save this data.
+      } else {
+        // Nothing has changed.
+        // Let them know that nothing has changed and clicking on the
+        // "Save" button won't do anything
+      }
+    } else {
+      // Bummer there are some errors
+      // We need to send the user to the first field with an error
+    }
   }
 
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
-
-  connectedCallback() : void {
-    // console.group('<kiln-details>.connectedCallback()');
-    super.connectedCallback();
-    super._getFromStore();
-    // console.log('this._user:', this._user);
-    // console.log('this.kilnID:', this.kilnID);
-    // console.log('this.kilnName:', this.kilnName);
-    // console.groupEnd();
-  }
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
@@ -376,6 +394,7 @@ export class KilnDetailsEdit extends KilnDetails {
             <router-link
               button
               class="btn"
+              ?disabled=${!this._canSave}
               label="Save"
               srLabel="changes to ${this._name}"
               url="/kilns/${this._path}"></router-link>
