@@ -16,8 +16,16 @@ a, button {
 	white-space: var(--rl-white-space, normal);
   text-underline-offset: var(--rl-btn-text-underline-offset, 0.1rem);
 }
-a:hover, a:focus, button:hover, button:focus {
+a:hover:not(.disabled),
+a:focus:not(.disabled),
+button:hover:not(.disabled),
+button:focus:not(.disabled) {
 	background-color: var(--rl-hover-background-colour);
 	color: var(--rl-hover-colour);
 	text-decoration: var(--rl-hover-text-decoration);
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }`;
