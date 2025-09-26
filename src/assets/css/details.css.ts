@@ -4,7 +4,7 @@ export const detailsStyle = css`
 details {
   border-bottom: 0.05rem solid #ccc;
   margin: 0 auto 1rem;
-  max-width: 40rem;
+  max-width: var(--max-width, 50rem);
   padding-bottom: 1rem;
   text-align: start;
 }

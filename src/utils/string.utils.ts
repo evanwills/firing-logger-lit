@@ -20,3 +20,5 @@ const ucFirstInner = (_whole : string, pre : string, first : string) : string =>
  * @returns string with first alphabetical character uppercased.
  */
 export const ucFirst = (input : string) : string => input.trim().replace(/([^a-z]*)([a-z])/i, ucFirstInner);
+
+export const kebab2Sentance = (input : string) : string => ucFirst(input.split(/(?<=[^A-Z])(?=[A-Z])/).map((str) => str.toLocaleLowerCase().trim()).join(' '));

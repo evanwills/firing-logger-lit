@@ -5,10 +5,10 @@ import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts'
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
-import FauxEvent from '../../utils/FauxEvent.class.ts';
 import FocusableInside from './FocusableInside.ts';
 import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
+import { dispatchCustomEvent } from "../../utils/event.utils.ts";
 
 export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
@@ -141,45 +141,26 @@ export class AccessibleWholeField extends FocusableInside {
   }
 
   _dispatch(event : InputEvent | KeyboardEvent) : void {
-    this.dispatchEvent(
-      new CustomEvent(
-        event.type,
-        {
-          bubbles: true,
-          composed: true,
-          detail: new FauxEvent(
-            (event.target as HTMLInputElement).value,
-            (event.target as HTMLInputElement).validity,
-            (event.type.startsWith('key'))
-              ? {
-                id: this.fieldID,
-                keyboard: {
-                  altKey: (event as KeyboardEvent).altKey,
-                  code: (event as KeyboardEvent).code,
-                  ctrlKey: (event as KeyboardEvent).ctrlKey,
-                  key: (event as KeyboardEvent).key,
-                  location: (event as KeyboardEvent).location,
-                  metaKey: (event as KeyboardEvent).metaKey,
-                  repeat: (event as KeyboardEvent).repeat,
-                  shiftKey: (event as KeyboardEvent).shiftKey,
-                },
-              }
-              : { id: this.fieldID },
-            event.type,
-            (event.target as HTMLInputElement).tagName.toLowerCase()
-          ),
-        },
-      ),
+    dispatchCustomEvent(
+      this,
+      (event.target as HTMLInputElement).value,
+      (event.target as HTMLInputElement).validity,
+      (event.target as HTMLInputElement),
     );
   }
 
   validate(event : InputEvent | KeyboardEvent) {
     event.preventDefault();
+    console.group('AccessibleWholeField.validate()')
 
     const { target } = event;
     if (this.sanitiseInput !== null) {
       (target as HTMLInputElement).value = this.sanitiseInput((target as HTMLInputElement).value);
     }
+    console.log('target:', target);
+    console.log('target.value:', (target as HTMLInputElement).value);
+    console.log('target.validity:', (target as HTMLInputElement).validity);
+    console.log('target.checkValidity():', (target as HTMLInputElement).checkValidity());
     this._invalid = !(target as HTMLInputElement).checkValidity();
 
     if (this.getErrorMsg !== null) {
@@ -197,7 +178,7 @@ export class AccessibleWholeField extends FocusableInside {
       : '';
 
     this._dispatch(event);
-    // console.groupEnd();
+    console.groupEnd();
   }
 
   //  END:  helper methods

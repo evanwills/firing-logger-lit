@@ -127,7 +127,7 @@ export class FiringLoggerWrapper extends LitElement {
       container-type: inline-size;
       container-name: firing-logger;
       margin: 0 auto;
-      padding: 6rem 0 2rem;
+      padding: 4.5rem 0 2rem;
       text-align: center;
       width: 100%;
     }
@@ -171,6 +171,10 @@ export class FiringLoggerWrapper extends LitElement {
     }
     .title {
       font-family: var(--title-font, 'Harlow Solid', cursive);
+    }
+    main {
+      max-width: var(--max-width, 50rem);
+      margin: 0 auto;
     }
 
     @container firing-logger (inline-size > 30rem) {

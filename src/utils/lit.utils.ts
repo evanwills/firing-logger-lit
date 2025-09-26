@@ -3,6 +3,7 @@ import { isNonEmptyStr } from './data.utils.ts';
 import type { ID, IIdNameObject, IIdObject, IKeyBool, IKeyStr, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
 import type { FWrapOutput, TCheckboxValueLabel, TOptionValueLabel } from "../types/renderTypes.d.ts";
 import '../components/shared-components/firing-logger-wrapper.ts';
+import { kebab2Sentance } from "./string.utils.ts";
 
 export const hasSlotContent = (
   component : LitElement,
@@ -73,14 +74,16 @@ export const enumToOptions = (input : IKeyStr) : TOptionValueLabel[] => {
   return output;
 };
 
-export const getCheckableOptions = (options: IKeyBool) : TCheckboxValueLabel[] => {
+export const getCheckableOptions = (optionValues: IKeyBool, optionLabels :  IKeyStr = {}) : TCheckboxValueLabel[] => {
   const output : TCheckboxValueLabel[] = [];
 
-  for (const key of Object.keys(options)) {
+  for (const key of Object.keys(optionValues)) {
     output.push({
       value: key,
-      label: key,
-      checked: options[key],
+      label: (typeof optionLabels[key] === 'string')
+        ? optionLabels[key]
+        : kebab2Sentance(key),
+      checked: optionValues[key],
     })
   }
 

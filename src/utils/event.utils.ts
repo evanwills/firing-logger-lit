@@ -14,7 +14,8 @@ import InputValue from "./InputValue.class.ts"
  */
 export const getCustomEvent = (
   value : string | number | object,
-  validity : TTrueValidity,
+  validity : TFauxValidity,
+  ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   report : null | FReportValidity = null,
   type : string = 'change',
 ) : CustomEvent => {
@@ -24,7 +25,7 @@ export const getCustomEvent = (
     {
       bubbles: true,
       composed: true,
-      detail: new InputValue(value, validity, report),
+      detail: new InputValue(value, validity, ogTarget, report),
     },
   );
 };
@@ -56,11 +57,20 @@ export const getTrueValidity = (overrdes : TFauxValidity = {}) : TTrueValidity =
 export const dispatchCustomEvent = (
   node : HTMLElement,
   value : string | number | object,
-  validity : TTrueValidity,
+  validity : TFauxValidity,
+  ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   report : FReportValidity | null = null,
   type : string = 'change',
 ) : void => {
-  node.dispatchEvent(getCustomEvent(value, validity, report, type));
+  node.dispatchEvent(
+    getCustomEvent(
+      value,
+      validity,
+      ogTarget,
+      report,
+      type,
+    ),
+  );
 };
 
 export const dispatchFLaction = (

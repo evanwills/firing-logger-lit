@@ -1,9 +1,9 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { getISO8601date } from '../../utils/date-time.utils.ts';
 import { renderDetails } from '../../utils/render.utils.ts';
-import { enumToOptions, getCheckableOptions } from '../../utils/lit.utils.ts';
+import { enumToOptions } from '../../utils/lit.utils.ts';
 import { ucFirst } from '../../utils/string.utils.ts';
 import { KilnDetails } from './kiln-details.ts';
 import '../lit-router/router-link.ts';
@@ -16,6 +16,8 @@ import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
+import type { IKeyBool, IKeyValue } from "../../types/data-simple.d.ts";
+import { addRemoveField } from "../../utils/validation.utils.ts";
 
 /**
  * An example element.
@@ -58,6 +60,16 @@ export class KilnDetailsEdit extends KilnDetails {
   @state()
   _kilnOptions : TOptionValueLabel[] = [];
 
+  @state()
+  _firingOptions : TCheckboxValueLabel[] = [];
+
+  @state()
+  _changedFields : string[] = [];
+
+  _errorFields : string[] = [];
+
+  _changes : IKeyValue = {};
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -66,8 +78,59 @@ export class KilnDetailsEdit extends KilnDetails {
   // ------------------------------------------------------
   // START: event handlers
 
-  toggleEdit() : void {
-    this._edit = !this._edit;
+  handleFiringTypesChange(event : CustomEvent) : void {
+    console.group('<kiln-details>.handleFiringTypesChange()');
+    console.log('event:', event);
+    console.log('event.detail:', event.detail);
+    console.log('event.detail.value:', event.detail.value);
+    console.log('event.detail.validity:', event.detail.validity);
+    console.log('event.detail.checkValidity():', event.detail.checkValidity());
+    const key = 'firingTypes';
+    this._changes = {
+      ...this._changes,
+      ...event.detail.value
+    };
+
+    // Because these are checkbox fields and there are no other
+    // requirements on this field, checkValidity() return false only
+    // means that the value has gone back to what it was originally.
+    this._changedFields = addRemoveField(
+      this._changedFields,
+      key,
+      event.detail.checkValidity(),
+    );
+
+    console.log('this._changedFields:', this._changedFields);
+    console.groupEnd();
+  }
+
+  handleDimensionChange(event : CustomEvent) : void {
+    const field : HTMLInputElement = event.detail;
+    this._changes[field.id] = field.value;
+
+    this._errorFields = addRemoveField(
+      this._errorFields,
+      field.id,
+      field.checkValidity() === false,
+    );
+
+    let initial : number = 0
+
+    switch (field.id) {
+      case 'depth':
+        initial = this._depth;
+        break;
+
+      case 'width':
+        initial = this._width;
+        break;
+
+      case 'height':
+        initial = this._height;
+        break;
+    }
+
+    this._changedFields = addRemoveField(this._changedFields, field.id, field.valueAsNumber !== initial);
   }
 
   handleSave() : void {
@@ -81,6 +144,7 @@ export class KilnDetailsEdit extends KilnDetails {
   connectedCallback() : void {
     // console.group('<kiln-details>.connectedCallback()');
     super.connectedCallback();
+    super._getFromStore();
     // console.log('this._user:', this._user);
     // console.log('this.kilnID:', this.kilnID);
     // console.log('this.kilnName:', this.kilnName);
@@ -91,7 +155,7 @@ export class KilnDetailsEdit extends KilnDetails {
   // ------------------------------------------------------
   // START: helper render methods
 
-  _renderDetails(detailName : string | null, openOthers : boolean) : TemplateResult {
+  _renderKilnDetails(detailName : string | null, openOthers : boolean) : TemplateResult {
     const output = html`
       <ul class="label-12 details">
         <li>
@@ -141,11 +205,12 @@ export class KilnDetailsEdit extends KilnDetails {
 
   _renderDimensions(detailName : string | null, openOthers : boolean) : TemplateResult {
     const output = html`
-        <ul class="label-8 details">
+        <ul class="label-8 details" @change=${this.handleDimensionChange}>
           <li>
             <accessible-number-field
               field-id="width"
               label="Width"
+              min="100"
               max="2500"
               required
               step="1"
@@ -156,6 +221,7 @@ export class KilnDetailsEdit extends KilnDetails {
             <accessible-number-field
               field-id="depth"
               label="Depth"
+              min="100"
               max="2500"
               required
               step="1"
@@ -166,6 +232,7 @@ export class KilnDetailsEdit extends KilnDetails {
             <accessible-number-field
               field-id="height"
               label="Height"
+              min="30"
               max="2500"
               required
               step="1"
@@ -194,13 +261,13 @@ export class KilnDetailsEdit extends KilnDetails {
           <accessible-checkbox-list
             field-id="firing-types"
             label="Allowed firing types"
-            .options=${getCheckableOptions(this._firingTypes)}
-            validation-type="name"></accessible-checkbox-list>
+            .options=${this._firingTypeOptions}
+            validation-type="name"
+            @change=${this.handleFiringTypesChange}></accessible-checkbox-list>
         </li>
       </ul>`,
       openOthers,
-      detailName,
-      true
+      detailName
     );
   }
 
@@ -289,7 +356,7 @@ export class KilnDetailsEdit extends KilnDetails {
 
     const detailName : string | null = (this.mode === 'edit')
       ? 'kiln-blocks'
-      : null
+      : null;
 
     const openOthers : boolean  = (this.mode !== 'edit')
 
@@ -301,7 +368,7 @@ export class KilnDetailsEdit extends KilnDetails {
           }</h2>
 
           ${this._renderNameType(detailName)}
-          ${this._renderDetails(detailName, openOthers)}
+          ${this._renderKilnDetails(detailName, openOthers)}
           ${this._renderDimensions(detailName, openOthers)}
           ${this._renderFiringTypes(detailName, openOthers)}
           ${this._renderStatus(detailName, openOthers)}

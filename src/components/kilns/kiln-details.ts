@@ -2,22 +2,25 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
-import type { ID, IKeyBool, IKeyValue } from '../../types/data-simple.d.ts';
+import type { ID, IKeyBool, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
+import type { TCheckboxValueLabel } from "../../types/renderTypes.d.ts";
 import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
+import { getAllowedFiringTypes } from "../../utils/kiln-data.utils.ts";
+import { getCheckableOptions } from "../../utils/lit.utils.ts";
+import { detailsStyle } from "../../assets/css/details.css.ts";
+import { labelWidths } from "../../assets/css/input-field.css.ts";
 import '../lit-router/router-link.ts';
 import '../input-fields/accessible-number-field.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
-import { detailsStyle } from "../../assets/css/details.css.ts";
-import { labelWidths } from "../../assets/css/input-field.css.ts";
-import { getAllowedFiringTypes } from "../../utils/kiln-data.utils.ts";
+import { renderDetails, renderReadonlyCheckable } from "../../utils/render.utils.ts";
 
 /**
  * An example element.
@@ -110,7 +113,7 @@ export class KilnDetails extends LoggerElement {
   _glaze: boolean = false;
 
   @state()
-  _firingTypes: IKeyBool = {
+  _allowedFiringTypes: IKeyValue = {
     bisque: false,
     glaze: false,
     luster: false,
@@ -138,23 +141,25 @@ export class KilnDetails extends LoggerElement {
   _programs : IStoredFiringProgram[] = [];
 
   @state()
-  _kilnTypes : IKeyValue = {};
+  _kilnTypes : IKeyStr = {};
 
   @state()
-  _fuelSources : IKeyValue = {};
+  _fuelSources : IKeyStr = {};
+
+  @state()
+  _firingTypes : IKeyStr = {};
+
+  @state()
+  _firingTypeOptions : TCheckboxValueLabel[] = [];
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
   _setKilnData(data : IKiln) : void {
-    console.group('<kiln-details>._setKilnData()');
     const _data = (Array.isArray(data))
       ? data[0]
       : data;
-    console.log('data:', data);
-    console.log('_data:', _data);
-    console.log('_data.installDate:', _data.installDate);
 
     if (isNonEmptyStr(_data, 'id')) {
       this._id  = _data.id;
@@ -173,10 +178,11 @@ export class KilnDetails extends LoggerElement {
       this._depth = _data.depth;
       this._height = _data.height;
 
-      this._firingTypes = getAllowedFiringTypes(
+      this._allowedFiringTypes = getAllowedFiringTypes(
         _data,
         (this.mode === 'new'),
       );
+      this._firingTypeOptions = getCheckableOptions(this._allowedFiringTypes, this._firingTypes);
 
       this._useCount = _data.useCount;
       this._isRetired = _data.isRetired;
@@ -184,60 +190,39 @@ export class KilnDetails extends LoggerElement {
       this._isInUse = _data.isInUse;
       this._isHot = _data.isHot;
 
-      console.log('this._installDate:', this._installDate);
       if (this._store !== null) {
         this._store.read(
           'programs',
           `kilnID=${this._id}`,
           ['id', 'type', 'name', 'urlPart', 'controllerProgramID', 'maxTemp', 'cone', 'duration'],
         ).then(this._setProgramData.bind(this)).catch((msg) => { console.error(msg)});
-
       }
-
     }
-    console.groupEnd();
   }
 
   _setProgramData(data : IStoredFiringProgram[]) : void {
-    console.group('<kiln-details>._setProgramData()');
     this._programs = data;
-    console.groupEnd();
   }
 
   _setKilnTypes(data : IKeyValue) : void {
-    console.group('<kiln-details>._setKilnTypes()');
-    console.log('data:', data);
     this._kilnTypes = data;
-    console.groupEnd();
   }
 
   _setFuelSources(data : IKeyValue) : void {
-    console.group('<kiln-details>._setFuelSources()');
-    console.log('data:', data);
     this._fuelSources = data;
-    console.groupEnd();
+  }
+
+  _setFiringTypes(data : IKeyValue) : void {
+    this._firingTypes = data;
   }
 
   async _getFromStore() : Promise<void> {
-    console.group('<kiln-details>._getFromStore()');
     await super._getFromStore();
-    // let ok = false;
 
-    console.log('this._store:', this._store);
     if (this._store !== null && Object.keys(this._fuelSources).length === 0) {
       this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this));
       this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this));
-
-      // const keys = [
-      //   'id',
-      //   'type',
-      //   'name',
-      //   'urlPart',
-      //   'controllerProgramID',
-      //   'maxTemp',
-      //   'cone',
-      //   'duration',
-      // ];
+      this._store.read('EfiringType', '', true).then(this._setFiringTypes.bind(this));
 
       if (isNonEmptyStr(this.kilnID)) {
         this._store.read('kilns', `#${this.kilnID}`).then(this._setKilnData.bind(this));
@@ -245,7 +230,6 @@ export class KilnDetails extends LoggerElement {
         this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnData.bind(this));
       }
     }
-    console.groupEnd();
   }
 
 
@@ -267,13 +251,8 @@ export class KilnDetails extends LoggerElement {
   // START: lifecycle methods
 
   connectedCallback() : void {
-    // console.group('<kiln-details>.connectedCallback()');
     super.connectedCallback();
     this._getFromStore();
-    // console.log('this._user:', this._user);
-    // console.log('this.kilnID:', this.kilnID);
-    // console.log('this.kilnName:', this.kilnName);
-    // console.groupEnd();
   }
 
   //  END:  lifecycle methods
@@ -281,13 +260,6 @@ export class KilnDetails extends LoggerElement {
   // START: helper render methods
 
   renderSingleProgram(program : IStoredFiringProgram) : TemplateResult {
-    // console.group('<kiln-details>.renderSingleProgram()');
-    // console.log('program:', program);
-    // console.log('this._path:', this._path);
-    // console.log('this._tUnit:', this._tUnit);
-    // console.log('this._name:', this._name);
-    // console.log('url:', `/kilns/${this._path}/programs/${program.urlPart}`)
-    // console.groupEnd();
     return html`
       <tr>
         <th>
@@ -315,7 +287,6 @@ export class KilnDetails extends LoggerElement {
     if (this._programs.length === 0) {
       return '';
     }
-    console.log('this._programs:', this._programs);
     return html`<table>
       <thead>
         <tr>
@@ -333,56 +304,8 @@ export class KilnDetails extends LoggerElement {
     </table>`;
   }
 
-  //  END:  helper render methods
-  // ------------------------------------------------------
-  // START: main render method
-
-  render() : TemplateResult {
-    let editBtn : TemplateResult | string = '';
-    let newProgramBtn : TemplateResult | string = '';
-    let showBtns : boolean = false;
-    console.group('<kiln-details>.render()');
-    console.log('this._user:', this._user);
-    console.log('this._id:', this._id);
-    console.log('this._name:', this._name);
-    console.log('this._store:', this._store);
-    console.log('this._userHasAuth(2):', this._userHasAuth(2));
-    console.log('this._userCan("program"):', this._userCan('program'));
-
-    if (isNonEmptyStr(this._id) === true) {
-      if (this._userHasAuth(2)) {
-        showBtns = true;
-        editBtn = html`<p class="last-btn"><router-link
-        class="btn"
-        data-uid="${this.kilnID}"
-        label="Edit"
-        sr-label="${this._name}"
-        url="/kilns/${this._path}/edit"></router-link></p>`;
-      }
-
-      if (this._userCan('program')) {
-        showBtns = true;
-        newProgramBtn = html`<p><router-link
-          class="btn"
-          data-uid="${this._id}"
-          data-max-temp="${this._maxTemp}"
-          label="Add new program"
-          sr-label="for ${this._name}"
-          .url="/kilns/${this._path}/programs/new"></router-link></p>`;
-      }
-    }
-
-    const title = isNonEmptyStr(this._name)
-      ? this._name
-      : 'Kiln';
-    console.log('showBtns:', showBtns);
-    console.log('editBtn:', editBtn);
-    console.log('newProgramBtn:', newProgramBtn);
-    console.log('title:', title);
-    console.groupEnd();
-
+  _renderDetails() : TemplateResult {
     return html`
-    <h2>${title}</h2>
     <div>
       <ul>
         <li><read-only-field label="Name" value="${this._name}"></read-only-field></li>
@@ -392,24 +315,62 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Type" value="${getValFromKey(this._kilnTypes, this._type)}"></read-only-field></li>
         <li><read-only-field label="Max temp" value="${this._tConverter(this._maxTemp)}&deg;${this._tUnit}"></read-only-field></li>
       </ul>
-    </div>
-    <details open name="kiln">
-      <summary>Programs</summary>
+    </div>`;
+  }
 
-      ${this.renderProgramList()}
-
-      ${newProgramBtn}
-    </details>
-    <details name="kiln">
-      <summary>Internal dimensions</summary>
+  _renderDimensions(detailName : string | null, openOthers : boolean) : TemplateResult {
+    const output = html`
       <ul class="kv-list">
         <li><read-only-field label="Width" value="${this._tConverter(this._width)}${this._lUnit}"></read-only-field></li>
         <li><read-only-field label="Depth" value="${this._tConverter(this._depth)}${this._lUnit}"></read-only-field></li>
         <li><read-only-field label="Height" value="${this._tConverter(this._height)}${this._lUnit}"></read-only-field></li>
-      </ul>
-    </details>
-    <details name="kiln">
-      <summary>Status</summary>
+      </ul>`;
+
+    return renderDetails(
+      'internal-kiln-dimensions',
+      'Internal dimensions',
+      output,
+      openOthers,
+      detailName,
+      true,
+    );
+  }
+
+  _renderFiringTypes(detailName : string | null, openOthers : boolean) : TemplateResult {
+    return renderDetails(
+      'kiln-firing-types',
+      'Allowed firing types',
+      html`
+      <ul class="kv-list">
+        ${this._firingTypeOptions.map(renderReadonlyCheckable)}
+      </ul>`,
+      openOthers,
+      detailName
+    );
+  }
+
+  _renderPrograms(detailName : string | null, openOthers : boolean) : TemplateResult {
+
+    const newProgramBtn =  (isNonEmptyStr(this._id) === true && this._userCan('program'))
+      ? html`<p><router-link
+        class="btn"
+        data-uid="${this._id}"
+        data-max-temp="${this._maxTemp}"
+        label="Add new program"
+        sr-label="for ${this._name}"
+        .url="/kilns/${this._path}/programs/new"></router-link></p>`
+      : '';
+    return renderDetails(
+      'programs',
+      'Programs',
+      html`${this.renderProgramList()} ${newProgramBtn}`,
+      openOthers,
+      detailName
+    );
+  }
+
+  _renderStatus(detailName : string | null, openOthers : boolean) : TemplateResult {
+    const output = html`
       <ul class="kv-list">
         <li><read-only-field label="Install date" value="${ifDefined((this._installDate !== null) ? getHumanDate(this._installDate) : null)}"></read-only-field></li>
         <li><read-only-field label="Firing count" value="${this._useCount}"></read-only-field></li>
@@ -417,25 +378,44 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Is working" .value="${this._isWorking}"></read-only-field></li>
         <li><read-only-field label="Is in use" .value="${this._isInUse}"></read-only-field></li>
         <li><read-only-field label="Is hot" .value="${this._isHot}"></read-only-field></li>
-        <!-- <li><read-only-field label="Max program count" value="${this._maxProgramCount}"></read-only-field></li> -->
-      </ul>
-    </details>
-    <details name="kiln">
-      <summary>Allowed firing types</summary>
-      <ul class="kv-list">
-        <li><read-only-field label="Bisque" .value="${this._bisque}"></read-only-field></li>
-        <li><read-only-field label="Glaze" .value="${this._glaze}"></read-only-field></li>
-        <li><read-only-field label="Luster" .value="${this._luster}"></read-only-field></li>
-        <li><read-only-field label="Onglaze" .value="${this._onglaze}"></read-only-field></li>
-        <li><read-only-field label="Saggar" .value="${this._saggar}"></read-only-field></li>
-        <li><read-only-field label="Raku" .value="${this._raku}"></read-only-field></li>
-        <li><read-only-field label="Pit firing" .value="${this._pit}"></read-only-field></li>
-        <li><read-only-field label="Black firing" .value="${this._black}"></read-only-field></li>
-        <li><read-only-field label="Salt Glaze" .value="${this._saltGlaze}"></read-only-field></li>
-      </ul>
-    </details>
-    ${editBtn}
-    `;
+      </ul>`;
+
+    return renderDetails(
+      'kiln-status',
+      'Status',
+      output,
+      openOthers,
+      detailName
+    );
+  }
+
+  //  END:  helper render methods
+  // ------------------------------------------------------
+  // START: main render method
+
+  render() : TemplateResult {
+    const editBtn : TemplateResult | string = (isNonEmptyStr(this._id) === true && this._userHasAuth(2))
+      ? html`<p class="last-btn"><router-link
+        class="btn"
+        data-uid="${this.kilnID}"
+        label="Edit"
+        sr-label="${this._name}"
+        url="/kilns/${this._path}/edit"></router-link></p>`
+      : '';
+
+    const title = isNonEmptyStr(this._name)
+      ? this._name
+      : 'Kiln';
+    const detailName : string = 'kiln-blocks';
+
+    return html`
+      <h2>${title}</h2>
+      ${this._renderDetails()}
+      ${this._renderPrograms(detailName, true)}
+      ${this._renderDimensions(detailName, false)}
+      ${this._renderFiringTypes(detailName, false)}
+      ${this._renderStatus(detailName, false)}
+      ${editBtn}`;
   }
 
   //  END:  main render method
@@ -443,6 +423,9 @@ export class KilnDetails extends LoggerElement {
   // START: styles
 
   static styles = css`
+  :host {
+    max-width: var(--max-width, 40rem);
+  }
   h3 { text-align: left; }
   ul {
     list-style: none;

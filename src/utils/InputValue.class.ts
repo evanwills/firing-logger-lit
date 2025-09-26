@@ -1,27 +1,67 @@
 import type { TemplateResult } from 'lit';
 import type { FReportValidity, TFauxValidity, TTrueValidity } from '../types/fauxDom.d.ts';
 import { getTrueValidity } from './event.utils.ts';
+import type { IKeyValue } from "../types/data-simple.d.ts";
 
 export default class {
-  _value : string | number | object;
+  // ------------------------------------------------------
+  // START: Private properties
 
-  _validity : TTrueValidity;
+  _defaultValue : string | number | object;
+
+  _id : string;
+
+  _name : string;
 
   _reportValidity : null | FReportValidity;
 
+  _validity : TTrueValidity;
+
+  _value : string | number | IKeyValue;
+
+  //  END:  Private properties
+  // ------------------------------------------------------
+  // START: Constructor
+
+  /**
+   *
+   * @param value          Current value of the field
+   * @param validity       Validity state of the field
+   * @param ogTarget       Input/Select/Textarea element that
+   *                       triggered the event
+   * @param reportValidity (optional) function to do provide custom
+   *                       error messages if user input is invalid
+   */
   constructor(
-    value : string | number | object,
-    validity: TFauxValidity,
+    value : string | number | IKeyValue,
+    validity : TFauxValidity,
+    ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
     reportValidity : null | FReportValidity = null,
   ) {
     this._value = value;
 
     this._validity = getTrueValidity();
 
+    this._id = ogTarget.id;
+    this._name = (ogTarget.name !== '')
+      ? ogTarget.name
+      : ogTarget.id;
+
+    if (ogTarget instanceof HTMLInputElement || ogTarget instanceof HTMLTextAreaElement) {
+      this._defaultValue = ogTarget.defaultValue;
+    } else {
+      // @todo work out how to find the default selected option of select input
+      this._defaultValue = value;
+    }
+
     this._setValidity(validity);
 
     this._reportValidity = reportValidity;
   }
+
+  //  END:  Constructor
+  // ------------------------------------------------------
+  // START: Private methods
 
   _setValidity(validity : TFauxValidity) {
     for (const key of Object.keys(this._validity)) {
@@ -31,9 +71,59 @@ export default class {
     }
   }
 
-  get value() { return this._value; }
+  //  END:  Private methods
+  // ------------------------------------------------------
+  // START: Public getters
 
-  get validity() { return this._validity; }
+  get value() : string | number | IKeyValue { return this._value; }
+
+  get defaultValue() : string | number | IKeyValue { return this._defaultValue; }
+
+  get validity() : TTrueValidity { return this._validity; }
+
+  get id() : string {
+    return (this._id !== '')
+      ? this._id
+      : this._name;
+  }
+
+  get name() : string {
+    return (this._name !== '')
+      ? this._name
+      : this._id;
+  }
+
+  get valueAsDate() : Date | null {
+    if (typeof this._value === 'string' || typeof this._value === 'number') {
+      const output = new Date(this._value);
+
+      return (output.toString() !== 'Invalid Date')
+        ? output
+        : null;
+    }
+
+    return null;
+  }
+
+  get valueAsNumber() : number {
+    if (typeof this._value === 'number') {
+      return (Number.isFinite(this._value))
+        ? this._value
+        : parseInt('Not a number');
+    }
+
+    if (typeof this._value === 'string' && /^\d+(?:\.\d+)?$/.test(this._value)) {
+      return (this._value.includes('.'))
+        ? parseFloat(this._value)
+        : parseInt(this._value, 10);
+    }
+
+    return parseInt('Not a number');
+  }
+
+  //  END:  Public getters
+  // ------------------------------------------------------
+  // START: Public methods
 
   checkValidity() : boolean {
     for (const key of Object.keys(this._validity)) {
@@ -73,10 +163,10 @@ export default class {
       return 'Input falls between allowed steps';
     }
     if (this._validity.tooLong) {
-      return 'Length of input was too long';
+      return 'Length of input is too long';
     }
     if (this._validity.tooShort) {
-      return 'Length of input was not long enough';
+      return 'Length of input is not long enough';
     }
     if (this._validity.typeMismatch) {
       return 'Input was wrong type';
@@ -87,4 +177,7 @@ export default class {
 
     return '';
   }
+
+  //  END:  Public methods
+  // ------------------------------------------------------
 }

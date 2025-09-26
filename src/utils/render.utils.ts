@@ -8,6 +8,7 @@ import type {
   TCheckboxValueLabel,
   TOptionValueLabel,
 } from '../types/renderTypes.d.ts';
+import '../components/input-fields/read-only-field.ts';
 
 const getIsChecked = (
   component : AccessibleRadioField | AccessibleCheckboxList,
@@ -93,3 +94,50 @@ export const renderDetails = (
         ${contents}
       </details>`
 };
+
+export const boolToStr = (input: boolean, str = 'yes') : string => {
+  switch (str.toLowerCase()) {
+    case 'yes':
+    case 'no':
+      return (input === true)
+        ? 'Yes'
+        : 'No';
+
+    case 'on':
+    case 'off':
+      return (input === true)
+        ? 'On'
+        : 'Off';
+
+    case 'in':
+    case 'out':
+      return (input === true)
+        ? 'In'
+        : 'Out';
+
+    case 'up':
+    case 'down':
+      return (input === true)
+        ? 'Up'
+        : 'Down';
+
+    case 'open':
+    case 'close':
+      return (input === true)
+        ? 'Open'
+        : 'Close';
+
+    default:
+      return (input === true)
+        ? 'True'
+        : 'False';
+  }
+}
+
+export const renderReadonlyCheckable = (
+  option : TCheckboxValueLabel
+) : TemplateResult => html`
+    <li><read-only-field
+      label="${option.label}"
+      value="${boolToStr(option.checked)}"></read-only-field></li>
+  `;

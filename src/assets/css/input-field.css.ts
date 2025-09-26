@@ -147,6 +147,24 @@ textarea {
   font-style: italic;
 }
 
+.cb-list {
+  margin: 0 0 0 2rem;
+  padding: 0;
+  list-style-type: none;
+  column-width: 8rem;
+  column-gap: 1rem;
+
+  li {
+    padding: 0.5rem 0;
+  }
+}
+.checkbox {
+  display: block;
+  padding-left: var(--checkbox-indent);
+  text-indent: calc(var(--checkbox-indent) * -1);
+  width: 100%;
+}
+
 .toggle {
   border-radius: 2rem;
   border: 0.05rem solid #cccccccc;
@@ -204,4 +222,7 @@ export const fieldListStyles = css`
   ul.border li + li {
     border-top: 0.05rem solid var(--border-colour, #aaa);
   }
+`;
+
+export const checkboxListStyles = css`
 `;
