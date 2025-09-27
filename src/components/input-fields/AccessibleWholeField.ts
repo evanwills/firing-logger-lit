@@ -151,16 +151,16 @@ export class AccessibleWholeField extends FocusableInside {
 
   validate(event : InputEvent | KeyboardEvent) {
     event.preventDefault();
-    console.group('AccessibleWholeField.validate()')
+    // console.group('AccessibleWholeField.validate()')
 
     const { target } = event;
     if (this.sanitiseInput !== null) {
       (target as HTMLInputElement).value = this.sanitiseInput((target as HTMLInputElement).value);
     }
-    console.log('target:', target);
-    console.log('target.value:', (target as HTMLInputElement).value);
-    console.log('target.validity:', (target as HTMLInputElement).validity);
-    console.log('target.checkValidity():', (target as HTMLInputElement).checkValidity());
+    // console.log('target:', target);
+    // console.log('target.value:', (target as HTMLInputElement).value);
+    // console.log('target.validity:', (target as HTMLInputElement).validity);
+    // console.log('target.checkValidity():', (target as HTMLInputElement).checkValidity());
     this._invalid = !(target as HTMLInputElement).checkValidity();
 
     if (this.getErrorMsg !== null) {
@@ -178,7 +178,7 @@ export class AccessibleWholeField extends FocusableInside {
       : '';
 
     this._dispatch(event);
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -186,7 +186,7 @@ export class AccessibleWholeField extends FocusableInside {
   // START: event handlers
 
   handleChange(event : InputEvent) : void {
-    console.group('AccessibleWholeField.handleChange()')
+    // console.group('AccessibleWholeField.handleChange()')
     this.validate(event);
     // console.groupEnd();
   }

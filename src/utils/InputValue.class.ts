@@ -2,6 +2,8 @@ import type { TemplateResult } from 'lit';
 import type { FReportValidity, TFauxValidity, TTrueValidity } from '../types/fauxDom.d.ts';
 import { getTrueValidity } from './event.utils.ts';
 import type { IKeyValue } from "../types/data-simple.d.ts";
+import { numOrNan } from "./numeric.utils.ts";
+import { dateOrNull } from "./date-time.utils.ts";
 
 export default class {
   // ------------------------------------------------------
@@ -37,6 +39,7 @@ export default class {
     validity : TFauxValidity,
     ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
     reportValidity : null | FReportValidity = null,
+    defaultValue : string | null = null,
   ) {
     this._value = value;
 
@@ -51,7 +54,9 @@ export default class {
       this._defaultValue = ogTarget.defaultValue;
     } else {
       // @todo work out how to find the default selected option of select input
-      this._defaultValue = value;
+      this._defaultValue = (defaultValue !== null)
+        ? defaultValue
+        : this._getDefaultOption(ogTarget);
     }
 
     this._setValidity(validity);
@@ -63,7 +68,15 @@ export default class {
   // ------------------------------------------------------
   // START: Private methods
 
-  _setValidity(validity : TFauxValidity) {
+  _getDefaultOption(field : HTMLSelectElement) : string {
+    const defaultOption = field.querySelector('option[selected]');
+
+    return (defaultOption !== null)
+      ? (defaultOption as HTMLOptionElement).value
+      : '';
+  }
+
+  _setValidity(validity : TFauxValidity) : void {
     for (const key of Object.keys(this._validity)) {
       if (typeof validity[key] === 'boolean') {
         this._validity[key] = validity[key];
@@ -93,33 +106,23 @@ export default class {
       : this._id;
   }
 
+  get defaultAsDate() : Date | null {
+    return dateOrNull(this._defaultValue);
+  }
+
+  get defaultAsNumber() : number {
+    return numOrNan(this._defaultValue);
+  }
+
   get valueAsDate() : Date | null {
-    if (typeof this._value === 'string' || typeof this._value === 'number') {
-      const output = new Date(this._value);
-
-      return (output.toString() !== 'Invalid Date')
-        ? output
-        : null;
-    }
-
-    return null;
+    return dateOrNull(this._value);
   }
 
   get valueAsNumber() : number {
-    if (typeof this._value === 'number') {
-      return (Number.isFinite(this._value))
-        ? this._value
-        : parseInt('Not a number');
-    }
-
-    if (typeof this._value === 'string' && /^\d+(?:\.\d+)?$/.test(this._value)) {
-      return (this._value.includes('.'))
-        ? parseFloat(this._value)
-        : parseInt(this._value, 10);
-    }
-
-    return parseInt('Not a number');
+    return numOrNan(this._value);
   }
+
+  get isNewValue() : boolean { return this._value !== this._defaultValue; }
 
   //  END:  Public getters
   // ------------------------------------------------------

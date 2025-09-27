@@ -269,7 +269,7 @@
     "aborted": "Aborted"
   },
 
-  "EkilnFiringState": {
+  "EkilnReadyStatus": {
     "available": "Available",
     "packing": "Packing",
     "packed": "Packed",

@@ -58,3 +58,9 @@ export interface IKeyValUrl implements IKeyValue {
   url?: string,
   value: string,
 }
+
+export type TOrderedEnum = {
+  order: number,
+  value: string,
+  label: string,
+};

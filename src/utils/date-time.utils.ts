@@ -31,3 +31,15 @@ export const getISO8601time = (when : number | Date | null) : string => {
 }
 
 export const getHumanDate = (date: Date) : string => date.toLocaleDateString();
+
+export const dateOrNull = (input : unknown) : Date | null => {
+  if (typeof input === 'string' || typeof input === 'number') {
+    const output = new Date(input);
+
+    return (output.toString() !== 'Invalid Date')
+      ? output
+      : null;
+  }
+
+  return null;
+};

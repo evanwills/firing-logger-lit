@@ -2,6 +2,7 @@ import type { IDBPDatabase } from "idb";
 import type { IKeyValue } from '../types/data-simple.d.ts';
 import type { TUser } from '../types/data.d.ts';
 import { getCookie } from '../utils/cookie.utils.ts';
+import { isUser } from "../types/data.type-guards.ts";
 
 export const getAuthUser = (db : IDBPDatabase) : Promise<TUser|null> => {
   const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
@@ -11,6 +12,50 @@ export const getAuthUser = (db : IDBPDatabase) : Promise<TUser|null> => {
   }
 
   return db.get('users', userID);
+};
+
+export const userHasAuth = (user : TUser | null, level : number) : boolean => {
+  if (user === null || isUser(user) === false) {
+    return false;
+  }
+
+  const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
+
+  if (userID === null || user.id !== userID || user.adminLevel < level)  {
+    return false;
+  }
+
+  return true;
+};
+
+export const userCan = (
+  user : TUser | null,
+  key: string,
+  level : number = 1,
+) : boolean => {
+  if (user !== null && userHasAuth(user, level)) {
+    switch(key.toLowerCase()) {
+      case 'fire':
+        return user.canFire;
+
+      case 'log':
+        return user.canLog;
+
+      case 'pack':
+        return user.canPack;
+
+      case 'price':
+        return user.canPrice;
+
+      case 'program':
+        return user.canProgram;
+
+      case 'unpack':
+        return user.canUnpack;
+    }
+  }
+
+  return false;
 };
 
 export const updateAuthUser = async (db: IDBPDatabase, data : IKeyValue) : Promise<boolean> => {

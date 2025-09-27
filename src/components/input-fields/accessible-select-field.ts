@@ -36,6 +36,12 @@ export class AccessibleSelectField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: event handlers
 
+  handleChange(event : InputEvent) : void {
+    console.group('AccessibleWholeField.handleChange()')
+    super.handleChange(event);
+    console.groupEnd();
+  }
+
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods

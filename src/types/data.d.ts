@@ -137,7 +137,7 @@ export interface FiringLog implements IKeyValue, IIdObject {
   programID: ID,
   diaryID: ID|null,
   firingType: EfiringType,
-  firingState: EkilnFiringState,
+  firingState: EkilnReadyStatus,
   start: number,
   end: number|null,
   started: boolean,
@@ -180,7 +180,7 @@ export interface StateChangeLogEntry extends IFiringLogEntry {
   userID: ID,
   firingID: ID,
   time: Date,
-  newState: EkilnFiringState,
+  newState: EkilnReadyStatus,
 }
 
 export interface Kilns {
@@ -321,7 +321,7 @@ enum EprogramState {
   aborted,
 }
 
-enum EkilnFiringState {
+enum EkilnReadyStatus {
   available,
   packing,
   packed,
@@ -331,6 +331,19 @@ enum EkilnFiringState {
   cold,
   unpacking,
   emptied,
+}
+
+enum EkilnMServiceState {
+  purchased,
+  delivered,
+  installed,
+  working,
+  maintenance,
+  brokenAwaitingRepair,
+  brokenBeingRepaired,
+  retired,
+  decomissioned,
+  removed,
 }
 
 enum EtemperatureState {

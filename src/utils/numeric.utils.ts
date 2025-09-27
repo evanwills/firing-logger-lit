@@ -7,3 +7,19 @@ export const round = (input : number, points: number = 0) : number => {
 
   return (Math.round(input * factor) / factor);
 };
+
+export const numOrNan = (input : unknown) : number => {
+  if (typeof input === 'number') {
+    return (Number.isFinite(input))
+      ? input
+      : parseInt('Not a number');
+  }
+
+  if (typeof input === 'string' && /^\d+(?:\.\d+)?$/.test(input)) {
+    return (input.includes('.'))
+      ? parseFloat(input)
+      : parseInt(input, 10);
+  }
+
+  return parseInt('Not a number');
+};

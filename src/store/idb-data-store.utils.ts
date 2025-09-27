@@ -67,7 +67,7 @@ export const populateEmptySlice = async (
  *              into.
  * @returns
  */
-export const populateEnumSlice = (
+export const populateKVslice = (
   db : IDBPDatabase,
   obj : IKeyValue,
   slice : string,
@@ -100,7 +100,7 @@ export const populateEnumSlice = (
  * @param force
  * @returns
  */
-export const populateEmptyEnumSlice = async(
+export const populateEmptyKVslice = async(
   db : IDBPDatabase,
   obj : IKeyValue,
   slice : string,
@@ -122,7 +122,75 @@ export const populateEmptyEnumSlice = async(
   }
 
   return (Object.keys(newObj).length > 0)
-    ? populateEnumSlice(db, newObj, slice)
+    ? populateKVslice(db, newObj, slice)
+    : Promise.resolve([]);
+};
+
+/**
+ * Insert Enum type data into data store
+ *
+ * @param db    Database connection object
+ * @param obj   Data to be stored
+ * @param slice Name of ObjectStore of the data is to be inserted
+ *              into.
+ * @returns
+ */
+export const populateEnumSlice = (
+  db : IDBPDatabase,
+  oEnum : TOrderedEnum[],
+  slice : string,
+  put : boolean = false,
+) : Promise<(void | IDBValidKey)[]> => {
+  const tx = db.transaction(slice, 'readwrite');
+  const method = (put === true)
+    ? 'put'
+    : 'add';
+
+  const rows = [];
+
+  for (const item of oEnum) {
+    rows.push(tx.store[method](item));
+  }
+
+  rows.push(tx.done);
+
+  return Promise.all(rows);
+};
+
+
+/**
+ * Insert Enum type data into an empty data store
+ *
+ * @param db     Database connection object
+ * @param obj    Data to be stored
+ * @param slice  Name of ObjectStore of the data is to be inserted
+ *               into.
+ * @param force
+ * @returns
+ */
+export const populateEmptyEnumSlice = async(
+  db : IDBPDatabase,
+  oEnum : TOrderedEnum[],
+  slice : string,
+  action : '' | 'update' | 'replace' = '',
+) => {
+  const inDB : TOrderedEnum[] = await db.getAll(slice);
+  let newEnum : TOrderedEnum[] = [];
+
+  if (inDB.length === 0 || action === 'replace') {
+    newEnum = oEnum;
+    db.clear(slice)
+  } else if (action === 'update' || oEnum.length !== inDB.length) {
+    const existing : string[] = inDB.map((item : TOrderedEnum) : string => item.value);
+    for (const entry of oEnum) {
+      if (existing.includes(entry.value) === false) {
+        newEnum.push(entry)
+      }
+    }
+  }
+
+  return (newEnum.length > 0)
+    ? populateEnumSlice(db, newEnum, slice)
     : Promise.resolve([]);
 };
 

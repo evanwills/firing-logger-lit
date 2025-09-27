@@ -1,5 +1,10 @@
 :root {
   --bg-colour: #242424;
+  --bg-colour-success: #005411;
+  --bg-colour-warning: #864907;
+  --bg-colour-error: #580a0a;
+  --bg-colour-info: #260e5b;
+  --bg-colour: #242424;
   --border-colour: #aaa;
   --checkbox-indent: 1.65rem;
   --delete-bg: #aa0000;

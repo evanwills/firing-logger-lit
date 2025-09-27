@@ -16,7 +16,7 @@ import type { IKiln, IUser } from './data.d.ts';
  */
 export type TStoreSlice = string;
 
-export type TStoreAction = 'setLoggedInUser' | 'replace' | 'append'
+export type TStoreAction = 'setLoggedInUser' | 'updateKiln' | 'replace' | 'append'
 
 /**
  * CDataStoreClass calls `FReadyWatcher()`s when the data store is
@@ -182,7 +182,7 @@ export type TDataStore = {
   cones: TConeData[],
   EfiringType: IKeyValPair[],
   EprogramState: IKeyValPair[],
-  EkilnFiringState: IKeyValPair[],
+  EkilnReadyStatus: IKeyValPair[],
   EtemperatureState: IKeyValPair[],
   EfuelSource: IKeyValPair[],
   EequipmentLogType: IKeyValPair[],

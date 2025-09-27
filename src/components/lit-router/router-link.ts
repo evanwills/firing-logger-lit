@@ -45,9 +45,11 @@ export class RouterLink extends LitElement {
   // START: event handlers
 
   navClick(event : Event): void {
-    event.preventDefault();
+    if (this.asBtn === false) {
+      event.preventDefault();
 
-    dispatchRouterEvent(this, this.url, this.dataset);
+      dispatchRouterEvent(this, this.url, this.dataset);
+    }
   }
 
   //  END:  event handlers

@@ -2,16 +2,31 @@ import { type IDBPDatabase, type IDBPTransaction } from 'idb';
 import type {
   CDataStoreClass,
   FReadyWatcher,
+  TActionList,
 } from '../types/store.d.ts';
 import PidbDataStore from './PidbDataStore.class.ts';
 import {
   populateEmptyEnumSlice,
+  populateEmptyKVslice,
   populateEmptySlice,
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from "./user-data.utils.ts";
 import type { IDBPmigrate, IDBPupgrade } from "../types/pidb.d.ts";
+import { updateKilnData } from "./kiln-data.utils.ts";
 
 let store : CDataStoreClass | null = null;
+
+const initEnum = (
+  db : IDBPDatabase<unknown>,
+  storeName: string
+) : void => {
+  if (!db.objectStoreNames.contains(storeName)) {
+    const store = db.createObjectStore(storeName, { keyPath: 'value' });
+
+    store.createIndex('order', 'order', { unique: true });
+    store.createIndex('label', 'label', { unique: true });
+  }
+}
 
 const upgradeSchema : IDBPupgrade = (
     db : IDBPDatabase<unknown>,
@@ -87,8 +102,8 @@ const upgradeSchema : IDBPupgrade = (
       kilns.createIndex('useCount', 'useCount', { unique: false });
       kilns.createIndex('isRetired', 'isRetired', { unique: false });
       kilns.createIndex('isWorking', 'isWorking', { unique: false });
-      kilns.createIndex('isInUse', 'isInUse', { unique: false });
-      kilns.createIndex('isHot', 'isHot', { unique: false });
+      kilns.createIndex('readyState', 'readyState', { unique: false });
+      kilns.createIndex('serviceState', 'serviceState', { unique: false });
     }
 
     //  END:  kilns
@@ -143,95 +158,20 @@ const upgradeSchema : IDBPupgrade = (
 
     //  END:  cones
     // ----------------------------------------------------------
-    // START: EfiringType
+    // START: enums
 
-    if (!db.objectStoreNames.contains('EfiringType')) {
-      const ftype = db.createObjectStore('EfiringType', { keyPath: 'key' });
+    initEnum(db, 'EfiringType');
+    initEnum(db, 'EprogramState');
+    initEnum(db, 'EkilnReadyStatus');
+    initEnum(db, 'EkilnServiceStatus');
+    initEnum(db, 'EtemperatureState');
+    initEnum(db, 'EfuelSource');
+    initEnum(db, 'EkilnType');
+    initEnum(db, 'EequipmentLogType');
+    initEnum(db, 'EprogramStatus');
+    initEnum(db, 'EAdminLevels');
 
-      ftype.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EfiringType
-    // ----------------------------------------------------------
-    // START: EprogramState
-
-    if (!db.objectStoreNames.contains('EprogramState')) {
-      const pState = db.createObjectStore('EprogramState', { keyPath: 'key' });
-
-      pState.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EprogramState
-    // ----------------------------------------------------------
-    // START: EkilnFiringState
-
-    if (!db.objectStoreNames.contains('EkilnFiringState')) {
-      const kfState = db.createObjectStore('EkilnFiringState', { keyPath: 'key' });
-
-      kfState.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EkilnFiringState
-    // ----------------------------------------------------------
-    // START: EtemperatureState
-
-    if (!db.objectStoreNames.contains('EtemperatureState')) {
-      const tState = db.createObjectStore('EtemperatureState', { keyPath: 'key' });
-
-      tState.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EtemperatureState
-    // ----------------------------------------------------------
-    // START: EfuelSource
-
-    if (!db.objectStoreNames.contains('EfuelSource')) {
-      const fSource = db.createObjectStore('EfuelSource', { keyPath: 'key' });
-
-      fSource.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EfuelSource
-    // ----------------------------------------------------------
-    // START: EkilnType
-
-    if (!db.objectStoreNames.contains('EkilnType')) {
-      const kType = db.createObjectStore('EkilnType', { keyPath: 'key' });
-
-      kType.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EkilnType
-    // ----------------------------------------------------------
-    // START: EequipmentLogType
-
-    if (!db.objectStoreNames.contains('EequipmentLogType')) {
-      const elType = db.createObjectStore('EequipmentLogType', { keyPath: 'key' });
-
-      elType.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EequipmentLogType
-    // ----------------------------------------------------------
-    // START: EprogramStatus
-
-    if (!db.objectStoreNames.contains('EprogramStatus')) {
-      const prState = db.createObjectStore('EprogramStatus', { keyPath: 'key' });
-
-      prState.createIndex('value', 'value', { unique: true });
-    }
-
-    //  END:  EprogramStatus
-    // ----------------------------------------------------------
-    // START: EAdminLevels
-
-    // if (!db.objectStoreNames.contains('programs')) {
-    //   const aLevel = db.createObjectStore('EAdminLevels', { keyPath: 'key' });
-
-    //   aLevel.createIndex('value', 'value', { unique: true });
-    // }
-
-    //  END:  EAdminLevels
+    //  END:  enums
     // ----------------------------------------------------------
 
     console.groupEnd();
@@ -250,7 +190,7 @@ const migrateData : IDBPmigrate = async (
       const data = await loggerData.json();
       // console.log('data:', data);
 
-      populateEmptyEnumSlice(
+      populateEmptyKVslice(
         db,
         { version, date: new Date().toISOString() },
         '_meta',
@@ -262,7 +202,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptySlice(db, data.programs, 'programs');
       populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
       populateEmptyEnumSlice(db, data.EprogramState, 'EprogramState');
-      populateEmptyEnumSlice(db, data.EkilnFiringState, 'EkilnFiringState');
+      populateEmptyEnumSlice(db, data.EkilnReadyStatus, 'EkilnReadyStatus');
       populateEmptyEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
       populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
       populateEmptyEnumSlice(db, data.EkilnType, 'EkilnType');
@@ -281,9 +221,10 @@ const migrateData : IDBPmigrate = async (
   }
 }
 
-const actions = {
+const actions : TActionList = {
   getLoggedInUser: getAuthUser,
   updateLoggedInUser: updateAuthUser,
+  updateKiln: updateKilnData,
 };
 
 export const getDataStoreClassSingleton = (

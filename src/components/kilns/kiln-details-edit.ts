@@ -1,10 +1,14 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import type { IKeyValue } from "../../types/data-simple.d.ts";
+import type InputValueClass from "../../utils/InputValue.class.ts";
+import type FocusableInside from "../input-fields/FocusableInside.ts";
 import { getISO8601date } from '../../utils/date-time.utils.ts';
 import { renderDetails } from '../../utils/render.utils.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
-import { ucFirst } from '../../utils/string.utils.ts';
+import { kebab2Sentance, ucFirst } from '../../utils/string.utils.ts';
+import { addRemoveField } from "../../utils/validation.utils.ts";
 import { KilnDetails } from './kiln-details.ts';
 import '../lit-router/router-link.ts';
 import '../input-fields/accessible-checkbox-list.ts';
@@ -16,8 +20,7 @@ import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
-import type { IKeyValue } from "../../types/data-simple.d.ts";
-import { addRemoveField } from "../../utils/validation.utils.ts";
+import '../shared-components/alert-block.ts'
 
 /**
  * An example element.
@@ -74,6 +77,9 @@ export class KilnDetailsEdit extends KilnDetails {
   @state()
   _canSave : boolean = false;
 
+  @state()
+  _nothingToSave : boolean = false;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -82,17 +88,40 @@ export class KilnDetailsEdit extends KilnDetails {
     this._canSave = (this._changedFields.length > 0 && this._errorFields.length === 0);
   }
 
+  _handleChangeInner(field : InputValueClass) : void {
+    // console.group('<kiln-details>.handleFiringTypesChange()');
+    this._nothingToSave = false;
+    this._errorFields = addRemoveField(
+      this._errorFields,
+      field.id,
+      field.checkValidity() === false,
+    );
+
+    this._changedFields = addRemoveField(
+      this._changedFields,
+      field.id,
+      field.isNewValue,
+    );
+
+    this._setCanSave();
+
+    // console.log('this._changes:', this._changes);
+    // console.log('this._errorFields:', this._errorFields);
+    // console.log('this._changedFields:', this._changedFields);
+    // console.groupEnd();
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
 
   handleFiringTypesChange(event : CustomEvent) : void {
-    console.group('<kiln-details>.handleFiringTypesChange()');
-    console.log('event:', event);
-    console.log('event.detail:', event.detail);
-    console.log('event.detail.value:', event.detail.value);
-    console.log('event.detail.validity:', event.detail.validity);
-    console.log('event.detail.checkValidity():', event.detail.checkValidity());
+    // console.group('<kiln-details>.handleFiringTypesChange()');
+    // console.log('event:', event);
+    // console.log('event.detail:', event.detail);
+    // console.log('event.detail.value:', event.detail.value);
+    // console.log('event.detail.validity:', event.detail.validity);
+    // console.log('event.detail.checkValidity():', event.detail.checkValidity());
     const key = 'firingTypes';
     this._changes = {
       ...this._changes,
@@ -110,59 +139,66 @@ export class KilnDetailsEdit extends KilnDetails {
     );
 
     this._setCanSave();
-    console.log('this._changedFields:', this._changedFields);
-    console.groupEnd();
+    // console.groupEnd();
   }
 
-  handleDimensionChange(event : CustomEvent) : void {
-    const field : HTMLInputElement = event.detail;
+  handleGenericChange(event : CustomEvent) : void {
+    // console.group('<kiln-details>.handleGenericChange()');
+    const field : InputValueClass = event.detail;
+    // console.log('field:', field);
+    // console.log('field.id:', field.id);
+    // console.log('field.value:', field.value);
+    // console.log('field.defaultValue:', field.defaultValue);
+    // console.log('this._changedFields:', this._changedFields);
     this._changes[field.id] = field.value;
 
-    this._errorFields = addRemoveField(
-      this._errorFields,
-      field.id,
-      field.checkValidity() === false,
-    );
-
-    let initial : number = 0
-
-    switch (field.id) {
-      case 'depth':
-        initial = this._depth;
-        break;
-
-      case 'width':
-        initial = this._width;
-        break;
-
-      case 'height':
-        initial = this._height;
-        break;
-    }
-
-    this._changedFields = addRemoveField(
-      this._changedFields,
-      field.id,
-      (field.valueAsNumber !== initial),
-    );
-
-    this._setCanSave();
+    this._handleChangeInner(field);
+    // console.groupEnd();
   }
 
-  handleSave() : void {
+  handleNumericChange(event : CustomEvent) : void {
+    const field : InputValueClass = event.detail;
+    this._changes[field.id] = field.valueAsNumber;
+
+    this._handleChangeInner(field);
+  }
+
+  handleSave(event : Event) : void {
+    event.preventDefault();
+    // console.group('<kiln-details>.handleSave()');
+    // console.log('this._errorFields:', this._errorFields);
+    // console.log('this._changedFields:', this._changedFields);
+    // console.log('this._nothingToSave (before):', this._nothingToSave);
+
     if (this._errorFields.length === 0) {
       // All good!!! No errors
       if (this._changedFields.length > 0) {
         // Something has changed. We can save this data.
+        this._store?.action('updateKiln', { ...this._changes, id: this._id });
       } else {
         // Nothing has changed.
         // Let them know that nothing has changed and clicking on the
         // "Save" button won't do anything
+        this._nothingToSave = true;
       }
     } else {
       // Bummer there are some errors
       // We need to send the user to the first field with an error
+      for (const key of this._kilnKeys) {
+        if (this._errorFields.includes(key)) {
+          // This is the first field with an error, we'll go to that.
+          const target : FocusableInside | null = this.renderRoot.querySelector(`[field-id=${key}]`);
+
+          if (target !== null) {
+            target.focusInside();
+          }
+        }
+      }
     }
+    // console.log('this._nothingToSave (after):', this._nothingToSave);
+    // console.log('this._errorFields:', this._errorFields);
+    // console.log('this._changedFields:', this._changedFields);
+    // console.groupEnd();
   }
 
   //  END:  event handlers
@@ -173,7 +209,10 @@ export class KilnDetailsEdit extends KilnDetails {
   // ------------------------------------------------------
   // START: helper render methods
 
-  _renderKilnDetails(detailName : string | null, openOthers : boolean) : TemplateResult {
+  _renderKilnDetails(
+    detailName : string | null,
+    openOthers : boolean
+  ) : TemplateResult {
     const output = html`
       <ul class="label-12 details">
         <li>
@@ -181,33 +220,39 @@ export class KilnDetailsEdit extends KilnDetails {
             field-id="type"
             label="Kiln type"
             .options=${this._kilnOptions}
-            value="${this._type}"></accessible-select-field>
+            value="${this._type}"
+            @change=${this.handleGenericChange}></accessible-select-field>
         </li>
         <li>
           <accessible-select-field
             field-id="fuel"
             label="Energy source"
             .options=${this._fuelOptions}
-            value="${this._fuel}"></accessible-select-field>
+            value="${this._fuel}"
+            @change=${this.handleGenericChange}></accessible-select-field>
         </li>
         <li>
           <accessible-number-field
             field-id="maxTemp"
             label="Max temp"
+            min="100"
             max="1400"
             required
             step="1"
             unit="°${this._tUnit}"
-            value="${this._tConverter(this._maxTemp)}"></accessible-number-field>
+            value="${this._tConverter(this._maxTemp)}"
+            @change=${this.handleNumericChange}></accessible-number-field>
         </li>
         <li>
           <accessible-number-field
             field-id="maxProgramCount"
             label="Max programs"
+            min="0"
             max="100"
             required
             step="1"
-            value="${this._maxProgramCount}"></accessible-number-field>
+            value="${this._maxProgramCount}"
+            @change=${this.handleNumericChange}></accessible-number-field>
         </li>
       </ul>`;
 
@@ -221,9 +266,12 @@ export class KilnDetailsEdit extends KilnDetails {
     );
   }
 
-  _renderDimensions(detailName : string | null, openOthers : boolean) : TemplateResult {
+  _renderDimensions(
+    detailName : string | null,
+    openOthers : boolean
+  ) : TemplateResult {
     const output = html`
-        <ul class="label-8 details" @change=${this.handleDimensionChange}>
+        <ul class="label-8 details" @change=${this.handleNumericChange}>
           <li>
             <accessible-number-field
               field-id="width"
@@ -269,7 +317,10 @@ export class KilnDetailsEdit extends KilnDetails {
     );
   }
 
-  _renderFiringTypes(detailName : string | null, openOthers : boolean) : TemplateResult {
+  _renderFiringTypes(
+    detailName : string | null,
+    openOthers : boolean
+  ) : TemplateResult {
     return renderDetails(
       'kiln-firing-types',
       'Allowed firing types',
@@ -289,7 +340,9 @@ export class KilnDetailsEdit extends KilnDetails {
     );
   }
 
-  _renderNameType(detailName : string | null) : TemplateResult {
+  _renderNameType(
+    detailName : string | null
+  ) : TemplateResult {
     const output = html`
       <ul class="label-8 details">
         <li>
@@ -297,24 +350,30 @@ export class KilnDetailsEdit extends KilnDetails {
             field-id="name"
             label="Name"
             required
+            validate-on-keyup
+            validation-type="name"
             value="${this._name}"
-            validation-type="name"></accessible-text-field>
+            @change=${this.handleGenericChange}></accessible-text-field>
         </li>
         <li>
           <accessible-text-field
             field-id="brand"
             label="Brand"
             required
+            validate-on-keyup
+            validation-type="name"
             value="${this._brand}"
-            validation-type="name"></accessible-text-field>
+            @change=${this.handleGenericChange}></accessible-text-field>
         </li>
         <li>
           <accessible-text-field
             field-id="model"
             label="Model"
             required
+            validate-on-keyup
+            validation-type="name"
             value="${this._model}"
-            validation-type="name"></accessible-text-field>
+            @change=${this.handleGenericChange}></accessible-text-field>
         </li>
       </ul>`;
 
@@ -328,7 +387,10 @@ export class KilnDetailsEdit extends KilnDetails {
     );
   }
 
-  _renderStatus(detailName : string | null, openOthers : boolean) : TemplateResult {
+  _renderStatus(
+    detailName : string | null,
+    openOthers : boolean
+  ) : TemplateResult {
     const output = html`
       <ul class="details">
         <li>
@@ -354,6 +416,45 @@ export class KilnDetailsEdit extends KilnDetails {
     );
   }
 
+  _noSave() {
+    // console.group('<kiln-details-edit>._noSave()');
+    // console.log('this._nothingToSave:', this._nothingToSave);
+    // console.groupEnd();
+    return (this._nothingToSave === true)
+      ? html`
+        <alert-block
+          heading="Nothing to save"
+          body="You haven't made any changes so there's nothing to save"
+          type="warning"></alert-block>`
+      : '';
+  }
+
+  _errorAlert() {
+    if (this._errorFields.length === 0) {
+      return '';
+    }
+    const errors : string[] = [];
+    console.group('<kiln-details-edit>._errorAlert()');
+    console.log('this._errorFields:', this._errorFields);
+    console.log('this._errorFields.length:', this._errorFields.length);
+    for (const key of this._kilnKeys) {
+      if (this._errorFields.includes(key)) {
+        errors.push(kebab2Sentance(key));
+      }
+    }
+
+    const errorHead : string = (errors.length === 1)
+      ? 'There are errors in the following fields:'
+      : `There is an error in ${errors[0]}`;
+    const errorList : TemplateResult | string = (errors.length === 1)
+      ? html`<ul class="error">${errors.map((error) : TemplateResult => html`<li>${error}</li>`)}</ul>`
+      : '';
+
+    console.log('errorList:', errorList);
+    console.groupEnd();
+    return html`<alert-block heading="${errorHead}">${errorList}</alert-block>`;
+  }
+
   //  END:  helper render methods
   // ------------------------------------------------------
   // START: main render method
@@ -376,7 +477,7 @@ export class KilnDetailsEdit extends KilnDetails {
       ? 'kiln-blocks'
       : null;
 
-    const openOthers : boolean  = (this.mode !== 'edit')
+    const openOthers : boolean  = (this.mode !== 'edit');
 
     return (this._userHasAuth(2))
       ? html`<div>
@@ -390,6 +491,8 @@ export class KilnDetailsEdit extends KilnDetails {
           ${this._renderDimensions(detailName, openOthers)}
           ${this._renderFiringTypes(detailName, openOthers)}
           ${this._renderStatus(detailName, openOthers)}
+          ${this._noSave()}
+          ${this._errorAlert()}
           <p>
             <router-link
               button
@@ -397,7 +500,8 @@ export class KilnDetailsEdit extends KilnDetails {
               ?disabled=${!this._canSave}
               label="Save"
               srLabel="changes to ${this._name}"
-              url="/kilns/${this._path}"></router-link>
+              url="/kilns/${this._path}"
+              @click=${this.handleSave}></router-link>
             <router-link
               class="btn"
               label="Cancel"

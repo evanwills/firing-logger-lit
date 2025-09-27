@@ -40,7 +40,7 @@ export enum EfiringLogType {
   unpacking,
 }
 
-export enum EkilnFiringState {
+export enum EkilnReadyStatus {
   packed,
   heating,
   cooling,

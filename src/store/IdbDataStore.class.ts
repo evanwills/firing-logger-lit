@@ -42,7 +42,7 @@ export class IdbDataStore implements CDataStoreClass {
               populateSlice(db, data.programs, 'programs');
               populateEnumSlice(db, data.EfiringType, 'EfiringType');
               populateEnumSlice(db, data.EprogramState, 'EprogramState');
-              populateEnumSlice(db, data.EkilnFiringState, 'EkilnFiringState');
+              populateEnumSlice(db, data.EkilnReadyStatus, 'EkilnReadyStatus');
               populateEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
               populateEnumSlice(db, data.Eview, 'Eview');
               populateEnumSlice(db, data.EfuelSource, 'EfuelSource');
@@ -225,12 +225,12 @@ export class IdbDataStore implements CDataStoreClass {
 
           //  END:  EprogramState
           // ----------------------------------------------------------
-          // START: EkilnFiringState
+          // START: EkilnReadyStatus
 
-          const kfState = db.createObjectStore('EkilnFiringState', { keyPath: 'key' });
+          const kfState = db.createObjectStore('EkilnReadyStatus', { keyPath: 'key' });
           kfState.createIndex('value', 'value', { unique: true });
 
-          //  END:  EkilnFiringState
+          //  END:  EkilnReadyStatus
           // ----------------------------------------------------------
           // START: EtemperatureState
 

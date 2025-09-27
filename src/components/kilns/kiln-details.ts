@@ -152,6 +152,9 @@ export class KilnDetails extends LoggerElement {
   @state()
   _firingTypeOptions : TCheckboxValueLabel[] = [];
 
+  @state()
+  _kilnKeys : string[] = [];
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -189,6 +192,7 @@ export class KilnDetails extends LoggerElement {
       this._isWorking = _data.isWorking;
       this._isInUse = _data.isInUse;
       this._isHot = _data.isHot;
+      this._kilnKeys = Object.keys(_data);
 
       if (this._store !== null) {
         this._store.read(
@@ -232,19 +236,9 @@ export class KilnDetails extends LoggerElement {
     }
   }
 
-
-
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
-
-  toggleEdit() : void {
-    this._edit = !this._edit;
-  }
-
-  handleSave() : void {
-    this._edit = false;
-  }
 
   //  END:  event handlers
   // ------------------------------------------------------
@@ -456,6 +450,15 @@ export class KilnDetails extends LoggerElement {
   tbody th { text-align: start; }
   tbody td { text-align: center; }
   table { margin: 0 auto; }
+  p.error { margin: 0; padding: 0}
+  ul.error {
+    margin: 0 0 0 1rem;
+    padding: 0;
+    list-style-type: disc;
+  }
+  ul.details li {
+    padding: 0.5rem 0;
+  }
   `;
 
   //  END:  styles

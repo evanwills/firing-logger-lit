@@ -27,10 +27,8 @@
       "salt": false,
       "saggar": false,
       "useCount": 20,
-      "isRetired": false,
-      "isWorking": true,
-      "isInUse": true,
-      "isHot": false
+      "readyState": "available",
+      "serviceState": "working"
     },
     {
       "id": "WpnCnk5aLA",
@@ -56,10 +54,8 @@
       "salt": false,
       "saggar": false,
       "useCount": 100,
-      "isRetired": false,
-      "isWorking": true,
-      "isInUse": true,
-      "isHot": false
+      "readyState": "available",
+      "serviceState": "working"
     }
   ],
 
@@ -240,78 +236,319 @@
     }
   ],
 
-  "EfiringType": {
-    "bisque": "Bisque",
-    "glaze": "Glaze",
-    "single": "Single firing glaze",
-    "luster": "Luster",
-    "onglaze": "Onglaze",
-    "raku": "Raku",
-    "black": "Black firing",
-    "salt": "Salt/Soda glaze",
-    "saggar": "Use saggers"
-  },
-
-  "EprogramState": {
-    "idle": "Idle",
-    "pending": "Pending",
-    "started": "Started",
-    "completed": "Completed",
-    "aborted": "Aborted"
-  },
-
-  "EkilnFiringState": {
-    "available": "Available",
-    "packing": "Packing",
-    "packed": "Packed",
-    "heating": "Heating",
-    "holding": "Holding",
-    "cooling": "Cooling",
-    "cold": "Cold",
-    "unpacking": "Unpacking",
-    "emptied": "Emptied"
-  },
-
-  "EtemperatureState": {
-    "nominal": "Nominal",
-    "over": "Over",
-    "overError": "OverError",
-    "under": "Under",
-    "underError": "UnderError"
-  },
-
-  "EfuelSource": {
-    "electric": "Electric",
-    "gas": "Gas",
-    "wood": "Wood",
-    "oil": "Oil",
-    "other": "Other"
-  },
-
-  "EkilnType": {
-    "general": "General",
-    "raku": "Raku",
-    "platter": "Platter",
-    "black firing": "Black firing",
-    "annagamma": "Annagamma"
-  },
-
-  "EequipmentLogType": {
-    "usage": "Usage",
-    "maintenance": "Maintenance",
-    "problem": "Problem"
-  },
-
-  "EprogramStatus": {
-    "unused": "Unused",
-    "selected": "Selected",
-    "used": "Used"
-  },
-
+  "EfiringType": [
+    {
+      "order": 0,
+      "value": "bisque",
+      "label": "Bisque"
+    },
+    {
+      "order": 1,
+      "value": "glaze",
+      "label": "Glaze"
+    },
+    {
+      "order": 2,
+      "value": "single",
+      "label": "Single firing glaze"
+    },
+    {
+      "order": 3,
+      "value": "luster",
+      "label": "Luster"
+    },
+    {
+      "order": 4,
+      "value": "onglaze",
+      "label": "Onglaze"
+    },
+    {
+      "order": 5,
+      "value": "raku",
+      "label": "Raku"
+    },
+    {
+      "order": 6,
+      "value": "black",
+      "label": "Black firing"
+    },
+    {
+      "order": 7,
+      "value": "salt",
+      "label": "Salt/Soda glaze"
+    },
+    {
+      "order": 8,
+      "value": "saggar",
+      "label": "Use saggers"
+    }
+  ],
+  "EprogramState": [
+    {
+      "order": 0,
+      "value": "idle",
+      "label": "Idle"
+    },
+    {
+      "order": 1,
+      "value": "pending",
+      "label": "Pending"
+    },
+    {
+      "order": 2,
+      "value": "active",
+      "label": "Active"
+    },
+    {
+      "order": 3,
+      "value": "completed",
+      "label": "Completed"
+    },
+    {
+      "order": 4,
+      "value": "aborted",
+      "label": "Aborted"
+    }
+  ],
+  "EkilnReadyStatus": [
+    {
+      "order": 0,
+      "value": "available",
+      "label": "Available"
+    },
+    {
+      "order": 1,
+      "value": "packing",
+      "label": "Packing"
+    },
+    {
+      "order": 2,
+      "value": "packed",
+      "label": "Packed"
+    },
+    {
+      "order": 3,
+      "value": "heating",
+      "label": "Heating"
+    },
+    {
+      "order": 4,
+      "value": "holding",
+      "label": "Holding"
+    },
+    {
+      "order": 5,
+      "value": "cooling",
+      "label": "Cooling"
+    },
+    {
+      "order": 6,
+      "value": "cold",
+      "label": "Ready to open"
+    },
+    {
+      "order": 7,
+      "value": "unpacking",
+      "label": "Unpacking"
+    },
+    {
+      "order": 8,
+      "value": "pricing",
+      "label": "Pricing"
+    },
+    {
+      "order": 9,
+      "value": "emptied",
+      "label": "Emptied"
+    }
+  ],
+  "EkilnServiceStatus": [
+    {
+      "order": 0,
+      "value": "purchased",
+      "label": "Purchased"
+    },
+    {
+      "order": 1,
+      "value": "delivered",
+      "label": "Delivered"
+    },
+    {
+      "order": 2,
+      "value": "installed",
+      "label": "Installed"
+    },
+    {
+      "order": 3,
+      "value": "working",
+      "label": "Working"
+    },
+    {
+      "order": 4,
+      "value": "maintenance",
+      "label": "Under maintenance"
+    },
+    {
+      "order": 5,
+      "value": "brokenAwaitingRepair",
+      "label": "Broken awaiting repair"
+    },
+    {
+      "order": 6,
+      "value": "brokenBeingRepaired",
+      "label": "Broken being repaired"
+    },
+    {
+      "order": 7,
+      "value": "retired",
+      "label": "Retired"
+    },
+    {
+      "order": 8,
+      "value": "decommissioned",
+      "label": "Decommissioned"
+    },
+    {
+      "order": 9,
+      "value": "removed",
+      "label": "Removed"
+    }
+  ],
+  "EtemperatureState": [
+    {
+      "order": 0,
+      "value": "underError",
+      "label": "UnderError"
+    },
+    {
+      "order": 1,
+      "value": "under",
+      "label": "Under"
+    },
+    {
+      "order": 2,
+      "value": "expected",
+      "label": "expected"
+    },
+    {
+      "order": 3,
+      "value": "over",
+      "label": "Over"
+    },
+    {
+      "order": 4,
+      "value": "overError",
+      "label": "OverError"
+    }
+  ],
+  "EfuelSource": [
+    {
+      "order": 0,
+      "value": "electric",
+      "label": "Electric"
+    },
+    {
+      "order": 1,
+      "value": "gas",
+      "label": "Gas"
+    },
+    {
+      "order": 2,
+      "value": "wood",
+      "label": "Wood"
+    },
+    {
+      "order": 3,
+      "value": "oil",
+      "label": "Oil"
+    },
+    {
+      "order": 4,
+      "value": "other",
+      "label": "Other"
+    }
+  ],
+  "EkilnType": [
+    {
+      "order": 0,
+      "value": "general",
+      "label": "General"
+    },
+    {
+      "order": 1,
+      "value": "raku",
+      "label": "Raku"
+    },
+    {
+      "order": 2,
+      "value": "platter",
+      "label": "Platter"
+    },
+    {
+      "order": 3,
+      "value": "black firing",
+      "label": "Black firing"
+    },
+    {
+      "order": 4,
+      "value": "annagamma",
+      "label": "Annagamma"
+    }
+  ],
+  "EequipmentLogType": [
+    {
+      "order": 0,
+      "value": "usage",
+      "label": "Usage"
+    },
+    {
+      "order": 1,
+      "value": "maintenance",
+      "label": "Maintenance"
+    },
+    {
+      "order": 2,
+      "value": "problem",
+      "label": "Problem"
+    }
+  ],
+  "EprogramStatus": [
+    {
+      "order": 0,
+      "value": "unused",
+      "label": "Unused"
+    },
+    {
+      "order": 1,
+      "value": "selected",
+      "label": "Selected"
+    },
+    {
+      "order": 2,
+      "value": "used",
+      "label": "Used"
+    }
+  ],
   "EAdminLevels": [
-    "Standard member",
-    "Firing logger",
-    "Admin",
-    "Super admin"
+    {
+      "order": 0,
+      "value": "none",
+      "label": "Standard member"
+    },
+    {
+      "order": 1,
+      "value": "logger",
+      "label": "Firing logger"
+    },
+    {
+      "order": 2,
+      "value": "admin",
+      "label": "Admin"
+    },
+    {
+      "order": 3,
+      "value": "super",
+      "label": "Super admin"
+    }
   ]
 }

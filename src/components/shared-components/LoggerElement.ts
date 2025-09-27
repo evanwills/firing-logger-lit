@@ -9,6 +9,7 @@ import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { isUser } from '../../types/data.type-guards.ts';
 import { getCookie } from '../../utils/cookie.utils.ts';
 import './loading-spinner.ts';
+import { userCan, userHasAuth } from "../../store/user-data.utils.ts";
 
 /**
  * `LoggerElement` is a renderless extension of `LitElement`. It
@@ -133,66 +134,11 @@ export class LoggerElement extends LitElement {
   // START: helper methods
 
   _userHasAuth(level: number) : boolean {
-    // console.group('LoggerElement._userHasAuth()');
-    // console.log('level:', level);
-    // console.log('this._user:', this._user);
-    if (this._user === null || isUser(this._user) === false) {
-      // console.warn('No user data to work with');
-      // console.groupEnd();
-      return false;
-    }
-
-    // console.log('isUser(this._user):', isUser(this._user));
-    const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
-    // console.log('userID:', userID);
-    // console.log('this._user.id:', this._user.id);
-    // console.log('this._user.adminLevel:', this._user.adminLevel);
-    // console.log('userID === null:', userID === null);
-    // console.log('this._user.id !== userID:', this._user.id !== userID);
-    // console.log('this._user.adminLevel < level:', this._user.adminLevel < level);
-    if (userID === null || this._user.id !== userID || this._user.adminLevel < level)  {
-      // console.warn('User is not logged or doesn\'t have permission');
-      // console.groupEnd();
-      return false;
-    }
-    // console.info('Yes! User has authorisation.');
-    // console.groupEnd();
-
-    return true;
+    return userHasAuth(this._user, level);
   }
 
   _userCan(key: string, level : number = 1) : boolean {
-    // console.group('LoggerElement._userCan()');
-    // console.log('key:', key);
-    // console.log('level:', level);
-    // console.log(`this._userHasAuth(${level}):`, this._userHasAuth(level));
-    // console.log('this._user !== null:', this._user !== null);
-    if (this._user !== null && this._userHasAuth(level)) {
-      switch(key.toLowerCase()) {
-        case 'fire':
-          return this._user.canFire;
-
-        case 'log':
-          return this._user.canLog;
-
-        case 'pack':
-          return this._user.canPack;
-
-        case 'price':
-          return this._user.canPrice;
-
-        case 'program':
-          return this._user.canProgram;
-
-        case 'unpack':
-          return this._user.canUnpack;
-      }
-    }
-
-    // console.warn('unknown key:', key);
-    // console.groupEnd();
-
-    return false;
+    return userCan(this._user, key, level);
   }
 
 

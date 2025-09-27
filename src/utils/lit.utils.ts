@@ -10,21 +10,38 @@ export const hasSlotContent = (
   slotName : string = '',
   propName : string = '',
 ) : boolean => {
+  console.group('hasSlotContent()');
+  console.log('component:', component);
+  console.log('component.attributes:', component.attributes);
+  console.log('slotName:', slotName);
+  console.log('propName:', propName);
   const _prop = (isNonEmptyStr(propName) === true)
     ? propName
     : slotName;
 
-  if (isNonEmptyStr((component as IKeyValue), _prop) === true) {
+
+  if (component.attributes.getNamedItem(_prop) !== null) {
+    console.groupEnd();
     return true;
   }
+  const selector = (isNonEmptyStr(slotName) && slotName !== 'default')
+    ? `slot[name=${slotName}]`
+    : 'slot:not([name])';
 
-  const slot = component.renderRoot.querySelector(
-    slotName
-      ? `slot[name="${slotName}"]`
-      : 'slot',
-  );
+  const slot = component.renderRoot.querySelector(selector);
 
-  return !!slot && (slot as HTMLSlotElement).assignedNodes({ flatten: true }).length > 0;
+  console.log('selector:', selector);
+  console.log('slot:', slot);
+  console.log('!!slot:', !!slot);
+  console.log(`component.renderRoot.querySelector("${selector}"):`, component.renderRoot.querySelector(selector));
+  console.log(`component.shadowRoot.querySelector("${selector}"):`, component.shadowRoot.querySelector(selector));
+  console.log(`component.shadowRoot.querySelector("slot"):`, component.shadowRoot.querySelector('slot'));
+  console.log(`component.renderRoot.querySelectorAll("slot"):`, component.renderRoot.querySelectorAll('slot'));
+
+  console.groupEnd();
+  return (!!slot && (slot as HTMLSlotElement)
+    .assignedNodes({ flatten: true })
+    .length > 0);
 };
 
 export const wrapApp : FWrapOutput = (input : TemplateResult | string) : TemplateResult => html`<firing-logger-wrapper data-wrap-app>${input}</firing-logger-wrapper>`
