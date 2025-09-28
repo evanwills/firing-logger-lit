@@ -1,4 +1,5 @@
-import type { IIdObject, IKeyValue } from '../types/data-simple.d.ts';
+import type { ID, IIdObject, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
+import type { TUniqueNameItem } from "../types/data.d.ts";
 import type { CDataStoreClass } from "../types/store.d.ts";
 
 const parseKeyValue = (input : string) : string => {
@@ -127,4 +128,24 @@ export const getUserPrefs = (db : CDataStoreClass) => () : IKeyValue => {
   }
 
   return output;
-}
+};
+
+const getUniqueName = (input : ILinkObject) : TUniqueNameItem => ({
+  name: input.name,
+  urlPart: input.urlPart,
+});
+
+export const getUniqueNameList = (
+  list: ILinkObject[],
+  id: ID | null,
+) : TUniqueNameItem[] => {
+  if (list.length === 0) {
+    return list;
+  }
+
+  if (id !== null) {
+    list = list.filter((item : ILinkObject) => item.id !== id);
+  }
+
+  return list.map(getUniqueName);
+};

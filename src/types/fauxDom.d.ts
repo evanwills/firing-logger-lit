@@ -1,5 +1,6 @@
 import type { TemplateResult } from 'lit';
 import type { IKeyBool } from "./data-simple.d.ts";
+import type InputValue from "../utils/InputValue.class.ts";
 
 export interface TFauxValidity extends IKeyBool {
   badInput ? : boolean,
@@ -30,3 +31,8 @@ export interface TTrueValidity extends TFauxValidity {
 };
 
 export type FReportValidity = (input: TTrueValidity) => string | TemplateResult;
+
+export type TFauxInputEvent = {
+  target: InputValue,
+  preventDefault: () => void,
+};

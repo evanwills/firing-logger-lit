@@ -1,4 +1,4 @@
-import type { SVGTemplateResult } from 'lit';
+import type { SVGTemplateResult, TemplateResult } from 'lit';
 import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601 } from './data-simple.d.ts';
 
 // ========================================================
@@ -297,8 +297,12 @@ export interface App {
   stateSlice: IKilns | allFiringPrograms | firingLogs | maintenance | issues | users | diary
 }
 
-function Fview (state: object, eHandler: function, routes: array) : html
+export type Fview = (state: object, eHandler: function, routes: array) => TemplateResult;
 
+export type TUniqueNameItem = {
+  name: string,
+  urlPart: string,
+};
 
 //  END:  view only types
 // ========================================================

@@ -1,4 +1,5 @@
-import { ID, ISO8601 } from './data-simple.d.ts'
+import { ID, ISO8601, type IKeyStr } from './data-simple.d.ts'
+import type { IKiln, IStoredFiringProgram, TUniqueNameItem } from "./data.d.ts";
 
 // --------------------------------------------------------
 // START: Enums
@@ -251,3 +252,19 @@ export type KilnState = {
 
 export type KilnStates = KilnState[]
 export type FiringLogs = FiringLogs[]
+
+export type TKilnDetails = {
+  EfiringTypes: Promise<IKeyStr>,
+  EfuelSources: Promise<IKeyStr>,
+  EkilnTypes: Promise<IKeyStr>,
+  kiln: IKiln | null,
+  programs: Promise<IStoredFiringProgram[]>,
+  uniqueNames: TUniqueNameItem[],
+};
+
+export type PKilnDetails = {
+  EfuelSources: Promise<IKeyStr>,
+  EfiringTypes: Promise<IKeyStr>,
+  EkilnTypes: Promise<IKeyStr>,
+  kiln: Promise<IKiln|null>,
+};

@@ -4,7 +4,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import type { ID, IKeyBool, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TCheckboxValueLabel } from "../../types/renderTypes.d.ts";
-import type { IStoredFiringProgram, IKiln } from '../../types/data.d.ts';
+import type { IStoredFiringProgram, IKiln, TUniqueNameItem } from '../../types/data.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
@@ -21,6 +21,7 @@ import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import { renderDetails, renderReadonlyCheckable } from "../../utils/render.utils.ts";
+import { getKilnEditData, getKilnViewData } from "../../store/kiln-store.utils.ts";
 
 /**
  * An example element.
@@ -155,6 +156,8 @@ export class KilnDetails extends LoggerElement {
   @state()
   _kilnKeys : string[] = [];
 
+  _uniqueNames : TUniqueNameItem[] = [];
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -193,33 +196,7 @@ export class KilnDetails extends LoggerElement {
       this._isInUse = _data.isInUse;
       this._isHot = _data.isHot;
       this._kilnKeys = Object.keys(_data);
-
-      if (this._store !== null) {
-        this._store.read(
-          'programs',
-          `kilnID=${this._id}`,
-          ['id', 'type', 'name', 'urlPart', 'controllerProgramID', 'maxTemp', 'cone', 'duration'],
-        ).then(this._setProgramData.bind(this)).catch((msg) => { console.error(msg)});
-      }
     }
-  }
-
-  _setProgramData(data : IStoredFiringProgram[]) : void {
-    this._programs = data;
-  }
-
-  _setKilnTypes(data : IKeyValue) : void {
-    // console.group('<kiln-data>._setKilnTypes()');
-    // console.log('data:', data);
-    this._kilnTypes = data;
-    // console.groupEnd();
-  }
-
-  _setFuelSources(data : IKeyValue) : void {
-    // console.group('<kiln-data>._setFuelSources()');
-    // console.log('data:', data);
-    this._fuelSources = data;
-    // console.groupEnd();
   }
 
   _setFiringTypes(data : IKeyValue) : void {
@@ -238,14 +215,18 @@ export class KilnDetails extends LoggerElement {
     await super._getFromStore();
 
     if (this._store !== null && Object.keys(this._fuelSources).length === 0) {
-      this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this));
-      this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this));
-      this._store.read('EfiringType', '', true).then(this._setFiringTypes.bind(this));
+      const tmp = (this.mode === '')
+        ? await getKilnViewData(this._store, this.kilnID, this.kilnName)
+        : await getKilnEditData(this._store, this.kilnID, this.kilnName);
 
-      if (isNonEmptyStr(this.kilnID)) {
-        this._store.read('kilns', `#${this.kilnID}`).then(this._setKilnData.bind(this));
-      } else if (isNonEmptyStr(this.kilnName)) {
-        this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnData.bind(this));
+      this._kilnTypes = await tmp.EkilnTypes;
+      this._fuelSources = await tmp.EfuelSources;
+      this._programs = await tmp.programs;
+      this._uniqueNames = tmp.uniqueNames;
+      tmp.EfiringTypes.then(this._setFiringTypes.bind(this));
+
+      if (tmp.kiln !== null) {
+        this._setKilnData(tmp.kiln);
       }
     }
   }
