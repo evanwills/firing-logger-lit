@@ -10,11 +10,11 @@ export const hasSlotContent = (
   slotName : string = '',
   propName : string = '',
 ) : boolean => {
-  console.group('hasSlotContent()');
-  console.log('component:', component);
-  console.log('component.attributes:', component.attributes);
-  console.log('slotName:', slotName);
-  console.log('propName:', propName);
+  // console.group('hasSlotContent()');
+  // console.log('component:', component);
+  // console.log('component.attributes:', component.attributes);
+  // console.log('slotName:', slotName);
+  // console.log('propName:', propName);
   const _prop = (isNonEmptyStr(propName) === true)
     ? propName
     : slotName;
@@ -30,15 +30,15 @@ export const hasSlotContent = (
 
   const slot = component.renderRoot.querySelector(selector);
 
-  console.log('selector:', selector);
-  console.log('slot:', slot);
-  console.log('!!slot:', !!slot);
-  console.log(`component.renderRoot.querySelector("${selector}"):`, component.renderRoot.querySelector(selector));
-  console.log(`component.shadowRoot.querySelector("${selector}"):`, component.shadowRoot.querySelector(selector));
-  console.log(`component.shadowRoot.querySelector("slot"):`, component.shadowRoot.querySelector('slot'));
-  console.log(`component.renderRoot.querySelectorAll("slot"):`, component.renderRoot.querySelectorAll('slot'));
+  // console.log('selector:', selector);
+  // console.log('slot:', slot);
+  // console.log('!!slot:', !!slot);
+  // console.log(`component.renderRoot.querySelector("${selector}"):`, component.renderRoot.querySelector(selector));
+  // console.log(`component.shadowRoot.querySelector("${selector}"):`, component.shadowRoot.querySelector(selector));
+  // console.log(`component.shadowRoot.querySelector("slot"):`, component.shadowRoot.querySelector('slot'));
+  // console.log(`component.renderRoot.querySelectorAll("slot"):`, component.renderRoot.querySelectorAll('slot'));
+  // console.groupEnd();
 
-  console.groupEnd();
   return (!!slot && (slot as HTMLSlotElement)
     .assignedNodes({ flatten: true })
     .length > 0);
@@ -91,10 +91,16 @@ export const enumToOptions = (input : IKeyStr) : TOptionValueLabel[] => {
   return output;
 };
 
-export const getCheckableOptions = (optionValues: IKeyBool, optionLabels :  IKeyStr = {}) : TCheckboxValueLabel[] => {
+export const getCheckableOptions = (
+  optionValues: IKeyBool,
+  optionLabels :  IKeyStr = {}
+) : TCheckboxValueLabel[] => {
+  console.group('getCheckableOptions()');
+  console.log('optionValues:', optionValues);
+  console.log('optionLabels:', optionLabels);
   const output : TCheckboxValueLabel[] = [];
 
-  for (const key of Object.keys(optionValues)) {
+  for (const key of Object.keys(optionLabels)) {
     output.push({
       value: key,
       label: (typeof optionLabels[key] === 'string')
@@ -104,5 +110,7 @@ export const getCheckableOptions = (optionValues: IKeyBool, optionLabels :  IKey
     })
   }
 
+  console.log('output:', output);
+  console.groupEnd();
   return output;
 }

@@ -15,7 +15,7 @@ import InputValue from "./InputValue.class.ts"
 export const getCustomEvent = (
   value : string | number | object,
   validity : TFauxValidity,
-  ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | InputValue,
   report : null | FReportValidity = null,
   type : string = 'change',
 ) : CustomEvent => {
@@ -58,7 +58,7 @@ export const dispatchCustomEvent = (
   node : HTMLElement,
   value : string | number | object,
   validity : TFauxValidity,
-  ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | InputValue,
   report : FReportValidity | null = null,
   type : string = 'change',
 ) : void => {

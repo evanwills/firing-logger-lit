@@ -28,12 +28,17 @@ export const inputFieldCSS = css`
 }
 .inner {
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+.inner:not(.no-label) {
   column-gap: var(--label-gap, 0.5rem);
   row-gap: 0.5rem;
   display: grid;
   grid-template-areas: 'label input';
   grid-template-columns: var(--label-width, 5.75rem) 1fr;
-  width: 100%;
 }
 .inner.inner-help {
   grid-template-areas: 'label input' 'label help';
@@ -105,7 +110,7 @@ export const inputFieldCSS = css`
   justify-self: start;
   align-self: start;
 }
-.input.password {
+.input.password, input[type=checkbox] {
   padding: 0;
 }
 
@@ -148,18 +153,38 @@ textarea {
 }
 
 .cb-list {
+  container-name: cb-list;
+  container-type: inline-size;
   margin: 0 0 0 2rem;
   padding: 0;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
   list-style-type: none;
-  column-width: 8rem;
-  column-gap: 1rem;
 
   li {
-    padding: 0.5rem 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
   }
+}
+@container cb-list (inline-size >= 21rem) {
+  .cb-list li {
+    width: calc((100% - 1rem) / 2);
+  }
+}
+@container cb-list (inline-size >= 32rem) {
+  .cb-list li {
+    width: calc((100% - 2rem) / 3);
+  }
+}
+
+.inner.no-label .cb-list {
+  margin-left: 0;
 }
 .checkbox {
   display: block;
+  font-weight: normal;
   padding-left: var(--checkbox-indent);
   text-indent: calc(var(--checkbox-indent) * -1);
   width: 100%;

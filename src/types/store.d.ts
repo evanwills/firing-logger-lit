@@ -188,6 +188,28 @@ export type TDataStore = {
   EequipmentLogType: IKeyValPair[],
   EprogramStatus: IKeyValPair[],
   EAdminLevels: IKeyValPair[],
+};
+
+/**
+ * When a user's session has expired, their updates cannot be applied
+ * but we don't want to loose their changes so we store the values to
+ * be later reinstated
+ *
+ * @property `timestamp`  The time when the changes were submitted
+ * @property `store`      The name of the store the changes apply to
+ * @property `userID`     The ID of the user that submitted the
+ *                        changes
+ * @property `changes`    The new values to be applied to the store
+ * @property `iniitalVal` The original values that will be over
+ *                        written (used for conflict resolution).
+ */
+export type TNoAuthChanges = {
+  timestamp: number,
+  store: string,
+  userID: ID,
+  mode: 'edit' | 'new' | 'copy' | 'delete'
+  changes: IIdObject,
+  initalVal: IIdObject,
 }
 
 // --------------------------------------------------------

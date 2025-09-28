@@ -1,5 +1,5 @@
 import { type IDBPDatabase } from 'idb';
-import type { ID, IIdObject, IKeyStr, IKeyValPair, IKeyValue } from "../types/data-simple.d.ts";
+import type { ID, IIdObject, IKeyStr, IKeyValPair, IKeyValue, TOrderedEnum } from "../types/data-simple.d.ts";
 
 type Fresolver = (value: unknown) => void;
 type kv = {
@@ -194,11 +194,21 @@ export const populateEmptyEnumSlice = async(
     : Promise.resolve([]);
 };
 
-const asObjKV = (data : kv[]) : IKeyValue => {
+const asObjKV = (data : TOrderedEnum[]) : IKeyValue => {
   const output : IKeyValue = {};
 
+  data.sort((a : TOrderedEnum, b : TOrderedEnum) : -1 | 0 |1 => {
+    if (a.order < b.order) {
+      return -1;
+    } else if (a.order > b.order) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
   for (const item of data) {
-    output[item.key] = item.value;
+    output[item.value] = item.label;
   }
 
   return output;

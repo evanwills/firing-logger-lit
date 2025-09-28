@@ -10,9 +10,9 @@ import {
   populateEmptyKVslice,
   populateEmptySlice,
 } from './idb-data-store.utils.ts';
-import { getAuthUser, updateAuthUser } from "./user-data.utils.ts";
-import type { IDBPmigrate, IDBPupgrade } from "../types/pidb.d.ts";
-import { updateKilnData } from "./kiln-data.utils.ts";
+import { getAuthUser, updateAuthUser } from './user-data.utils.ts';
+import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
+import { updateKilnData } from './kiln-store.utils.ts';
 
 let store : CDataStoreClass | null = null;
 
@@ -158,6 +158,19 @@ const upgradeSchema : IDBPupgrade = (
 
     //  END:  cones
     // ----------------------------------------------------------
+    // START: unauthenticated updates
+
+    if (!db.objectStoreNames.contains('noAuthChanges')) {
+      const cones = db.createObjectStore('noAuthChanges', { keyPath: ['store', 'userID'] });
+
+      cones.createIndex('timestamp', 'timestamp', { unique: false });
+      cones.createIndex('store', 'store', { unique: false });
+      cones.createIndex('userID', 'userID', { unique: false });
+      cones.createIndex('mode', 'mode', { unique: false });
+    }
+
+    //  END:  cones
+    // ----------------------------------------------------------
     // START: enums
 
     initEnum(db, 'EfiringType');
@@ -203,6 +216,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
       populateEmptyEnumSlice(db, data.EprogramState, 'EprogramState');
       populateEmptyEnumSlice(db, data.EkilnReadyStatus, 'EkilnReadyStatus');
+      populateEmptyEnumSlice(db, data.EkilnServiceStatus, 'EkilnServiceStatus');
       populateEmptyEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
       populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
       populateEmptyEnumSlice(db, data.EkilnType, 'EkilnType');

@@ -91,7 +91,7 @@ export default [
   {
     route: '/kilns/new',
     render: ({ _GLOBALS } : IKeyValue) => html`<kiln-details-edit
-      new
+      mode="new"
       .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
   },
   {

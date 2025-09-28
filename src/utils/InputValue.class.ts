@@ -5,7 +5,7 @@ import type { IKeyValue } from "../types/data-simple.d.ts";
 import { numOrNan } from "./numeric.utils.ts";
 import { dateOrNull } from "./date-time.utils.ts";
 
-export default class {
+export default class InputValue {
   // ------------------------------------------------------
   // START: Private properties
 
@@ -37,7 +37,7 @@ export default class {
   constructor(
     value : string | number | IKeyValue,
     validity : TFauxValidity,
-    ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+    ogTarget : HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | InputValue,
     reportValidity : null | FReportValidity = null,
     defaultValue : string | null = null,
   ) {
@@ -50,7 +50,7 @@ export default class {
       ? ogTarget.name
       : ogTarget.id;
 
-    if (ogTarget instanceof HTMLInputElement || ogTarget instanceof HTMLTextAreaElement) {
+    if (ogTarget instanceof HTMLSelectElement === false) {
       this._defaultValue = ogTarget.defaultValue;
     } else {
       // @todo work out how to find the default selected option of select input
@@ -77,11 +77,16 @@ export default class {
   }
 
   _setValidity(validity : TFauxValidity) : void {
+    let invalid : boolean = false;
     for (const key of Object.keys(this._validity)) {
       if (typeof validity[key] === 'boolean') {
         this._validity[key] = validity[key];
+        if (key !== 'valid' && validity[key] === false) {
+          invalid = true;
+        }
       }
     }
+    this._validity.valid = !invalid;
   }
 
   //  END:  Private methods

@@ -5,6 +5,8 @@ import type { IKeyBool } from "../../types/data-simple.d.ts";
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 import { getRenderCheckable } from "../../utils/render.utils.ts";
 import { dispatchCustomEvent } from "../../utils/event.utils.ts";
+import ExternalBlur from "../../utils/ExternalBlur.class.ts";
+import InputValue from "../../utils/InputValue.class.ts";
 
 /**
  * An example element.
@@ -36,6 +38,10 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
   @state()
   _asGroup : boolean = true;
 
+  _externalBlur : ExternalBlur | null = null;
+
+  _output : IKeyBool = {};
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -44,8 +50,8 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
     return `${this.fieldID}-${option.value}`;
   }
 
-  _emitChange(target : HTMLInputElement) : void {
-    const output : IKeyBool = {};
+  _emitChange(target : HTMLInputElement, validate: boolean = false) : void {
+    console.group('<accessible-checkbox-list>._emitChange()');
     let diffCount : number = 0;
     let checkedCount : number = 0;
 
@@ -55,13 +61,10 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
       // console.log('checked:', checked);
       // console.log('target.value:', target.value);
       // console.log('target.checked:', target.checked);
-      output[value] = (value === target.value)
-        ? (target.checked === true)
-        : checked;
-      diffCount += (output[value] !== checked)
+      diffCount += (this._output[value] !== checked)
         ? 1
         : 0;
-      checkedCount += (output[value] === true)
+      checkedCount += (this._output[value] === true)
         ? 1
         : 0;
     }
@@ -69,13 +72,37 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
     const rangeOverflow = (this.max > -1 && this.max < checkedCount);
     const rangeUnderflow = (this.min > -1 && this.min > checkedCount);
     const valueMissing = (diffCount === 0);
+    const validity = { rangeOverflow, rangeUnderflow, valueMissing };
 
-    dispatchCustomEvent(
-      this,
-      output,
-      { rangeUnderflow, rangeOverflow, valueMissing },
-      target,
-    );
+    this._validate({
+      target: new InputValue(this._output, validity, target),
+      preventDefault : () => undefined,
+    });
+    console.groupEnd();
+  }
+
+  _updateCB(event: InputEvent | KeyboardEvent) : void {
+    console.group('<accessible-checkbox-list>._updateCB()');
+
+    if (Object.keys(this._output).length === 0) {
+      for (const { value, checked } of this.options) {
+        this._output[value] = checked;
+      }
+    }
+    console.log('event:', event);
+    console.log('event.target:', event.target);
+    console.log('event.target.value:', event.target.value);
+    console.log('this._output:', this._output);
+    console.log(`this._output.${event.target.value}:`, this._output[event.target.value]);
+    if (event.target instanceof HTMLInputElement
+      && typeof this._output[event.target.value] === 'boolean'
+    ) {
+      console.log('event:', event);
+      this._output[(event.target).value] = (event.target).checked;
+
+      this._emitChange(event.target as HTMLInputElement);
+    }
+    console.groupEnd();
   }
 
   //  END:  helper methods
@@ -83,12 +110,50 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
   // START: event handlers
 
   handleChange(event: InputEvent): void {
-    this._emitChange(event.target as HTMLInputElement);
+    console.group('<accessible-checkbox-list>.handleChange()');
+    this._updateCB(event);
+      console.groupEnd();
   }
 
   handleKeyup(event: KeyboardEvent): void {
-    this._emitChange(event.target as HTMLInputElement);
+    console.group('<accessible-checkbox-list>.handleKeyup()');
+    this._updateCB(event);
+      console.groupEnd();
   }
+
+  // handleExternalBlur(event: CustomEvent) : void {
+  //   console.group('<accessible-checkbox-list>.handleExternalBlur()');
+  //   console.log('event:', event);
+  //   const tmp = this.renderRoot.querySelector('input[type=checkbox]');
+  //   if (tmp !== null) {
+  //     this._emitChange(tmp as HTMLInputElement, true);
+  //   }
+  //   console.groupEnd();
+  // }
+
+  // handleFocus(event: FocusEvent): void {
+  //   super.handleFocus(event);
+  //   console.group('<accessible-checkbox-list>.handleFocus()');
+  //   console.log('event:', event);
+  //   console.log('this._externalBlur:', this._externalBlur);
+  //   if (this._externalBlur === null) {
+  //     this._externalBlur = new ExternalBlur(
+  //       this,
+  //       this.fieldID,
+  //       { autoUnset: true, doConsole: true, listen: true, collapsed: false },
+  //     );
+  //     this.addEventListener('externalblur', this.handleExternalBlur.bind(this));
+  //   } else {
+  //     this._externalBlur.listen();
+  //   }
+
+  //   if (Object.keys(this._output).length === 0) {
+  //     for (const { value, checked } of this.options) {
+  //       this._output[value] = checked;
+  //     }
+  //   }
+  //   console.groupEnd();
+  // }
 
   //  END:  event handlers
   // ------------------------------------------------------
@@ -101,7 +166,7 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
   renderField() : TemplateResult {
     const renderCheckable = getRenderCheckable(this);
 
-    return html`<ul class="input-flex cb-list">
+    return html`<ul class="input-flex cb-list" @focus=${this.handleFocus}>
       ${this.options.map((option) => html`
       <li>
         <label for="${this.getID(option)}" class="checkbox">

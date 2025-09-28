@@ -1,14 +1,15 @@
 import type { IKeyBool } from "../types/data-simple.d.ts";
 import type { IKiln } from "../types/data.d.ts";
+import type InputValue from "./InputValue.class.ts";
 
 export const getAllowedFiringTypes = (
-  kiln : IKiln | null,
+  kiln : IKeyBool | null,
   isNew : boolean = false,
 ) : IKeyBool => {
   const output : IKeyBool = {
     bisque: false,
     glaze: false,
-    single: true,
+    single: false,
     luster: false,
     onglaze: false,
     raku: false,
@@ -41,5 +42,18 @@ export const getAllowedFiringTypes = (
       }
     }
   }
+
   return output;
+};
+
+export const reportFiringTypeError = (
+  target : HTMLInputElement | InputValue
+) : string => {
+  if (target.checkValidity() === false
+    && target.validity.rangeUnderflow === true
+  ) {
+    return 'Please select at least one firing type';
+  }
+
+  return '';
 };

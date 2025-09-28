@@ -1,13 +1,10 @@
-/**
- * @typedef {import('../../types/external-blur.d').ExternalBlurOptions} ExternalBlurOptions
- */
-
-import { isBoolTrue } from './data-utils';
+import type { ExternalBlurOptions, FEventHandler } from "../types/ExternalBlur.d.ts";
+import { isBoolTrue } from './data.utils.ts';
 
 /**
- * @var {HTMLBodyElement|Null} globalBody Web page's body DOM element
+ * @var globalBody Web page's body DOM element
  */
-let globalBody = null;
+let globalBody : HTMLBodyElement | HTMLElement | null = null;
 
 /**
  * ExternalBlur makes it easy to listen for pseudo blur events by
@@ -33,17 +30,17 @@ export default class ExternalBlur {
    * Whether or not to automatically unset event handlers when an
    * "externalblur" event is dispatched
    *
-   * @property {boolean} _autoUnset
+   * @property _autoUnset
    */
-  _autoUnset = false;
+  _autoUnset : boolean = false;
 
   /**
    * Whether or not to log to console details of the "externalblur"
    * event when it is dispatched
    *
-   * @property {boolean} _autoUnset
+   * @property _autoUnset
    */
-  _doConsole = false;
+  _doConsole : boolean = false;
 
   /**
    * Event handler function called when the document <BODY> element
@@ -51,7 +48,7 @@ export default class ExternalBlur {
    *
    * @property {function} _handler
    */
-  _handler;
+  _handler : FEventHandler | null = null;
 
   /**
    * String provided in the `details` property of the CustomEvent
@@ -59,7 +56,7 @@ export default class ExternalBlur {
    *
    * @property {string} _id
    */
-  _id = '';
+  _id : string = '';
 
   /**
    * Whether or not event listeners are currently set on the document
@@ -95,23 +92,22 @@ export default class ExternalBlur {
   /**
    * Set up handlers for External Blur
    *
-   * @param {Element} node DOM node that is a wrapper for something
-   *                       that needs to know when it has lost focus
-   *                       within itself.
-   * @param {string}  id   ID string to include as the detail value
-   *                       for a custom event
-   * @param {import('../../types/external-blur.d').ExternalBlurOptions} options
+   * @param node DOM node that is a wrapper for something that needs
+   *             to know when it has lost focus within itself.
+   * @param id   ID string to include as the detail value for a
+   *             custom event
+   * @param options
    */
   constructor(
-    node,
-    id,
+    node : HTMLElement,
+    id : string,
     {
       autoUnset,
       collapsed,
       doConsole,
       listen,
       watcherNode,
-    },
+    } : ExternalBlurOptions,
   ) {
     this._id = id;
     this._node = node;
@@ -150,17 +146,19 @@ export default class ExternalBlur {
     );
 
     if (this._autoUnset !== false) {
-      this.unset(); // eslint-disable-line no-use-before-define
+      this.ignore(); // eslint-disable-line no-use-before-define
     }
   }
 
-  _getHandler(context, collapsed) { // eslint-disable-line class-methods-use-this
+  _getHandler(context : ExternalBlur, collapsed : boolean) { // eslint-disable-line class-methods-use-this
     const grpFunc = (collapsed === true)
       ? 'groupCollapsed'
       : 'group';
 
-    return (event) => {
-      if (context._node.contains(event.target) === false) {
+    return (event : Event) : void => {
+      console.group('ExternalBlur.handler()');
+      console.log('event:', event);
+      if (context._node.contains(event.target as Node) === false) {
         if (context._doConsole === true) {
           // eslint-disable-next-line no-console
           console[grpFunc]('ExternalBlur.handler()');
@@ -169,10 +167,11 @@ export default class ExternalBlur {
           console.log('parent:', context._node); // eslint-disable-line no-console
           context._dispatch();
           console.groupEnd(); // eslint-disable-line no-console
+        } else {
+          context._dispatch();
         }
-
-        context._dispatch();
       }
+      console.groupEnd();
     };
   }
 
@@ -181,7 +180,7 @@ export default class ExternalBlur {
    *
    * @returns {boolean}
    */
-  _init() { // eslint-disable-line class-methods-use-this
+  _init() : boolean { // eslint-disable-line class-methods-use-this
     if (globalBody === null || globalBody instanceof Element === false) {
       // We don't yet have the document body DOM node so let's try
       // and get it
@@ -212,7 +211,7 @@ export default class ExternalBlur {
    *                       the event listners after they've served
    *                       their purpose
    */
-  doAutoUnset(doIt = true) {
+  doAutoUnset(doIt : boolean = true) : void {
     if (typeof doIt !== 'boolean') {
       throw new Error(
         'useExternalBlur.doAutoUnset() expects only parameter '
@@ -233,7 +232,7 @@ export default class ExternalBlur {
    * @returns {void}
    * @throws {Error} If `doIt` is not boolean
    */
-  logToConsole(doIt = false) {
+  logToConsole(doIt : boolean = false) : void {
     if (typeof doIt !== 'boolean') {
       throw new Error(
         'useExternalBlur.logToConsole() expects only parameter '
@@ -255,7 +254,7 @@ export default class ExternalBlur {
    * @returns {boolean} TRUE if event listeners were set.
    *                    FALSE otherwise
    */
-  listen() {
+  listen() : boolean {
     if (this._listenersSet === false) {
       // Do we need to initialise the `globalBody`
       let ok = (globalBody !== null);
@@ -264,10 +263,10 @@ export default class ExternalBlur {
         ok = this._init();
       }
 
-      if (ok === true) {
-        globalBody.addEventListener('pointerup', this._handler);
-        globalBody.addEventListener('focus', this._handler);
-        globalBody.addEventListener('keyup', this._handler);
+      if (ok === true && this._handler !== null) {
+        globalBody?.addEventListener('pointerup', this._handler);
+        globalBody?.addEventListener('focus', this._handler);
+        globalBody?.addEventListener('keyup', this._handler);
         // Possibly also set 'keydown' listener
 
         if (this._watcher !== null) {
@@ -294,11 +293,11 @@ export default class ExternalBlur {
    * @returns {boolean} TRUE if event listeners could be removed.
    *                    FALSE otherwise
    */
-  ignore() {
-    if (this._listenersSet === true) {
-      globalBody.removeEventListener('pointerup', this._handler);
-      globalBody.removeEventListener('focus', this._handler);
-      globalBody.removeEventListener('keyup', this._handler);
+  ignore() : boolean {
+    if (this._listenersSet === true && this._handler !== null) {
+      globalBody?.removeEventListener('pointerup', this._handler);
+      globalBody?.removeEventListener('focus', this._handler);
+      globalBody?.removeEventListener('keyup', this._handler);
       // Also unset 'keydown' listener if it was set
 
       if (this._watcher !== null) {

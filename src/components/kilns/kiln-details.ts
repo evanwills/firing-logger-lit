@@ -209,15 +209,29 @@ export class KilnDetails extends LoggerElement {
   }
 
   _setKilnTypes(data : IKeyValue) : void {
+    // console.group('<kiln-data>._setKilnTypes()');
+    // console.log('data:', data);
     this._kilnTypes = data;
+    // console.groupEnd();
   }
 
   _setFuelSources(data : IKeyValue) : void {
+    // console.group('<kiln-data>._setFuelSources()');
+    // console.log('data:', data);
     this._fuelSources = data;
+    // console.groupEnd();
   }
 
   _setFiringTypes(data : IKeyValue) : void {
     this._firingTypes = data;
+
+    if (this.mode === 'new') {
+      this._allowedFiringTypes = getAllowedFiringTypes(null, true);
+      this._firingTypeOptions = getCheckableOptions(
+        this._allowedFiringTypes,
+        this._firingTypes,
+      );
+    }
   }
 
   async _getFromStore() : Promise<void> {

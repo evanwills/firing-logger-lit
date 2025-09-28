@@ -5,10 +5,11 @@ import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts'
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
-import FocusableInside from './FocusableInside.ts';
-import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
 import { dispatchCustomEvent } from "../../utils/event.utils.ts";
+import FocusableInside from './FocusableInside.ts';
+import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
+import type { TFauxInputEvent } from "../../types/fauxDom.d.ts";
 
 export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
@@ -140,7 +141,7 @@ export class AccessibleWholeField extends FocusableInside {
       : undefined;
   }
 
-  _dispatch(event : InputEvent | KeyboardEvent) : void {
+  _dispatch(event : InputEvent | KeyboardEvent | TFauxInputEvent) : void {
     dispatchCustomEvent(
       this,
       (event.target as HTMLInputElement).value,
@@ -149,9 +150,9 @@ export class AccessibleWholeField extends FocusableInside {
     );
   }
 
-  validate(event : InputEvent | KeyboardEvent) {
+  _validate(event : InputEvent | KeyboardEvent | TFauxInputEvent) {
     event.preventDefault();
-    // console.group('AccessibleWholeField.validate()')
+    // console.group('AccessibleWholeField._validate()')
 
     const { target } = event;
     if (this.sanitiseInput !== null) {
@@ -187,7 +188,7 @@ export class AccessibleWholeField extends FocusableInside {
 
   handleChange(event : InputEvent) : void {
     // console.group('AccessibleWholeField.handleChange()')
-    this.validate(event);
+    this._validate(event);
     // console.groupEnd();
   }
 
@@ -195,7 +196,7 @@ export class AccessibleWholeField extends FocusableInside {
     // console.group('AccessibleWholeField.handleKeyup()');
     // console.log('this.validateOnKeyup:', this.validateOnKeyup);
     if (this.validateOnKeyup === true) {
-      this.validate(event);
+      this._validate(event);
     } else {
       this._dispatch(event);
     }
@@ -210,7 +211,7 @@ export class AccessibleWholeField extends FocusableInside {
     // console.groupEnd();
   }
 
-  handleFocus() : void {
+  handleFocus(_event: FocusEvent) : void {
     this._hadFocus = true;
   }
 
@@ -252,7 +253,11 @@ export class AccessibleWholeField extends FocusableInside {
     this._descIDs.error = id;
     this._innerClass.error = 'error';
 
-    return html`<div class="error" id="${id}">${this._errorMsg}</div>`;
+    return html`<div
+      aria-live="polite"
+      class="error"
+      id="${id}"
+      role="alert" >${this._errorMsg}</div>`;
   }
 
   renderField() : TemplateResult {
@@ -310,6 +315,9 @@ export class AccessibleWholeField extends FocusableInside {
     let cls = 'inner';
     if (this._hadFocus === true) {
       cls += ' had-focus';
+    }
+    if (this.noLabel === true) {
+      cls += ' no-label';
     }
     for (const key in this._innerClass) {
       if (this._innerClass[key] !== '') {

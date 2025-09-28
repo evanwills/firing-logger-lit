@@ -79,7 +79,7 @@ export class AccessibleTextField extends AccessibleWholeField {
       value="${ifDefined(this.value)}"
       @change=${this.handleChange}
       @keyup=${this.handleKeyup}
-      @blur=${this.validate} />`;
+      @blur=${this._validate} />`;
   }
 
   //  END:  helper render methods

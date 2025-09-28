@@ -21,6 +21,7 @@ import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
 import '../shared-components/alert-block.ts'
+import { reportFiringTypeError } from "../../utils/kiln-data.utils.ts";
 
 /**
  * An example element.
@@ -40,7 +41,7 @@ export class KilnDetailsEdit extends KilnDetails {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   @property({ type: String, attribute: 'mode' })
-  mode : 'add' | 'clone' | 'copy' | 'edit' = 'edit';
+  mode : 'new' | 'clone' | 'copy' | 'edit' = 'edit';
 
   //  END:  properties/attributes
   // -----------------------------
@@ -328,8 +329,12 @@ export class KilnDetailsEdit extends KilnDetails {
       <ul class="details">
         <li>
           <accessible-checkbox-list
+            error-msg="Please select at least on firing type"
             field-id="firing-types"
             label="Allowed firing types"
+            .getErrorMsg=${reportFiringTypeError}
+            no-label
+            min="1"
             .options=${this._firingTypeOptions}
             validation-type="name"
             @change=${this.handleFiringTypesChange}></accessible-checkbox-list>
