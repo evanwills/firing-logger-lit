@@ -1,5 +1,5 @@
-import OrtonConeChart from '../data/orton-cones.json' with { type: 'json' };
-import type { FiringStep } from "../types/data.d.ts";
+import OrtonConeChart from '../../public/data/orton-cones.json' with { type: 'json' };
+import type { FiringStep } from '../types/programs.d.ts';
 
 type TConeData = {
   cone: string,

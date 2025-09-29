@@ -1,4 +1,4 @@
-import type { IKeyValue } from "./data-simple.d.ts";
+import type { IKeyValue } from './data-simple.d.ts';
 
 /**
  * TObjKey is either

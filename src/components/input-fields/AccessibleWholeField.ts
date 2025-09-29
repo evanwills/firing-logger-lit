@@ -1,15 +1,15 @@
-import { css, html, type TemplateResult } from 'lit'
-import { property, state } from 'lit/decorators.js'
+import { css, html, type TemplateResult } from 'lit';
+import { property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
-import type { IKeyValue } from '../../types/data-simple.d.ts'
+import type { IKeyValue } from '../../types/data-simple.d.ts';
+import type { TFauxInputEvent } from '../../types/fauxDom.d.ts';
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
-import { dispatchCustomEvent } from "../../utils/event.utils.ts";
-import FocusableInside from './FocusableInside.ts';
+import { dispatchCustomEvent } from '../../utils/event.utils.ts';
 import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
-import type { TFauxInputEvent } from "../../types/fauxDom.d.ts";
+import FocusableInside from './FocusableInside.ts';
 
 export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------

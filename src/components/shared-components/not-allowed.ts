@@ -1,6 +1,6 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { isNonEmptyStr } from "../../utils/data.utils.ts";
+import { isNonEmptyStr } from '../../utils/data.utils.ts';
 
 /**
  * An example element.

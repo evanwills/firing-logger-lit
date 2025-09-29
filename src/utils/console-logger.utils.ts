@@ -3,9 +3,9 @@
  * performing common actions that are shared across components
  */
 
-import type { TCmethod, TKeys } from "../types/console-logger.d.ts";
-import type { IKeyValue } from "../types/data-simple.d.ts";
-import type FauxEvent from "./FauxEvent.class.ts";
+import type { TCmethod, TKeys } from '../types/console-logger.d.ts';
+import type { IKeyValue } from '../types/data-simple.d.ts';
+import type FauxEvent from './FauxEvent.class.ts';
 import { isBoolTrue, isNonEmptyStr, isObj } from './data.utils.ts';
 
 

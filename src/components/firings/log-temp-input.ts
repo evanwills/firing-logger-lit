@@ -1,12 +1,12 @@
-import { css, html, type TemplateResult } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { css, html, type TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import type { FReportValidity, TTrueValidity } from '../../types/fauxDom.d.ts';
 import { forceNum } from '../../utils/data.utils.ts';
 import { dispatchCustomEvent, getIncrement } from '../../utils/event.utils.ts';
 import { logEntryInputStyle, logEntryInputVars } from '../../assets/css/log-entry-styles.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
-import { LoggerElement } from '../LoggerElement.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
 // import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 /**

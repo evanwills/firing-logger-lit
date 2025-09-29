@@ -3,9 +3,9 @@ import { customElement, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
 import { deleteCookie, getCookie } from '../../utils/cookie.utils.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
-// import { isNonEmptyStr } from "../../utils/data.utils.ts";
+// import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import './login-ui.ts';
-import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
+import { dispatchRouterEvent } from '../lit-router/lit-router.utils.ts';
 
 @customElement('firing-logger-wrapper')
 export class FiringLoggerWrapper extends LitElement {

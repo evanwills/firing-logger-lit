@@ -1,5 +1,5 @@
-import { html, type TemplateResult } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { html, type TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 import { getRenderCheckable } from '../../utils/render.utils.ts';

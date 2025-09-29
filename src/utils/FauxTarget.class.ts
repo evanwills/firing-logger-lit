@@ -1,4 +1,4 @@
-import type { IKeyValue } from "../types/data-simple.d.ts";
+import type { IKeyValue } from '../types/data-simple.d.ts';
 import { forceNum, isNonEmptyStr, isNum, isObj } from './data.utils.ts';
 
 export default class FauxTarget {

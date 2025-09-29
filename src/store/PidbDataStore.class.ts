@@ -12,7 +12,7 @@ import {
   outputAs,
   parseKeyValSelector,
 } from './idb-data-store.utils.ts';
-import type { IDBPmigrate, IDBPupgrade } from "../types/pidb.d.ts";
+import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
 
 /**
  * Check whether a value is empty or null

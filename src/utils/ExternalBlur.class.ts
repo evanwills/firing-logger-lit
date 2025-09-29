@@ -1,4 +1,4 @@
-import type { ExternalBlurOptions, FEventHandler } from "../types/ExternalBlur.d.ts";
+import type { ExternalBlurOptions, FEventHandler } from '../types/ExternalBlur.d.ts';
 import { isBoolTrue } from './data.utils.ts';
 
 /**

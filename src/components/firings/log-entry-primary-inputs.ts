@@ -9,7 +9,7 @@ import { calculateExpectedTemp, forceNum } from '../../utils/data.utils.ts';
 import InputValueClass from '../../utils/InputValue.class.ts';
 import './log-temp-input.ts';
 import './log-time-input.ts';
-import { dialogStyles } from "../../assets/css/dialog.css.ts";
+import { dialogStyles } from '../../assets/css/dialog.css.ts';
 
 /**
  * An example element.

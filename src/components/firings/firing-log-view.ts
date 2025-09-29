@@ -1,14 +1,14 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import type { ID } from '../../types/data-simple.d.ts';
 import type {
   FiringLog,
   IFiringLogEntry,
   ResponsibleLogEntry,
   StateChangeLogEntry,
-  TemperatureLogEntry,
-  IStoredFiringProgram,
-} from "../../types/data.d.ts";
-import type { ID } from "../../types/data-simple.d.ts";
+} from '../../types/data.d.ts';
+import type { IStoredFiringProgram } from '../../types/programs.d.ts';
+import type { TempLogEntry } from '../../types/firing-log.d.ts';
 import { isChangeLog, isRespLog, isTempLog } from '../../types/data.type-guards.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 
@@ -54,7 +54,7 @@ export class FiringLogView extends LoggerElement {
   @state()
   _edit : boolean = false;
 
-  _log : TemperatureLogEntry[] = []
+  _log : TempLogEntry[] = []
   _changeLog : StateChangeLogEntry[]  = []
   _responsibleLog : ResponsibleLogEntry[]  = []
   _rawLog : IFiringLogEntry[] = [];

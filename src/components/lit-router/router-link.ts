@@ -2,7 +2,7 @@ import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { dispatchRouterEvent } from './lit-router.utils.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
-import { linkStyle } from "../../assets/css/link-style.ts";
+import { linkStyle } from '../../assets/css/link-style.ts';
 
 @customElement('router-link')
 export class RouterLink extends LitElement {

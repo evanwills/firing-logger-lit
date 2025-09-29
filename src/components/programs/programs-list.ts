@@ -1,15 +1,15 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { IKiln } from '../../types/data.d.ts';
-import { tableStyles } from '../../assets/css/program-view-style.ts';
-import '../lit-router/router-link.ts';
+import type { IKiln} from '../../types/kilns.d.ts';
+import type { IStoredFiringProgram } from '../../types/programs.d.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
-import type { IStoredFiringProgram } from '../../types/data.d.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { getLinkProps } from '../../utils/lit.utils.ts';
+import { tableStyles } from '../../assets/css/program-view-style.ts';
+import '../lit-router/router-link.ts';
 
 @customElement('programs-list')
 export class ProgramsList extends LoggerElement {

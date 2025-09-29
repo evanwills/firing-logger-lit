@@ -2,26 +2,28 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
-import type { ID, IKeyBool, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
-import type { TCheckboxValueLabel } from "../../types/renderTypes.d.ts";
-import type { IStoredFiringProgram, IKiln, TUniqueNameItem } from '../../types/data.d.ts';
+import type { ID, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
+import type { TCheckboxValueLabel } from '../../types/renderTypes.d.ts';
+import type { TUniqueNameItem } from '../../types/data.d.ts';
+import type { IStoredFiringProgram } from '../../types/programs.d.ts';
+import type { IKiln } from '../../types/kilns';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
-import { getAllowedFiringTypes } from "../../utils/kiln-data.utils.ts";
-import { getCheckableOptions } from "../../utils/lit.utils.ts";
-import { detailsStyle } from "../../assets/css/details.css.ts";
-import { labelWidths } from "../../assets/css/input-field.css.ts";
+import { getAllowedFiringTypes } from '../../utils/kiln-data.utils.ts';
+import { getCheckableOptions } from '../../utils/lit.utils.ts';
+import { detailsStyle } from '../../assets/css/details.css.ts';
+import { labelWidths } from '../../assets/css/input-field.css.ts';
 import '../lit-router/router-link.ts';
 import '../input-fields/accessible-number-field.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
-import { renderDetails, renderReadonlyCheckable } from "../../utils/render.utils.ts";
-import { getKilnEditData, getKilnViewData } from "../../store/kiln-store.utils.ts";
+import { renderDetails, renderReadonlyCheckable } from '../../utils/render.utils.ts';
+import { getKilnEditData, getKilnViewData } from '../../store/kiln-store.utils.ts';
 
 /**
  * An example element.

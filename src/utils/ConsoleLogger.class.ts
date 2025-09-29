@@ -8,8 +8,8 @@ import {
   // logObjDeepKeyVal,
 } from './console-logger.utils.ts';
 import ConsoleLoggerDummy from './ConsoleLoggerDummy.class.ts';
-import type { IKeyValue } from "../types/data-simple.d.ts";
-import type { TKeys, TInitLoggable, TLoggableVars, TCmethod } from "../types/console-logger.d.ts";
+import type { IKeyValue } from '../types/data-simple.d.ts';
+import type { TKeys, TInitLoggable, TLoggableVars, TCmethod } from '../types/console-logger.d.ts';
 
 /**
  * ConsoleLogger is a collection of methods for making console

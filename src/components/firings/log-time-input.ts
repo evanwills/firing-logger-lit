@@ -1,5 +1,5 @@
-import { LitElement, css, html, type TemplateResult } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { LitElement, css, html, type TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { FReportValidity, TTrueValidity } from '../../types/fauxDom.d.ts';
 import { logEntryInputStyle, logEntryInputVars } from '../../assets/css/log-entry-styles.ts';
 import { getISO8601time } from '../../utils/date-time.utils.ts';

@@ -1,15 +1,14 @@
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { TUser } from '../../types/data.d.ts';
+import type { TUser } from '../../types/users.d.ts';
 import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
 import { getDataStoreClassSingleton } from '../../store/FiringLogger.store.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { isUser } from '../../types/data.type-guards.ts';
-import { getCookie } from '../../utils/cookie.utils.ts';
+import { userCan, userHasAuth } from '../../store/user-data.utils.ts';
 import './loading-spinner.ts';
-import { userCan, userHasAuth } from "../../store/user-data.utils.ts";
 
 /**
  * `LoggerElement` is a renderless extension of `LitElement`. It

@@ -1,11 +1,11 @@
-import type { IDBPDatabase } from "idb";
+import type { IDBPDatabase } from 'idb';
 import type { ID, IKeyValue } from '../types/data-simple.d.ts';
 import type { IKiln, TUser } from '../types/data.d.ts';
-import { getAuthUser, userHasAuth } from "./user-data.utils.ts";
-import type { CDataStoreClass } from "../types/store.d.ts";
-import { isNonEmptyStr } from "../utils/data.utils.ts";
-import type { PKilnDetails, TKilnDetails } from "../types/kilns.d.ts";
-import { getUniqueNameList } from "../utils/store.utils.ts";
+import { getAuthUser, userHasAuth } from './user-data.utils.ts';
+import type { CDataStoreClass } from '../types/store.d.ts';
+import { isNonEmptyStr } from '../utils/data.utils.ts';
+import type { PKilnDetails, TKilnDetails } from '../types/kilns.d.ts';
+import { getUniqueNameList } from '../utils/store.utils.ts';
 
 
 export const updateKilnData = async (db: IDBPDatabase, data : IKeyValue) : Promise<boolean> => {

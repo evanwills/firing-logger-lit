@@ -4,7 +4,7 @@ import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { FGlobalsGet, TParsedRoute } from '../../types/router-types.d.ts';
 import { parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
-import type { FWrapOutput } from "../../types/renderTypes.d.ts";
+import type { FWrapOutput } from '../../types/renderTypes.d.ts';
 
 const wrapOutput : FWrapOutput = (input : TemplateResult | string) => (typeof input === 'string')
   ? html`${input}`

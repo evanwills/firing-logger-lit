@@ -1,6 +1,6 @@
 import type { ID, IIdObject, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
-import type { TUniqueNameItem } from "../types/data.d.ts";
-import type { CDataStoreClass } from "../types/store.d.ts";
+import type { TUniqueNameItem } from '../types/data.d.ts';
+import type { CDataStoreClass } from '../types/store.d.ts';
 
 const parseKeyValue = (input : string) : string => {
   if (input.includes('=') === false)  {

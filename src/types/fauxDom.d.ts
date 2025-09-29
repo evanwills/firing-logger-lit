@@ -1,6 +1,6 @@
 import type { TemplateResult } from 'lit';
-import type { IKeyBool } from "./data-simple.d.ts";
-import type InputValue from "../utils/InputValue.class.ts";
+import type { IKeyBool } from './data-simple.d.ts';
+import type InputValue from '../utils/InputValue.class.ts';
 
 export interface TFauxValidity extends IKeyBool {
   badInput ? : boolean,

@@ -1,12 +1,9 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { ID, IKeyValUrl } from '../../types/data-simple.d.ts';
-import type {
-  FiringStep,
-  IKiln,
-  IStoredFiringProgram,
-  TSvgPathItem,
-} from '../../types/data.d.ts';
+import type { TSvgPathItem } from '../../types/data.d.ts';
+import type { IKiln} from '../../types/kilns.d.ts';
+import type { FiringStep, IStoredFiringProgram } from '../../types/programs.d.ts';
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import {
   durationFromStep,

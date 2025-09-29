@@ -1,7 +1,7 @@
 // ------------------------------------------------------------------
 // START: Basic scalar types
 
-import type { TemplateResult } from "lit";
+import type { TemplateResult } from 'lit';
 
 export type ISO8601 = string;
 export type TTimeStamp = number;

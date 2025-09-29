@@ -28,38 +28,6 @@ export interface FancyAction extends Action {
 // ========================================================
 // START: stored data types
 
-
-export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObject {
-  id: ID,
-  brand: string,
-  model: string,
-  name: string,
-  urlPart: string,
-  installDate: ISO8601|null,
-  fuel: EfuelSource,
-  type: EkilnType,
-  maxTemp: number,
-  maxProgramCount: number,
-  volume: number,
-  width: number,
-  depth: number,
-  height: number,
-  bisque: boolean,
-  glaze: boolean,
-  single: boolean,
-  luster: boolean,
-  onglaze: boolean,
-  saggar: boolean,
-  raku: boolean,
-  salt: boolean,
-  black: boolean,
-  useCount: number,
-  isRetired: boolean,
-  isWorking: boolean,
-  isInUse: boolean,
-  isHot: boolean
-}
-
 export interface  EquipmentLogEntry implements IKeyValue, IIdObject {
   id: ID,
   equipmentID: string,
@@ -71,64 +39,6 @@ export interface  EquipmentLogEntry implements IKeyValue, IIdObject {
   parentID: string | null,
   verifiedDate: number | null,
   verifiedBy: string | null
-}
-
-export interface IFiringProgramData implements IKeyValue, IIdObject, IIdNameObject, ILinkObject {
-  id: ID,
-  kilnID: string,
-  controllerProgramID: number,
-  type: EfiringType,
-  name: string,
-  urlPart: string,
-  version: number,
-  description: string,
-  steps: [FiringStep],
-  created: ISO8601,
-  createdBy: ID,
-  superseded: boolean,
-  parentID: string,
-  used: boolean,
-  useCount: number,
-  deleted: boolean,
-  locked: boolean
-}
-
-export interface IStoredFiringProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObject, IFiringProgramData {
-  id: ID,
-  kilnID: ID,
-  controllerProgramID: number,
-  type: string,
-  name: string,
-  urlPart: string,
-  version: number,
-  description: string,
-  maxTemp: number,
-  cone: string,
-  duration: number,
-  averageRate: number,
-  steps: [FiringStep],
-  created: ISO8601,
-  createdBy: ID,
-  superseded: boolean,
-  parentID: string,
-  used: boolean,
-  useCount: number,
-  deleted: boolean,
-  locked: boolean
-}
-
-export interface FiringProgramTmp implements IKeyValue, IIdObject, IIdNameObject, ILinkObject, IStoredFiringProgram {
-  confirmed: boolean,
-  errors: object,
-  lastField: string,
-  mode: string
-}
-
-export type FiringStep = {
-  order: number,   // step order in program, starting at 1
-  endTemp: number, // positive degrees
-  rate: number,    // degrees per hour
-  hold: number     // minutes to hold at end temperature
 }
 
 export interface FiringLog implements IKeyValue, IIdObject {
@@ -210,25 +120,6 @@ export interface DiaryEntry implements IKeyValue, IIdObject {
   started: boolean,
 }
 
-export interface TUser implements IKeyValue, IIdObject {
-  id: ID,
-  username: string
-  firstName: string
-  lastName: string,
-  preferredName: string,
-  phone: string,
-  email: string,
-  canFire: boolean,
-  canProgram: boolean,
-  canLog: boolean,
-  canPack: boolean,
-  canUnpack: boolean,
-  canPrice: boolean,
-  adminLevel: number,
-  notMetric: boolean,
-  colourScheme: 'auto' | 'light' | 'dark',
-}
-
 export interface Studio implements IKeyValue {
   kilns: IKiln[],
   firingPrograms: AllFiringPrograms,
@@ -259,44 +150,6 @@ export type TSvgUnit = {
   value: string|number|SVGTemplateResult,
 }
 
-
-export interface FiringReport {
-    kilnName: string,
-    program: firingProgram,
-    firingType: EfiringType,
-    kilnState: EprogramState,
-    responsible: string,
-    startTime: Date,
-    endTime: Date,
-    programState: EprogramState,
-    tempState: EtemperatureState,
-    log: [reportRow]
-    currentRate: number
-}
-
-export interface ReportRow {
-  time: Date,
-  temp: number,
-  expectedTemp: number,
-  rate: number,
-  expectedRate: number
-}
-
-export interface veiw {
-  route: [string],
-  title: string,
-  url: string,
-  navOpen: false,
-  settingsOpen: false
-}
-
-export interface App {
-  currentUser: user,
-  reports: [firingReport],
-  view: Eview,
-  stateSlice: IKilns | allFiringPrograms | firingLogs | maintenance | issues | users | diary
-}
-
 export type Fview = (state: object, eHandler: function, routes: array) => TemplateResult;
 
 export type TUniqueNameItem = {
@@ -308,90 +161,10 @@ export type TUniqueNameItem = {
 // ========================================================
 // START: enums
 
-
-enum EfiringType {
-  bisque,
-  glaze,
-  single,
-  luster,
-  onglaze
-}
-
-enum EprogramState {
-  idle,
-  pending,
-  started,
-  completed,
-  aborted,
-}
-
-enum EkilnReadyStatus {
-  available,
-  packing,
-  packed,
-  heating,
-  holding,
-  cooling,
-  cold,
-  unpacking,
-  emptied,
-}
-
-enum EkilnMServiceState {
-  purchased,
-  delivered,
-  installed,
-  working,
-  maintenance,
-  brokenAwaitingRepair,
-  brokenBeingRepaired,
-  retired,
-  decomissioned,
-  removed,
-}
-
-enum EtemperatureState {
-  nominal,
-  over,
-  overError,
-  under,
-  underError,
-}
-
-enum Eview {
-  diary,
-  firings,
-  kilns,
-  programs,
-  report,
-  users
-}
-
-enum EfuelSource {
-  electric,
-  gas,
-  wood,
-  oil,
-}
-
-enum EkilnType {
-  'general',
-  'raku',
-  'platter',
-  'black firing',
-  'annagamma'
-}
-
 enum EequipmentLogType {
   usage,
   maintenance,
-  problem
-}
-
-enum EprogramStatus {
-  unused,
-  selected,
-  used
+  problem,
 }
 
 

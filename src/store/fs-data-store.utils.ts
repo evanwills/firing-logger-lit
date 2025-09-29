@@ -1,4 +1,4 @@
-import { getAllById, getById, getPaginationSet } from "../utils/store.utils.ts";
+import { getAllById, getById, getPaginationSet } from '../utils/store.utils.ts';
 
 export const getDataFromSlice = (data: any, slice: string[]) : any => {
   if (slice.length === 0) {

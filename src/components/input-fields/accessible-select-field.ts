@@ -1,5 +1,5 @@
-import { html, type TemplateResult } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { html, type TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';

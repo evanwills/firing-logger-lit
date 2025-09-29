@@ -1,6 +1,6 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { IKeyValUrl } from './item-details.ts';
+import type { IKeyValUrl } from '../../types/data-simple.d.ts';
 import { emptyOrNull, isBoolTrue, isNonEmptyStr } from '../../utils/data.utils.ts';
 import '../input-fields/read-only-field.ts';
 

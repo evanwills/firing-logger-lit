@@ -1,12 +1,11 @@
-import { html, type TemplateResult } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { html, type TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
-import type { IKeyBool } from "../../types/data-simple.d.ts";
+import type { IKeyBool } from '../../types/data-simple.d.ts';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
-import { getRenderCheckable } from "../../utils/render.utils.ts";
-import { dispatchCustomEvent } from "../../utils/event.utils.ts";
-import ExternalBlur from "../../utils/ExternalBlur.class.ts";
-import InputValue from "../../utils/InputValue.class.ts";
+import { getRenderCheckable } from '../../utils/render.utils.ts';
+import ExternalBlur from '../../utils/ExternalBlur.class.ts';
+import InputValue from '../../utils/InputValue.class.ts';
 
 /**
  * An example element.

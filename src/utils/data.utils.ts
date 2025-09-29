@@ -1,4 +1,4 @@
-import type { IKeyValue } from "../types/data-simple.d.ts";
+import type { IKeyValue } from '../types/data-simple.d.ts';
 
 /**
  * This file contains a collection of "pure" function that help with

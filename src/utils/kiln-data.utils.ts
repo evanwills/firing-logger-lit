@@ -1,6 +1,5 @@
-import type { IKeyBool } from "../types/data-simple.d.ts";
-import type { IKiln } from "../types/data.d.ts";
-import type InputValue from "./InputValue.class.ts";
+import type { IKeyBool } from '../types/data-simple.d.ts';
+import type InputValue from './InputValue.class.ts';
 
 export const getAllowedFiringTypes = (
   kiln : IKeyBool | null,

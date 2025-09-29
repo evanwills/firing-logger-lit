@@ -1,5 +1,6 @@
-import type { TSvgPathItem, FiringStep } from "../types/data.d.ts";
-import { round } from "./numeric.utils.ts";
+import type { TSvgPathItem } from '../types/data.d.ts';
+import type { FiringStep } from '../types/programs';
+import { round } from './numeric.utils.ts';
 
 /**
  * Convert degrees in fahrenheit to degrees celsius

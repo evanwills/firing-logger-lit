@@ -1,17 +1,14 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-// import { nanoid } from 'nanoid';
+import type { TUser } from '../../types/users.d.ts';
 import { setCookie } from '../../utils/cookie.utils.ts';
-// import { linkStyle } from '../../assets/css/link-style.ts';
-// import { isNonEmptyStr } from "../../utils/data.utils.ts";
+import { isNonEmptyStr, isObj } from '../../utils/data.utils.ts';
+import { LoggerElement } from './LoggerElement.ts';
+import { dispatchRouterEvent } from '../lit-router/lit-router.utils.ts';
+import { dialogStyles } from '../../assets/css/dialog.css.ts';
+import { fieldListStyles } from '../../assets/css/input-field.css.ts';
 import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-password-field.ts';
-import { isNonEmptyStr, isObj } from "../../utils/data.utils.ts";
-import { LoggerElement } from "./LoggerElement.ts";
-import { fieldListStyles } from "../../assets/css/input-field.css.ts";
-import { dialogStyles } from "../../assets/css/dialog.css.ts";
-import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
-import type { TUser } from "../../types/data.d.ts";
 
 @customElement('login-ui')
 export class LoginUI extends LoggerElement {

@@ -1,4 +1,4 @@
-import { LitElement } from "lit";
+import { LitElement } from 'lit';
 
 export default class FocusableInside extends LitElement {
 
@@ -32,7 +32,7 @@ export default class FocusableInside extends LitElement {
         if (typeof this._fieldElement.focusInside === 'function') {
           this._fieldElement.focusInside(selector);
         } else {
-          console.warn(
+          console.warn(``
             `<${this._fieldElement.tagName}> does not support `
             + 'focusing within itself from outside',
           );

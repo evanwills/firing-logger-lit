@@ -1,10 +1,10 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import type { CDataStoreClass } from './types/store.d.ts';
 import { getDataStoreClassSingleton } from './store/FiringLogger.store.ts';
 import { wrapApp } from './utils/lit.utils.ts';
+import { getCookie } from './utils/cookie.utils.ts';
 import './components/lit-router/lit-router.ts';
-import type { CDataStoreClass } from './types/store.d.ts';
-import { getCookie } from "./utils/cookie.utils.ts";
 
 // We want to initialise the data store as soon as possible
 getDataStoreClassSingleton();

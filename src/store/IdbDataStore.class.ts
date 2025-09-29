@@ -1,9 +1,9 @@
-import { nanoid } from "nanoid";
-import type { CDataStoreClass, FReadyWatcher, TStoreAction, TStoreSlice } from "../types/store.d.ts";
-// import { splitSlice } from "../utils/store.utils.ts";
-import type { ID } from "../types/data-simple.d.ts";
-import { getOnError, getOnSuccess, populateEnumSlice, populateSlice } from "./idb-data-store.utils.ts";
-import { emptyOrNull } from "../utils/data.utils.ts";
+import { nanoid } from 'nanoid';
+import type { CDataStoreClass, FReadyWatcher, TStoreAction, TStoreSlice } from '../types/store.d.ts';
+// import { splitSlice } from '../utils/store.utils.ts';
+import type { ID } from '../types/data-simple.d.ts';
+import { getOnError, getOnSuccess, populateEnumSlice, populateSlice } from './idb-data-store.utils.ts';
+import { emptyOrNull } from '../utils/data.utils.ts';
 
 let store : CDataStoreClass | null = null;
 

@@ -1,10 +1,10 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { IKiln } from '../../types/data.d.ts';
+import type { IKiln } from '../../types/kilns.d.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
-import { getValFromKey } from "../../utils/data.utils.ts";
-import { storeCatch } from "../../store/idb-data-store.utils.ts";
+import { getValFromKey } from '../../utils/data.utils.ts';
+import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
 

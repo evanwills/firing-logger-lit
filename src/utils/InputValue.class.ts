@@ -1,9 +1,9 @@
 import type { TemplateResult } from 'lit';
 import type { FReportValidity, TFauxValidity, TTrueValidity } from '../types/fauxDom.d.ts';
 import { getTrueValidity } from './event.utils.ts';
-import type { IKeyValue } from "../types/data-simple.d.ts";
-import { numOrNan } from "./numeric.utils.ts";
-import { dateOrNull } from "./date-time.utils.ts";
+import type { IKeyValue } from '../types/data-simple.d.ts';
+import { numOrNan } from './numeric.utils.ts';
+import { dateOrNull } from './date-time.utils.ts';
 
 export default class InputValue {
   // ------------------------------------------------------

@@ -1,4 +1,4 @@
-import type { IDBPDatabase } from "idb";
+import type { IDBPDatabase } from 'idb';
 import type { ID, IKeyValPair, IKeyValue } from './data-simple.d.ts';
 import type { IKiln, IUser } from './data.d.ts';
 

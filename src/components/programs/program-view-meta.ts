@@ -2,7 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { hoursFromSeconds, x2x } from '../../utils/conversions.utils.ts';
 import { keyValueStyle, programViewVars } from '../../assets/css/program-view-style.ts';
-import type { IKeyValUrl } from "../../types/data-simple.d.ts";
+import type { IKeyValUrl } from '../../types/data-simple.d.ts';
 import '../lit-router/router-link.ts';
 import '../shared-components/item-details.ts';
 

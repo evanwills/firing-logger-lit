@@ -1,5 +1,5 @@
-import type { TInitLoggable } from "../types/console-logger.d.ts";
-import type { IKeyValue } from "../types/data-simple.d.ts";
+import type { TInitLoggable } from '../types/console-logger.d.ts';
+import type { IKeyValue } from '../types/data-simple.d.ts';
 
 /**
  * ConsoleLoggerDummy does absolutely nothing.
