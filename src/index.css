@@ -28,6 +28,8 @@
   --label-width: 5.75rem;
   --label-y-translate: 0;
   --max-width: 40rem;
+  --multi-col-list-margin-block: 1rem;
+  --multi-col-list-margin-inline-start: 0;
   --primary-stroke: #cc5eff;
   --primary-stroke-width: 10;
   --text-underline-offset: 0.2em;

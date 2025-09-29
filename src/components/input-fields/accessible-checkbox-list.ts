@@ -1,7 +1,7 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
-import type { IKeyBool } from '../../types/data-simple.d.ts';
+import type { IKeyBool, IKeyValue } from '../../types/data-simple.d.ts';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 import { getRenderCheckable } from '../../utils/render.utils.ts';
 import ExternalBlur from '../../utils/ExternalBlur.class.ts';
@@ -49,7 +49,7 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
     return `${this.fieldID}-${option.value}`;
   }
 
-  _emitChange(target : HTMLInputElement, validate: boolean = false) : void {
+  _emitChange(target : HTMLInputElement) : void {
     console.group('<accessible-checkbox-list>._emitChange()');
     let diffCount : number = 0;
     let checkedCount : number = 0;
@@ -90,9 +90,12 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
     }
     console.log('event:', event);
     console.log('event.target:', event.target);
-    console.log('event.target.value:', event.target.value);
+    console.log('event.target.value:', (event.target as IKeyValue).value);
     console.log('this._output:', this._output);
-    console.log(`this._output.${event.target.value}:`, this._output[event.target.value]);
+    console.log(
+      `this._output.${(event.target as IKeyValue).value}:`,
+      this._output[(event.target as IKeyValue).value],
+    );
     if (event.target instanceof HTMLInputElement
       && typeof this._output[event.target.value] === 'boolean'
     ) {
@@ -165,7 +168,7 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
   renderField() : TemplateResult {
     const renderCheckable = getRenderCheckable(this);
 
-    return html`<ul class="input-flex cb-list" @focus=${this.handleFocus}>
+    return html`<ul class="input-flex multi-col-list three-col-list cb-list" @focus=${this.handleFocus}>
       ${this.options.map((option) => html`
       <li>
         <label for="${this.getID(option)}" class="checkbox">

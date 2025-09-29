@@ -272,7 +272,7 @@ export class KilnDetailsEdit extends KilnDetails {
     openOthers : boolean
   ) : TemplateResult {
     const output = html`
-        <ul class="label-8 details" @change=${this.handleNumericChange}>
+        <ul class="label-8 multi-col-list two-col-list" @change=${this.handleNumericChange}>
           <li>
             <accessible-number-field
               field-id="width"
@@ -397,7 +397,7 @@ export class KilnDetailsEdit extends KilnDetails {
     openOthers : boolean
   ) : TemplateResult {
     const output = html`
-      <ul class="details">
+      <ul class="multi-col-list three-col-list">
         <li>
           <accessible-temporal-field
             field-id="installDate"
@@ -486,7 +486,7 @@ export class KilnDetailsEdit extends KilnDetails {
 
     return (this._userHasAuth(2))
       ? html`<div>
-          <h2>${(this.mode === 'add')
+          <h2>${(this.mode === 'new')
             ? 'Add a new kiln'
             : `${ucFirst(this.mode)} ${this._name}`
           }</h2>

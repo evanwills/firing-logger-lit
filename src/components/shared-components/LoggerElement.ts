@@ -6,7 +6,7 @@ import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
 import { getDataStoreClassSingleton } from '../../store/FiringLogger.store.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
-import { isUser } from '../../types/data.type-guards.ts';
+import { isUser } from '../../types/user.type-guards.ts';
 import { userCan, userHasAuth } from '../../store/user-data.utils.ts';
 import './loading-spinner.ts';
 

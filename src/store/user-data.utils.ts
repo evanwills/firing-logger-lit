@@ -1,8 +1,8 @@
 import type { IDBPDatabase } from 'idb';
 import type { IKeyValue } from '../types/data-simple.d.ts';
-import type { TUser } from '../types/data.d.ts';
+import type { TUser } from '../types/users.d.ts';
 import { getCookie } from '../utils/cookie.utils.ts';
-import { isUser } from '../types/data.type-guards.ts';
+import { isUser } from '../types/user.type-guards.ts';
 
 export const getAuthUser = (db : IDBPDatabase) : Promise<TUser|null> => {
   const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);

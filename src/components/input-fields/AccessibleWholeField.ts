@@ -8,8 +8,9 @@ import type { TFauxInputEvent } from '../../types/fauxDom.d.ts';
 import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
 import { dispatchCustomEvent } from '../../utils/event.utils.ts';
-import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
+import { checkboxListStyles, inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import FocusableInside from './FocusableInside.ts';
+import { multiColListStyles, threeColListStyles } from "../../assets/css/lists.css.ts";
 
 export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
@@ -357,7 +358,7 @@ export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css`${inputFieldCSS}`;
+  static styles = css`${inputFieldCSS} ${multiColListStyles} ${threeColListStyles} ${checkboxListStyles}`;
 
   //  END:  styles
   // ------------------------------------------------------

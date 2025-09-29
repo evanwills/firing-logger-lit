@@ -104,10 +104,8 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
   salt: boolean,
   black: boolean,
   useCount: number,
-  isRetired: boolean,
-  isWorking: boolean,
-  isInUse: boolean,
-  isHot: boolean
+  readyState: string,
+  serviceState: string,
 }
 
 export type MaintenanceLog = {

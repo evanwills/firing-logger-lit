@@ -2,10 +2,6 @@ import { type IDBPDatabase } from 'idb';
 import type { ID, IIdObject, IKeyStr, IKeyValPair, IKeyValue, TOrderedEnum } from '../types/data-simple.d.ts';
 
 type Fresolver = (value: unknown) => void;
-type kv = {
-  key: string,
-  value: string,
-}
 
 export const populateSlice = (
   db : IDBPDatabase,
@@ -297,7 +293,7 @@ export const getByKeyValue = async (
   // console.log('primary:', primary);
 
   if (typeof primary !== 'undefined') {
-    const tx = await db.transaction(storeName, 'readonly');
+    const tx = db.transaction(storeName, 'readonly');
     // console.log('tx:', tx);
     const index = tx.store.index(primary.indexName);
     // console.log('index:', index);

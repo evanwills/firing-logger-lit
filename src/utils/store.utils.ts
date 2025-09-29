@@ -1,6 +1,5 @@
 import type { ID, IIdObject, IKeyValue, ILinkObject } from '../types/data-simple.d.ts';
 import type { TUniqueNameItem } from '../types/data.d.ts';
-import type { CDataStoreClass } from '../types/store.d.ts';
 
 const parseKeyValue = (input : string) : string => {
   if (input.includes('=') === false)  {
@@ -120,15 +119,15 @@ export const getLimitedObjList = (input : any, filter: string[]) : any => {
   })
 }
 
-export const getUserPrefs = (db : CDataStoreClass) => () : IKeyValue => {
-  const prefs = db.read('UserPreferences');
-  const output : IKeyValue = {
-    colourScheme: 'auto',
-    notMetric: false,
-  }
+// export const getUserPrefs = (db : CDataStoreClass) => () : IKeyValue => {
+//   const prefs = db.read('UserPreferences');
+//   const output : IKeyValue = {
+//     colourScheme: 'auto',
+//     notMetric: false,
+//   }
 
-  return output;
-};
+//   return output;
+// };
 
 const getUniqueName = (input : ILinkObject) : TUniqueNameItem => ({
   name: input.name,

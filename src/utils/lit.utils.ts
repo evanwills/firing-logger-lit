@@ -102,9 +102,6 @@ export const getCheckableOptions = (
   optionValues: IKeyBool,
   optionLabels :  IKeyStr = {}
 ) : TCheckboxValueLabel[] => {
-  console.group('getCheckableOptions()');
-  console.log('optionValues:', optionValues);
-  console.log('optionLabels:', optionLabels);
   const output : TCheckboxValueLabel[] = [];
 
   for (const key of Object.keys(optionLabels)) {
@@ -117,7 +114,5 @@ export const getCheckableOptions = (
     })
   }
 
-  console.log('output:', output);
-  console.groupEnd();
   return output;
 }

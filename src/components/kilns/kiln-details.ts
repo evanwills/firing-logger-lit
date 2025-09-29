@@ -6,7 +6,7 @@ import type { ID, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TCheckboxValueLabel } from '../../types/renderTypes.d.ts';
 import type { TUniqueNameItem } from '../../types/data.d.ts';
 import type { IStoredFiringProgram } from '../../types/programs.d.ts';
-import type { IKiln } from '../../types/kilns';
+import type { IKiln } from '../../types/kilns.d.ts';
 import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
@@ -16,6 +16,7 @@ import { getAllowedFiringTypes } from '../../utils/kiln-data.utils.ts';
 import { getCheckableOptions } from '../../utils/lit.utils.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
 import { labelWidths } from '../../assets/css/input-field.css.ts';
+import { multiColListStyles, threeColListStyles, twoColListStyles } from '../../assets/css/lists.css.ts'
 import '../lit-router/router-link.ts';
 import '../input-fields/accessible-number-field.ts';
 import '../input-fields/accessible-select-field.ts';
@@ -129,16 +130,12 @@ export class KilnDetails extends LoggerElement {
   };
 
   @state()
-  _isRetired: boolean = false;
-
-  @state()
-  _isWorking: boolean = false;
+  _serviceState: string = '';
 
   _useCount: number = 0;
 
-  _isInUse: boolean = false;
+  _readyState: string = '';
 
-  _isHot: boolean = false;
 
   @state()
   _programs : IStoredFiringProgram[] = [];
@@ -164,53 +161,52 @@ export class KilnDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnData(data : IKiln) : void {
-    const _data = (Array.isArray(data))
-      ? data[0]
-      : data;
-
-    if (isNonEmptyStr(_data, 'id')) {
-      this._id  = _data.id;
-      this._brand = _data.brand;
-      this._model = _data.model;
-      this._name = _data.name;
-      this._path = _data.urlPart;
-      this._installDate = (_data.installDate !== null)
-        ? new Date(_data.installDate)
-        : null;
-      this._fuel = _data.fuel.toString();
-      this._type = _data.type.toString();
-      this._maxTemp = _data.maxTemp;
-      this._maxProgramCount = _data.maxProgramCount;
-      this._width = _data.width;
-      this._depth = _data.depth;
-      this._height = _data.height;
-
+  _setFiringTypeOptions(data : IKiln | null = null) : void {
+    if (Object.keys(this._allowedFiringTypes).length === 0 || data !== null) {
       this._allowedFiringTypes = getAllowedFiringTypes(
-        _data,
+        data,
         (this.mode === 'new'),
       );
-      this._firingTypeOptions = getCheckableOptions(this._allowedFiringTypes, this._firingTypes);
+    }
 
-      this._useCount = _data.useCount;
-      this._isRetired = _data.isRetired;
-      this._isWorking = _data.isWorking;
-      this._isInUse = _data.isInUse;
-      this._isHot = _data.isHot;
-      this._kilnKeys = Object.keys(_data);
+    if (Object.keys(this._firingTypes).length > 0
+      && this._firingTypeOptions.length === 0
+    ) {
+      this._firingTypeOptions = getCheckableOptions(this._allowedFiringTypes, this._firingTypes);
+    }
+  }
+
+  _setKilnData(data : IKiln) : void {
+    if (isNonEmptyStr(data, 'id')) {
+      this._id = data.id;
+      this._brand = data.brand;
+      this._model = data.model;
+      this._name = data.name;
+      this._path = data.urlPart;
+      this._installDate = (data.installDate !== null)
+        ? new Date(data.installDate)
+        : null;
+      this._fuel = data.fuel.toString();
+      this._type = data.type.toString();
+      this._maxTemp = data.maxTemp;
+      this._maxProgramCount = data.maxProgramCount;
+      this._width = data.width;
+      this._depth = data.depth;
+      this._height = data.height;
+
+      this._setFiringTypeOptions(data);
+
+      this._useCount = data.useCount;
+      this._readyState = data.readyState;
+      this._serviceState = data.serviceState;
+      this._kilnKeys = Object.keys(data);
     }
   }
 
   _setFiringTypes(data : IKeyValue) : void {
     this._firingTypes = data;
 
-    if (this.mode === 'new') {
-      this._allowedFiringTypes = getAllowedFiringTypes(null, true);
-      this._firingTypeOptions = getCheckableOptions(
-        this._allowedFiringTypes,
-        this._firingTypes,
-      );
-    }
+    this._setFiringTypeOptions();
   }
 
   async _getFromStore() : Promise<void> {
@@ -311,7 +307,7 @@ export class KilnDetails extends LoggerElement {
 
   _renderDimensions(detailName : string | null, openOthers : boolean) : TemplateResult {
     const output = html`
-      <ul class="kv-list">
+      <ul class="multi-col-list two-col-list">
         <li><read-only-field label="Width" value="${this._tConverter(this._width)}${this._lUnit}"></read-only-field></li>
         <li><read-only-field label="Depth" value="${this._tConverter(this._depth)}${this._lUnit}"></read-only-field></li>
         <li><read-only-field label="Height" value="${this._tConverter(this._height)}${this._lUnit}"></read-only-field></li>
@@ -332,7 +328,7 @@ export class KilnDetails extends LoggerElement {
       'kiln-firing-types',
       'Allowed firing types',
       html`
-      <ul class="kv-list">
+      <ul class="multi-col-list three-col-list cb-list">
         ${this._firingTypeOptions.map(renderReadonlyCheckable)}
       </ul>`,
       openOthers,
@@ -362,7 +358,7 @@ export class KilnDetails extends LoggerElement {
 
   _renderStatus(detailName : string | null, openOthers : boolean) : TemplateResult {
     const output = html`
-      <ul class="kv-list">
+      <ul class="multi-col-list three-col-list status">
         <li><read-only-field label="Install date" value="${ifDefined((this._installDate !== null) ? getHumanDate(this._installDate) : null)}"></read-only-field></li>
         <li><read-only-field label="Firing count" value="${this._useCount}"></read-only-field></li>
         <li><read-only-field label="Is retired" .value="${this._isRetired}"></read-only-field></li>
@@ -430,8 +426,8 @@ export class KilnDetails extends LoggerElement {
   .kv-list {
     --label-width: 6.5rem;
     --label-align: right;
-    column-width: 10rem;
-    column-gap: 3rem;
+    column-width: calc(100% - 2rem / 3);
+    column-gap: 1rem;
   }
   p.last-btn {
     margin-bottom: 0;
@@ -439,9 +435,25 @@ export class KilnDetails extends LoggerElement {
     text-align: left;
   }
 
+  .three-col-list {
+    --input-padding: 0.05rem 0 0;
+    --label-align: right;
+
+    &.cb-list {
+      --label-width: 9rem;
+    }
+
+    &.status {
+      --label-width: 7.5rem;
+    }
+  }
+
   ${detailsStyle}
   ${labelWidths}
   ${tableStyles}
+  ${multiColListStyles}
+  ${threeColListStyles}
+  ${twoColListStyles}
   ${srOnly}
 
   tbody th { text-align: start; }

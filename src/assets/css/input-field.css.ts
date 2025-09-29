@@ -152,33 +152,6 @@ textarea {
   font-style: italic;
 }
 
-.cb-list {
-  container-name: cb-list;
-  container-type: inline-size;
-  margin: 0 0 0 2rem;
-  padding: 0;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  list-style-type: none;
-
-  li {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-  }
-}
-@container cb-list (inline-size >= 21rem) {
-  .cb-list li {
-    width: calc((100% - 1rem) / 2);
-  }
-}
-@container cb-list (inline-size >= 32rem) {
-  .cb-list li {
-    width: calc((100% - 2rem) / 3);
-  }
-}
-
 .inner.no-label .cb-list {
   margin-left: 0;
 }
@@ -250,4 +223,7 @@ export const fieldListStyles = css`
 `;
 
 export const checkboxListStyles = css`
-`;
+.cb-list {
+  --multi-col-list-margin-block: 0;
+  --multi-col-list-margin-inline-start: 2rem;
+}`;
