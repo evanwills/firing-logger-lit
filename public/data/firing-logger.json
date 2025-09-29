@@ -12,6 +12,7 @@
       "installDate": "2025-07-17",
       "fuel": "electric",
       "type": "general",
+      "openingType": "front",
       "maxTemp": 1295,
       "maxProgramCount": 20,
       "volume": 311,
@@ -40,6 +41,7 @@
       "installDate": "2025-07-17",
       "fuel": "electric",
       "type": "general",
+      "openingType": "front",
       "maxTemp": 1295,
       "maxProgramCount": 20,
       "volume": 114,
@@ -392,12 +394,12 @@
     },
     {
       "order": 5,
-      "value": "brokenAwaitingRepair",
+      "value": "awaitingRepair",
       "label": "Broken awaiting repair"
     },
     {
       "order": 6,
-      "value": "brokenBeingRepaired",
+      "value": "beingRepaired",
       "label": "Broken being repaired"
     },
     {
@@ -488,13 +490,35 @@
     },
     {
       "order": 3,
-      "value": "black firing",
+      "value": "black",
       "label": "Black firing"
     },
     {
       "order": 4,
       "value": "annagamma",
       "label": "Annagamma"
+    }
+  ],
+  "EkilnOpeningType": [
+    {
+      "order": 0,
+      "value": "front",
+      "label": "Front loading"
+    },
+    {
+      "order": 1,
+      "value": "top",
+      "label": "Top loading"
+    },
+    {
+      "order": 2,
+      "value": "tophat",
+      "label": "Top hat"
+    },
+    {
+      "order": 3,
+      "value": "trolly",
+      "label": "Trolly"
     }
   ],
   "EequipmentLogType": [

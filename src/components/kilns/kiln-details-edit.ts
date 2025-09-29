@@ -65,6 +65,9 @@ export class KilnDetailsEdit extends KilnDetails {
   _kilnOptions : TOptionValueLabel[] = [];
 
   @state()
+  _kilnOpeningOptions : TOptionValueLabel[] = [];
+
+  @state()
   _firingOptions : TCheckboxValueLabel[] = [];
 
   @state()
@@ -221,7 +224,17 @@ export class KilnDetailsEdit extends KilnDetails {
             field-id="type"
             label="Kiln type"
             .options=${this._kilnOptions}
+            required
             value="${this._type}"
+            @change=${this.handleGenericChange}></accessible-select-field>
+        </li>
+        <li>
+          <accessible-select-field
+            field-id="type"
+            label="Loading method"
+            .options=${this._kilnOpeningOptions}
+            required
+            value="${this._openingType}"
             @change=${this.handleGenericChange}></accessible-select-field>
         </li>
         <li>
@@ -229,6 +242,7 @@ export class KilnDetailsEdit extends KilnDetails {
             field-id="fuel"
             label="Energy source"
             .options=${this._fuelOptions}
+            required
             value="${this._fuel}"
             @change=${this.handleGenericChange}></accessible-select-field>
         </li>
@@ -476,6 +490,9 @@ export class KilnDetailsEdit extends KilnDetails {
     }
     if (this._kilnOptions.length === 0) {
       this._kilnOptions = enumToOptions(this._kilnTypes);
+    }
+    if (this._kilnOpeningOptions.length === 0) {
+      this._kilnOpeningOptions = enumToOptions(this._kilnOpeningTypes);
     }
 
     const detailName : string | null = (this.mode === 'edit')

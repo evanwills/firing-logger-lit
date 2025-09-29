@@ -13,7 +13,11 @@ export const isKiln = (kiln : unknown) : kiln is IKiln => (
   // START: details
   && typeof (kiln as IKiln).urlPart === 'string'
   && typeof (kiln as IKiln).fuel === 'string'
+  // && ['electric', 'gas', 'wood', 'oil', 'other'].includes((kiln as IKiln).fuel)
   && typeof (kiln as IKiln).type === 'string'
+  // && ['general', 'raku', 'platter', 'black', 'annagamma'].includes((kiln as IKiln).type)
+  && typeof (kiln as IKiln).openingType === 'string'
+  // && ['front', 'top', 'tophat', 'trolly'].includes((kiln as IKiln).openingType)
   && typeof (kiln as IKiln).maxTemp === 'number'
   && typeof (kiln as IKiln).maxProgramCount === 'number'
   //  END:  details
@@ -42,7 +46,9 @@ export const isKiln = (kiln : unknown) : kiln is IKiln => (
   || (kiln as IKiln).installDate === null)
   && typeof (kiln as IKiln).useCount === 'number'
   && typeof (kiln as IKiln).readyState === 'string'
+  // && ['available', 'packing', 'packed', 'heating', 'holding', 'cooling', 'cold', 'unpacking', 'pricing', 'emptied'].includes((kiln as IKiln).readyState)
   && typeof (kiln as IKiln).serviceState === 'string'
+  // && ['purchased', 'delivered', 'installed', 'working', 'maintenance', 'awaitingRepair', 'beingRepaired', 'retired', 'decommissioned', 'Removed'].includes((kiln as IKiln).serviceState)
   //  END:  status
   // --------------------------------------------
 );

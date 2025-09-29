@@ -4,10 +4,10 @@ import type { IKiln } from '../types/kilns.d.ts';
 import type { TUser } from '../types/users.d.ts';
 import { getAuthUser, userHasAuth } from "./user-data.utils.ts";
 import type { CDataStoreClass } from "../types/store.d.ts";
-import { isNonEmptyStr, isObj } from "../utils/data.utils.ts";
+import { isNonEmptyStr } from "../utils/data.utils.ts";
 import type { PKilnDetails, TKilnDetails } from "../types/kilns.d.ts";
 import { getUniqueNameList } from "../utils/store.utils.ts";
-import { isKiln, isKilnReport } from "../types/kiln.type-guards.ts";
+import { isKiln } from "../types/kiln.type-guards.ts";
 
 
 export const updateKilnData = async (db: IDBPDatabase, data : IKeyValue) : Promise<boolean> => {
@@ -61,6 +61,7 @@ const getBasicKilnData = (
     EkilnTypes: db.read('EkilnType', '', true),
     EfuelSources: db.read('EfuelSource', '', true),
     EfiringTypes: db.read('EfiringType', '', true),
+    EkilnOpeningType: db.read('EkilnOpeningType', '', true),
     kiln: (selector !== '')
       ? db.read('kilns', selector)
       : Promise.resolve(null),

@@ -180,6 +180,7 @@ const upgradeSchema : IDBPupgrade = (
     initEnum(db, 'EtemperatureState');
     initEnum(db, 'EfuelSource');
     initEnum(db, 'EkilnType');
+    initEnum(db, 'EkilnOpeningType');
     initEnum(db, 'EequipmentLogType');
     initEnum(db, 'EprogramStatus');
     initEnum(db, 'EAdminLevels');
@@ -220,6 +221,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptyEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
       populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
       populateEmptyEnumSlice(db, data.EkilnType, 'EkilnType');
+      populateEmptyEnumSlice(db, data.EkilnOpeningType, 'EkilnOpeningType');
       populateEmptyEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
       populateEmptyEnumSlice(db, data.EprogramStatus, 'EprogramStatus');
     }

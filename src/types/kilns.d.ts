@@ -86,8 +86,9 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
   name: string,
   urlPart: string,
   installDate: ISO8601|null,
-  fuel: EfuelSource,
-  type: EkilnType,
+  fuel: 'electric' | 'gas' | 'wood' | 'oil' | 'other',
+  type: 'general' | 'raku' | 'platter' | 'black' | 'annagamma',
+  openingType: 'front' | 'top' | 'tophat' | 'trolly',
   maxTemp: number,
   maxProgramCount: number,
   volume: number,
@@ -104,8 +105,8 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
   salt: boolean,
   black: boolean,
   useCount: number,
-  readyState: string,
-  serviceState: string,
+  readyState: 'available' | 'packing' | 'packed' | 'heating' | 'holding' | 'cooling' | 'cold' | 'unpacking' | 'pricing' | 'emptied',
+  serviceState: 'purchased' | 'delivered' | 'installed' | 'working' | 'maintenance' | 'awaitingRepair' | 'beingRepaired' | 'retired' | 'decommissioned' | 'Removed',
 }
 
 export type MaintenanceLog = {
@@ -138,6 +139,7 @@ export type FiringLogs = FiringLogs[]
 export type TKilnDetails = {
   EfiringTypes: Promise<IKeyStr>,
   EfuelSources: Promise<IKeyStr>,
+  EkilnOpeningType: Promise<IKeyStr>,
   EkilnTypes: Promise<IKeyStr>,
   kiln: IKiln | null,
   programs: Promise<IStoredFiringProgram[]>,
@@ -148,5 +150,6 @@ export type PKilnDetails = {
   EfuelSources: Promise<IKeyStr>,
   EfiringTypes: Promise<IKeyStr>,
   EkilnTypes: Promise<IKeyStr>,
+  EkilnOpeningType: Promise<IKeyStr>,
   kiln: Promise<IKiln|null>,
 };

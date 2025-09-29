@@ -99,6 +99,9 @@ export class KilnDetails extends LoggerElement {
   _type : string = '';
 
   @state()
+  _openingType : string = '';
+
+  @state()
   _maxTemp : number = 0;
 
   @state()
@@ -112,6 +115,9 @@ export class KilnDetails extends LoggerElement {
 
   @state()
   _height: number = 0;
+
+  @state()
+  _volume: number = 0;
 
   @state()
   _glaze: boolean = false;
@@ -142,6 +148,9 @@ export class KilnDetails extends LoggerElement {
 
   @state()
   _kilnTypes : IKeyStr = {};
+
+  @state()
+  _kilnOpeningTypes : IKeyStr = {};
 
   @state()
   _fuelSources : IKeyStr = {};
@@ -186,13 +195,15 @@ export class KilnDetails extends LoggerElement {
       this._installDate = (data.installDate !== null)
         ? new Date(data.installDate)
         : null;
-      this._fuel = data.fuel.toString();
-      this._type = data.type.toString();
+      this._fuel = data.fuel;
+      this._type = data.type;
+      this._openingType = data.openingType;
       this._maxTemp = data.maxTemp;
       this._maxProgramCount = data.maxProgramCount;
       this._width = data.width;
       this._depth = data.depth;
       this._height = data.height;
+      this._volume = data.volume;
 
       this._setFiringTypeOptions(data);
 
@@ -218,6 +229,7 @@ export class KilnDetails extends LoggerElement {
         : await getKilnEditData(this._store, this.kilnID, this.kilnName);
 
       this._kilnTypes = await tmp.EkilnTypes;
+      this._kilnOpeningTypes = await tmp.EkilnOpeningType;
       this._fuelSources = await tmp.EfuelSources;
       this._programs = await tmp.programs;
       this._uniqueNames = tmp.uniqueNames;
@@ -244,7 +256,7 @@ export class KilnDetails extends LoggerElement {
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
-  // START: helper render methods
+  // START: helper render methodsEkilnOpeningType
 
   renderSingleProgram(program : IStoredFiringProgram) : TemplateResult {
     return html`
@@ -300,6 +312,7 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Model" value="${this._model}"></read-only-field></li>
         <li><read-only-field label="Fuel" value="${getValFromKey(this._fuelSources, this._fuel)}"></read-only-field></li>
         <li><read-only-field label="Type" value="${getValFromKey(this._kilnTypes, this._type)}"></read-only-field></li>
+        <li><read-only-field label="Loading" value="${getValFromKey(this._kilnOpeningTypes, this._openingType)}"></read-only-field></li>
         <li><read-only-field label="Max temp" value="${this._tConverter(this._maxTemp)}&deg;${this._tUnit}"></read-only-field></li>
       </ul>
     </div>`;
@@ -311,6 +324,7 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Width" value="${this._tConverter(this._width)}${this._lUnit}"></read-only-field></li>
         <li><read-only-field label="Depth" value="${this._tConverter(this._depth)}${this._lUnit}"></read-only-field></li>
         <li><read-only-field label="Height" value="${this._tConverter(this._height)}${this._lUnit}"></read-only-field></li>
+        <li><read-only-field label="Volume" value="${this._volume} litres"></read-only-field></li>
       </ul>`;
 
     return renderDetails(
