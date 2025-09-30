@@ -161,7 +161,7 @@ const upgradeSchema : IDBPupgrade = (
     // START: unauthenticated updates
 
     if (!db.objectStoreNames.contains('noAuthChanges')) {
-      const cones = db.createObjectStore('noAuthChanges', { keyPath: ['store', 'userID'] });
+      const cones = db.createObjectStore('noAuthChanges', { keyPath: ['store', 'changeID', 'userID'] });
 
       cones.createIndex('timestamp', 'timestamp', { unique: false });
       cones.createIndex('store', 'store', { unique: false });
@@ -169,7 +169,15 @@ const upgradeSchema : IDBPupgrade = (
       cones.createIndex('mode', 'mode', { unique: false });
     }
 
-    //  END:  cones
+    //  END:  unauthenticated updates
+    // ----------------------------------------------------------
+    // START: user preferences
+
+    if (!db.objectStoreNames.contains('userPreferences')) {
+      db.createObjectStore('userPreferences', { keyPath: 'key' });
+    }
+
+    //  END:  user preferences
     // ----------------------------------------------------------
     // START: enums
 
@@ -224,6 +232,17 @@ const migrateData : IDBPmigrate = async (
       populateEmptyEnumSlice(db, data.EkilnOpeningType, 'EkilnOpeningType');
       populateEmptyEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
       populateEmptyEnumSlice(db, data.EprogramStatus, 'EprogramStatus');
+      populateEmptyKVslice(
+        db,
+        {
+          userID: '',
+          preferredName: '',
+          notMetric: false,
+          colourScheme: 'auto',
+        },
+        'userPreferences',
+        'replace',
+      );
     }
 
     const coneData = await globalThis.fetch('/data/orton-cones.json');

@@ -80,6 +80,7 @@ export type HeatSource = {
 }
 
 export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObject {
+  [key: string]: any
   id: ID,
   brand: string,
   model: string,

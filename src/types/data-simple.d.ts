@@ -16,15 +16,18 @@ export interface IKeyValue {
 };
 
 export interface IIdObject implements IKeyValue {
+  [key: string]: any,
   id: ID,
 };
 
 export interface IIdNameObject implements IKeyValue, IIdObject {
+  [key: string]: any
   id: ID,
   name: string,
 };
 
 export interface ILinkObject implements IKeyValue, IIdObject, IIdNameObject {
+  [key: string]: any
   id: ID,
   name: string,
   urlPart: string,
@@ -51,6 +54,7 @@ export interface IKeyValPair implements IKeyStr {
 };
 
 export interface IKeyValUrl implements IKeyValue {
+  [key: string]: any
   help?: string,
   key: string,
   noEmpty?: boolean,

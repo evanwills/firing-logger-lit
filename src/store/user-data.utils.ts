@@ -3,15 +3,47 @@ import type { IKeyValue } from '../types/data-simple.d.ts';
 import type { TUser } from '../types/users.d.ts';
 import { getCookie } from '../utils/cookie.utils.ts';
 import { isUser } from '../types/user.type-guards.ts';
+import { populateEmptyKVslice } from './idb-data-store.utils.ts';
+import { isNonEmptyStr } from '../utils/data.utils.ts';
 
-export const getAuthUser = (db : IDBPDatabase) : Promise<TUser|null> => {
+const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourScheme } : TUser) => {
+  populateEmptyKVslice(
+    db,
+    { id, preferredName, notMetric, colourScheme },
+    'userPreferences',
+    'replace',
+  );
+};
+
+export const getLastAuthUser = async (db : IDBPDatabase) : Promise<TUser|null> => {
+  const userID = await db.get('userPreferences', 'id');
+
+  return (isNonEmptyStr(userID))
+    ? db.get('users', userID)
+    : Promise.resolve(null);
+};
+
+export const getAuthUser = async (db : IDBPDatabase) : Promise<TUser|null> => {
   const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
 
   if (userID === null) {
     return Promise.resolve(null);
   }
 
-  return db.get('users', userID);
+  const localUser = await db.get('userPreferences', 'id');
+  const tmp = db.get('users', userID);
+
+  if (localUser === userID) {
+    return tmp
+  }
+
+  const userData : TUser = await tmp;
+
+  if (isUser(userData)) {
+    setUserPrefs(db, userData);
+  }
+
+  return Promise.resolve(userData);
 };
 
 export const userHasAuth = (user : TUser | null, level : number) : boolean => {
