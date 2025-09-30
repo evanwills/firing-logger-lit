@@ -8,30 +8,7 @@ import { isNonEmptyStr } from "../utils/data.utils.ts";
 import type { PKilnDetails, TKilnDetails } from "../types/kilns.d.ts";
 import { getUniqueNameList } from "../utils/store.utils.ts";
 import { isKiln } from "../types/kiln.type-guards.ts";
-import { saveChangeOnHold } from "./changesOnHole.utils.ts";
-
-const getInitialKilnData = (changes: IIdObject, kiln : IKiln) : IIdObject | string => {
-  const initial : IIdObject = { id: kiln.id };
-
-  for (const key of Object.keys(changes)) {
-    const iType = typeof kiln[key];
-    if (iType === 'undefined') {
-      return `Kiln update contains unknown property: "${key}"`;
-    }
-
-    if (typeof changes[key] !== iType
-      && (key !== 'installDate'
-      || (changes[key] !== null
-      && isNonEmptyStr(changes[key]) === false))
-    ) {
-      return `Kiln update contains unknown property: "${key}"`;
-    }
-
-    initial[key] = kiln[key];
-  }
-
-  return initial;
-}
+import { getInitialData, saveChangeOnHold } from "./save-data.utils.ts";
 
 const saveKilnChanges = (
   db: IDBPDatabase,
@@ -49,8 +26,6 @@ const saveKilnChanges = (
 
   return db.put('kilns', _kiln, changes.id);
 };
-
-// const saveKilnChanges = ()
 
 export const updateKilnData = async (db: IDBPDatabase, changes : IIdObject) : Promise<IDBValidKey> => {
   let user : TUser | null = await getAuthUser(db);
@@ -77,7 +52,7 @@ export const updateKilnData = async (db: IDBPDatabase, changes : IIdObject) : Pr
     return Promise.reject(`Could not find kiln matching "${changes.id}"`);
   }
 
-  const initial : IIdObject | string = getInitialKilnData(changes, kiln);
+  const initial : IIdObject | string = getInitialData(changes, kiln);
 
   if (typeof initial === 'string') {
     return Promise.reject(initial);
