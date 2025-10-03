@@ -150,8 +150,8 @@ export class LoggerElement extends LitElement {
 
 
   _setUser(user: TUser | null) : void {
-    console.group('LoggerElement._setUser()');
-    console.log('user:', user);
+    // console.group('LoggerElement._setUser()');
+    // console.log('user:', user);
 
     if (user !== null && isUser(user) === true) {
       this._user = user;
@@ -175,9 +175,9 @@ export class LoggerElement extends LitElement {
         this._lUnit = 'mm';
       }
     }
-    console.log('this._user:', this._user);
-    console.log('this._notMetric:', this._notMetric);
-    console.groupEnd();
+    // console.log('this._user:', this._user);
+    // console.log('this._notMetric:', this._notMetric);
+    // console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {
