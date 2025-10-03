@@ -51,6 +51,41 @@ export class LitRouter extends LitElement {
 
   //  END:  state
   // ------------------------------------------------------
+  // START: static methods
+
+  /**
+   * Dispatch a lit-router event.
+   *
+   * @param node    HTML/Lit element to dispatch the custome router
+   *                event from
+   * @param url     URL the link points to.
+   * @param data    Any additional data passed via data attributes to
+   *                the route-link element
+   * @param rewrite Whether or not to just rewrite the address bar URL
+   *                (or to perform a navigation event)
+   */
+  static dispatchRouterEvent(
+    node : LitElement | HTMLElement,
+    url: string,
+    data: IKeyValue = {},
+    type : 'nav' | 'rewrite' | 'refresh' = 'nav',
+  ) : void {
+    const _type = `litrouter${type}`;
+
+    node.dispatchEvent(
+      new CustomEvent(
+        _type,
+        {
+          bubbles: true,
+          composed: true,
+          detail: { data, url },
+        },
+      ),
+    );
+  }
+
+  //  END:  static methods
+  // ------------------------------------------------------
   // START: helper methods
 
 
