@@ -50,7 +50,6 @@ export default class FauxEvent {
     }
 
     this._target = new FauxTarget(value, validity, _otherProps, tag);
-    console.groupEnd();
   }
 
   //  END:  Constructor

@@ -89,9 +89,9 @@ const getBasicKilnData = (
   id: ID | null = null,
   name: string | null = null,
 ) : PKilnDetails => {
-  console.group('getBasicKilnData()');
-  console.log('id:', id);
-  console.log('name:', name);
+  // console.group('getBasicKilnData()');
+  // console.log('id:', id);
+  // console.log('name:', name);
   let selector = '';
 
   if (isNonEmptyStr(id)) {
@@ -100,8 +100,8 @@ const getBasicKilnData = (
     selector = `urlPart=${name}`;
   }
 
-  console.log('selector:', selector);
-  console.groupEnd();
+  // console.log('selector:', selector);
+  // console.groupEnd();
 
   return {
     EkilnTypes: db.read('EkilnType', '', true),

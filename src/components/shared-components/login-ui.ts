@@ -117,7 +117,7 @@ export class LoginUI extends LoggerElement {
         break;
 
       default:
-        console.log('event:', event);
+        console.error('event:', event);
         throw new Error('could not determine what to do');
     }
   }
@@ -169,7 +169,7 @@ export class LoginUI extends LoggerElement {
     ) {
       this._loginUI.showModal();
       if (this._usernameField !== null) {
-        console.log('setting docus on username field')
+        // console.log('setting docus on username field');
         this._usernameField.focus();
       }
     }

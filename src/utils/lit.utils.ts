@@ -28,7 +28,7 @@ export const hasSlotContent = (
 
 
   if (component.attributes.getNamedItem(_prop) !== null) {
-    console.groupEnd();
+    // console.groupEnd();
     return true;
   }
   const selector = (isNonEmptyStr(slotName) && slotName !== 'default')

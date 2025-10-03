@@ -28,11 +28,11 @@ class FsDataStore implements CDataStoreClass {
     outputMode : string[] | boolean = false,
   ) : Promise<any> {
     if (typeof this._data[slice] === 'undefined') {
-      console.group('FsDataStore.read() - ERROR');
-      console.log('slice:', slice);
-      console.log('selector:', selector);
-      console.log('filter:', filter);
-      console.groupEnd();
+      // console.group('FsDataStore.read() - ERROR');
+      // console.log('slice:', slice);
+      // console.log('selector:', selector);
+      // console.log('filter:', filter);
+      // console.groupEnd();
       throw new Error('FsDataStore.read() expects first argument to be the property name for a store property')
     }
 
@@ -64,11 +64,11 @@ class FsDataStore implements CDataStoreClass {
    *          write action
    */
   write(action : string, userID : string, payload: any) : Promise<string> {
-    console.group('FsDataStore.write()');
-    console.log('Action :', action);
-    console.log('UserID :', userID);
-    console.log('Payload:', payload);
-    console.groupEnd();
+    // console.group('FsDataStore.write()');
+    // console.log('Action :', action);
+    // console.log('UserID :', userID);
+    // console.log('Payload:', payload);
+    // console.groupEnd();
     return Promise.resolve('');
   }
 
@@ -89,20 +89,20 @@ class FsDataStore implements CDataStoreClass {
    *          that action
    */
   watch(
-    action: string,
-    handler : (payload: any) => void,
+    _action: string,
+    _handler : (payload: any) => void,
     slice: string = '',
   ) : string {
-    console.group('FsDataStore.watch()');
-    console.log('Action :', action);
-    console.log('UserID :', handler);
-    console.log('slice:', slice);
+    // console.group('FsDataStore.watch()');
+    // console.log('Action :', action);
+    // console.log('UserID :', handler);
+    // console.log('slice:', slice);
     const id = nanoid(10);
     const _slice = splitSlice(slice);
 
-    console.log('id:', id);
-    console.log('_slice:', _slice);
-    console.groupEnd();
+    // console.log('id:', id);
+    // console.log('_slice:', _slice);
+    // console.groupEnd();
     return id;
   }
 
@@ -115,9 +115,9 @@ class FsDataStore implements CDataStoreClass {
    *          FALSE otherwise
    */
   ignore(watchID : string) : boolean {
-    console.group('FsDataStore.ignore()');
-    console.log('watchID :', watchID);
-    console.groupEnd();
+    // console.group('FsDataStore.ignore()');
+    // console.log('watchID :', watchID);
+    // console.groupEnd();
     return false;
   }
 

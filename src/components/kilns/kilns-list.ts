@@ -81,8 +81,6 @@ export class KilnsList extends LoggerElement {
         .then(this._setKilnList.bind(this))
         .catch(storeCatch);
     }
-
-    console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {

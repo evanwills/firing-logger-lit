@@ -204,7 +204,6 @@ export class LitRouter extends LitElement {
       return this._wrap(possibleRoute.render(args));
     }
 
-    console.groupEnd();
     return this._wrap(this.renderNotFound());
   }
 

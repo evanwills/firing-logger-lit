@@ -11,7 +11,7 @@ export const getCone = (temp : number, rate : number) : string => {
   const _rate = (rate <= 105)
     ? 60
     : 160;
-  console.log('_rate:', _rate);
+  // console.log('_rate:', _rate);
 
   let previousCone : TConeData|null = null;
   let nextCone : TConeData|null = null;
@@ -20,14 +20,14 @@ export const getCone = (temp : number, rate : number) : string => {
     if ((cone as TConeData).rate === _rate) {
       if ((cone as TConeData).temp > temp) {
         nextCone = (cone as TConeData);
-        console.info('matched!!!')
-        console.groupEnd();
+        // console.info('matched!!!')
+        // console.groupEnd();
         break;
       } else {
         previousCone = (cone as TConeData);
       }
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   if (previousCone !== null && nextCone !== null) {

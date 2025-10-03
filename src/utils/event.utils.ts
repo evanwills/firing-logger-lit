@@ -79,12 +79,12 @@ export const dispatchFLaction = (
   payload : any,
   userID : string,
 ) : void => {
-  console.group('dispatchFLaction()');
-  console.log('node:', node);
-  console.log('type:', type);
-  console.log('payload:', payload);
-  console.log('userID:', userID);
-  console.groupEnd();
+  // console.group('dispatchFLaction()');
+  // console.log('node:', node);
+  // console.log('type:', type);
+  // console.log('payload:', payload);
+  // console.log('userID:', userID);
+  // console.groupEnd();
   node.dispatchEvent(
     new CustomEvent(
       'flaction',

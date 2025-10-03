@@ -50,7 +50,7 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
   }
 
   _emitChange(target : HTMLInputElement) : void {
-    console.group('<accessible-checkbox-list>._emitChange()');
+    // console.group('<accessible-checkbox-list>._emitChange()');
     let diffCount : number = 0;
     let checkedCount : number = 0;
 
@@ -77,34 +77,34 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
       target: new InputValue(this._output, validity, target),
       preventDefault : () => undefined,
     });
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   _updateCB(event: InputEvent | KeyboardEvent) : void {
-    console.group('<accessible-checkbox-list>._updateCB()');
+    // console.group('<accessible-checkbox-list>._updateCB()');
 
     if (Object.keys(this._output).length === 0) {
       for (const { value, checked } of this.options) {
         this._output[value] = checked;
       }
     }
-    console.log('event:', event);
-    console.log('event.target:', event.target);
-    console.log('event.target.value:', (event.target as IKeyValue).value);
-    console.log('this._output:', this._output);
-    console.log(
-      `this._output.${(event.target as IKeyValue).value}:`,
-      this._output[(event.target as IKeyValue).value],
-    );
+    // console.log('event:', event);
+    // console.log('event.target:', event.target);
+    // console.log('event.target.value:', (event.target as IKeyValue).value);
+    // console.log('this._output:', this._output);
+    // console.log(
+    //   `this._output.${(event.target as IKeyValue).value}:`,
+    //   this._output[(event.target as IKeyValue).value],
+    // );
     if (event.target instanceof HTMLInputElement
       && typeof this._output[event.target.value] === 'boolean'
     ) {
-      console.log('event:', event);
+      // console.log('event:', event);
       this._output[(event.target).value] = (event.target).checked;
 
       this._emitChange(event.target as HTMLInputElement);
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -112,15 +112,15 @@ export class AccessibleCheckboxList extends AccessibleWholeField {
   // START: event handlers
 
   handleChange(event: InputEvent): void {
-    console.group('<accessible-checkbox-list>.handleChange()');
+    // console.group('<accessible-checkbox-list>.handleChange()');
     this._updateCB(event);
-      console.groupEnd();
+      // console.groupEnd();
   }
 
   handleKeyup(event: KeyboardEvent): void {
-    console.group('<accessible-checkbox-list>.handleKeyup()');
+    // console.group('<accessible-checkbox-list>.handleKeyup()');
     this._updateCB(event);
-      console.groupEnd();
+    // console.groupEnd();
   }
 
   // handleExternalBlur(event: CustomEvent) : void {

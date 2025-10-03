@@ -443,9 +443,9 @@ export class KilnDetailsEdit extends KilnDetails {
       return '';
     }
     const errors : string[] = [];
-    console.group('<kiln-details-edit>._errorAlert()');
-    console.log('this._errorFields:', this._errorFields);
-    console.log('this._errorFields.length:', this._errorFields.length);
+    // console.group('<kiln-details-edit>._errorAlert()');
+    // console.log('this._errorFields:', this._errorFields);
+    // console.log('this._errorFields.length:', this._errorFields.length);
     for (const key of this._kilnKeys) {
       if (this._errorFields.includes(key)) {
         errors.push(kebab2Sentance(key));
@@ -459,8 +459,8 @@ export class KilnDetailsEdit extends KilnDetails {
       ? html`<ul class="error">${errors.map((error) : TemplateResult => html`<li>${error}</li>`)}</ul>`
       : '';
 
-    console.log('errorList:', errorList);
-    console.groupEnd();
+    // console.log('errorList:', errorList);
+    // console.groupEnd();
     return html`<alert-block heading="${errorHead}">${errorList}</alert-block>`;
   }
 

@@ -395,12 +395,11 @@ export class KilnDetails extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    console.group('<kiln-details>.render()');
-    console.log('this._user:', this._user);
-    console.log('this._edit:', this._edit);
-    console.log('isNonEmptyStr(this._id):', isNonEmptyStr(this._id));
-    console.log('this._userHasAuth(2):', this._userHasAuth(2));
-
+    // console.group('<kiln-details>.render()');
+    // console.log('this._user:', this._user);
+    // console.log('this._edit:', this._edit);
+    // console.log('isNonEmptyStr(this._id):', isNonEmptyStr(this._id));
+    // console.log('this._userHasAuth(2):', this._userHasAuth(2));
 
     const editBtn : TemplateResult | string = (isNonEmptyStr(this._id) === true && this._userHasAuth(2))
       ? html`<p class="last-btn"><router-link
@@ -417,10 +416,10 @@ export class KilnDetails extends LoggerElement {
       : 'Kiln';
     const detailName : string = 'kiln-blocks';
 
-    console.log('editBtn:', editBtn);
-    console.log('title:', title);
-    console.log('detailName:', detailName);
-    console.groupEnd();
+    // console.log('editBtn:', editBtn);
+    // console.log('title:', title);
+    // console.log('detailName:', detailName);
+    // console.groupEnd();
 
     return html`
       <h2>${title}</h2>

@@ -156,8 +156,8 @@ export default class ExternalBlur {
       : 'group';
 
     return (event : Event) : void => {
-      console.group('ExternalBlur.handler()');
-      console.log('event:', event);
+      // console.group('ExternalBlur.handler()');
+      // console.log('event:', event);
       if (context._node.contains(event.target as Node) === false) {
         if (context._doConsole === true) {
           // eslint-disable-next-line no-console
@@ -171,7 +171,7 @@ export default class ExternalBlur {
           context._dispatch();
         }
       }
-      console.groupEnd();
+      // console.groupEnd();
     };
   }
 

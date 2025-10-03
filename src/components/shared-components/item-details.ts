@@ -39,26 +39,26 @@ export class ItemDetails extends LitElement {
   // START: helper render methods
 
   _renderItem(item : IKeyValUrl) : TemplateResult | string {
-    console.group('<item-details>.renderItem');
-    console.log('item:', item);
-    console.log('item.help:', item.help);
-    console.log('item.key:', item.key);
-    console.log('item.value:', item.value);
-    console.log('item.noEmpty:', item.noEmpty);
-    console.log('item.uid:', item.uid);
-    console.log('item.url:', item.url);
-    console.groupEnd();
+    // console.group('<item-details>.renderItem');
+    // console.log('item:', item);
+    // console.log('item.help:', item.help);
+    // console.log('item.key:', item.key);
+    // console.log('item.value:', item.value);
+    // console.log('item.noEmpty:', item.noEmpty);
+    // console.log('item.uid:', item.uid);
+    // console.log('item.url:', item.url);
+    // console.groupEnd();
     if (emptyOrNull(item.value) && isBoolTrue(item.noEmpty)) {
       return '';
     }
 
     return html`
       <li><read-only-field
-      helpMsg="${item.help}"
-      label="${item.key}"
-      uid="${item.uid}"
-      value="${item.value}"
-      url="${item.url}"></read-only-field></li>`;
+        helpMsg="${item.help}"
+        label="${item.key}"
+        uid="${item.uid}"
+        value="${item.value}"
+        url="${item.url}"></read-only-field></li>`;
   }
 
   //  END:  helper render methods
@@ -66,13 +66,13 @@ export class ItemDetails extends LitElement {
   // START: main render method
 
   render() : TemplateResult | string {
-    console.group('<item-details>.renderItem');
+    // console.group('<item-details>.renderItem');
     const hasDesc = isNonEmptyStr(this.description);
     const hasPairs = this.pairs.length > 0;
-    console.log('this.pairs:', this.pairs);
-    console.log('hasDesc:', hasDesc);
-    console.log('hasPairs:', hasPairs);
-    console.groupEnd();
+    // console.log('this.pairs:', this.pairs);
+    // console.log('hasDesc:', hasDesc);
+    // console.log('hasPairs:', hasPairs);
+    // console.groupEnd();
 
     if (hasPairs === false && hasDesc === false) {
       return '';
