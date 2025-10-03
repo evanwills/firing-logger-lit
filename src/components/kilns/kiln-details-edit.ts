@@ -10,6 +10,8 @@ import { enumToOptions } from '../../utils/lit.utils.ts';
 import { kebab2Sentance, name2urlPart, ucFirst } from '../../utils/string.utils.ts';
 import { addRemoveField } from '../../utils/validation.utils.ts';
 import { KilnDetails } from './kiln-details.ts';
+import { LitRouter } from '../lit-router/lit-router.ts';
+import { reportFiringTypeError } from '../../utils/kiln-data.utils.ts';
 import '../lit-router/router-link.ts';
 import '../input-fields/accessible-checkbox-list.ts';
 import '../input-fields/accessible-number-field.ts';
@@ -21,8 +23,6 @@ import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
 import '../shared-components/alert-block.ts'
-import { reportFiringTypeError } from '../../utils/kiln-data.utils.ts';
-import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
 
 /**
  * An example element.
@@ -171,7 +171,7 @@ export class KilnDetailsEdit extends KilnDetails {
             ? this._changes.urlPart
             : this._path;
 
-          dispatchRouterEvent(this, `/kilns/${path}`, { id: this._id });
+          LitRouter.dispatchRouterEvent(this, `/kilns/${path}`, { id: this._id });
         });
       } else {
         // Nothing has changed.

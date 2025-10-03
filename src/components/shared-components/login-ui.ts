@@ -3,8 +3,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { TUser } from '../../types/users.d.ts';
 import { setCookie } from '../../utils/cookie.utils.ts';
 import { isNonEmptyStr, isObj } from '../../utils/data.utils.ts';
+import { LitRouter } from '../lit-router/lit-router.ts';
 import { LoggerElement } from './LoggerElement.ts';
-import { dispatchRouterEvent } from '../lit-router/lit-router.utils.ts';
 import { dialogStyles } from '../../assets/css/dialog.css.ts';
 import { fieldListStyles } from '../../assets/css/input-field.css.ts';
 import '../input-fields/accessible-text-field.ts';
@@ -93,7 +93,7 @@ export class LoginUI extends LoggerElement {
         if (user.length > 0) {
           setCookie(import.meta.env.VITE_AUTH_COOKIE, user[0].id, 30);
 
-          dispatchRouterEvent(this, '/login', { userName : user[0].username }, 'refresh');
+          LitRouter.dispatchRouterEvent(this, '/login', { userName : user[0].username }, 'refresh');
         }
       }
 

@@ -1,6 +1,6 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { dispatchRouterEvent } from './lit-router.utils.ts';
+import { LitRouter } from './lit-router.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
 
@@ -48,7 +48,7 @@ export class RouterLink extends LitElement {
     if (this.asBtn === false) {
       event.preventDefault();
 
-      dispatchRouterEvent(this, this.url, this.dataset);
+      LitRouter.dispatchRouterEvent(this, this.url, this.dataset);
     }
   }
 

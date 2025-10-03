@@ -5,7 +5,7 @@ import { deleteCookie, getCookie } from '../../utils/cookie.utils.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
 // import { isNonEmptyStr } from '../../utils/data.utils.ts';
 import './login-ui.ts';
-import { dispatchRouterEvent } from '../lit-router/lit-router.utils.ts';
+import { LitRouter } from '../lit-router/lit-router.ts';
 
 @customElement('firing-logger-wrapper')
 export class FiringLoggerWrapper extends LitElement {
@@ -66,7 +66,7 @@ export class FiringLoggerWrapper extends LitElement {
       this._isLoggedIn = false;
       this._showLogin = false;
 
-      dispatchRouterEvent(this, '/logout', {}, 'refresh');
+      LitRouter.dispatchRouterEvent(this, '/logout', {}, 'refresh');
     }
   }
 
