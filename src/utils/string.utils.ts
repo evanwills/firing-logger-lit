@@ -22,3 +22,17 @@ const ucFirstInner = (_whole : string, pre : string, first : string) : string =>
 export const ucFirst = (input : string) : string => input.trim().replace(/([^a-z]*)([a-z])/i, ucFirstInner);
 
 export const kebab2Sentance = (input : string) : string => ucFirst(input.split(/(?<=[^A-Z])(?=[A-Z])/).map((str) => str.toLocaleLowerCase().trim()).join(' '));
+
+// export const name2urlPart = (input : string) : string => {
+//   const t1 = input.replace(/[^a-z\d-]+/gi, '-');
+//   const t2 = t1.replace(/(?:^-+|-+$)/g, '');
+//   const t3 = t2.replace(/-+/g, '-');
+//   console.group('name2urlPart()');
+//   console.log('input:', input);
+//   console.log('t1:', t1);
+//   console.log('t2:', t2);
+//   console.log('t3:', t3);
+//   console.groupEnd();
+//   return t3;
+// };
+export const name2urlPart = (input : string) : string => input.toLowerCase().replace(/[^a-z\d-]+/g, '-').replace(/(?:^-+|-+$)/g, '').replace(/-+/g, '-');

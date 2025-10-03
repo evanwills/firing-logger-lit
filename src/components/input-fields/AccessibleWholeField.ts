@@ -96,10 +96,16 @@ export class AccessibleWholeField extends FocusableInside {
   };
 
   @state()
-  _errorMsg : string = '';
+  _errorMsg : string | TemplateResult = '';
+
+  @state()
+  _getErrorMsg : FValidationMessage | null = null;
 
   @state()
   _hadFocus : boolean = false;
+
+  @state()
+  _helpMsg : string = '';
 
   @state()
   _innerClass : IKeyValue = {
@@ -143,6 +149,13 @@ export class AccessibleWholeField extends FocusableInside {
   }
 
   _dispatch(event : InputEvent | KeyboardEvent | TFauxInputEvent) : void {
+    // console.group('AccessibleWholeField._validate()');
+    // console.log('event.target:', event.target);
+    // console.log('event.target.value:', (event.target as HTMLInputElement).value);
+    // console.log('event.target.validity:', (event.target as HTMLInputElement).validity);
+    // console.log('event.target.validity.valid:', (event.target as HTMLInputElement).validity.valid);
+    // console.log('event.target.checkValidity():', (event.target as HTMLInputElement).checkValidity());
+    // console.groupEnd();
     dispatchCustomEvent(
       this,
       (event.target as HTMLInputElement).value,
@@ -153,7 +166,7 @@ export class AccessibleWholeField extends FocusableInside {
 
   _validate(event : InputEvent | KeyboardEvent | TFauxInputEvent) {
     event.preventDefault();
-    // console.group('AccessibleWholeField._validate()')
+    // console.group('AccessibleWholeField._validate()');
 
     const { target } = event;
     if (this.sanitiseInput !== null) {
@@ -162,11 +175,14 @@ export class AccessibleWholeField extends FocusableInside {
     // console.log('target:', target);
     // console.log('target.value:', (target as HTMLInputElement).value);
     // console.log('target.validity:', (target as HTMLInputElement).validity);
+    // console.log('target.validity.valid:', (target as HTMLInputElement).validity.valid);
     // console.log('target.checkValidity():', (target as HTMLInputElement).checkValidity());
     this._invalid = !(target as HTMLInputElement).checkValidity();
 
     if (this.getErrorMsg !== null) {
       this._errorMsg = this.getErrorMsg(target as HTMLInputElement);
+    } else if (this._getErrorMsg !== null) {
+      this._errorMsg = this._getErrorMsg(target as HTMLInputElement);
     } else if (this._invalid === true) {
       if (isNonEmptyStr(this.errorMsg) === true) {
         this._errorMsg = this.errorMsg;
@@ -193,9 +209,9 @@ export class AccessibleWholeField extends FocusableInside {
     // console.groupEnd();
   }
 
-  handleKeyup(event : KeyboardEvent) : void {
-    // console.group('AccessibleWholeField.handleKeyup()');
-    // console.log('this.validateOnKeyup:', this.validateOnKeyup);
+  handleKeyup(event : KeyboardEvent | InputEvent) : void {
+    console.group('AccessibleWholeField.handleKeyup()');
+    console.log('this.validateOnKeyup:', this.validateOnKeyup);
     if (this.validateOnKeyup === true) {
       this._validate(event);
     } else {
@@ -209,7 +225,7 @@ export class AccessibleWholeField extends FocusableInside {
     if (this.watchOverflowY === true) {
       this._overflowY = ((event.target as HTMLInputElement).scrollHeight > (event.target as HTMLInputElement).clientHeight);
     }
-    // console.groupEnd();
+    console.groupEnd();
   }
 
   handleFocus(_event: FocusEvent) : void {
@@ -266,20 +282,26 @@ export class AccessibleWholeField extends FocusableInside {
   }
 
   renderHelp() : TemplateResult | string {
-    if (hasSlotContent(this, 'help', 'helpMsg')) {
-      const id = `${this.fieldID}--help`;
+    const help = (this.helpMsg !== '')
+      ? this.helpMsg
+      : this._helpMsg;
+    let id : string | null = '';
+    let hidden = true
+
+
+    if (help !== '') {
+      id = `${this.fieldID}--help`;
       this._descIDs.help = id;
       this._innerClass.help = 'help';
-
-      return html`<div class="help" id="${id}--help">
-          <slot name="help">${this.helpMsg}</slot>
-        </div>`;
+      hidden = false;
+    } else {
+      this._innerClass.help = '';
+      this._descIDs.help = '';
     }
 
-    this._innerClass.help = '';
-    this._descIDs.help = '';
-
-    return '';
+    return html`<div class="help" ?hidden=${hidden} id="${ifDefined(id)}">
+        <slot name="help">${help}</slot>
+      </div>`;
   }
 
   renderDataList() : TemplateResult | string {

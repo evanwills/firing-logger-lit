@@ -82,6 +82,7 @@ export class LoggerElement extends LitElement {
    *
    * @var _tConverter
    */
+  @state()
   _tConverter : (T : number) => number = x2x;
 
   /**
@@ -90,6 +91,7 @@ export class LoggerElement extends LitElement {
    *
    * @var _tConverter
    */
+  @state()
   _tConverterRev : (T : number) => number = x2x;
 
   /**
@@ -98,6 +100,7 @@ export class LoggerElement extends LitElement {
    *
    * @var _lConverter
    */
+  @state()
   _lConverter : (T : number) => number = x2x;
 
   /**
@@ -106,6 +109,7 @@ export class LoggerElement extends LitElement {
    *
    * @var _lConverter
    */
+  @state()
   _lConverterRev : (T : number) => number = x2x;
 
   /**
@@ -114,18 +118,22 @@ export class LoggerElement extends LitElement {
    *
    * @var _store
    */
+  @state()
   _store : CDataStoreClass | null = null;
 
   /**
    * @var _tUnit Temperature unit indicator to match user's preference
    */
+  @state()
   _tUnit : string = 'C';
 
   /**
    * @var _lUnit Length unit indicator to match user's preference
    */
+  @state()
   _lUnit : string = 'mm';
 
+  @state()
   _user : TUser | null = null;
 
   //  END:  state
@@ -142,6 +150,9 @@ export class LoggerElement extends LitElement {
 
 
   _setUser(user: TUser | null) : void {
+    console.group('LoggerElement._setUser()');
+    console.log('user:', user);
+
     if (user !== null && isUser(user) === true) {
       this._user = user;
       this._notMetric = (typeof this._user?.notMetric === 'boolean')
@@ -164,6 +175,9 @@ export class LoggerElement extends LitElement {
         this._lUnit = 'mm';
       }
     }
+    console.log('this._user:', this._user);
+    console.log('this._notMetric:', this._notMetric);
+    console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {

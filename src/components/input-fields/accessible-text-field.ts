@@ -2,6 +2,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
+import { getCustomErrorMsg } from "../../utils/text-field.utils.ts";
 
 /**
  * An example element.
@@ -31,7 +32,8 @@ export class AccessibleTextField extends AccessibleWholeField {
   // START: state
 
   regexes : {[key:string]:RegExp} = {
-    name: /\w[\w\- .,\(\):\&\/]{0,49}/
+    name: /\w[\w\- .,\(\):\&\/]{3,49}/,
+    title: /[\w\d][\d\w\- .,\(\):\&\/\+]{3,49}/,
   }
 
   //  END:  state
@@ -57,6 +59,21 @@ export class AccessibleTextField extends AccessibleWholeField {
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
+
+  connectedCallback() : void {
+    super.connectedCallback();
+
+    if (['name', 'title'].includes(this.validationType)) {
+      if (this.getErrorMsg === null) {
+        this._getErrorMsg = getCustomErrorMsg(
+          this.label,
+          this.validationType,
+          this.minlength,
+          this.maxlength,
+        );
+      }
+    }
+  }
 
   //  END:  lifecycle ethods
   // ------------------------------------------------------

@@ -10,7 +10,7 @@ import { getUniqueNameList } from "../utils/store.utils.ts";
 import { isKiln } from "../types/kiln.type-guards.ts";
 import { getInitialData, saveChangeOnHold } from "./save-data.utils.ts";
 
-const saveKilnChanges = (
+const saveKilnChanges = async (
   db: IDBPDatabase,
   _userID : string,
   changes : IIdObject,
@@ -24,7 +24,18 @@ const saveKilnChanges = (
     }
   }
 
-  return db.put('kilns', _kiln, changes.id);
+  try {
+    return await db.put('kilns', _kiln);
+  } catch (error) {
+    console.group('saveKilnChanges()');
+    console.log('_userID:', _userID);
+    console.log('changes:', changes);
+    console.log('kiln:', kiln);
+    console.log('_kiln:', _kiln);
+    console.error('Failed to save kiln data:', error);
+    console.groupEnd();
+    return Promise.reject(error);
+  }
 };
 
 export const updateKilnData = async (db: IDBPDatabase, changes : IIdObject) : Promise<IDBValidKey> => {

@@ -81,11 +81,12 @@ export default class InputValue {
     for (const key of Object.keys(this._validity)) {
       if (typeof validity[key] === 'boolean') {
         this._validity[key] = validity[key];
-        if (key !== 'valid' && validity[key] === false) {
+        if (key !== 'valid' && validity[key] === true) {
           invalid = true;
         }
       }
     }
+
     this._validity.valid = !invalid;
   }
 

@@ -14,7 +14,7 @@ export type TLogEntryOption = {
 
 export type TUserEnteredOptions = { [key:string]: number };
 
-export type FValidationMessage = (target : HTMLInputElement) => string;
+export type FValidationMessage = (target : HTMLInputElement | InputValue) => string | TemplateResult;
 
 export type TOptionValueLabel = {
   value: string,

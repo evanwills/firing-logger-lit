@@ -77,33 +77,37 @@ const upgradeSchema : IDBPupgrade = (
     if (!db.objectStoreNames.contains('kilns')) {
       const kilns = db.createObjectStore('kilns', { keyPath: 'id' });
 
+      kilns.createIndex('bisque', 'bisque', { unique: false });
+      kilns.createIndex('black', 'black', { unique: false });
       kilns.createIndex('brand', 'brand', { unique: false });
-      kilns.createIndex('model', 'model', { unique: false });
-      kilns.createIndex('name', 'name', { unique: true });
-      kilns.createIndex('urlPart', 'urlPart', { unique: true });
-      kilns.createIndex('installDate', 'installDate', { unique: false });
+      kilns.createIndex('depth', 'depth', { unique: false });
       kilns.createIndex('fuel', 'fuel', { unique: false });
-      kilns.createIndex('type', 'type', { unique: false });
+      kilns.createIndex('glaze', 'glaze', { unique: false });
+      kilns.createIndex('height', 'height', { unique: false });
+      kilns.createIndex('installDate', 'installDate', { unique: false });
+      // kilns.createIndex('isRetired', 'isRetired', { unique: false });
+      // kilns.createIndex('isWorking', 'isWorking', { unique: false });
+      kilns.createIndex('luster', 'luster', { unique: false });
+      kilns.createIndex('maxProgramCount', 'maxProgramCount', { unique: false });
       kilns.createIndex('maxTemp', 'maxTemp', { unique: false });
+      kilns.createIndex('model', 'model', { unique: false });
+      // kilns.createIndex('name', 'name', { unique: false });
+      kilns.createIndex('name', 'name', { unique: true });
+      // kilns.createIndex('pit', 'pit', { unique: false });
+      kilns.createIndex('onglaze', 'onglaze', { unique: false });
+      kilns.createIndex('openingType', 'openingType', { unique: false });
+      kilns.createIndex('raku', 'raku', { unique: false });
+      kilns.createIndex('readyState', 'readyState', { unique: false });
+      kilns.createIndex('saggar', 'saggar', { unique: false });
+      kilns.createIndex('salt', 'salt', { unique: false });
+      kilns.createIndex('serviceState', 'serviceState', { unique: false });
+      kilns.createIndex('single', 'single', { unique: false });
+      kilns.createIndex('type', 'type', { unique: false });
+      // kilns.createIndex('urlPart', 'urlPart', { unique: false });
+      kilns.createIndex('urlPart', 'urlPart', { unique: true });
+      kilns.createIndex('useCount', 'useCount', { unique: false });
       kilns.createIndex('volume', 'volume', { unique: false });
       kilns.createIndex('width', 'width', { unique: false });
-      kilns.createIndex('depth', 'depth', { unique: false });
-      kilns.createIndex('height', 'height', { unique: false });
-      kilns.createIndex('glaze', 'glaze', { unique: false });
-      kilns.createIndex('bisque', 'bisque', { unique: false });
-      kilns.createIndex('luster', 'luster', { unique: false });
-      kilns.createIndex('onglaze', 'onglaze', { unique: false });
-      kilns.createIndex('saggar', 'saggar', { unique: false });
-      kilns.createIndex('raku', 'raku', { unique: false });
-      kilns.createIndex('pit', 'pit', { unique: false });
-      kilns.createIndex('black', 'black', { unique: false });
-      kilns.createIndex('rawGlaze', 'rawGlaze', { unique: false });
-      kilns.createIndex('saltGlaze', 'saltGlaze', { unique: false });
-      kilns.createIndex('useCount', 'useCount', { unique: false });
-      kilns.createIndex('isRetired', 'isRetired', { unique: false });
-      kilns.createIndex('isWorking', 'isWorking', { unique: false });
-      kilns.createIndex('readyState', 'readyState', { unique: false });
-      kilns.createIndex('serviceState', 'serviceState', { unique: false });
     }
 
     //  END:  kilns

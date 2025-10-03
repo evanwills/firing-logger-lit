@@ -65,8 +65,8 @@ export const inputFieldCSS = css`
   font-size: 0.875rem;
   font-weight: bold;
   grid-area: error;
-  text-indent: -1.65rem;
   padding-inline-start: 1.65rem;
+  text-indent: -1.65rem;
 }
 .error::before {
   border: 0.2rem solid var(--error-border-colour, #f00);
@@ -76,7 +76,7 @@ export const inputFieldCSS = css`
   font-size: 0.75rem;
   height: 0.8rem;
   line-height: 0.75rem;
-  margin-inline-end: 0.5rem;
+  margin-inline-end: 0.25rem;
   text-align: center;
   text-indent: 0;
   width: 0.8rem;

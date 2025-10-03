@@ -45,7 +45,7 @@ export class AccessibleTextareaField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: event handlers
 
-  handleKeyup(event: InputEvent): void {
+  handleKeyup(event: KeyboardEvent | InputEvent): void {
     super.handleKeyup(event);
 
     const { clientHeight, scrollHeight} = (event.target as HTMLTextAreaElement);

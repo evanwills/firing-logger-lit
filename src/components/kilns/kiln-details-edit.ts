@@ -7,7 +7,7 @@ import type FocusableInside from '../input-fields/FocusableInside.ts';
 import { getISO8601date } from '../../utils/date-time.utils.ts';
 import { renderDetails } from '../../utils/render.utils.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
-import { kebab2Sentance, ucFirst } from '../../utils/string.utils.ts';
+import { kebab2Sentance, name2urlPart, ucFirst } from '../../utils/string.utils.ts';
 import { addRemoveField } from '../../utils/validation.utils.ts';
 import { KilnDetails } from './kiln-details.ts';
 import '../lit-router/router-link.ts';
@@ -22,6 +22,7 @@ import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
 import '../shared-components/alert-block.ts'
 import { reportFiringTypeError } from '../../utils/kiln-data.utils.ts';
+import { dispatchRouterEvent } from "../lit-router/lit-router.utils.ts";
 
 /**
  * An example element.
@@ -93,7 +94,6 @@ export class KilnDetailsEdit extends KilnDetails {
   }
 
   _handleChangeInner(field : InputValueClass) : void {
-    // console.group('<kiln-details>.handleFiringTypesChange()');
     this._nothingToSave = false;
     this._errorFields = addRemoveField(
       this._errorFields,
@@ -108,11 +108,6 @@ export class KilnDetailsEdit extends KilnDetails {
     );
 
     this._setCanSave();
-
-    // console.log('this._changes:', this._changes);
-    // console.log('this._errorFields:', this._errorFields);
-    // console.log('this._changedFields:', this._changedFields);
-    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -147,17 +142,14 @@ export class KilnDetailsEdit extends KilnDetails {
   }
 
   handleGenericChange(event : CustomEvent) : void {
-    // console.group('<kiln-details>.handleGenericChange()');
     const field : InputValueClass = event.detail;
-    // console.log('field:', field);
-    // console.log('field.id:', field.id);
-    // console.log('field.value:', field.value);
-    // console.log('field.defaultValue:', field.defaultValue);
-    // console.log('this._changedFields:', this._changedFields);
+
     this._changes[field.id] = field.value;
+    if (field.id === 'name') {
+      this._changes.urlPart = name2urlPart(field.value.toString());
+    }
 
     this._handleChangeInner(field);
-    // console.groupEnd();
   }
 
   handleNumericChange(event : CustomEvent) : void {
@@ -169,16 +161,18 @@ export class KilnDetailsEdit extends KilnDetails {
 
   handleSave(event : Event) : void {
     event.preventDefault();
-    // console.group('<kiln-details>.handleSave()');
-    // console.log('this._errorFields:', this._errorFields);
-    // console.log('this._changedFields:', this._changedFields);
-    // console.log('this._nothingToSave (before):', this._nothingToSave);
 
     if (this._errorFields.length === 0) {
       // All good!!! No errors
       if (this._changedFields.length > 0) {
         // Something has changed. We can save this data.
-        this._store?.action('updateKiln', { ...this._changes, id: this._id });
+        this._store?.action('updateKiln', { ...this._changes, id: this._id }).then((_response) => {
+          const path = (typeof this._changes.urlPart === 'string')
+            ? this._changes.urlPart
+            : this._path;
+
+          dispatchRouterEvent(this, `/kilns/${path}`, { id: this._id });
+        });
       } else {
         // Nothing has changed.
         // Let them know that nothing has changed and clicking on the
@@ -199,10 +193,6 @@ export class KilnDetailsEdit extends KilnDetails {
         }
       }
     }
-    // console.log('this._nothingToSave (after):', this._nothingToSave);
-    // console.log('this._errorFields:', this._errorFields);
-    // console.log('this._changedFields:', this._changedFields);
-    // console.groupEnd();
   }
 
   //  END:  event handlers
@@ -370,7 +360,7 @@ export class KilnDetailsEdit extends KilnDetails {
             label="Name"
             required
             validate-on-keyup
-            validation-type="name"
+            validation-type="title"
             value="${this._name}"
             @change=${this.handleGenericChange}></accessible-text-field>
         </li>
@@ -380,7 +370,7 @@ export class KilnDetailsEdit extends KilnDetails {
             label="Brand"
             required
             validate-on-keyup
-            validation-type="name"
+            validation-type="title"
             value="${this._brand}"
             @change=${this.handleGenericChange}></accessible-text-field>
         </li>
@@ -390,7 +380,7 @@ export class KilnDetailsEdit extends KilnDetails {
             label="Model"
             required
             validate-on-keyup
-            validation-type="name"
+            validation-type="title"
             value="${this._model}"
             @change=${this.handleGenericChange}></accessible-text-field>
         </li>
