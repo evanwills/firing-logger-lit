@@ -14,9 +14,9 @@ export const getDataFromSlice = (data: any, slice: string[]) : any => {
       } else if (slice[0].startsWith('@')) {
         return getPaginationSet(data, slice[0]);
       } else {
-        // console.group('getDataFromSlice() - ERROR:');
-        // console.log('data:', data);
-        // console.log('slice:', slice);
+        console.group('getDataFromSlice() - ERROR:');
+        console.log('data:', data);
+        console.log('slice:', slice);
         console.groupEnd();
         throw new Error(
           'getDataFromSlice() expects data to be an array when slice is an ID string'
