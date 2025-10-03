@@ -1,4 +1,3 @@
-import { LitElement } from 'lit';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { FGetRouteArgs, IRouteArgs, TParsedRoute, TRoute } from '../../types/router-types.d.ts';
 
@@ -72,34 +71,3 @@ const parsedRouteAdapter = (route : TRoute) : TParsedRoute => ({
 });
 
 export const parseRoutes = (routes : TRoute[]) : TParsedRoute[] => routes.map(parsedRouteAdapter);
-
-/**
- * Dispatch a lit-router event.
- *
- * @param node    HTML/Lit element to dispatch the custome router
- *                event from
- * @param url     URL the link points to.
- * @param data    Any additional data passed via data attributes to
- *                the route-link element
- * @param rewrite Whether or not to just rewrite the address bar URL
- *                (or to perform a navigation event)
- */
-export const dispatchRouterEvent = (
-  node : LitElement | HTMLElement,
-  url: string,
-  data: IKeyValue = {},
-  type : 'nav' | 'rewrite' | 'refresh' = 'nav',
-) : void => {
-  const _type = `litrouter${type}`;
-
-  node.dispatchEvent(
-    new CustomEvent(
-      _type,
-      {
-        bubbles: true,
-        composed: true,
-        detail: { data, url },
-      },
-    ),
-  );
-}
