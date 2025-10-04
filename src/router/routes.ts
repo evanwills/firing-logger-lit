@@ -1,5 +1,4 @@
-import { html } from 'lit';
-import { ifDefined } from 'lit/directives/if-defined.js';
+import { html, type TemplateResult } from 'lit';
 import type { IKeyValue } from '../types/data-simple.d.ts';
 import '../components/programs/programs-list.ts';
 import '../components/programs/program-details.ts';
@@ -8,11 +7,10 @@ import '../components/kilns/kilns-list.ts';
 import '../components/kilns/kiln-details.ts';
 import '../components/kilns/kiln-details-edit.ts';
 
-const home = ({ _SEARCH, _GLOBALS } : IKeyValue) => html`<kilns-list
-  filters=${_SEARCH}
-  .user=${ifDefined(_GLOBALS)}></kilns-list>`
+const home = ({ _SEARCH } : IKeyValue) : TemplateResult => html`<kilns-list
+  filters=${_SEARCH}></kilns-list>`
 
-const authChange = ({ _DATA } : IKeyValue) => {
+const authChange = ({ _DATA } : IKeyValue) : TemplateResult => {
   const msg = (typeof _DATA.userName === 'string')
     ? html`are now logged in as <code>${_DATA.userName}</code>`
     : 'have been logged out';
@@ -39,39 +37,33 @@ export default [
 
   {
     route: '/firing/:firingID',
-    render: ({ firingID, _GLOBALS } : IKeyValue) => html`<firing-view
-      firing-uid="${firingID}"
-      .user=${ifDefined(_GLOBALS)}></firing-view>`,
+    render: ({ firingID } : IKeyValue) : TemplateResult => html`<firing-view
+      firing-uid="${firingID}"></firing-view>`,
   },
   {
     route: '/firing/:firingID/edit',
-    render: ({ firingID, _GLOBALS } : IKeyValue) => html`<firing-view-edit
-      firing-uid="${firingID}"
-      .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
+    render: ({ firingID } : IKeyValue) : TemplateResult => html`<firing-view-edit
+      firing-uid="${firingID}"></firing-view-edit>`,
   },
   {
     route: '/firings',
-    render: ({ _SEARCH, _GLOBALS } : IKeyValue) => html`<firings-list
-      filters=${_SEARCH}
-      .user=${ifDefined(_GLOBALS)}></firings-list>`,
+    render: ({ _SEARCH } : IKeyValue) : TemplateResult => html`<firings-list
+      filters=${_SEARCH}></firings-list>`,
   },
   {
     route: '/program/:programID',
-    render: ({ programID, _GLOBALS } : IKeyValue) => html`<program-details
-      programID="${programID}"
-      .user=${ifDefined(_GLOBALS)}></program-details>`,
+    render: ({ programID } : IKeyValue) : TemplateResult => html`<program-details
+      programID="${programID}"></program-details>`,
   },
   {
     route: '/program/:programID/edit',
-    render: ({ programID, _GLOBALS } : IKeyValue) => html`<program-details-edit
-      programID="${programID}"
-      .user=${ifDefined(_GLOBALS)}></program-details-edit>`,
+    render: ({ programID } : IKeyValue) : TemplateResult => html`<program-details-edit
+      programID="${programID}"></program-details-edit>`,
   },
   {
     route: '/programs',
-    render: ({ _SEARCH, _GLOBALS } : IKeyValue) => html`<programs-list
-      filters=${_SEARCH}
-      .user=${ifDefined(_GLOBALS)}></programs-list>`,
+    render: ({ _SEARCH } : IKeyValue) : TemplateResult => html`<programs-list
+      filters=${_SEARCH}></programs-list>`,
   },
 
   //  END:  shortcut routes
@@ -84,37 +76,31 @@ export default [
   },
   {
     route: '/kiln/:kilnID',
-    render: ({ kilnID, _GLOBALS } : IKeyValue) => html`<kiln-details
-      kiln-uid="${kilnID}"
-      .user=${ifDefined(_GLOBALS)}></kiln-details>`,
+    render: ({ kilnID } : IKeyValue) : TemplateResult => html`<kiln-details
+      kiln-uid="${kilnID}"></kiln-details>`,
   },
   {
     route: '/kilns/new',
-    render: ({ _GLOBALS } : IKeyValue) => html`<kiln-details-edit
-      mode="new"
-      .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
+    render: () => html`<kiln-details-edit mode="new"></kiln-details-edit>`,
   },
   {
     route: '/kilns/:kilnPath',
-    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details
+    render: ({ kilnPath, _DATA } : IKeyValue) : TemplateResult => html`<kiln-details
       kiln-path="${kilnPath}"
-      kiln-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></kiln-details>`,
+      kiln-uid="${_DATA.uid}"></kiln-details>`,
   },
   {
     route: '/kilns/:kilnPath/edit',
-    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details-edit
+    render: ({ kilnPath, _DATA } : IKeyValue) : TemplateResult => html`<kiln-details-edit
       kiln-path="${kilnPath}"
-      kiln-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
+      kiln-uid="${_DATA.uid}"></kiln-details-edit>`,
   },
   {
     route: '/kilns/:kilnPath/clone',
-    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details-edit
+    render: ({ kilnPath, _DATA } : IKeyValue) : TemplateResult => html`<kiln-details-edit
       kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
-      clone
-      .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
+      clone></kiln-details-edit>`,
   },
 
   //  END:  Kiln routes
@@ -123,43 +109,38 @@ export default [
 
   {
     route: '/kilns/:kilnPath/firings',
-    render: ({ kilnPath, _SEARCH, _GLOBALS } : IKeyValue) => html`<firings-list
+    render: ({ kilnPath, _SEARCH } : IKeyValue) : TemplateResult => html`<firings-list
       kiln-path="${kilnPath}"
-      filters=${_SEARCH}
-      .user=${ifDefined(_GLOBALS)}></firings-list>`,
+      filters=${_SEARCH}></firings-list>`,
   },
   {
     route: '/kilns/:kilnPath/firings/:firingName',
-    render: ({ kilnPath, firingName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view
+    render: ({ kilnPath, firingName, _DATA } : IKeyValue) : TemplateResult => html`<firing-view
       kiln-path="${kilnPath}"
       firingName="${firingName}"
-      firing-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></firing-view>`,
+      firing-uid="${_DATA.uid}"></firing-view>`,
   },
   {
     route: '/kilns/:kilnPath/firings/:firingName/edit',
-    render: ({ kilnPath, firingName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
+    render: ({ kilnPath, firingName, _DATA } : IKeyValue) : TemplateResult => html`<firing-view-edit
       kiln-path="${kilnPath}"
       firingName="${firingName}"
-      firing-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
+      firing-uid="${_DATA.uid}"></firing-view-edit>`,
   },
   {
     route: '/kilns/:kilnPath/firings/new',
-    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
+    render: ({ kilnPath, _DATA } : IKeyValue) : TemplateResult => html`<firing-view-edit
       kiln-uid="${_DATA.uid}"
       kiln-path="${kilnPath}"
-      new
-      .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
+      new></firing-view-edit>`,
   },
   {
     route: '/kilns/:kilnPath/firings/:firingName/clone',
-    render: ({ firingName, kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
+    render: ({ firingName, kilnPath, _DATA } : IKeyValue) : TemplateResult => html`<firing-view-edit
       clone
       firing-name="${firingName}"
       firing-uid="${_DATA.uid}"
-      kiln-path="${kilnPath}"
-      .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
+      kiln-path="${kilnPath}"></firing-view-edit>`,
   },
 
   //  END:  firing routes
@@ -168,44 +149,63 @@ export default [
 
   {
     route: '/kilns/:kilnPath/programs',
-    render: ({ kilnPath, _DATA, _SEARCH, _GLOBALS } : IKeyValue) => html`<programs-list
+    render: ({ kilnPath, _DATA, _SEARCH } : IKeyValue) : TemplateResult => html`<programs-list
       filters="${_SEARCH}"
       kiln-path="${kilnPath}"
-      kiln-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></programs-list>`,
+      kiln-uid="${_DATA.uid}"></programs-list>`,
   },
   {
     route: '/kilns/:kilnPath/programs/new',
-    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<program-details
+    render: ({ kilnPath, _DATA } : IKeyValue) : TemplateResult => html`<program-details
       kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
-      new
-      .user=${ifDefined(_GLOBALS)}></program-details-edit>`,
+      new></program-details-edit>`,
   },
   {
-    route: '/kilns/:kilnPath/programs/:programName',
-    render: ({ kilnPath, programName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details
+    route: '/kilns/:kilnPath/programs/:programPath',
+    // render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => {
+    //   console.group('routes.ts /kilns/:kilnPath/programs/:programPath');
+    //   console.log('_DATA:', _DATA);
+    //   console.log('_DATA.uid:', _DATA.uid);
+    //   console.log('kilnPath:', kilnPath);
+    //   console.log('programPath:', programPath);
+    //   console.groupEnd();
+
+    //   return html`<program-details
+    //   kiln-path="${kilnPath}"
+    //   program-path="${programPath}"
+    //   program-uid="${_DATA.uid}"></program-details>`},
+    render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => html`<program-details
       kiln-path="${kilnPath}"
-      program-name="${programName}"
-      program-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></program-details>`,
+      program-path="${programPath}"
+      program-uid="${_DATA.uid}"></program-details>`,
   },
   {
-    route: '/kilns/:kilnPath/programs/:programName/edit',
-    render: ({ kilnPath, programName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details-edit
+    route: '/kilns/:kilnPath/programs/:programPath/edit',
+    render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => {
+      console.group('routes.ts /kilns/:kilnPath/programs/:programPath/edit');
+      console.log('_DATA:', _DATA);
+      console.log('_DATA.uid:', _DATA.uid);
+      console.log('kilnPath:', kilnPath);
+      console.log('programPath:', programPath);
+      console.groupEnd();
+      return html`<program-details-edit
       kiln-path="${kilnPath}"
-      program-name="${programName}"
-      program-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></program-details-edit>`,
+      program-path="${programPath}"
+      program-uid="${_DATA.uid}"></program-details-edit>`;
+    },
+    // render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => html`<program-details-edit
+    //   kiln-path="${kilnPath}"
+    //   program-path="${programPath}"
+    //   program-uid="${_DATA.uid}"></program-details-edit>`,
   },
   {
-    route: '/kilns/:kilnPath/programs/:programName/firings',
-    render: ({ kilnPath, programName, _SEARCH, _DATA, _GLOBALS } : IKeyValue) => html`<firings-list
+    route: '/kilns/:kilnPath/programs/:programPath/firings',
+    render: ({ kilnPath, programPath, _SEARCH, _DATA } : IKeyValue) : TemplateResult => html`<firings-list
       filters=${_SEARCH}
       kiln-path="${kilnPath}"
-      program-name="${programName}"
-      program-uid="${_DATA.uid}"
-      .user=${ifDefined(_GLOBALS)}></firings-list>`,
+      program-path="${programPath}"
+      program-uid="${_DATA.uid}"></firings-list>`,
   },
 
   //  END:  program routes
@@ -214,30 +214,26 @@ export default [
 
   {
     route: '/users',
-    render: ({ _SEARCH, _HASH, _GLOBALS } : IKeyValue) => html`<user-list
+    render: ({ _SEARCH, _HASH } : IKeyValue) : TemplateResult => html`<user-list
       anchor="${_HASH}"
-      filters="${_SEARCH}"
-      .user=${ifDefined(_GLOBALS)}></user-list>`,
+      filters="${_SEARCH}"></user-list>`,
   },
   {
     route: '/user/new',
-    render: ({ _GLOBALS } : IKeyValue) => html`<user-details-edit
-      new
-      .user=${ifDefined(_GLOBALS)}></user-details-edit>`,
+    render: () : TemplateResult => html`<user-details-edit
+      new></user-details-edit>`,
   },
   {
     route: '/users/:userName',
-    render: ({ userName, _DATA, _HASH, _GLOBALS } : IKeyValue) => html`<user-details
+    render: ({ userName, _DATA, _HASH } : IKeyValue) : TemplateResult => html`<user-details
       anchor="${_HASH}"
-      .user=${ifDefined(_GLOBALS)}
       user-name="${userName}"
       user-uid="${_DATA.uid}"></user-details>`,
   },
   {
     route: '/users/:userName/edit',
-    render: ({ userName, _DATA, _HASH, _GLOBALS } : IKeyValue) => html`<user-details-edit
+    render: ({ userName, _DATA, _HASH } : IKeyValue) : TemplateResult => html`<user-details-edit
       anchor="${_HASH}"
-      .user=${ifDefined(_GLOBALS)}
       usesr-name="${userName}"
       usesr-uid="${_DATA.uid}"></user-details-edit>`,
   },

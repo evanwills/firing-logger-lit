@@ -177,7 +177,7 @@ export type FDataStoreSingleton = () => Promise<CDataStoreClass>;
 export type TDataStore = {
   users: IUser[],
   kilns: IKiln[],
-  programs: IStoredFiringProgram[],
+  programs: IProgram[],
   firings: FiringLog[]
   cones: TConeData[],
   EfiringType: IKeyValPair[],

@@ -2,7 +2,7 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln} from '../../types/kilns.d.ts';
-import type { IStoredFiringProgram } from '../../types/programs.d.ts';
+import type { IProgram } from '../../types/programs.d.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
@@ -48,7 +48,7 @@ export class ProgramsList extends LoggerElement {
     _kilnList : IKiln[] = [];
 
     @state()
-    _programList : IStoredFiringProgram[] = [];
+    _programList : IProgram[] = [];
 
     @state()
     _kilnTypes : IKeyValue = {};
@@ -86,7 +86,7 @@ export class ProgramsList extends LoggerElement {
     this._ready = true;
   }
 
-  _setProgramList(data : IStoredFiringProgram[]) : void {
+  _setProgramList(data : IProgram[]) : void {
     this._programList = data;
     this._ready = true;
   }

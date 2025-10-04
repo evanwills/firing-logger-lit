@@ -2,7 +2,7 @@ import type { IKeyBool } from '../types/data-simple.d.ts';
 import type { IKiln } from "../types/kilns.d.ts";
 import type InputValue from './InputValue.class.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
-import { isNumMinMax, isValidEnumValue } from "./data.utils.ts";
+import { isNumMinMax, isObj, isValidEnumValue } from "./data.utils.ts";
 
 export const getAllowedFiringTypes = (
   kiln : IKeyBool | null,
@@ -48,6 +48,14 @@ export const getAllowedFiringTypes = (
   return output;
 };
 
+/**
+ * Reports an error message if no firing types are selected.
+ *
+ * @param target HTML input element or InputValue instance
+ *
+ * @returns Error message if Firing type is invalid,
+ *          Empty string otherwise
+ */
 export const reportFiringTypeError = (
   target : HTMLInputElement | InputValue
 ) : string => {
@@ -60,6 +68,13 @@ export const reportFiringTypeError = (
   return '';
 };
 
+/**
+ * Get the valid string options for a specified kiln property.
+ *
+ * @param prop Kiln property to get options for
+ *
+ * @returns Array of valid string options for the specified property
+ */
 export const getKilnPropOptions = (prop : string) : string[] => {
   switch (prop) {
     case 'fuel':
@@ -80,16 +95,31 @@ export const getKilnPropOptions = (prop : string) : string[] => {
 export const isValidKilnEnumValue = (
   kiln : unknown,
   prop : string,
-) : boolean => isValidEnumValue(kiln, prop, getKilnPropOptions(prop))
+) : boolean => isValidEnumValue(kiln, prop, getKilnPropOptions(prop));
 
+/**
+ * Generates a standard error message for invalid kiln data properties.
+ *
+ * @param prop Kiln property that is invalid
+ * @param type Type of property (string, number, etc)
+ *
+ * @returns Human readable error message
+ */
 const getKilnError = (
   prop: string,
   type: string = 'value',
 ) : string | null => 'Kiln data is invalid! It does not have a '
   + `valid \`${prop}\` ${type}.`;
 
+/**
+ * Validates that the provided data conforms to the IKiln interface.
+ *
+ * @param kiln Data that should conform to IKiln interface
+ *
+ * @returns Error string if data is invalid, otherwise null.
+ */
 export const validateKilnData = (kiln: unknown) : string | null => {
-  if (Object.prototype.toString.call(kiln) !== '[object Object]') {
+  if (isObj(kiln) === false) {
     return 'kiln is not an object';
   }
 

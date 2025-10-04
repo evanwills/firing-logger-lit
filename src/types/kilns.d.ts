@@ -1,5 +1,5 @@
 import { ID, ISO8601, type IKeyStr } from './data-simple.d.ts';
-import type { IKiln, IStoredFiringProgram, TUniqueNameItem } from './data.d.ts';
+import type { IKiln, IProgram, TUniqueNameItem } from './data.d.ts';
 
 // --------------------------------------------------------
 // START: Enums
@@ -143,7 +143,7 @@ export type TKilnDetails = {
   EkilnOpeningType: Promise<IKeyStr>,
   EkilnTypes: Promise<IKeyStr>,
   kiln: IKiln | null,
-  programs: Promise<IStoredFiringProgram[]>,
+  programs: Promise<IProgram[]>,
   uniqueNames: TUniqueNameItem[],
 };
 

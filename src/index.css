@@ -71,6 +71,13 @@
   --secondary-dash: 15 15;
   --subtitle-feature-font: var(--title-font);
   --subtitle-feature-font-size: 2rem;
+  --logo-fill: none;
+  --logo-stroke-colour: #FFF;
+  --logo-stroke-width: 0.346001;
+  --logo-height: 2rem;
+  --logo-margin-bottom: -0.5rem;
+  --logo-margin-top: -0.5rem;
+  --logo-translate-y: 0.25rem;
   --table-border-colour: var(--border-colour, #aaa);
   --table-cell-padding: 0.25em 0.5em;
   --textarea-height: 3.5rem;
@@ -117,5 +124,14 @@ body {
     --log-stroke: #66195c;
     --program-stroke: #1d7527;
     --rect-stroke: #2b1b6f;
+  }
+}
+
+@media screen and (min-width: 36rem) {
+  :root {
+    --logo-height: 3rem;
+    --logo-margin-bottom: -1.5rem;
+    --logo-margin-top: -1rem;
+    --logo-translate-y: 0;
   }
 }

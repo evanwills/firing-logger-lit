@@ -8,31 +8,11 @@ export type FiringStep = {
   hold: number     // minutes to hold at end temperature
 }
 
-export interface IFiringProgramData implements IKeyValue, IIdObject, IIdNameObject, ILinkObject {
+export interface IProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObject {
   id: ID,
   kilnID: ID,
   controllerProgramID: number,
-  type: string,
-  name: string,
-  urlPart: string,
-  version: number,
-  description: string,
-  steps: FiringStep[],
-  created: ISO8601,
-  createdBy: ID,
-  superseded: boolean,
-  parentID: string,
-  used: boolean,
-  useCount: number,
-  deleted: boolean,
-  locked: boolean
-}
-
-export interface IStoredFiringProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObject, IFiringProgramData {
-  id: ID,
-  kilnID: ID,
-  controllerProgramID: number,
-  type: string,
+  type: 'bisque' | 'glaze' | 'single' | 'luster' | 'onglaze' | 'raku' | 'salt' | 'black',
   name: string,
   urlPart: string,
   version: number,
@@ -52,9 +32,15 @@ export interface IStoredFiringProgram extends IKeyValue, IIdObject, IIdNameObjec
   locked: boolean,
 }
 
-export interface FiringProgramTmp implements IKeyValue, IIdObject, IIdNameObject, ILinkObject, IStoredFiringProgram {
+export interface FiringProgramTmp implements IKeyValue, IIdObject, IIdNameObject, ILinkObject, IProgram {
   confirmed: boolean,
   errors: object,
   lastField: string,
   mode: string
+}
+
+export type PProgramDetails = {
+  program: Promise<IProgram|null>,
+  kiln: Promise<IKiln|null>,
+  EfiringTypes: Promise<IKeyStr>,
 }

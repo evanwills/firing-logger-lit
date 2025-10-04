@@ -4,8 +4,9 @@ import { nanoid } from 'nanoid';
 import { deleteCookie, getCookie } from '../../utils/cookie.utils.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
 // import { isNonEmptyStr } from '../../utils/string.utils.ts';
-import './login-ui.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
+import './firing-logger-logo.ts';
+import './login-ui.ts';
 
 @customElement('firing-logger-wrapper')
 export class FiringLoggerWrapper extends LitElement {
@@ -87,7 +88,9 @@ export class FiringLoggerWrapper extends LitElement {
     return html`
     <div class="wrap">
       <header>
-        <h1 class="title"><router-link url="/">Firing Logger</router-link></h1>
+        <!-- <h1 class="title"><router-link url="/"><img src="/images/firing-logger-logo.svg" alt="Firing Logger"></router-link></h1> -->
+        <!-- <h1 class="title"><router-link url="/">Firing Logger</router-link></h1> -->
+        <h1 class="title"><router-link url="/"><firing-logger-logo></firing-logger-logo></router-link></h1>
         <p>A kiln firing logger and plotter.</p>
         <nav>
           <ul>

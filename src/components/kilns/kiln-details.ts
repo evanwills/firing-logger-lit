@@ -5,7 +5,7 @@ import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import type { ID, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TCheckboxValueLabel } from '../../types/renderTypes.d.ts';
 import type { TUniqueNameItem } from '../../types/data.d.ts';
-import type { IStoredFiringProgram } from '../../types/programs.d.ts';
+import type { IProgram } from '../../types/programs.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
@@ -145,7 +145,7 @@ export class KilnDetails extends LoggerElement {
 
 
   @state()
-  _programs : IStoredFiringProgram[] = [];
+  _programs : IProgram[] = [];
 
   @state()
   _kilnTypes : IKeyStr = {};
@@ -267,7 +267,7 @@ export class KilnDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: helper render methodsEkilnOpeningType
 
-  renderSingleProgram(program : IStoredFiringProgram) : TemplateResult {
+  renderSingleProgram(program : IProgram) : TemplateResult {
     return html`
       <tr>
         <th>

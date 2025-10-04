@@ -7,7 +7,7 @@ import type {
   ResponsibleLogEntry,
   StateChangeLogEntry,
 } from '../../types/data.d.ts';
-import type { IStoredFiringProgram } from '../../types/programs.d.ts';
+import type { IProgram } from '../../types/programs.d.ts';
 import type { TempLogEntry } from '../../types/firing-log.d.ts';
 import { isChangeLog, isRespLog, isTempLog } from '../../types/data.type-guards.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
@@ -58,7 +58,7 @@ export class FiringLogView extends LoggerElement {
   _changeLog : StateChangeLogEntry[]  = []
   _responsibleLog : ResponsibleLogEntry[]  = []
   _rawLog : IFiringLogEntry[] = [];
-  _program : IStoredFiringProgram | null = null;
+  _program : IProgram | null = null;
 
   //  END:  state
   // ------------------------------------------------------
@@ -80,7 +80,7 @@ export class FiringLogView extends LoggerElement {
               this._changeLog = logResult.filter(isChangeLog);
             });
 
-            this._store?.read(`programs.#${firingResult.programID}`).then((programResult : IStoredFiringProgram | null) => {
+            this._store?.read(`programs.#${firingResult.programID}`).then((programResult : IProgram | null) => {
               this._program = programResult;
             })
           }

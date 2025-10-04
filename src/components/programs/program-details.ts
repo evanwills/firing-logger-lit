@@ -1,9 +1,9 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { ID, IKeyValUrl } from '../../types/data-simple.d.ts';
-import type { TSvgPathItem } from '../../types/data.d.ts';
+// import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { IKiln} from '../../types/kilns.d.ts';
-import type { FiringStep, IStoredFiringProgram } from '../../types/programs.d.ts';
+import type { FiringStep, IProgram } from '../../types/programs.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
   durationFromStep,
@@ -20,6 +20,7 @@ import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
+import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
 
 /**
  * An example element.
@@ -41,11 +42,14 @@ export class ProgramDetails extends LoggerElement {
   @property({ type: String, attribute: 'program-uid' })
   programID : ID = '';
 
-  @property({ type: String, attribute: 'kiln-name' })
-  kilnName : string = '';
+  @property({ type: String, attribute: 'kiln-path' })
+  kilnPath : string = '';
 
-  @property({ type: String, attribute: 'program-name' })
-  programName : string = '';
+  @property({ type: String, attribute: 'program-path' })
+  programPath : string = '';
+
+  @property({ type: String, attribute: 'mode' })
+  mode : string = '';
 
   //  END:  properties/attributes
   // ------------------------------------------------------
@@ -70,10 +74,10 @@ export class ProgramDetails extends LoggerElement {
   _edit : boolean = false;
 
   @state()
-  type : string = '';
+  _type : string = '';
 
   @state()
-  name : string = '';
+  _name : string = '';
 
   @state()
   _kilnID : string = '';
@@ -82,36 +86,40 @@ export class ProgramDetails extends LoggerElement {
   _kilnName : string = '';
 
   @state()
+  _urlPart : string = '';
+
+  @state()
   _kilnUrlPart : string = '';
 
   @state()
-  cone : string = '';
+  _cone : string = '';
 
   @state()
-  description : string = '';
+  _description : string = '';
 
   @state()
-  maxTemp : number = 0;
+  _maxTemp : number = 0;
 
   @state()
-  controllerID : number = 0;
+  _controllerID : number = 0;
 
   @state()
-  duration : number = 0;
+  _duration : number = 0;
 
   @state()
-  steps : FiringStep[] = [];
-
-  stepsAsPath : TSvgPathItem[] = [];
+  _steps : FiringStep[] = [];
 
   @state()
-  programData : IStoredFiringProgram | null = null;
+  _programData : IProgram | null = null;
 
   @state()
   _tmpSteps : FiringStep[] = [];
 
   @state()
   _stepCount : number = 0;
+
+  @state()
+  _firingTypes : TOptionValueLabel[] = [];
 
   //  END:  state
   // ------------------------------------------------------
@@ -134,28 +142,29 @@ export class ProgramDetails extends LoggerElement {
 
       if (this._store !== null) {
         this._store
-          .read('programs', `kilnID=${this._kilnID}&&urlPart=${this.programName}`)
+          .read('programs', `kilnID=${this._kilnID}&&urlPart=${this.programPath}`)
           .then(this._setProgramData.bind(this));
 
       }
     }
   }
 
-  _setProgramData(data : IStoredFiringProgram) : void {
+  _setProgramData(data : IProgram) : void {
     if (data !== null) {
       const _data = (Array.isArray(data))
         ? data[0]
         : data;
-      this.programData = _data;
-      this.name = _data.name;
+      this._programData = _data;
+      this._name = _data.name;
       this._kilnID = _data.kilnID;
-      this.cone = _data.cone;
-      this.controllerID = _data.controllerProgramID;
-      this.description = _data.description;
-      this.maxTemp = _data.maxTemp;
-      this.duration = _data.duration;
-      this.steps = _data.steps;
-      this.type = _data.type;
+      this._urlPart = _data.urlPart;
+      this._cone = _data.cone;
+      this._controllerID = _data.controllerProgramID;
+      this._description = _data.description;
+      this._maxTemp = _data.maxTemp;
+      this._duration = _data.duration;
+      this._steps = _data.steps;
+      this._type = _data.type;
       this._ready = true;
 
       if (this._kilnName === '') {
@@ -166,17 +175,23 @@ export class ProgramDetails extends LoggerElement {
 
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
+    console.group('ProgramDetails._getFromStore()');
+    console.log('this._store:', this._store);
+    console.log('this.programID:', this.programID);
+    console.log('this.programPath:', this.programPath);
+    console.log('this.kilnPath:', this.kilnPath);
 
     if (this._store !== null) {
       if (isNonEmptyStr(this.programID)) {
         this._store.read('programs', `#${this.programID}`).then(this._setProgramData.bind(this));
-      } else if (isNonEmptyStr(this.kilnName) && (isNonEmptyStr(this.programName))) {
-        this._store.read('kilns', `urlPart=${this.kilnName}`).then(this._setKilnByURL.bind(this));
+      } else if (isNonEmptyStr(this.kilnPath) && (isNonEmptyStr(this.programPath))) {
+        this._store.read('kilns', `urlPart=${this.kilnPath}`).then(this._setKilnByURL.bind(this));
 
       }
     } else {
       this._ready = true;
     }
+    console.groupEnd();
   }
 
   //  END:  helper methods
@@ -204,15 +219,7 @@ export class ProgramDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: helper render methods
 
-  //  END:  helper render methods
-  // ------------------------------------------------------
-  // START: main render method
-
-  render() : TemplateResult{
-    if (this._ready === false) {
-      return html`<loading-spinner label="program details"></loading-spinner>`;
-    }
-
+  renderDetails() : TemplateResult {
     const data : IKeyValUrl[] = [
       {
         key: 'Kiln',
@@ -222,83 +229,110 @@ export class ProgramDetails extends LoggerElement {
       },
       {
         key: 'Type',
-        value: this.type,
+        value: this._type,
         noEmpty: true,
       },
       {
         key: 'Max temp',
-        value: `${this._tConverter(this.maxTemp)}°${this._tUnit}`,
+        value: `${this._tConverter(this._maxTemp)}°${this._tUnit}`,
       },
       {
         key: 'Duration',
-        value: hoursFromSeconds(this.duration),
+        value: hoursFromSeconds(this._duration),
       },
       {
         key: 'Cone',
-        value: this.cone,
+        value: this._cone,
         noEmpty: true,
       },
     ];
 
+    return html`<item-details
+          description="${this._description}"
+          .pairs=${data}></item-details>`;
+  }
+
+  renderSteps() : TemplateResult {
+    return html`<table>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>
+            End Temp<br />
+            <span class="unit">(°${this._tUnit})
+            </span>
+          </th>
+          <th>
+            Rate<br />
+            <span class="unit">(°${this._tUnit}/hr)</span>
+          </th>
+          <th>
+            Hold<br />
+            <span class="unit">(min)</span>
+          </th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${this._steps.map((step, i) => html`
+          <tr>
+            <th>${step.order}</th>
+            <td>${this._tConverter(step.endTemp)}</td>
+            <td>${step.rate}</td>
+            <td>${step.hold}</td>
+            <td>${durationFromStep(this._steps, i)}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>`;
+  }
+
+  renderButtonInner() : TemplateResult {
+    return html`<router-link
+      class="btn"
+      label="edit"
+      sr-label="${this._name} for ${this._kilnName}"
+      uid="${this.programID}"
+      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>`;
+  }
+
+  renderButtons() : TemplateResult | string {
+    return (this._userCan('program', 1) === true)
+      ? this.renderButtonInner()
+      : '';
+  }
+
+  renderPlot() : TemplateResult | string {
+    return html`<firing-plot
+      ?notMetric=${this.notMetric}
+      .primary=${[
+        { order: 0, endTemp: 0, rate: 0, hold: 0 },
+        ...this._steps,
+      ]}
+      primary-is-program></firing-plot>`;
+  }
+
+  //  END:  helper render methods
+  // ------------------------------------------------------
+  // START: main render method
+
+  render() : TemplateResult{
+    if (this._ready === false) {
+      return html`<loading-spinner label="program details"></loading-spinner>`;
+    }
+
     return html`
       <div class="program-view">
-        <h2>${this.name}</h2>
+        <h2>${this._name}</h2>
 
-        <item-details
-          description="${this.description}"
-          .pairs=${data}></item-details>
+        ${this.renderDetails()}
 
         <h3>Program steps</h3>
 
-        <firing-plot
-          ?notMetric=${this.notMetric}
-          .primary=${[
-            { order: 0, endTemp: 0, rate: 0, hold: 0 },
-            ...this.steps,
-          ]}
-          primary-is-program></firing-plot>
+        ${this.renderPlot()}
+        ${this.renderSteps()}
 
-        <table>
-          <thead>
-            <tr>
-              <th>Step</th>
-              <th>
-                End Temp<br />
-                <span class="unit">(°${this._tUnit})
-                </span>
-              </th>
-              <th>
-                Rate<br />
-                <span class="unit">(°${this._tUnit}/hr)</span>
-              </th>
-              <th>
-                Hold<br />
-                <span class="unit">(min)</span>
-              </th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${this.steps.map((step, i) => html`
-              <tr>
-                <th>${step.order}</th>
-                <td>${this._tConverter(step.endTemp)}</td>
-                <td>${step.rate}</td>
-                <td>${step.hold}</td>
-                <td>${durationFromStep(this.steps, i)}</td>
-              </tr>
-            `)}
-          </tbody>
-        </table>
-
-        ${(this.readOnly === false)
-          ? html`<router-link
-            label="edit"
-            sr-label="${this.name} for ${this.kilnName}"
-            uid="${this.programID}"
-            url="/kilns/${this._kilnName}/programs/${this.name}/edit" ></router-link>`
-          : ''}
-
+        ${this.renderButtons()}
       </div>`;
   }
 
@@ -310,8 +344,27 @@ export class ProgramDetails extends LoggerElement {
     ${programViewVars}
     .program-view h3, .program-view p { text-align: left; }
 
+    ul {
+      list-style: none;
+      margin: 1rem 0;
+      padding: 0;
+    }
+    li {
+      margin: 0;
+      padding: 0.25rem 0;
+    }
     ${tableStyles}
-    ${keyValueStyle}`;
+    ${keyValueStyle}
+
+    input[type="number"] {
+      padding: 0.25rem 0 0.25rem 0.5rem;
+      text-align: center;
+      width: 3.5rem;
+    }
+    .kv-list {
+      --label-width: 7.5rem;
+      --label-align: right;
+    }`;
 
   //  END:  styles
   // ------------------------------------------------------
