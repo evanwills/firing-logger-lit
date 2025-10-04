@@ -106,7 +106,7 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
   salt: boolean,
   black: boolean,
   useCount: number,
-  readyState: 'available' | 'packing' | 'packed' | 'heating' | 'holding' | 'cooling' | 'cold' | 'unpacking' | 'pricing' | 'emptied',
+  readyState: 'unavailable' | 'available' | 'packing' | 'packed' | 'heating' | 'holding' | 'cooling' | 'cold' | 'unpacking' | 'pricing' | 'emptied',
   serviceState: 'purchased' | 'delivered' | 'installed' | 'working' | 'maintenance' | 'awaitingRepair' | 'beingRepaired' | 'retired' | 'decommissioned' | 'Removed',
 }
 

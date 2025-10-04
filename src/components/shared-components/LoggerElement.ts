@@ -113,6 +113,24 @@ export class LoggerElement extends LitElement {
   _lConverterRev : (T : number) => number = x2x;
 
   /**
+   * Convert temperature from Celcius to Fahrenheit
+   * (if needed)
+   *
+   * @var _tConverter
+   */
+  @state()
+  _vConverter : (T : number) => number = x2x;
+
+  /**
+   * Convert temperature from Fahrenheit to Celcius
+   * (if needed)
+   *
+   * @var _tConverter
+   */
+  @state()
+  _vConverterRev : (T : number) => number = x2x;
+
+  /**
    * Global store object that allows the component to read from the
    * store and write to the store. And watch for changes in the store
    *
@@ -132,6 +150,12 @@ export class LoggerElement extends LitElement {
    */
   @state()
   _lUnit : string = 'mm';
+
+  /**
+   * @var _lUnit Length unit indicator to match user's preference
+   */
+  @state()
+  _vUnit : string = 'lt';
 
   @state()
   _user : TUser | null = null;

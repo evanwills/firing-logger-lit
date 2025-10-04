@@ -3,7 +3,6 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { ID } from '../../types/data-simple.d.ts';
 import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { FiringStep, IStoredFiringProgram } from '../../types/programs.d.ts';
-// import { deepClone, isNonEmptyStr } from '../../utils/data.utils.ts';
 import {
   durationFromStep,
   durationFromSteps,

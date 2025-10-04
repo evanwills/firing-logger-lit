@@ -2,7 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import { hasSlotContent } from '../../utils/lit.utils.ts';
-import { isNonEmptyStr } from '../../utils/data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 
 @customElement('read-only-field')
 export class ReadOnlyField extends LitElement {

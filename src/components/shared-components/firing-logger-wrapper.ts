@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { nanoid } from 'nanoid';
 import { deleteCookie, getCookie } from '../../utils/cookie.utils.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
-// import { isNonEmptyStr } from '../../utils/data.utils.ts';
+// import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import './login-ui.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
 

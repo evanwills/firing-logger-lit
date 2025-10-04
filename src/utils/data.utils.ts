@@ -1,4 +1,5 @@
-import type { IKeyValue } from '../types/data-simple.d.ts';
+import type { IKeyStr, IKeyValue } from '../types/data-simple.d.ts';
+import { isNonEmptyStr } from "./string.utils.ts";
 
 /**
  * This file contains a collection of "pure" function that help with
@@ -169,28 +170,6 @@ export const isScalarOrNull = (input : unknown) : boolean => (
 export const isStrOrNull = (input : unknown) : boolean => (input === null
   || typeof input === 'string');
 
-/**
- * Check whether object's string property is a non empty string
- *
- * @param obj  String or object to be tested
- * @param prop Name of object property
- *
- * @returns TRUE if property is string and non-empty.
- */
-export const isNonEmptyStr = (
-  obj : unknown,
-  prop : string | null = null,
-) : boolean => {
-  if (prop === null && typeof obj === 'string') {
-    return (obj.trim() !== '');
-  }
-
-  return (isObj(obj)
-    && typeof prop === 'string'
-    && typeof (obj as IKeyValue)[prop] === 'string'
-    && (obj as IKeyValue)[prop].trim() !== '');
-};
-
 const _objectsAreSameArray = (obj1 : IKeyValue, obj2 : IKeyValue) : boolean => {
   if (!Array.isArray(obj2)) {
     return false;
@@ -226,6 +205,14 @@ const _objectsAreSameObject = (obj1 : IKeyValue, obj2 : IKeyValue) : boolean => 
 
   return true;
 };
+
+export const isNumMinMax = (
+  input : unknown,
+  min : number | null = null,
+  max : number | null= null,
+) : boolean => (isNum(input) === true
+  && (min === null || (input as number) >= min)
+  && (max === null || (input as number) <= max));
 
 /**
  * Recursively compare two objects.
@@ -310,3 +297,10 @@ export const getValFromKey = (obj : IKeyValue, key : string) => {
     ? obj[key]
     : '';
 }
+
+export const isValidEnumValue = (
+  input : unknown,
+  key: string,
+  options: string[],
+) : boolean => (isNonEmptyStr(input, key) === true
+  && options.includes((input as IKeyStr)[key]) === true);

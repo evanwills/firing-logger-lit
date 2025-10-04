@@ -1,6 +1,6 @@
-import type { IDBPDatabase } from "idb";
-import type { ID, IIdObject } from "../types/data-simple";
-import { isNonEmptyStr } from "../utils/data.utils";
+import type { IDBPDatabase } from 'idb';
+import type { ID, IIdObject } from '../types/data-simple.d.ts';
+import { isNonEmptyStr } from '../utils/string.utils.ts';
 
 export const saveChangeOnHold = (
   db: IDBPDatabase,

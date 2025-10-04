@@ -95,23 +95,23 @@ export default [
       .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
   },
   {
-    route: '/kilns/:kilnName',
-    render: ({ kilnName, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath',
+    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details
+      kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></kiln-details>`,
   },
   {
-    route: '/kilns/:kilnName/edit',
-    render: ({ kilnName, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details-edit
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/edit',
+    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details-edit
+      kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
   },
   {
-    route: '/kilns/:kilnName/clone',
-    render: ({ kilnName, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details-edit
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/clone',
+    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<kiln-details-edit
+      kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
       clone
       .user=${ifDefined(_GLOBALS)}></kiln-details-edit>`,
@@ -122,43 +122,43 @@ export default [
   // START: firing routes
 
   {
-    route: '/kilns/:kilnName/firings',
-    render: ({ kilnName, _SEARCH, _GLOBALS } : IKeyValue) => html`<firings-list
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/firings',
+    render: ({ kilnPath, _SEARCH, _GLOBALS } : IKeyValue) => html`<firings-list
+      kiln-path="${kilnPath}"
       filters=${_SEARCH}
       .user=${ifDefined(_GLOBALS)}></firings-list>`,
   },
   {
-    route: '/kilns/:kilnName/firings/:firingName',
-    render: ({ kilnName, firingName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/firings/:firingName',
+    render: ({ kilnPath, firingName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view
+      kiln-path="${kilnPath}"
       firingName="${firingName}"
       firing-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></firing-view>`,
   },
   {
-    route: '/kilns/:kilnName/firings/:firingName/edit',
-    render: ({ kilnName, firingName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/firings/:firingName/edit',
+    render: ({ kilnPath, firingName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
+      kiln-path="${kilnPath}"
       firingName="${firingName}"
       firing-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
   },
   {
-    route: '/kilns/:kilnName/firings/new',
-    render: ({ kilnName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
+    route: '/kilns/:kilnPath/firings/new',
+    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
       kiln-uid="${_DATA.uid}"
-      kiln-name="${kilnName}"
+      kiln-path="${kilnPath}"
       new
       .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
   },
   {
-    route: '/kilns/:kilnName/firings/:firingName/clone',
-    render: ({ firingName, kilnName, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
+    route: '/kilns/:kilnPath/firings/:firingName/clone',
+    render: ({ firingName, kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<firing-view-edit
       clone
       firing-name="${firingName}"
       firing-uid="${_DATA.uid}"
-      kiln-name="${kilnName}"
+      kiln-path="${kilnPath}"
       .user=${ifDefined(_GLOBALS)}></firing-view-edit>`,
   },
 
@@ -167,42 +167,42 @@ export default [
   // START: program routes
 
   {
-    route: '/kilns/:kilnName/programs',
-    render: ({ kilnName, _DATA, _SEARCH, _GLOBALS } : IKeyValue) => html`<programs-list
+    route: '/kilns/:kilnPath/programs',
+    render: ({ kilnPath, _DATA, _SEARCH, _GLOBALS } : IKeyValue) => html`<programs-list
       filters="${_SEARCH}"
-      kiln-name="${kilnName}"
+      kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></programs-list>`,
   },
   {
-    route: '/kilns/:kilnName/programs/new',
-    render: ({ kilnName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/programs/new',
+    render: ({ kilnPath, _DATA, _GLOBALS } : IKeyValue) => html`<program-details
+      kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
       new
       .user=${ifDefined(_GLOBALS)}></program-details-edit>`,
   },
   {
-    route: '/kilns/:kilnName/programs/:programName',
-    render: ({ kilnName, programName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/programs/:programName',
+    render: ({ kilnPath, programName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details
+      kiln-path="${kilnPath}"
       program-name="${programName}"
       program-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></program-details>`,
   },
   {
-    route: '/kilns/:kilnName/programs/:programName/edit',
-    render: ({ kilnName, programName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details-edit
-      kiln-name="${kilnName}"
+    route: '/kilns/:kilnPath/programs/:programName/edit',
+    render: ({ kilnPath, programName, _DATA, _GLOBALS } : IKeyValue) => html`<program-details-edit
+      kiln-path="${kilnPath}"
       program-name="${programName}"
       program-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></program-details-edit>`,
   },
   {
-    route: '/kilns/:kilnName/programs/:programName/firings',
-    render: ({ kilnName, programName, _SEARCH, _DATA, _GLOBALS } : IKeyValue) => html`<firings-list
+    route: '/kilns/:kilnPath/programs/:programName/firings',
+    render: ({ kilnPath, programName, _SEARCH, _DATA, _GLOBALS } : IKeyValue) => html`<firings-list
       filters=${_SEARCH}
-      kiln-name="${kilnName}"
+      kiln-path="${kilnPath}"
       program-name="${programName}"
       program-uid="${_DATA.uid}"
       .user=${ifDefined(_GLOBALS)}></firings-list>`,

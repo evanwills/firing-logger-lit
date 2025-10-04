@@ -154,14 +154,15 @@ export default class PidbDataStore implements CDataStoreClass {
         // const primary = selectors.shift();
         // console.group('PidbDataStore.read() (kv)');
         // console.log('selectors:', selectors);
-        // console.log('primary:', primary);
         // console.log('storeName:', storeName);
+        // console.log('outputMode:', outputMode);
 
         // const output = await this._db.getAllFromIndex(storeName, primary.indexName, primary.value).catch(storeCatch);
         const output = await getByKeyValue(this._db, storeName, selector);
 
         // if (typeof output !== 'undefined')
         // console.log('output:', output);
+        // console.groupEnd();
 
         return outputAs(output, outputMode);
       }

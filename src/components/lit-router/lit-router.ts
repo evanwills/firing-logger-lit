@@ -177,9 +177,18 @@ export class LitRouter extends LitElement {
 
     // console.group('<lit-router>.connectedCallback()');
 
-    this.addEventListener('litrouternav', this.handleRouteLink);
-    this.addEventListener('litrouterrewrite', this.handleRouteRewrite);
-    this.addEventListener('litrouterrefresh', this.handleRefresh);
+    this.addEventListener(
+      'litrouternav',
+      this.handleRouteLink.bind(this)
+    );
+    this.addEventListener(
+      'litrouterrewrite',
+      this.handleRouteRewrite.bind(this)
+    );
+    this.addEventListener(
+      'litrouterrefresh',
+      this.handleRefresh.bind(this)
+    );
 
     globalThis.addEventListener('popstate', this.handlePopState);
 

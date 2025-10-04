@@ -5,8 +5,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import type { FSanitise, FValidationMessage } from '../../types/renderTypes.d.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TFauxInputEvent } from '../../types/fauxDom.d.ts';
-import { isNonEmptyStr } from '../../utils/data.utils.ts';
-import { hasSlotContent } from '../../utils/lit.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { dispatchCustomEvent } from '../../utils/event.utils.ts';
 import { checkboxListStyles, inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import FocusableInside from './FocusableInside.ts';
@@ -210,8 +209,8 @@ export class AccessibleWholeField extends FocusableInside {
   }
 
   handleKeyup(event : KeyboardEvent | InputEvent) : void {
-    console.group('AccessibleWholeField.handleKeyup()');
-    console.log('this.validateOnKeyup:', this.validateOnKeyup);
+    // console.group('AccessibleWholeField.handleKeyup()');
+    // console.log('this.validateOnKeyup:', this.validateOnKeyup);
     if (this.validateOnKeyup === true) {
       this._validate(event);
     } else {
@@ -225,7 +224,7 @@ export class AccessibleWholeField extends FocusableInside {
     if (this.watchOverflowY === true) {
       this._overflowY = ((event.target as HTMLInputElement).scrollHeight > (event.target as HTMLInputElement).clientHeight);
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   handleFocus(_event: FocusEvent) : void {

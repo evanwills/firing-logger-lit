@@ -1,7 +1,7 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
-import type { IKeyValue } from '../../types/data-simple.d.ts';
+import type { ID, IIdNameObject, IIdObject, IKeyValue } from '../../types/data-simple.d.ts';
 import type InputValueClass from '../../utils/InputValue.class.ts';
 import type FocusableInside from '../input-fields/FocusableInside.ts';
 import { getISO8601date } from '../../utils/date-time.utils.ts';
@@ -23,6 +23,10 @@ import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
 import '../shared-components/alert-block.ts'
+import { nanoid } from "nanoid";
+import type { TStoreAction } from "../../types/store.d.ts";
+import { emptyOrNull, isNumMinMax } from "../../utils/data.utils.ts";
+import { round } from "../../utils/numeric.utils.ts";
 
 /**
  * An example element.
@@ -95,6 +99,7 @@ export class KilnDetailsEdit extends KilnDetails {
 
   _handleChangeInner(field : InputValueClass) : void {
     this._nothingToSave = false;
+
     this._errorFields = addRemoveField(
       this._errorFields,
       field.id,
@@ -110,12 +115,53 @@ export class KilnDetailsEdit extends KilnDetails {
     this._setCanSave();
   }
 
+  _setVolume() : void {
+    const height = (typeof this._changes.height !== 'undefined')
+      ? this._changes.height
+      : this._height;
+    const width = (typeof this._changes.width !== 'undefined')
+      ? this._changes.width
+      : this._width;
+    const depth = (typeof this._changes.depth !== 'undefined')
+      ? this._changes.depth
+      : this._depth;
+
+    this._changes.volume = (height > 0 && width > 0 && depth > 0)
+      ? round((width / 100) * (depth / 100) * (height / 100), 2)
+      : 0;
+  }
+
+  _setChangeDefaults(id : ID) : IIdObject {
+    const output : IIdObject = { ...this._changes, id };
+
+    if (emptyOrNull(output.fuel) && this._fuelOptions.length > 0 ) {
+      output.fuel = this._fuelOptions[0].value;
+    }
+    if (emptyOrNull(output.type) && this._kilnOptions.length > 0 ) {
+      output.type = this._kilnOptions[0].value;
+    }
+    if (emptyOrNull(output.openingType) && this._kilnOpeningOptions.length > 0 ) {
+      output.openingType = this._kilnOpeningOptions[0].value;
+    }
+    output.serviceState = 'working';
+    output.readyState = 'available';
+    output.useCount = 0;
+
+    for (const key of Object.keys(this._allowedFiringTypes)) {
+      if (typeof output[key] !== 'boolean') {
+        output[key] = false;
+      }
+    }
+
+    return output;
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
 
   handleFiringTypesChange(event : CustomEvent) : void {
-    // console.group('<kiln-details>.handleFiringTypesChange()');
+    // console.group('<kiln-details-edit>.handleFiringTypesChange()');
     // console.log('event:', event);
     // console.log('event.detail:', event.detail);
     // console.log('event.detail.value:', event.detail.value);
@@ -141,6 +187,18 @@ export class KilnDetailsEdit extends KilnDetails {
     // console.groupEnd();
   }
 
+  handleDateChange(event : CustomEvent) : void {
+    const field : InputValueClass = event.detail;
+
+    const value = field.valueAsDate;
+
+    this._changes[field.id] = (value !== null)
+      ? getISO8601date(value.getTime())
+      : null;
+
+    this._handleChangeInner(field);
+  }
+
   handleGenericChange(event : CustomEvent) : void {
     const field : InputValueClass = event.detail;
 
@@ -155,6 +213,11 @@ export class KilnDetailsEdit extends KilnDetails {
   handleNumericChange(event : CustomEvent) : void {
     const field : InputValueClass = event.detail;
     this._changes[field.id] = field.valueAsNumber;
+    const dimensions = ['width', 'depth', 'height'];
+
+    if (dimensions.includes(field.id) === true) {
+      this._setVolume();
+    }
 
     this._handleChangeInner(field);
   }
@@ -166,13 +229,26 @@ export class KilnDetailsEdit extends KilnDetails {
       // All good!!! No errors
       if (this._changedFields.length > 0) {
         // Something has changed. We can save this data.
-        this._store?.action('updateKiln', { ...this._changes, id: this._id }).then((_response) => {
-          const path = (typeof this._changes.urlPart === 'string')
-            ? this._changes.urlPart
-            : this._path;
+        let action : TStoreAction = 'updateKiln';
+        let id : ID = this._id;
 
-          LitRouter.dispatchRouterEvent(this, `/kilns/${path}`, { id: this._id });
-        });
+        if (this.mode !== 'edit') {
+          action = 'addKiln';
+          id = nanoid(10);
+
+          this._changes = this._setChangeDefaults(id);
+        } else {
+          this._changes = { ...this._changes, id };
+        }
+
+        this._store?.action(action, { ...this._changes })
+          .then((_response) => {
+            const path = (typeof this._changes.urlPart === 'string')
+              ? this._changes.urlPart
+              : this._path;
+
+            LitRouter.dispatchRouterEvent(this, `/kilns/${path}`, { id });
+          });
       } else {
         // Nothing has changed.
         // Let them know that nothing has changed and clicking on the
@@ -220,7 +296,7 @@ export class KilnDetailsEdit extends KilnDetails {
         </li>
         <li>
           <accessible-select-field
-            field-id="type"
+            field-id="openingType"
             label="Loading method"
             .options=${this._kilnOpeningOptions}
             required
@@ -275,6 +351,20 @@ export class KilnDetailsEdit extends KilnDetails {
     detailName : string | null,
     openOthers : boolean
   ) : TemplateResult {
+    let volume : number | string | TemplateResult = '';
+
+    if (isNumMinMax(this._changes.volume, 0.001, 10000) === true) {
+      volume = this._changes.volume;
+    } else if (isNumMinMax(this._volume, 0.001, 10000) === true) {
+      volume = this._volume;
+    }
+
+    if (typeof volume === 'number' && volume > 0) {
+      volume = `${round(volume, 2)}${this._vUnit}`;
+    } else {
+      volume = html`<em>[unknown]</em>`;
+    }
+
     const output = html`
         <ul class="label-8 multi-col-list two-col-list" @change=${this.handleNumericChange}>
           <li>
@@ -309,6 +399,9 @@ export class KilnDetailsEdit extends KilnDetails {
               step="1"
               unit="${this._lUnit}"
               value="${this._lConverter(this._height)}"></accessible-number-field>
+          </li>
+          <li>
+            <read-only-field label="Volume" .value=${volume}></read-only-field>
           </li>
         </ul>`;
 
@@ -409,7 +502,8 @@ export class KilnDetailsEdit extends KilnDetails {
             type="date"
             step="1"
             value="${getISO8601date(this._installDate)}"
-            validation-type="name"></accessible-temporal-field>
+            validation-type="name"
+            @change=${this.handleGenericChange}></accessible-temporal-field>
         </li>
         <li>
         </li>

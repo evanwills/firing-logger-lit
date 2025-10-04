@@ -12,7 +12,7 @@ import {
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from './user-data.utils.ts';
 import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
-import { updateKilnData } from './kiln-store.utils.ts';
+import { addNewKilnData, updateKilnData } from './kiln-store.utils.ts';
 
 let store : CDataStoreClass | null = null;
 
@@ -264,6 +264,7 @@ const actions : TActionList = {
   getLoggedInUser: getAuthUser,
   updateLoggedInUser: updateAuthUser,
   updateKiln: updateKilnData,
+  addKiln: addNewKilnData,
 };
 
 export const getDataStoreClassSingleton = (

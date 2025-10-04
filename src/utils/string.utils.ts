@@ -1,3 +1,5 @@
+import type { IKeyValue } from "../types/data-simple.d.ts";
+import { isObj } from "./data.utils.ts";
 
 
 /**
@@ -36,3 +38,25 @@ export const kebab2Sentance = (input : string) : string => ucFirst(input.split(/
 //   return t3;
 // };
 export const name2urlPart = (input : string) : string => input.toLowerCase().replace(/[^a-z\d-]+/g, '-').replace(/(?:^-+|-+$)/g, '').replace(/-+/g, '-');
+
+/**
+ * Check whether object's string property is a non empty string
+ *
+ * @param obj  String or object to be tested
+ * @param prop Name of object property
+ *
+ * @returns TRUE if property is string and non-empty.
+ */
+export const isNonEmptyStr = (
+  obj : unknown,
+  prop : string | null = null,
+) : boolean => {
+  if (prop === null && typeof obj === 'string') {
+    return (obj.trim() !== '');
+  }
+
+  return (isObj(obj)
+    && typeof prop === 'string'
+    && typeof (obj as IKeyValue)[prop] === 'string'
+    && (obj as IKeyValue)[prop].trim() !== '');
+};

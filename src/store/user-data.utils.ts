@@ -4,7 +4,7 @@ import type { TUser } from '../types/users.d.ts';
 import { getCookie } from '../utils/cookie.utils.ts';
 import { isUser } from '../types/user.type-guards.ts';
 import { populateEmptyKVslice } from './idb-data-store.utils.ts';
-import { isNonEmptyStr } from '../utils/data.utils.ts';
+import { isNonEmptyStr } from '../utils/string.utils.ts';
 
 const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourScheme } : TUser) => {
   populateEmptyKVslice(

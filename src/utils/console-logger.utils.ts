@@ -6,7 +6,7 @@
 import type { TCmethod, TKeys } from '../types/console-logger.d.ts';
 import type { IKeyValue } from '../types/data-simple.d.ts';
 import type FauxEvent from './FauxEvent.class.ts';
-import { isBoolTrue, isNonEmptyStr, isObj } from './data.utils.ts';
+import { isBoolTrue, isNonEmptyStr, isObj } from './string.utils.ts';
 
 
 /**

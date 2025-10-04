@@ -16,7 +16,7 @@ import type { IKiln, IUser } from './data.d.ts';
  */
 export type TStoreSlice = string;
 
-export type TStoreAction = 'setLoggedInUser' | 'updateKiln' | 'replace' | 'append'
+export type TStoreAction = 'setLoggedInUser' | 'updateKiln' | 'addKiln' | 'replace' | 'append'
 
 /**
  * CDataStoreClass calls `FReadyWatcher()`s when the data store is

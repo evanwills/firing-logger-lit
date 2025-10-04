@@ -1,5 +1,5 @@
 import { html, type LitElement, type TemplateResult } from 'lit';
-import { isNonEmptyStr } from './data.utils.ts';
+import { isNonEmptyStr } from './string.utils.ts';
 import type {
   ID,
   IIdNameObject,

@@ -4,7 +4,7 @@ import type { ID, IKeyValUrl } from '../../types/data-simple.d.ts';
 import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { IKiln} from '../../types/kilns.d.ts';
 import type { FiringStep, IStoredFiringProgram } from '../../types/programs.d.ts';
-import { isNonEmptyStr } from '../../utils/data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
   durationFromStep,
   hoursFromSeconds,

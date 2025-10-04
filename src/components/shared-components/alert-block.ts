@@ -1,7 +1,8 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 // import { hasSlotContent } from '../../utils/lit.utils.ts';
-import { emptyOrNull, isNonEmptyStr } from '../../utils/data.utils.ts';
+import { emptyOrNull } from '../../utils/data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 
 @customElement('alert-block')
 export class AlertBlock extends LitElement {

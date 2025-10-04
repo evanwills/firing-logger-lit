@@ -5,7 +5,8 @@ import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
 import '../lit-router/router-link.ts';
-import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
+import { getValFromKey } from '../../utils/data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 
 @customElement('kilns-list')

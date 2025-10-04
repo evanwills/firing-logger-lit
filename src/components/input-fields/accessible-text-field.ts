@@ -32,8 +32,8 @@ export class AccessibleTextField extends AccessibleWholeField {
   // START: state
 
   regexes : {[key:string]:RegExp} = {
-    name: /\w[\w\- .,\(\):\&\/]{3,49}/,
-    title: /[\w\d][\d\w\- .,\(\):\&\/\+]{3,49}/,
+    name: /\w[\w\- .,\(\):\&\/]{2,49}/,
+    title: /[\w\d][\d\w\- .,\(\):\&\/\+]{2,49}/,
   }
 
   //  END:  state

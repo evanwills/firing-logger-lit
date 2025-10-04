@@ -7,7 +7,8 @@ import type { TCheckboxValueLabel } from '../../types/renderTypes.d.ts';
 import type { TUniqueNameItem } from '../../types/data.d.ts';
 import type { IStoredFiringProgram } from '../../types/programs.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
-import { getValFromKey, isNonEmptyStr } from '../../utils/data.utils.ts';
+import { getValFromKey } from '../../utils/data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { tableStyles } from '../../assets/css/program-view-style.ts';
@@ -47,8 +48,8 @@ export class KilnDetails extends LoggerElement {
   @property({ type: String, attribute: 'kiln-uid' })
   kilnID : ID = '';
 
-  @property({ type: String, attribute: 'kiln-name' })
-  kilnName : string = '';
+  @property({ type: String, attribute: 'kiln-path' })
+  kilnPath : string = '';
 
   @property({ type: String, attribute: 'mode' })
   mode : string = '';
@@ -130,9 +131,9 @@ export class KilnDetails extends LoggerElement {
     onglaze: false,
     saggar: false,
     raku: false,
-    blackFiring: false,
-    rawGlaze: false,
-    saltGlaze: false,
+    black: false,
+    single: false,
+    salt: false,
   };
 
   @state()
@@ -223,10 +224,16 @@ export class KilnDetails extends LoggerElement {
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
 
+    // console.group('<kiln-details>._getFromStore()');
+    // console.log('this.kilnID:', this.kilnID);
+    // console.log('this.kilnPath:', this.kilnPath);
+    // console.log('this.mode:', this.mode);
+
     if (this._store !== null && Object.keys(this._fuelSources).length === 0) {
       const tmp = (this.mode === '')
-        ? await getKilnViewData(this._store, this.kilnID, this.kilnName)
-        : await getKilnEditData(this._store, this.kilnID, this.kilnName);
+        ? await getKilnViewData(this._store, this.kilnID, this.kilnPath)
+        : await getKilnEditData(this._store, this.kilnID, this.kilnPath);
+      // console.log('tmp:', tmp);
 
       this._kilnTypes = await tmp.EkilnTypes;
       this._kilnOpeningTypes = await tmp.EkilnOpeningType;
@@ -234,11 +241,13 @@ export class KilnDetails extends LoggerElement {
       this._programs = await tmp.programs;
       this._uniqueNames = tmp.uniqueNames;
       tmp.EfiringTypes.then(this._setFiringTypes.bind(this));
+      // console.log('tmp.kiln:', tmp.kiln);
 
       if (tmp.kiln !== null) {
         this._setKilnData(tmp.kiln);
       }
     }
+    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -375,10 +384,6 @@ export class KilnDetails extends LoggerElement {
       <ul class="multi-col-list three-col-list status">
         <li><read-only-field label="Install date" value="${ifDefined((this._installDate !== null) ? getHumanDate(this._installDate) : null)}"></read-only-field></li>
         <li><read-only-field label="Firing count" value="${this._useCount}"></read-only-field></li>
-        <li><read-only-field label="Is retired" .value="${this._isRetired}"></read-only-field></li>
-        <li><read-only-field label="Is working" .value="${this._isWorking}"></read-only-field></li>
-        <li><read-only-field label="Is in use" .value="${this._isInUse}"></read-only-field></li>
-        <li><read-only-field label="Is hot" .value="${this._isHot}"></read-only-field></li>
       </ul>`;
 
     return renderDetails(
