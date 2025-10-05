@@ -71,9 +71,12 @@
   --secondary-dash: 15 15;
   --subtitle-feature-font: var(--title-font);
   --subtitle-feature-font-size: 2rem;
-  --logo-fill: none;
-  --logo-stroke-colour: #FFF;
-  --logo-stroke-width: 0.346001;
+  --logo-fill: #fff;
+  --logo-inner-fill: var(--bg-colour, #242424);
+  --logo-inner-stroke-colour: transparent;
+  --logo-inner-stroke-width: 0;
+  --logo-stroke-colour: transparent;
+  --logo-stroke-width: 0;
   --logo-height: 2rem;
   --logo-margin-bottom: -0.5rem;
   --logo-margin-top: -0.5rem;
@@ -133,5 +136,11 @@ body {
     --logo-margin-bottom: -1.5rem;
     --logo-margin-top: -1rem;
     --logo-translate-y: 0;
+    --logo-fill: none;
+    --logo-inner-fill: none;
+    --logo-inner-stroke-colour: #fff;
+    --logo-inner-stroke-width: 0.346001;
+    --logo-stroke-colour: #FFF;
+    --logo-stroke-width: 0.346001;
   }
 }
