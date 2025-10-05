@@ -6,6 +6,12 @@ import '../components/programs/program-details-edit.ts';
 import '../components/kilns/kilns-list.ts';
 import '../components/kilns/kiln-details.ts';
 import '../components/kilns/kiln-details-edit.ts';
+import '../components/firings/firings-list.ts';
+// import '../components/firings/firing-view.ts';
+// import '../components/firings/firing-view-edit.ts';
+// import '../components/users/user-list.ts';
+import '../components/users/user-details.ts';
+import '../components/users/user-details-edit.ts';
 
 const home = ({ _SEARCH } : IKeyValue) : TemplateResult => html`<kilns-list
   filters=${_SEARCH}></kilns-list>`

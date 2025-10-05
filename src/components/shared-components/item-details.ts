@@ -107,6 +107,7 @@ export class ItemDetails extends LitElement {
       --rl-white-space: nowrap;
     }
     * { box-sizing: border-box; }
+    ul { --rl-white-space: normal; }
     ul, li {
       margin: 0;
       padding: 0;
@@ -114,9 +115,11 @@ export class ItemDetails extends LitElement {
       width: 100%;
     }
     p {
-      margin: 0;
+      margin: 0 0 1rem 0;
       font-style: italic;
       text-align: left;
+      padding-bottom: 1rem;
+      border-bottom: 0.05rem solid var(--table-border-colour, #ccc);
     }
     .summary-outer {
       container-name: summary-block;
@@ -130,6 +133,7 @@ export class ItemDetails extends LitElement {
       display: flex;
       flex-direction: column;
       align-self: flex-end;
+      width: 100%;
     }
 
     @container summary-block (width > 24rem) {
@@ -138,10 +142,22 @@ export class ItemDetails extends LitElement {
         column-gap: 1rem;
         align-items: stretch;
       }
-      .summary > p {
-        padding-right: 1rem;
-        border-right: 0.05rem solid var(--table-border-colour, #ccc);
-        max-width: 20rem;
+      .summary {
+        > p {
+          border-bottom: none;
+          padding-bottom: 0;
+          margin: 0;
+          padding-right: 1rem;
+          border-right: 0.05rem solid var(--table-border-colour, #ccc);
+          max-width: 20rem;
+          width: calc((100% - 1rem) / 2)
+        }
+        > ul {
+          flex-grow: 1;
+          flex-shrink: 0;
+          width: calc((100% - 1rem) / 2);
+
+        }
       }
     }
   `;

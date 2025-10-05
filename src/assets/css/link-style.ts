@@ -24,6 +24,12 @@ button:focus:not(.disabled) {
 	color: var(--rl-hover-colour);
 	text-decoration: var(--rl-hover-text-decoration);
 }
+a.active {
+  text-decoration: none;
+	color: var(--font-colour);
+  opacity: 0.75;
+  cursor: default;
+}
 
 .disabled {
   cursor: not-allowed;

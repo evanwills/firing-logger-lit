@@ -104,10 +104,11 @@ export class FiringLoggerLogo extends LitElement {
 
   static styles = css`
   svg {
-    display: block;
+    display: var(--logo-display, block);
     height: var(--logo-height, 2rem);
     margin-bottom: var(--logo-margin-bottom, -0.5rem);
     margin-top: var(--logo-margin-top, -0.5rem);
+    margin-inline: var(--logo-margin-inline, auto);
     transform: translateY(var(--logo-translate-y, 0.25rem));
     width: auto;
   }

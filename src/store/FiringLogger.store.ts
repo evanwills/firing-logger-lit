@@ -4,14 +4,15 @@ import type {
   FReadyWatcher,
   TActionList,
 } from '../types/store.d.ts';
+import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
 import PidbDataStore from './PidbDataStore.class.ts';
 import {
+  fetchLatest,
   populateEmptyEnumSlice,
   populateEmptyKVslice,
   populateEmptySlice,
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from './user-data.utils.ts';
-import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
 import { addNewKilnData, updateKilnData } from './kiln-store.utils.ts';
 
 let store : CDataStoreClass | null = null;
@@ -207,18 +208,23 @@ const migrateData : IDBPmigrate = async (
   db : IDBPDatabase,
   version : number,
 ) : Promise<void> => {
-  const dbVersion = await db.get('_meta', 'version');
-
-  if (typeof dbVersion !== 'string' || parseInt(dbVersion, 10) < version) {
+  if (db.version < version) {
     const loggerData = await globalThis.fetch('/data/firing-logger.json');
 
     if (loggerData.ok === true)  {
       const data = await loggerData.json();
-      // console.log('data:', data);
 
+      const now = Date.now();
       populateEmptyKVslice(
         db,
-        { version, date: new Date().toISOString() },
+        {
+          version,
+          date: new Date().toISOString(),
+          kilns: now,
+          programs: now,
+          firings: now,
+          users: now,
+        },
         '_meta',
         'replace',
       );
@@ -265,6 +271,7 @@ const actions : TActionList = {
   updateLoggedInUser: updateAuthUser,
   updateKiln: updateKilnData,
   addKiln: addNewKilnData,
+  fetchLatest,
 };
 
 export const getDataStoreClassSingleton = (

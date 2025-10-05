@@ -5,6 +5,7 @@ import { getDataStoreClassSingleton } from './store/FiringLogger.store.ts';
 import { wrapApp } from './utils/lit.utils.ts';
 import { getCookie } from './utils/cookie.utils.ts';
 import './components/lit-router/lit-router.ts';
+import { nanoid } from "nanoid";
 
 // We want to initialise the data store as soon as possible
 getDataStoreClassSingleton();
@@ -34,6 +35,18 @@ export class FiringLogger extends LitElement {
     // console.group('<firing-logger>._updateReady()');
     // console.info('DB is now ready');
     this._ready = true;
+    if (this._db !== null && this._db.ready === true) {
+      console.log('Fetching latest data on startup');
+      // console.log('this._db:', this._db);
+      // console.group('this._db.action()');
+      // console.log('this._db.actions:', this._db.actions);
+      // console.groupEnd();
+      // We don't await this - we just want to kick it off
+      // and let it happen in the background
+      this._db.action('fetchLatest', null).catch((error) => {
+        console.error('Failed to fetch latest data on startup:', error);
+      });
+    }
     // console.groupEnd();
   }
 
@@ -52,6 +65,8 @@ export class FiringLogger extends LitElement {
     super.connectedCallback();
     // console.group('<firing-logger>.connectedCallback()');
 
+    console.info('ID:', nanoid(10));
+
     this._path = globalThis.location.pathname;
     // console.log('this._path:', this._path);
 
@@ -59,12 +74,12 @@ export class FiringLogger extends LitElement {
     // console.groupEnd();
 
     // Usage:
-    const value = getCookie(import.meta.env.VITE_AUTH_COOKIE);
-    if (value !== null) {
-      console.log(`Cookie - ${import.meta.env.VITE_AUTH_COOKIE}:`, value);
-    } else {
-      console.log('Cookie does not exist or has expired.');
-    }
+    // const value = getCookie(import.meta.env.VITE_AUTH_COOKIE);
+    // if (value !== null) {
+    //   console.log(`Cookie - ${import.meta.env.VITE_AUTH_COOKIE}:`, value);
+    // } else {
+    //   console.log('Cookie does not exist or has expired.');
+    // }
   }
 
   render() : TemplateResult | string {
@@ -84,7 +99,7 @@ export class FiringLogger extends LitElement {
     :host {
       max-width: 1280px;
       margin: 0 auto;
-      width: calc(100% - 4rem);
+      width: calc(100% - 2rem);
       container-type: inline-size;
       container-name: firing-logger;
     }

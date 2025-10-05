@@ -10,6 +10,7 @@ import { dialogStyles } from '../../assets/css/dialog.css.ts';
 import { fieldListStyles } from '../../assets/css/input-field.css.ts';
 import '../input-fields/accessible-text-field.ts';
 import '../input-fields/accessible-password-field.ts';
+import './firing-logger-logo.ts';
 
 @customElement('login-ui')
 export class LoginUI extends LoggerElement {
@@ -180,7 +181,7 @@ export class LoginUI extends LoggerElement {
     //       This prevents previous user input values persisting
     return html`
       <dialog id="login" @keydown=${this._keydownHandler} @close=${this._cancel}>
-        <h2>Login to <span class="title">Firing Logger</span>${studio}</h2>
+        <h2>Login to <firing-logger-logo></firing-logger-logo>${studio}</h2>
         ${(this.open === true)
           ? html`
         <ul>
@@ -212,6 +213,7 @@ export class LoginUI extends LoggerElement {
       font-size: 1.15rem;
       font-weight: normal;
       margin-top: 0;
+      --logo-display: inline;
     }
     .title {
       font-family: var(--title-font, 'Harlow Solid', cursive);

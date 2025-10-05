@@ -1,11 +1,12 @@
 :root {
-  --bg-colour: #242424;
+  --bg-colour: #101112;
   --bg-colour-success: #005411;
   --bg-colour-warning: #864907;
   --bg-colour-error: #580a0a;
   --bg-colour-info: #260e5b;
-  --bg-colour: #242424;
-  --border-colour: #aaa;
+  --border-colour: #ccc;
+  --border: 0.05rem solid var(--border-colour, #ccc);
+  --border-radius: 0.25rem;
   --checkbox-indent: 1.65rem;
   --delete-bg: #aa0000;
   --dialog-max-width: 30rem;
@@ -15,7 +16,7 @@
   --error-colour: #f00;
   --grid-fill: none;
   --font-size: 3rem;
-  --font-colour: rgba(255, 255, 255, 0.87);
+  --font-colour: #e8e8e8;
   --font-weight: bold;
   --font-height: 3rem;
   --grid-stroke: #fff;
@@ -27,6 +28,18 @@
   --label-padding: 0.25rem 0 0;
   --label-width: 5.75rem;
   --label-y-translate: 0;
+  --logo-display: block;
+  --logo-fill: #fff;
+  --logo-inner-fill: var(--bg-colour, #242424);
+  --logo-inner-stroke-colour: transparent;
+  --logo-inner-stroke-width: 0;
+  --logo-stroke-colour: transparent;
+  --logo-stroke-width: 0;
+  --logo-height: 2rem;
+  --logo-margin-bottom: -0.5rem;
+  --logo-margin-inline: auto;
+  --logo-margin-top: -0.5rem;
+  --logo-translate-y: 0.25rem;
   --max-width: 40rem;
   --multi-col-list-margin-block: 1rem;
   --multi-col-list-margin-inline-start: 0;
@@ -39,7 +52,7 @@
   --rl-background-colour: inherit;
   --rl-border: inherit;
   --rl-border-radius: inherit;
-  --rl-colour: #a7f;
+  --rl-colour: #998eff;
   --rl-font-family: inherit;
   --rl-font-weight: bold;
   --rl-font-size: inherit;
@@ -71,16 +84,6 @@
   --secondary-dash: 15 15;
   --subtitle-feature-font: var(--title-font);
   --subtitle-feature-font-size: 2rem;
-  --logo-fill: #fff;
-  --logo-inner-fill: var(--bg-colour, #242424);
-  --logo-inner-stroke-colour: transparent;
-  --logo-inner-stroke-width: 0;
-  --logo-stroke-colour: transparent;
-  --logo-stroke-width: 0;
-  --logo-height: 2rem;
-  --logo-margin-bottom: -0.5rem;
-  --logo-margin-top: -0.5rem;
-  --logo-translate-y: 0.25rem;
   --table-border-colour: var(--border-colour, #aaa);
   --table-cell-padding: 0.25em 0.5em;
   --textarea-height: 3.5rem;
@@ -127,20 +130,5 @@ body {
     --log-stroke: #66195c;
     --program-stroke: #1d7527;
     --rect-stroke: #2b1b6f;
-  }
-}
-
-@media screen and (min-width: 36rem) {
-  :root {
-    --logo-height: 3rem;
-    --logo-margin-bottom: -1.5rem;
-    --logo-margin-top: -1rem;
-    --logo-translate-y: 0;
-    --logo-fill: none;
-    --logo-inner-fill: none;
-    --logo-inner-stroke-colour: #fff;
-    --logo-inner-stroke-width: 0.346001;
-    --logo-stroke-colour: #FFF;
-    --logo-stroke-width: 0.346001;
   }
 }

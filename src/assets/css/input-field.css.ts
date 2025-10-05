@@ -32,6 +32,7 @@ export const inputFieldCSS = css`
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
+  justify-self: stretch;
 }
 .inner:not(.no-label) {
   column-gap: var(--label-gap, 0.5rem);
@@ -51,6 +52,10 @@ export const inputFieldCSS = css`
 }
 
 .inner * { box-sizing: border-box; }
+
+.input-flex {
+  display: flex;
+}
 
 .label, label {
   font-weight: bold;
@@ -85,7 +90,6 @@ export const inputFieldCSS = css`
   grid-area: help;
   font-size: 0.875rem;
   font-style: italic;
-
 }
 .inner > .input,
 .inner > input,
@@ -94,14 +98,15 @@ export const inputFieldCSS = css`
   grid-area: input;
   display: inline-block;
 }
-.inner > .input-flex,
+.inner > .input-flex {
   grid-area: input;
-  display: flex;
 }
 
 .input {
   white-space: var(--input-white-space, wrap);
+  flex-grow: 1;
 }
+.input.nowrap { white-space: nowrap; }
 
 .input, input, select, textarea {
   font-family: inherit;
@@ -110,12 +115,35 @@ export const inputFieldCSS = css`
   justify-self: start;
   align-self: start;
 }
-.input.password, input[type=checkbox] {
+input[type=checkbox] {
   padding: 0;
+}
+.password {
+  flex-grow: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.password-btn {
+  display: inline-block;
+  width: 2.5rem;
+  border: none;
+  border-top: var(--border);
+  border-right: var(--border);
+  border-bottom: var(--border);
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+.password-show {
+  background: #900 url('/src/assets/icons/show.svg') no-repeat center;
+  background-size: 1.5rem;
+}
+.password-hide {
+  background: #050 url('/src/assets/icons/hide.svg') no-repeat center;
+  background-size: 1.5rem;
 }
 
 input, select, textarea {
-  border: 0.05rem solid #ccc;
+  border: var(--border);
   border-radius: 0.25rem;
 }
 .had-focus input:invalid, .had-focus select:invalid, .had-focus textarea:invalid {
@@ -131,7 +159,7 @@ input[type="number"] {
   padding-right: 0;
 }
 
-input[type="text"] {
+input[type="text"]:not(.password) {
   font-family: inherit;
   font-size: inherit;
   padding-right: 0.5rem;

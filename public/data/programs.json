@@ -1,0 +1,98 @@
+[
+  {
+    "id": "f6afaRKAiy",
+    "kilnID": "AXARcxcpZN",
+    "controllerProgramID": 1,
+    "type": "glaze",
+    "name": "Mid-fire glaze (1210°C)",
+    "urlPart": "mid-fire-bisque-1210",
+    "version": 1,
+    "description": "Cone 6 glaze firing",
+    "maxTemp": 1210,
+    "duration": 38400,
+    "cone": "6",
+    "averageRate": 93.75,
+    "created": "2025-09-12T21:05:00+10:00",
+    "createdBy": "wfj_myxTAV",
+    "superseded": false,
+    "parentID": "",
+    "used": true,
+    "useCount": 1,
+    "deleted": false,
+    "locked": false,
+    "steps": [
+      {
+        "order": 1,
+        "endTemp": 1000,
+        "rate": 150,
+        "hold": 0
+      },
+      {
+        "order": 2,
+        "endTemp": 1100,
+        "rate": 100,
+        "hold": 10
+      },
+      {
+        "order": 3,
+        "endTemp": 1200,
+        "rate": 60,
+        "hold": 10
+      },
+      {
+        "order": 4,
+        "endTemp": 1000,
+        "rate": 75,
+        "hold": 0
+      }
+    ]
+  },
+  {
+    "id": "ZQfi3zS0Rt",
+    "kilnID": "WpnCnk5aLA",
+    "controllerProgramID": 1,
+    "type": "bisque",
+    "name": "Normal bisque",
+    "urlPart": "normal-bisque",
+    "version": 1,
+    "description": "Cone 06 bisque firing for small to medium sized work",
+    "maxTemp": 1000,
+    "duration": 38400,
+    "cone": "06",
+    "averageRate": 93.75,
+    "created": "2025-08-25T18:30:00+10:00",
+    "createdBy": "wfj_myxTAV",
+    "superseded": false,
+    "parentID": "",
+    "used": true,
+    "useCount": 1,
+    "deleted": false,
+    "locked": false,
+    "steps": [
+      {
+        "order": 1,
+        "endTemp": 225,
+        "rate": 75,
+        "hold": 0
+      },
+      {
+        "order": 2,
+        "endTemp": 525,
+        "rate": 150,
+        "hold": 0
+      },
+      {
+        "order": 3,
+        "endTemp": 725,
+        "rate": 100,
+        "hold": 0
+      },
+      {
+        "order": 4,
+        "endTemp": 1000,
+        "rate": 75,
+        "hold": 0
+      }
+    ]
+  }
+]

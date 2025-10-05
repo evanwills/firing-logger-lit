@@ -8,7 +8,7 @@ import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
 
-@customElement('firing-list')
+@customElement('firings-list')
 export class FiringsList extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes`;
@@ -73,7 +73,7 @@ export class FiringsList extends LoggerElement {
     console.log('data:', data);
     console.log('this._firingList (after):', this._firingList);
     console.log('this._ready (before):', this._ready);
-    this._firingList = data;
+    this._firingList = [];
     this._ready = true;
 
     console.log('this._ready (before):', this._ready);
@@ -154,12 +154,13 @@ export class FiringsList extends LoggerElement {
       ? html`<table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Energy source</th>
+            <th>Date</th>
+            <th>Kiln</th>
+            <th>Program</th>
             <th>Top temp</th>
-            <th>Cone</th>
-            <th>Duration</th>
-            <th>Width</th>
+            <!-- <th>Cone</th>
+            <th>Duration</th> -->
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -183,6 +184,6 @@ export class FiringsList extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'firing-list': FiringsList,
+    'firings-list': FiringsList,
   }
 };

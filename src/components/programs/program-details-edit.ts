@@ -1,5 +1,5 @@
 import { html, type TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 // import { customElement, property, state } from 'lit/decorators.js';
 // import type { ID } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
@@ -54,7 +54,8 @@ export class ProgramDetailsEdit extends ProgramDetails {
   // _lUnit : string = 'mm';
   //
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+  @state()
+  _canSave : boolean = false;
 
   //  END:  state
   // ------------------------------------------------------
@@ -144,6 +145,12 @@ export class ProgramDetailsEdit extends ProgramDetails {
     this._maxTemp = maxTempFromSteps(this._tmpSteps);
     this._duration = durationFromSteps(this._tmpSteps);
     this._cone = getTopCone(this._tmpSteps, this._maxTemp);
+  }
+
+  handleSave(event : CustomEvent) : void {
+    console.log('handleSave()');
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   //  END:  event handlers
@@ -281,6 +288,24 @@ export class ProgramDetailsEdit extends ProgramDetails {
           </tr>
         </tfoot>
       </table>`;
+  }
+
+  renderButtonInner() : TemplateResult {
+    const path = `/kilns/${this._kilnUrlPart}/programs/${this._urlPart}`;
+    return html`
+      <router-link
+        button
+        class="btn"
+        ?disabled=${!this._canSave}
+        label="Save"
+        srLabel="changes to ${this._name}"
+        url="${path}"
+        @click=${this.handleSave}></router-link><router-link
+      class="btn"
+      label="Cancel"
+      sr-label="${this._name} for ${this._kilnName}"
+      uid="${this.programID}"
+      url="${path}" ></router-link>`;
   }
 
   //  END:  helper render methods

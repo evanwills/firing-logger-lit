@@ -10,6 +10,7 @@ import { dispatchCustomEvent } from '../../utils/event.utils.ts';
 import { checkboxListStyles, inputFieldCSS } from '../../assets/css/input-field.css.ts';
 import FocusableInside from './FocusableInside.ts';
 import { multiColListStyles, threeColListStyles } from "../../assets/css/lists.css.ts";
+import { srOnly } from "../../assets/css/sr-only.ts";
 
 export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
@@ -379,7 +380,7 @@ export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css`${inputFieldCSS} ${multiColListStyles} ${threeColListStyles} ${checkboxListStyles}`;
+  static styles = css`${inputFieldCSS} ${multiColListStyles} ${threeColListStyles} ${checkboxListStyles} ${srOnly}`;
 
   //  END:  styles
   // ------------------------------------------------------

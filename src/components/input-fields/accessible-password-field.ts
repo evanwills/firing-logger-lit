@@ -73,20 +73,24 @@ export class AccessiblePasswordField extends AccessibleWholeField {
     return html`
       <span class="input-flex">
         <input
-        ?disabled=${ifDefined(this.disabled)}
-        .id="${this.fieldID}"
-        .maxlength=${ifDefined(this.maxlength)}
-        .minlength=${ifDefined(this.minlength)}
-        .pattern=${ifDefined(this.pattern)}
-        ?placeholder=${this.placeholder}
-        ?readonly=${this.readonly}
-        ?required=${this.required}
-        .type="${this._type}"
-        .value=${ifDefined(this.value)}
-        @change=${this.handleChange}
-        @keyup=${this.handleKeyup} />
+          class="password"
+          ?disabled=${ifDefined(this.disabled)}
+          .id="${this.fieldID}"
+          .maxlength=${ifDefined(this.maxlength)}
+          .minlength=${ifDefined(this.minlength)}
+          .pattern=${ifDefined(this.pattern)}
+          ?placeholder=${this.placeholder}
+          ?readonly=${this.readonly}
+          ?required=${this.required}
+          .type="${this._type}"
+          .value=${ifDefined(this.value)}
+          @change=${this.handleChange}
+          @keyup=${this.handleKeyup} />
 
-        <button @click=${this.toggleVisibility}>
+        <button
+          class="password-btn password-${this._btnIcon}"
+          type="button"
+          @click=${this.toggleVisibility}>
           ${this._btnIcon}
           <span class="sr-only">${this._btnTxt} password</span>
         </button>

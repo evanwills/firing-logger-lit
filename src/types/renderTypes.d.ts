@@ -28,7 +28,7 @@ export type TCheckboxValueLabel = {
 
 export type FSanitise = (input: string) => string;
 
-export type FWrapOutput = (input : TemplateResult | string) => TemplateResult;
+export type FWrapOutput = (input : TemplateResult | string, path: string) => TemplateResult;
 
 export type FIsChecked = (option : TCheckboxValueLabel | TOptionValueLabel) => boolean;
 

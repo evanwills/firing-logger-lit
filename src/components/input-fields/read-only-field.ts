@@ -9,17 +9,26 @@ export class ReadOnlyField extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: String, attribute: 'label' })
-  label : string = '';
-
-  @property({ type: String, attribute: 'value' })
-  value : string | boolean | null = '';
+  @property({ type: Boolean, attribute: 'grow' })
+  grow : boolean = false;
 
   @property({ type: String, attribute: 'help-text' })
   helpMsg : string = '';
 
+  @property({ type: String, attribute: 'label' })
+  label : string = '';
+
+  @property({ type: Boolean, attribute: 'nowrap' })
+  nowrap : boolean = false;
+
+  @property({ type: String, attribute: 'uid' })
+  uid : string = '';
+
   @property({ type: String, attribute: 'url' })
   url : string = '';
+
+  @property({ type: String, attribute: 'value' })
+  value : string | boolean | null = '';
 
 
   //  END:  properties/attributes
@@ -75,6 +84,14 @@ export class ReadOnlyField extends LitElement {
       val = '';
     }
 
+    const nowrap = (this.nowrap === true)
+      ? ' nowrap'
+      : '';
+
+    const grow = (this.grow === true)
+      ? ' grow'
+      : '';
+
 
     return html`
       <div class="outer">
@@ -83,8 +100,9 @@ export class ReadOnlyField extends LitElement {
           ${isNonEmptyStr(this.url)
             ? html`<router-link
                 label="${val}"
-                url="${this.url}"></router-link>`
-            : html`<span class="input"><slot name="value">${val}</slot></span>`
+                url="${this.url}"
+                data-uid="${this.uid}"></router-link>`
+            : html`<span class="input${nowrap}${grow}"><slot name="value">${val}</slot></span>`
           }
 
           ${this.renderHelp()}

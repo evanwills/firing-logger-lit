@@ -329,3 +329,115 @@ export const getByKeyValue = async (
     })
   }
 }
+
+export const pullStoreData = async (
+  db : IDBPDatabase,
+  storeName : string,
+  url: string,
+  now: boolean = false,
+) : Promise<(void|IDBValidKey)[]> => {
+  console.group('pullStoreData()');
+  console.log('storeName:', storeName);
+  // console.log('url:', url);
+  // console.log('now:', now);
+
+  const last = await db.get('_meta', storeName);
+
+  const when = (now === true)
+    ? 300000 // 5 minutes
+    : 86400000; // 24 hours
+
+  console.log('last:', last);
+  console.log(`lastFetched ${storeName}:`, last?.value);
+  console.log('when:', when);
+  console.groupEnd();
+  if (typeof last === 'undefined' || (Date.now() - last.value) > when) {
+    console.log('Fetching new data for', storeName);
+
+    try {
+      const response = await fetch(url);
+
+      // console.log('response:', response);
+
+      if (response.ok) {
+        // console.log('Update last fetched time for', storeName);
+        db.put('_meta', { key: storeName, value: Date.now() });
+        console.log('newLast:', await db.get('_meta', storeName));
+
+        const data : IIdObject[]= await response.json();
+        // console.log('data:', data);
+
+
+        if (Array.isArray(data) && data.length > 0) {
+          const newItems : IIdObject[] = [];
+
+          for (const item of data) {
+            if (typeof item.id !== 'undefined') {
+              const _tmp = await db.get(storeName, item.id);
+              if (typeof _tmp === 'undefined' || _tmp === null) {
+                newItems.push(item);
+              }
+            }
+          }
+
+          const added = [];
+
+          if (newItems.length > 0) {
+            const tx = db.transaction(storeName, 'readwrite');
+
+            for (const item of newItems) {
+              console.log('New item:', item);
+              added.push(await tx.store.add(item));
+            }
+
+            added.push(tx.done);
+
+            console.info('Added', newItems.length, 'new items to', storeName);
+            // console.groupEnd();
+
+            return Promise.all(added);
+          }
+
+          console.info('No new items to add to', storeName);
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching data:', e);
+    }
+  } else {
+    console.info(`Data for "${storeName}" is up to date.`);
+  }
+
+  // console.groupEnd();
+  return Promise.resolve([]);
+}
+
+export const fetchLatestKilns = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+  console.info('fetchLatestKilns()');
+  await pullStoreData(db, 'kilns', '/data/kilns.json').catch(storeCatch);
+};
+
+export const fetchLatestPrograms = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+  console.info('fetchLatestPrograms()');
+  await pullStoreData(db, 'programs', '/data/programs.json').catch(storeCatch);
+};
+
+export const fetchLatestFirings = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+  console.info('fetchLatestFirings()');
+  await pullStoreData(db, 'firings', '/data/firings.json').catch(storeCatch);
+};
+
+export const fetchLatestUsers = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+  console.info('fetchLatestUsers()');
+  await pullStoreData(db, 'users', '/data/users.json', true).catch(storeCatch);
+};
+
+export const fetchLatest = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+  console.info('fetchLatest()');
+  await Promise.all([
+    // fetchLatestFirings(db),
+    fetchLatestKilns(db),
+    fetchLatestPrograms(db),
+    // fetchLatestUsers(db),
+  ]).catch(storeCatch).finally(() => { console.groupEnd(); });
+};

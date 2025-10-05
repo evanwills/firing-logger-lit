@@ -9,10 +9,13 @@ export class RouterLink extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  @property({ type: Boolean, attribute: 'active' })
+  active : boolean = false;
+
   @property({ type: Boolean, attribute: 'button' })
   asBtn : boolean = false;
 
-  @property({ type: Boolean, attribute: 'disabled' })
+    @property({ type: Boolean, attribute: 'disabled' })
   disabled : boolean = false;
 
   @property({ type: String, attribute: 'url' })
@@ -36,8 +39,11 @@ export class RouterLink extends LitElement {
     const extra = (this.disabled === true)
       ? ' disabled'
       : '';
+    const active = (this.active === true)
+      ? ' active'
+      : '';
 
-    return `router-link${extra}`;
+    return `router-link${extra}${active}`;
   }
 
   //  END:  helper methods

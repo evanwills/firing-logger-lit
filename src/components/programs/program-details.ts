@@ -290,7 +290,7 @@ export class ProgramDetails extends LoggerElement {
   renderButtonInner() : TemplateResult {
     return html`<router-link
       class="btn"
-      label="edit"
+      label="Edit"
       sr-label="${this._name} for ${this._kilnName}"
       uid="${this.programID}"
       url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>`;

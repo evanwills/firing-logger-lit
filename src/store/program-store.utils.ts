@@ -1,7 +1,9 @@
 import type { ID } from "../types/data-simple.d.ts";
 import type { IKiln } from "../types/kilns.d.ts";
+import { isProgram } from "../types/program.type-guards.ts";
 import type { IProgram, PProgramDetails } from "../types/programs.d.ts";
 import type { CDataStoreClass } from "../types/store.d.ts";
+import { validateProgramData } from "../utils/program.utils.ts";
 import { isNonEmptyStr } from "../utils/string.utils.ts";
 import { getKiln } from "./kiln-store.utils.ts";
 
@@ -15,14 +17,16 @@ export const getProgram = async (input : Promise<IProgram|IProgram[]|null|undefi
   }
   // console.log('kiln (after):', kiln);
   // console.log('isKiln(kiln):', isKiln(kiln));
-  const _tmp = validateKilnData(program);
+
+  const _tmp = validateProgramData(program);
   // console.log('_tmp:', _tmp);
   if (_tmp !== null) {
     console.warn('Kiln data is invalid:', _tmp);
+    return null;
   }
   // console.groupEnd();
 
-  return (isKiln(program))
+  return isProgram(program)
     ? program
     : null;
 }
@@ -45,10 +49,10 @@ export const getBasicProgramData = async (
 
 
   if (isNonEmptyStr(id)) {
-    _program = await db.read('programs', `#${id}`);
+    _program = await getProgram(db.read('programs', `#${id}`));
 
     if (_program !== null) {
-      kiln = db.read('kilns', `#${_program.kilnID}`);
+      kiln = getKiln(db.read('kilns', `#${_program.kilnID}`));
     }
 
     program = Promise.resolve(_program);
@@ -56,7 +60,7 @@ export const getBasicProgramData = async (
     _kiln = await getKiln(db.read('kilns', `urlPart=${kilnUrlPart}`));
 
     if (_kiln !== null) {
-      program = db.read('programs', `kilnID=${_kiln.id}&&urlPart=${programUrlPart}`);
+      program = getProgram(db.read('programs', `kilnID=${_kiln.id}&&urlPart=${programUrlPart}`));
     }
 
     kiln = Promise.resolve(_kiln);

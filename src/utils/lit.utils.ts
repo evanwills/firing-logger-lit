@@ -51,7 +51,7 @@ export const hasSlotContent = (
     .length > 0);
 };
 
-export const wrapApp : FWrapOutput = (input : TemplateResult | string) : TemplateResult => html`<firing-logger-wrapper data-wrap-app>${input}</firing-logger-wrapper>`
+export const wrapApp : FWrapOutput = (input : TemplateResult | string, path: string) : TemplateResult => html`<firing-logger-wrapper data-wrap-app path="${path}">${input}</firing-logger-wrapper>`
 
 export const getNameByID = <Type>(input : Type[], id: ID) : string => {
   const output = input.find((item) => (item as IIdNameObject).id === id);

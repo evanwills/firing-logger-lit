@@ -102,7 +102,7 @@ export default class PidbDataStore implements CDataStoreClass {
   // ------------------------------------------------------
   // START: class getters
 
-  get ready() : boolean { return this._ready; }
+  get ready() : boolean { return this._ready && this._db !== null; }
 
   get loading() : boolean { return this._loading; }
 
@@ -198,6 +198,7 @@ export default class PidbDataStore implements CDataStoreClass {
     payload: any = null,
   ) : Promise<any> {
     // console.group('PidbDataStore.action');
+    // console.log('this._db:', this._db);
     // console.log('action:', action);
     // console.log('payload:', payload);
     // console.log('this._actions:', this._actions);
@@ -207,7 +208,16 @@ export default class PidbDataStore implements CDataStoreClass {
     if (typeof this._actions[action] === 'function') {
       // console.info('Yay!!! We found an action');
       // console.groupEnd();
-      return this._actions[action](this._db, payload);
+      if (this._db !== null) {
+        return this._actions[action](this._db, payload);
+      } else {
+        const laterAction = () : Promise<any> => {
+          return this._actions[action](this._db, payload);
+        };
+
+        this.watchReady(laterAction.bind(this))
+        return Promise.resolve('The database is not yet ready. So, we\'ve added a ready watcher for this action.');
+      }
     }
 
     // console.error(`Boo!!! No action found for "${action}"`)
