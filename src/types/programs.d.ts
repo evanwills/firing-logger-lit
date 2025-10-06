@@ -25,7 +25,7 @@ export interface IProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObje
   createdBy: ID,
   version: number,
   superseded: boolean,
-  parentID: string,
+  parentID: ID | null,
   useCount: number,
   deleted: boolean,
   locked: boolean,

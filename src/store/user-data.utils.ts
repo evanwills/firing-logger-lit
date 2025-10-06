@@ -32,12 +32,15 @@ export const getAuthUser = async (db : IDBPDatabase) : Promise<TUser|null> => {
 
   const localUser = await db.get('userPreferences', 'id');
   const tmp = db.get('users', userID);
-
+  // console.log('localUser:', localUser);
+  // console.log('userID:', userID);
+  // console.log('tmp:', tmp);
   if (localUser === userID) {
     return tmp
   }
 
   const userData : TUser = await tmp;
+  // console.log('tmp:', tmp);
 
   if (isUser(userData)) {
     setUserPrefs(db, userData);

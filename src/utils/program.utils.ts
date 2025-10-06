@@ -1,3 +1,4 @@
+import { isID } from "../types/data.type-guards.ts";
 import type { FiringStep, IProgram } from "../types/programs.d.ts";
 import { isNumMinMax, isObj } from "./data.utils.ts";
 import { isNonEmptyStr } from "./string.utils.ts";
@@ -75,11 +76,11 @@ export const validateProgramData = (program: unknown) : string | null => {
     return 'program is not an object';
   }
 
-  if (isNonEmptyStr(program, 'id') === false) {
+  if (isID((program as IProgram).id) === false) {
     return getProgramError('id', 'string');
   }
 
-  if (isNonEmptyStr(program, 'kilnID') === false) {
+  if (isID((program as IProgram).kilnID) === false) {
     return getProgramError('kilnID',' string');
   }
 
@@ -139,7 +140,7 @@ export const validateProgramData = (program: unknown) : string | null => {
     return getProgramError('created', 'string');
   }
 
-  if (isNonEmptyStr(program, 'createdBy') === false) {
+  if (isID((program as IProgram).createdBy) === false) {
     return getProgramError('createdBy', 'string');
   }
 
@@ -151,7 +152,7 @@ export const validateProgramData = (program: unknown) : string | null => {
     return getProgramError('superseded', 'boolean');
   }
 
-  if (isNonEmptyStr(program, 'parentID') === false) {
+  if ((program as IProgram).parentID !== null && isID((program as IProgram).parentID) === false) {
     return getProgramError('parentID', 'string');
   }
 

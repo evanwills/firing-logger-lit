@@ -1,11 +1,10 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { nanoid } from "nanoid";
 import type { CDataStoreClass } from './types/store.d.ts';
 import { getDataStoreClassSingleton } from './store/FiringLogger.store.ts';
 import { wrapApp } from './utils/lit.utils.ts';
-import { getCookie } from './utils/cookie.utils.ts';
 import './components/lit-router/lit-router.ts';
-import { nanoid } from "nanoid";
 
 // We want to initialise the data store as soon as possible
 getDataStoreClassSingleton();
@@ -36,7 +35,7 @@ export class FiringLogger extends LitElement {
     // console.info('DB is now ready');
     this._ready = true;
     if (this._db !== null && this._db.ready === true) {
-      console.log('Fetching latest data on startup');
+      console.info('Fetching latest data on startup');
       // console.log('this._db:', this._db);
       // console.group('this._db.action()');
       // console.log('this._db.actions:', this._db.actions);

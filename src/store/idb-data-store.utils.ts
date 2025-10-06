@@ -336,8 +336,8 @@ export const pullStoreData = async (
   url: string,
   now: boolean = false,
 ) : Promise<(void|IDBValidKey)[]> => {
-  console.group('pullStoreData()');
-  console.log('storeName:', storeName);
+  // console.group('pullStoreData()');
+  // console.log('storeName:', storeName);
   // console.log('url:', url);
   // console.log('now:', now);
 
@@ -347,10 +347,10 @@ export const pullStoreData = async (
     ? 300000 // 5 minutes
     : 86400000; // 24 hours
 
-  console.log('last:', last);
-  console.log(`lastFetched ${storeName}:`, last?.value);
-  console.log('when:', when);
-  console.groupEnd();
+  // console.log('last:', last);
+  // console.log(`lastFetched ${storeName}:`, last?.value);
+  // console.log('when:', when);
+  // console.groupEnd();
   if (typeof last === 'undefined' || (Date.now() - last.value) > when) {
     console.log('Fetching new data for', storeName);
 

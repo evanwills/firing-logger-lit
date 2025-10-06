@@ -188,22 +188,22 @@ export default [
   },
   {
     route: '/kilns/:kilnPath/programs/:programPath/edit',
-    render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => {
-      console.group('routes.ts /kilns/:kilnPath/programs/:programPath/edit');
-      console.log('_DATA:', _DATA);
-      console.log('_DATA.uid:', _DATA.uid);
-      console.log('kilnPath:', kilnPath);
-      console.log('programPath:', programPath);
-      console.groupEnd();
-      return html`<program-details-edit
-      kiln-path="${kilnPath}"
-      program-path="${programPath}"
-      program-uid="${_DATA.uid}"></program-details-edit>`;
-    },
-    // render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => html`<program-details-edit
+    // render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => {
+    //   console.group('routes.ts /kilns/:kilnPath/programs/:programPath/edit');
+    //   console.log('_DATA:', _DATA);
+    //   console.log('_DATA.uid:', _DATA.uid);
+    //   console.log('kilnPath:', kilnPath);
+    //   console.log('programPath:', programPath);
+    //   console.groupEnd();
+    //   return html`<program-details-edit
     //   kiln-path="${kilnPath}"
     //   program-path="${programPath}"
-    //   program-uid="${_DATA.uid}"></program-details-edit>`,
+    //   program-uid="${_DATA.uid}"></program-details-edit>`;
+    // },
+    render: ({ kilnPath, programPath, _DATA } : IKeyValue) : TemplateResult => html`<program-details-edit
+      kiln-path="${kilnPath}"
+      program-path="${programPath}"
+      program-uid="${_DATA.uid}"></program-details-edit>`,
   },
   {
     route: '/kilns/:kilnPath/programs/:programPath/firings',

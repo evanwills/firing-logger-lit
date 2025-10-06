@@ -248,7 +248,7 @@ export class LitRouter extends LitElement {
       return this._wrap(possibleRoute.render(args), this._url);
     }
 
-    return this._wrap(this.renderNotFound());
+    return this._wrap(this.renderNotFound(), this._url);
   }
 
   //  END:  main render method

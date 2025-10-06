@@ -1,9 +1,9 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { ID, IKeyValUrl } from '../../types/data-simple.d.ts';
+import type { ID, IKeyStr, IKeyValUrl } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { IKiln} from '../../types/kilns.d.ts';
-import type { FiringStep, IProgram } from '../../types/programs.d.ts';
+import type { FiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
   durationFromStep,
@@ -21,6 +21,9 @@ import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
+import { isIKeyStr } from "../../types/data.type-guards.ts";
+import { isKiln } from "../../types/kiln.type-guards.ts";
+import { enumToOptions } from "../../utils/lit.utils.ts";
 
 /**
  * An example element.
@@ -113,85 +116,91 @@ export class ProgramDetails extends LoggerElement {
   _programData : IProgram | null = null;
 
   @state()
+  _kilnData : IKiln | null = null;
+
+  @state()
   _tmpSteps : FiringStep[] = [];
 
   @state()
   _stepCount : number = 0;
 
   @state()
-  _firingTypes : TOptionValueLabel[] = [];
+  _firingTypes : IKeyStr | null = null;
+
+  @state()
+  _firingTypeOptions : TOptionValueLabel[] = [];
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnData(data : IKiln | null) : void {
-    if (data !== null) {
-      this._kilnName = data.name;
-      this._kilnUrlPart = data.urlPart;
-      this._kilnID = data.id;
+  async _setProgramData({ EfiringTypes, program, kiln } : PProgramDetails) : Promise<void> {
+    console.group('<program-details>._setProgramData()');
+    // console.log('EfiringTypes:', EfiringTypes);
+    // console.log('program:', program);
+    // console.log('kiln:', kiln);
+    const _program = await program;
+    const _kiln = await kiln;
+    const _EfiringTypes = await EfiringTypes;
+    console.log('_EfiringTypes:', _EfiringTypes);
+    console.log('_program:', _program);
+    console.log('_kiln:', _kiln);
+    console.log('this._edit:', this._edit);
+
+    if (_program !== null) {
+      this._programData = _program;
+      this._name = _program.name;
+      this._kilnID = _program.kilnID;
+      this._urlPart = _program.urlPart;
+      this._cone = _program.cone;
+      this._controllerID = _program.controllerProgramID;
+      this._description = _program.description;
+      this._maxTemp = _program.maxTemp;
+      this._duration = _program.duration;
+      this._steps = _program.steps;
+      this._type = _program.type;
       this._ready = true;
     }
-  }
 
-  _setKilnByURL(data : IKiln[]) : void {
-    if (data !== null) {
-      this._kilnName = data[0].name
-      this._kilnUrlPart = data[0].urlPart
-      this._kilnID = data[0].id
-
-      if (this._store !== null) {
-        this._store
-          .read('programs', `kilnID=${this._kilnID}&&urlPart=${this.programPath}`)
-          .then(this._setProgramData.bind(this));
-
-      }
+    if (isKiln(_kiln) === true) {
+      this._kilnData = _kiln;
+      this._kilnName = _kiln.name;
+      this._kilnUrlPart = _kiln.urlPart;
     }
-  }
 
-  _setProgramData(data : IProgram) : void {
-    if (data !== null) {
-      const _data = (Array.isArray(data))
-        ? data[0]
-        : data;
-      this._programData = _data;
-      this._name = _data.name;
-      this._kilnID = _data.kilnID;
-      this._urlPart = _data.urlPart;
-      this._cone = _data.cone;
-      this._controllerID = _data.controllerProgramID;
-      this._description = _data.description;
-      this._maxTemp = _data.maxTemp;
-      this._duration = _data.duration;
-      this._steps = _data.steps;
-      this._type = _data.type;
-      this._ready = true;
-
-      if (this._kilnName === '') {
-        this._store?.read('kilns', `#${this._kilnID}`).then(this._setKilnData.bind(this));
-      }
-    };
+    if (isIKeyStr(_EfiringTypes) && this._kilnData !== null) {
+      this._firingTypes = _EfiringTypes;
+      this._firingTypeOptions = enumToOptions(this._firingTypes)
+        .filter((option : TOptionValueLabel) => (isNonEmptyStr(option.value) === true
+          && typeof this._kilnData !== 'undefined'
+          && (this._kilnData as IKiln)[option.value] === true));
+      console.log('this._firingTypeOptions:', this._firingTypeOptions);
+    }
+    console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
-    console.group('ProgramDetails._getFromStore()');
-    console.log('this._store:', this._store);
-    console.log('this.programID:', this.programID);
-    console.log('this.programPath:', this.programPath);
-    console.log('this.kilnPath:', this.kilnPath);
+    // console.group('<program-details>._getFromStore()');
+    // console.log('this._store:', this._store);
+    // console.log('this.programID:', this.programID);
+    // console.log('this.programPath:', this.programPath);
+    // console.log('this.kilnPath:', this.kilnPath);
 
     if (this._store !== null) {
-      if (isNonEmptyStr(this.programID)) {
-        this._store.read('programs', `#${this.programID}`).then(this._setProgramData.bind(this));
-      } else if (isNonEmptyStr(this.kilnPath) && (isNonEmptyStr(this.programPath))) {
-        this._store.read('kilns', `urlPart=${this.kilnPath}`).then(this._setKilnByURL.bind(this));
-
-      }
+      this._store.action(
+        'getProgramData',
+        {
+          id: this.programID,
+          kilnUrlPart: this.kilnPath,
+          programUrlPart: this.programPath
+        },
+        false,
+      ).then(this._setProgramData.bind(this));
     } else {
       this._ready = true;
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -208,11 +217,13 @@ export class ProgramDetails extends LoggerElement {
 
   connectedCallback() : void {
     super.connectedCallback();
+    // console.group('<program-details>.connectedCallback()');
+    // console.log('this.programID', this.programID);
+    // console.log('this.programPath', this.programPath);
+    // console.log('this.kilnPath', this.kilnPath);
 
     this._getFromStore();
-    console.log('this.programID', this.programID);
-    console.log('this.programID', this.programID);
-    console.log('this.programID', this.programID);
+    // console.groupEnd();
   }
 
   //  END:  lifecycle methods

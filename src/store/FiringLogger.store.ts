@@ -13,7 +13,8 @@ import {
   populateEmptySlice,
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from './user-data.utils.ts';
-import { addNewKilnData, updateKilnData } from './kiln-store.utils.ts';
+import { getKilnEditData, getKilnViewData, addNewKilnData, updateKilnData } from './kiln-store.utils.ts';
+import { getProgramData } from "./program-store.utils.ts";
 
 let store : CDataStoreClass | null = null;
 
@@ -208,7 +209,12 @@ const migrateData : IDBPmigrate = async (
   db : IDBPDatabase,
   version : number,
 ) : Promise<void> => {
-  if (db.version < version) {
+  // console.group('migrateData()');
+  // console.log('db:', db);
+  // console.log('version:', version);
+  // console.log('db.get("_meta", "version"):', await db.get('_meta', 'version'));
+  const dbVersion = await db.get('_meta', 'version');
+  if (typeof dbVersion === 'undefined' || dbVersion === null || dbVersion.value < version) {
     const loggerData = await globalThis.fetch('/data/firing-logger.json');
 
     if (loggerData.ok === true)  {
@@ -228,6 +234,7 @@ const migrateData : IDBPmigrate = async (
         '_meta',
         'replace',
       );
+      console.log('db.getAll("_meta"):', await db.getAll('_meta'));
 
       populateEmptySlice(db, data.users, 'users');
       populateEmptySlice(db, data.kilns, 'kilns');
@@ -264,6 +271,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptySlice(db, data, 'cones');
     }
   }
+  // console.groupEnd();
 }
 
 const actions : TActionList = {
@@ -271,7 +279,10 @@ const actions : TActionList = {
   updateLoggedInUser: updateAuthUser,
   updateKiln: updateKilnData,
   addKiln: addNewKilnData,
+  getKilnEditData,
+  getKilnViewData,
   fetchLatest,
+  getProgramData,
 };
 
 export const getDataStoreClassSingleton = (

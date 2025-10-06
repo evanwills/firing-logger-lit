@@ -15,6 +15,10 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import InputValue from "../../utils/InputValue.class.ts";
 import { durationFromSteps, maxTempFromSteps } from "../../utils/conversions.utils.ts";
 import { getTopCone } from "../../utils/getCone.util.ts";
+import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
+import { isIKeyStr } from "../../types/data.type-guards.ts";
+import type { IKeyStr } from "../../types/data-simple.d.ts";
+import { enumToOptions } from "../../utils/lit.utils.ts";
 // import '../shared-components/firing-plot.ts'
 // import '../input-fields/accessible-number-field.ts';
 // import '../input-fields/accessible-select-field.ts';
@@ -57,9 +61,16 @@ export class ProgramDetailsEdit extends ProgramDetails {
   @state()
   _canSave : boolean = false;
 
+  @state()
+  _firingTypeOptions : TOptionValueLabel[] = []
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
+
+  _limitFiringTypes(type : TOptionValueLabel) : boolean {
+    return (typeof this._kilnData[type.value] === 'boolean' && this._kilnData[type.value] === true);
+  }
 
   //  END:  helper methods
   // ------------------------------------------------------
@@ -193,7 +204,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
             field-id="type"
             label="Firing type"
             maxlength="255"
-            .options=${this._firingTypes}
+            .options=${this._firingTypeOptions}
             .value=${this._type}
             @change=${this.handleChange}></accessible-select-field>
         </li>

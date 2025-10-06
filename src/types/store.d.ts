@@ -1,6 +1,7 @@
 import type { IDBPDatabase } from 'idb';
 import type { ID, IKeyValPair, IKeyValue } from './data-simple.d.ts';
 import type { IKiln, IUser } from './data.d.ts';
+import type PidbDataStore from "../store/PidbDataStore.class.ts";
 
 /**
  * TStoreSlice is a dot-separated string matching the following regular expression pattern
@@ -16,7 +17,11 @@ import type { IKiln, IUser } from './data.d.ts';
  */
 export type TStoreSlice = string;
 
-export type TStoreAction = 'setLoggedInUser' | 'updateKiln' | 'addKiln' | 'replace' | 'append' | 'fetchLatest' | 'fetchLatestKilns' | 'fetchLatestPrograms' | 'fetchLatestFirings' | 'addProgram' | 'updateProgram' | 'addFiring' | 'updateFiring' | 'deleteFiring' | 'addUser' | 'updateUser' | 'setUserPreferences' | 'clearNoAuthChanges' | 'saveChangeOnHold' | 'reapplyChangesOnHold';
+export type TStoreAction = 'setLoggedInUser' | 'fetchLatest' | 'replace' | 'append'
+  | 'fetchLatestKilns' | 'getKilnEditData' | 'getKilnViewData' | 'updateKiln' | 'addKiln'
+  | 'fetchLatestPrograms' | 'getProgramData' | 'addProgram' | 'updateProgram'
+  | 'fetchLatestFirings' | 'addFiring' | 'updateFiring' | 'deleteFiring'
+  | 'fetchLatestusers' | 'addUser' | 'updateUser' | 'setUserPreferences' | 'clearNoAuthChanges' | 'saveChangeOnHold' | 'reapplyChangesOnHold';
 
 /**
  * CDataStoreClass calls `FReadyWatcher()`s when the data store is
@@ -41,9 +46,10 @@ export type FReadyWatcher = (isReady: boolean) => void;
 export type FDataStoreAction = (
   action : TStoreAction,
   payload: any = null,
+  PIDB: boolean = false,
 ) => Promise<any>;
 
-export type FActionHandler = (payload: any) => Promise<any>
+export type FActionHandler = (db : IDBPDatabase | CDataStoreClass, payload: any) => Promise<any>
 
 export interface TActionList extends IKeyValue {
   [key:TStoreAction] : FActionHandler

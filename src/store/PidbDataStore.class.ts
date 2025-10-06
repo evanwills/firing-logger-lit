@@ -196,6 +196,7 @@ export default class PidbDataStore implements CDataStoreClass {
   action(
     action : TStoreAction,
     payload: any = null,
+    PIDB: boolean = true,
   ) : Promise<any> {
     // console.group('PidbDataStore.action');
     // console.log('this._db:', this._db);
@@ -209,10 +210,10 @@ export default class PidbDataStore implements CDataStoreClass {
       // console.info('Yay!!! We found an action');
       // console.groupEnd();
       if (this._db !== null) {
-        return this._actions[action](this._db, payload);
+        return this._actions[action]((PIDB === true) ? this._db : this, payload);
       } else {
         const laterAction = () : Promise<any> => {
-          return this._actions[action](this._db, payload);
+          return this._actions[action]((PIDB === true) ? this._db : this, payload);
         };
 
         this.watchReady(laterAction.bind(this))

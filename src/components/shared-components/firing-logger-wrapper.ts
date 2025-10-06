@@ -106,8 +106,8 @@ export class FiringLoggerWrapper extends LoggerElement {
       ? 'in'
       : 'out';
 
-    console.log('this._user:', this._user);
-    console.log('this._userHasAuth(2):', this._userHasAuth(2));
+    // console.log('this._user:', this._user);
+    // console.log('this._userHasAuth(2):', this._userHasAuth(2));
 
     return html`
     <div class="wrap">
