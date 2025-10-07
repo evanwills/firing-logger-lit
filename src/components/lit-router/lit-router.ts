@@ -1,10 +1,10 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { FGlobalsGet, TParsedRoute } from '../../types/router-types.d.ts';
+import type { FGlobalsGet, IRouteArgs, TParsedRoute } from '../../types/router-types.d.ts';
+import type { FWrapOutput } from '../../types/renderTypes.d.ts';
 import { parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
-import type { FWrapOutput } from '../../types/renderTypes.d.ts';
 
 const wrapOutput : FWrapOutput = (input : TemplateResult | string) => (typeof input === 'string')
   ? html`${input}`
@@ -25,6 +25,9 @@ export class LitRouter extends LitElement {
 
   @property({ type: Function, attribute: 'getGlobals'})
   getGlobals : FGlobalsGet | null = null;
+
+  @property({ attribute: 'store'})
+  store : any = null;
 
   //  END:  properties/attributes
   // -----------------------------
@@ -220,7 +223,7 @@ export class LitRouter extends LitElement {
     const { route, search, hash } = splitURL(this._url);
 
     for (const possibleRoute of this._parsedRoutes) {
-      const args = possibleRoute.getArgs(route);
+      const args : IRouteArgs = possibleRoute.getArgs(route);
 
       if (args === null) {
         continue;
@@ -241,6 +244,7 @@ export class LitRouter extends LitElement {
       args._GLOBALS = typeof this.getGlobals === 'function'
         ? this.getGlobals()
         : {};
+      args._STORE = this.store;
 
       // console.log('args (after):', args);
       // console.groupEnd();

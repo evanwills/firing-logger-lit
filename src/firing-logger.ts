@@ -89,8 +89,9 @@ export class FiringLogger extends LitElement {
 
     return (this._ready === true)
       ? html`<lit-router
-        initial-route="${this._path}"
-        .wrapperFunc=${wrapApp}></lit-router>`
+          initial-route="${this._path}"
+          .store=${this._db}
+          .wrapperFunc=${wrapApp}></lit-router>`
       : 'Not ready yet';
   }
 

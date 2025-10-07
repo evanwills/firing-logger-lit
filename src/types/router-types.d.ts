@@ -2,12 +2,15 @@ import type { TemplateResult } from 'lit';
 import type { IKeyValue } from './data-simple.d.ts';
 
 export interface IRouteArgs extends IKeyValue {
+  [key: string]: string,
   _HASH: string,
   _SEARCH: IKeyValue
-  _DETAIL: string,
+  _DATA: IKeyValue,
+  _GLOBALS: unknown,
+  _STORE: unknown,
 };
 
-export type FRouteRenderer = (IRouteArgs) => TemplateResult;
+export type FRouteRenderer = (args : IRouteArgs) => TemplateResult;
 export type FGetRouteArgs = (path: string[]) => IKeyValue | null;
 
 export type TRoute = {
