@@ -144,6 +144,7 @@ export class FiringLoggerWrapper extends LoggerElement {
 
       <login-ui
         .open=${this._showLogin}
+        .store=${this.store}
         @close=${this._handleLogin}
         @loggedin=${this._handleLogin}></login-ui>
 

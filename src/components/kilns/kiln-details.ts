@@ -229,10 +229,10 @@ export class KilnDetails extends LoggerElement {
     // console.log('this.kilnPath:', this.kilnPath);
     // console.log('this.mode:', this.mode);
 
-    if (this._store !== null && Object.keys(this._fuelSources).length === 0) {
+    if (this.store !== null && Object.keys(this._fuelSources).length === 0) {
       const tmp = (this.mode === '')
-        ? await getKilnViewData(this._store, this.kilnID, this.kilnPath)
-        : await getKilnEditData(this._store, this.kilnID, this.kilnPath);
+        ? await getKilnViewData(this.store, this.kilnID, this.kilnPath)
+        : await getKilnEditData(this.store, this.kilnID, this.kilnPath);
       // console.log('tmp:', tmp);
 
       this._kilnTypes = await tmp.EkilnTypes;

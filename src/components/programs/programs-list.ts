@@ -92,21 +92,21 @@ export class ProgramsList extends LoggerElement {
   }
 
   _setData(_ok : boolean) : void {
-    if (this._store !== null) {
-      this._store.read('EfiringType', '', true).then(this._setFiringTypes.bind(this)).catch(storeCatch);
-      this._store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this)).catch(storeCatch);
-      this._store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this)).catch(storeCatch);
-      this._store.read('kilns').then(this._setKilnList.bind(this)).catch(storeCatch);
-      this._store.read('programs').then(this._setProgramList.bind(this)).catch(storeCatch);
+    if (this.store !== null) {
+      this.store.read('EfiringType', '', true).then(this._setFiringTypes.bind(this)).catch(storeCatch);
+      this.store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this)).catch(storeCatch);
+      this.store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this)).catch(storeCatch);
+      this.store.read('kilns').then(this._setKilnList.bind(this)).catch(storeCatch);
+      this.store.read('programs').then(this._setProgramList.bind(this)).catch(storeCatch);
     }
   }
 
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
 
-    if (this._store !== null) {
-      if (this._store.ready === false) {
-        this._store.watchReady(this._setData.bind(this));
+    if (this.store !== null) {
+      if (this.store.ready === false) {
+        this.store.watchReady(this._setData.bind(this));
       } else {
         this._setData(true)
       }

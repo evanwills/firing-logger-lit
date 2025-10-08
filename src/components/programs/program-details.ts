@@ -182,13 +182,13 @@ export class ProgramDetails extends LoggerElement {
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
     // console.group('<program-details>._getFromStore()');
-    // console.log('this._store:', this._store);
+    // console.log('this.store:', this.store);
     // console.log('this.programID:', this.programID);
     // console.log('this.programPath:', this.programPath);
     // console.log('this.kilnPath:', this.kilnPath);
 
-    if (this._store !== null) {
-      this._store.action(
+    if (this.store !== null) {
+      this.store.action(
         'getProgramData',
         {
           id: this.programID,

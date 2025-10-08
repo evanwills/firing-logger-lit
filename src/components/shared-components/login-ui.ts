@@ -89,8 +89,8 @@ export class LoginUI extends LoggerElement {
     //   console.log('this._passwordField:', this._passwordField);
     //   this._passwordField?.focus();
     } else {
-      if (this._store !== null) {
-        const user : TUser[] = await this._store.read('users', `username=${this._username}`);
+      if (this.store !== null) {
+        const user : TUser[] = await this.store.read('users', `username=${this._username}`);
 
         if (user.length > 0) {
           setCookie(import.meta.env.VITE_AUTH_COOKIE, user[0].id, 30);

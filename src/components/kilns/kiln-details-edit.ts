@@ -241,7 +241,7 @@ export class KilnDetailsEdit extends KilnDetails {
           this._changes = { ...this._changes, id };
         }
 
-        this._store?.action(action, { ...this._changes })
+        this.store?.action(action, { ...this._changes })
           .then((_response) => {
             const path = (typeof this._changes.urlPart === 'string')
               ? this._changes.urlPart

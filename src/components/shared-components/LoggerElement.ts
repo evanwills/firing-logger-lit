@@ -4,7 +4,6 @@ import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TUser } from '../../types/users.d.ts';
 import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
-import { getDataStoreClassSingleton } from '../../store/FiringLogger.store.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { isUser } from '../../types/user.type-guards.ts';
 import { userCan, userHasAuth } from '../../store/user-data.utils.ts';
@@ -58,6 +57,15 @@ export class LoggerElement extends LitElement {
    */
   @property({ type: Boolean, attribute: 'read-only' })
   readOnly : boolean = false;
+
+  /**
+   * Global store object that allows the component to read from the
+   * store and write to the store. And watch for changes in the store
+   *
+   * @var _store
+   */
+  @property({ type: Object, attribute: 'store' })
+  store : CDataStoreClass | null = null;
 
   //  END:  properties/attributes
   // ------------------------------------------------------
@@ -131,15 +139,6 @@ export class LoggerElement extends LitElement {
   _vConverterRev : (T : number) => number = x2x;
 
   /**
-   * Global store object that allows the component to read from the
-   * store and write to the store. And watch for changes in the store
-   *
-   * @var _store
-   */
-  @state()
-  _store : CDataStoreClass | null = null;
-
-  /**
    * @var _tUnit Temperature unit indicator to match user's preference
    */
   @state()
@@ -204,16 +203,19 @@ export class LoggerElement extends LitElement {
     // console.groupEnd();
   }
 
-  async _getFromStore() : Promise<void> {
-    if (this._store === null) {
-      this._store = await getDataStoreClassSingleton();
+  _getFromStore() : void {
+    // console.group('LoggerElement._getFromStore()');
+    // console.log('this.store:', this.store);
 
-      this._store.action('getLoggedInUser' as TStoreAction)
+    if (this.store !== null) {
+      this.store.action('getLoggedInUser' as TStoreAction)
         .then(this._setUser.bind(this))
         .catch(storeCatch);
 
       this._dbReady = true;
     }
+
+    // console.groupEnd();
   }
 
   //  END:  helper methods

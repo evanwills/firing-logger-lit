@@ -69,16 +69,16 @@ export class KilnsList extends LoggerElement {
   }
 
   _setData(_ok : boolean) : void {
-    if (this._store !== null) {
-      this._store.read('EkilnType', '', true)
+    if (this.store !== null) {
+      this.store.read('EkilnType', '', true)
         .then(this._setKilnTypes.bind(this))
         .catch(storeCatch);
 
-      this._store.read('EfuelSource', '', true)
+      this.store.read('EfuelSource', '', true)
         .then(this._setFuelSources.bind(this))
         .catch(storeCatch);
 
-      this._store.read('kilns')
+      this.store.read('kilns')
         .then(this._setKilnList.bind(this))
         .catch(storeCatch);
     }
@@ -87,9 +87,9 @@ export class KilnsList extends LoggerElement {
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
 
-    if (this._ready === false && this._store !== null) {
-      if (this._store.ready === false) {
-        this._store.watchReady(this._setData.bind(this));
+    if (this._ready === false && this.store !== null) {
+      if (this.store.ready === false) {
+        this.store.watchReady(this._setData.bind(this));
       } else {
         this._setData(true);
       }
