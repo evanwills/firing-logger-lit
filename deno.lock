@@ -476,7 +476,8 @@
         "npm:lit@^3.3.1",
         "npm:nanoid@^5.1.5",
         "npm:typescript@~5.8.3",
-        "npm:vite@^7.1.2"
+        "npm:vite@^7.1.2",
+        "npm:vitest@^3.2.4"
       ]
     }
   }
