@@ -54,6 +54,12 @@ export default [
       .store=${_STORE}></firing-view-edit>`,
   },
   {
+    route: '/firing/new',
+    render: ({ firingID, _STORE } : IRouteArgs) : TemplateResult => html`<firing-view-edit
+      firing-uid="${firingID}"
+      .store=${_STORE}></firing-view-edit>`,
+  },
+  {
     route: '/firings',
     render: ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<firings-list
       filters=${_SEARCH}
@@ -69,6 +75,13 @@ export default [
     route: '/program/:programID/edit',
     render: ({ programID, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
       programID="${programID}"
+      .store=${_STORE}></program-details-edit>`,
+  },
+  {
+    route: '/program/:programID/clone',
+    render: ({ programID, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
+      programID="${programID}"
+      mode="clone"
       .store=${_STORE}></program-details-edit>`,
   },
   {
@@ -159,10 +172,10 @@ export default [
   {
     route: '/kilns/:kilnPath/firings/:firingName/clone',
     render: ({ firingName, kilnPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<firing-view-edit
-      clone
       firing-name="${firingName}"
       firing-uid="${_DATA.uid}"
       kiln-path="${kilnPath}"
+      mode="clone"
       .store=${_STORE}></firing-view-edit>`,
   },
 
@@ -188,19 +201,6 @@ export default [
   },
   {
     route: '/kilns/:kilnPath/programs/:programPath',
-    // render: ({ kilnPath, programPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => {
-    //   console.group('routes.ts /kilns/:kilnPath/programs/:programPath');
-    //   console.log('_DATA:', _DATA);
-    //   console.log('_DATA.uid:', _DATA.uid);
-    //   console.log('kilnPath:', kilnPath);
-    //   console.log('programPath:', programPath);
-    //   console.groupEnd();
-
-    //   return html`<program-details
-    //   kiln-path="${kilnPath}"
-    //   program-path="${programPath}"
-    //   program-uid="${_DATA.uid}"
-    //    .store=${_STORE}></program-details>`},
     render: ({ kilnPath, programPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<program-details
       kiln-path="${kilnPath}"
       program-path="${programPath}"
@@ -209,23 +209,19 @@ export default [
   },
   {
     route: '/kilns/:kilnPath/programs/:programPath/edit',
-    // render: ({ kilnPath, programPath, _DATA _STORE } : IRouteArgs) : TemplateResult => {
-    //   console.group('routes.ts /kilns/:kilnPath/programs/:programPath/edit');
-    //   console.log('_DATA:', _DATA);
-    //   console.log('_DATA.uid:', _DATA.uid);
-    //   console.log('kilnPath:', kilnPath);
-    //   console.log('programPath:', programPath);
-    //   console.groupEnd();
-    //   return html`<program-details-edit
-    //   kiln-path="${kilnPath}"
-    //   program-path="${programPath}"
-    //   program-uid="${_DATA.uid}"
-    //   .store=${_STORE}></program-details-edit>`;
-    // },
     render: ({ kilnPath, programPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
       kiln-path="${kilnPath}"
       program-path="${programPath}"
       program-uid="${_DATA.uid}"
+      .store=${_STORE}></program-details-edit>`,
+  },
+  {
+    route: '/kilns/:kilnPath/programs/:programPath/clone',
+    render: ({ kilnPath, programPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
+      kiln-path="${kilnPath}"
+      program-path="${programPath}"
+      program-uid="${_DATA.uid}"
+      mode="clone"
       .store=${_STORE}></program-details-edit>`,
   },
   {

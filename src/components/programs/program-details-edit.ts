@@ -1,24 +1,37 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-// import { customElement, property, state } from 'lit/decorators.js';
-// import type { ID } from '../../types/data-simple.d.ts';
+// import {
+//   customElement,
+//   property,
+//   state,
+// } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
+// import type { ID, IKeyStr } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
-import type { FiringStep, IProgram } from '../../types/programs.d.ts';
+import type {
+  FiringStep,
+  // IProgram,
+} from '../../types/programs.d.ts';
+import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 // import {
 //   durationFromStep,
 //   durationFromSteps,
 //   maxTempFromSteps,
 // } from '../../utils/conversions.utils.ts';
-// import { keyValueStyle, programViewVars, tableStyles } from '../../assets/css/program-view-style.ts';
+// import {
+//   keyValueStyle,
+//   programViewVars,
+//   tableStyles
+// } from '../../assets/css/program-view-style.ts';
 import { ProgramDetails } from './program-details.ts';
-import { ifDefined } from "lit/directives/if-defined.js";
-import InputValue from "../../utils/InputValue.class.ts";
-import { durationFromSteps, maxTempFromSteps } from "../../utils/conversions.utils.ts";
-import { getTopCone } from "../../utils/getCone.util.ts";
-import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { isIKeyStr } from "../../types/data.type-guards.ts";
-import type { IKeyStr } from "../../types/data-simple.d.ts";
-import { enumToOptions } from "../../utils/lit.utils.ts";
+import {
+  durationFromSteps,
+  maxTempFromSteps,
+} from '../../utils/conversions.utils.ts';
+import { getTopCone } from '../../utils/getCone.util.ts';
+import InputValue from '../../utils/InputValue.class.ts';
+// import { isIKeyStr } from '../../types/data.type-guards.ts';
+// import { enumToOptions } from '../../utils/lit.utils.ts';
 // import '../shared-components/firing-plot.ts'
 // import '../input-fields/accessible-number-field.ts';
 // import '../input-fields/accessible-select-field.ts';
@@ -69,7 +82,25 @@ export class ProgramDetailsEdit extends ProgramDetails {
   // START: helper methods
 
   _limitFiringTypes(type : TOptionValueLabel) : boolean {
-    return (typeof this._kilnData[type.value] === 'boolean' && this._kilnData[type.value] === true);
+    return (this._kilnData !== null
+      && typeof this._kilnData[type.value] === 'boolean'
+      && this._kilnData[type.value] === true);
+  }
+
+  _getVal<T>(value : T) : T | null {
+    return (this.mode === 'clone')
+      ? null
+      : value;
+  }
+
+  _getPlace(value : string | number) : string | null {
+    if (this.mode !== 'clone') {
+      return null;
+    }
+
+    return (typeof value === 'number')
+      ? value.toString()
+      : value;
   }
 
   //  END:  helper methods
@@ -81,9 +112,18 @@ export class ProgramDetailsEdit extends ProgramDetails {
   // START: event handlers
 
   handleChange(event : CustomEvent) : void {
+    // console.group('<program-details-edit>.handleChange()');
+    // console.log('event:', event);
     if (event.detail instanceof InputValue) {
       const target = (event.detail as InputValue);
       const value = target.value.toString();
+      // console.log('target:', target);
+      // console.log('value:', value);
+      // console.log('target.id:', target.id);
+      // console.log('this._name (before):', this._name);
+      // console.log('this._description (before):', this._description);
+      // console.log('this._type (before):', this._type);
+      // console.log('this._controllerID (before):', this._controllerID);
 
       if (target.checkValidity() === true) {
         switch(target.id) {
@@ -106,11 +146,18 @@ export class ProgramDetailsEdit extends ProgramDetails {
           default:
             break;
         }
+        // console.log('this._name (after):', this._name);
+        // console.log('this._description (after):', this._description);
+        // console.log('this._type (after):', this._type);
+        // console.log('this._controllerID (after):', this._controllerID);
       }
     }
+    // console.groupEnd();
   }
 
   addStep() : void {
+    console.group('<program-details-edit>.addStep()');
+    console.log('this._tmpSteps (before):', this._tmpSteps);
     const newStep : FiringStep = {
       order: this._steps.length + 1,
       endTemp: 0,
@@ -119,20 +166,33 @@ export class ProgramDetailsEdit extends ProgramDetails {
     };
 
     this._tmpSteps = [...this._tmpSteps, newStep];
+    console.log('this._tmpSteps (after):', this._tmpSteps);
+    console.groupEnd();
   }
 
   deleteStep(event : InputEvent) : void {
-    console.log('deleteStep()');
+    console.group('<program-details-edit>.deleteStep()');
+    console.log('this._tmpSteps (before):', this._tmpSteps);
     const i = parseInt((event.target as HTMLButtonElement).value, 10);
 
     this._tmpSteps = this._tmpSteps.filter((step) => step.order !== i);
+    console.log('this._tmpSteps (after):', this._tmpSteps);
+    console.groupEnd();
   }
 
   updateStep(event : InputEvent) : void {
+    console.group('<program-details-edit>.updateStep()');
+    console.log('this._tmpSteps (before):', this._tmpSteps);
+    console.log('this._cone (before):', this._cone);
+    console.log('this._duration (before):', this._duration);
+    console.log('this._maxTemp (before):', this._maxTemp);
     const target = event.target as HTMLInputElement;
     const i = parseInt(target.dataset.stepOrder as string, 10);
     const field = target.dataset.field as keyof FiringStep;
 
+    console.log('i:', i);
+    console.log('field:', field);
+    console.log('target:', target);
     let val : number = (typeof target.value === 'number')
       ? target.value
       : parseInt(target.value, 10);
@@ -143,6 +203,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
         : val;
     }
 
+    console.log('val:', val);
     this._tmpSteps = this._tmpSteps.map((step) => {
       if (step.order === i) {
         return {
@@ -156,6 +217,11 @@ export class ProgramDetailsEdit extends ProgramDetails {
     this._maxTemp = maxTempFromSteps(this._tmpSteps);
     this._duration = durationFromSteps(this._tmpSteps);
     this._cone = getTopCone(this._tmpSteps, this._maxTemp);
+    console.log('this._maxTemp (after):', this._maxTemp);
+    console.log('this._duration (after):', this._duration);
+    console.log('this._cone (after):', this._cone);
+    console.log('this._tmpSteps (after):', this._tmpSteps);
+    console.groupEnd();
   }
 
   handleSave(event : CustomEvent) : void {
@@ -181,11 +247,12 @@ export class ProgramDetailsEdit extends ProgramDetails {
             label="Name"
             maxlength="50"
             minlength="5"
+            .placeholder=${ifDefined(this._getPlace(this._name))}
             required
             spellcheck
             validate-on-keyup
             validation-type="title"
-            .value=${ifDefined((this._name !== '') ? this._name : null)}
+            .value=${ifDefined(this._getVal(this._name))}
             @change=${this.handleChange}
             @keyup=${this.handleChange}></accessible-text-field>
         </li>
@@ -194,8 +261,9 @@ export class ProgramDetailsEdit extends ProgramDetails {
             field-id="description"
             label="Description"
             maxlength="255"
+            .placeholder=${ifDefined(this._getPlace(this._description))}
             validate-on-keyup
-            .value=${this._description}
+            .value=${ifDefined(this._getVal(this._description))}
             @change=${this.handleChange}
             @keyup=${this.handleChange}></accessible-textarea-field>
         </li>
@@ -215,15 +283,20 @@ export class ProgramDetailsEdit extends ProgramDetails {
             label="Program #"
             min="1"
             max="25"
+            .placeholder=${ifDefined(this._getPlace(this._controllerID))}
             step="1"
-            .value=${this._controllerID}
+            .value=${ifDefined(this._getVal(this._controllerID))}
             @change=${this.handleChange}></accessible-select-field>
         </li>
       </ul>`;
   }
 
   renderSteps() : TemplateResult {
+    if (this._tmpSteps.length === 0) {
+      this._tmpSteps = [...this._steps];
+    }
     return html`
+      <p>&lt;program-details-edit&gt;.renderSteps()</p>
       <table>
         <thead>
           <tr>
@@ -244,7 +317,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
           </tr>
         </thead>
         <tbody>
-          ${this._steps.map((step) => html`
+          ${this._tmpSteps.map((step) => html`
           <tr>
             <th>${step.order}</th>
             <td>
@@ -287,7 +360,6 @@ export class ProgramDetailsEdit extends ProgramDetails {
                   &times;
                 </button>`
                 : html`&nbsp;`}
-
             </td>
           </tr>`)}
         </tbody>
@@ -317,6 +389,25 @@ export class ProgramDetailsEdit extends ProgramDetails {
       sr-label="${this._name} for ${this._kilnName}"
       uid="${this.programID}"
       url="${path}" ></router-link>`;
+  }
+
+  renderPlot() : TemplateResult | string {
+    if (this._tmpSteps.length === 0) {
+      this._tmpSteps = [...this._steps];
+    }
+    return html`<firing-plot
+      ?notMetric=${this.notMetric}
+      .primary=${[
+        { order: 0, endTemp: 0, rate: 0, hold: 0 },
+        ...this._tmpSteps,
+      ]}
+      primary-is-program></firing-plot>`;
+  }
+
+  renderName(): TemplateResult | string {
+    return (this.mode === 'clone')
+      ? html`Copy of <em>${this._name}</em>`
+      : `Edit ${this._name}`;
   }
 
   //  END:  helper render methods

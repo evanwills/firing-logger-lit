@@ -1,7 +1,7 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { FGlobalsGet, IRouteArgs, TParsedRoute } from '../../types/router-types.d.ts';
+import type { IRouteArgs, TParsedRoute } from '../../types/router-types.d.ts';
 import type { FWrapOutput } from '../../types/renderTypes.d.ts';
 import { parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
@@ -23,11 +23,8 @@ export class LitRouter extends LitElement {
   @property({ type: Function, attribute: 'wrapperFunc'})
   wrapperFunc : FWrapOutput | null = null;
 
-  @property({ type: Function, attribute: 'getGlobals'})
-  getGlobals : FGlobalsGet | null = null;
-
   @property({ attribute: 'store'})
-  store : any = null;
+  store : unknown | null = null;
 
   //  END:  properties/attributes
   // -----------------------------
@@ -102,7 +99,7 @@ export class LitRouter extends LitElement {
    *
    * @param event
    */
-  handleRouteRewrite(event: CustomEvent) {
+  handleRouteRewrite(event: CustomEvent) : void {
     event.preventDefault();
 
     globalThis.history.pushState({ ...event.detail.data }, '', event.detail.url);
@@ -121,7 +118,7 @@ export class LitRouter extends LitElement {
    *
    * @param event
    */
-  handleRouteLink(event: CustomEvent) {
+  handleRouteLink(event: CustomEvent) : void {
     event.preventDefault();
 
     // console.group('<lit-router>.handleRouteLink()');
@@ -143,7 +140,7 @@ export class LitRouter extends LitElement {
     // console.groupEnd();
   }
 
-  handlePopState(_event : PopStateEvent) {
+  handlePopState(_event : PopStateEvent) : void {
     // console.group('<lit-router>.handlePopState()');
     // console.log('_event:', _event);
     // console.log('_event.target:', _event.target);
@@ -157,7 +154,7 @@ export class LitRouter extends LitElement {
     // console.groupEnd();
   }
 
-  handleRefresh(event : CustomEvent) {
+  handleRefresh(event : CustomEvent) : void {
     const url = this._url;
     const data = this._data;
     this._url = event.detail.url;
@@ -236,14 +233,12 @@ export class LitRouter extends LitElement {
       // console.log('hash:', hash);
       // console.log('this._data:', this._data);
       // console.log('this._url:', this._url);
+      // console.log('this.store:', this.store);
       // console.log('args (before):', args);
 
       args._HASH = hash;
       args._SEARCH = search;
       args._DATA = this._data;
-      args._GLOBALS = typeof this.getGlobals === 'function'
-        ? this.getGlobals()
-        : {};
       args._STORE = this.store;
 
       // console.log('args (after):', args);

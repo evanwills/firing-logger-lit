@@ -42,7 +42,11 @@ export interface IKeyNum extends IKeyValue {
 };
 
 export interface IKeyBool extends IKeyValue {
-  [key:string] : bool
+  [key:string] : boolean
+};
+
+export interface IKeyScalar  extends IKeyValue {
+  [key:string] : string | number | boolean | null
 };
 
 //  END:  Basic object types
@@ -58,6 +62,7 @@ export interface IKeyValUrl implements IKeyValue {
   help?: string,
   key: string,
   noEmpty?: boolean,
+  placeholder?: string,
   uid?: string,
   url?: string,
   value: string,

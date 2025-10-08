@@ -306,6 +306,7 @@ export class IdbDataStore implements CDataStoreClass {
     slice: string = '',
     selector : string = '',
     outputMode : string[] | boolean = false,
+    // deno-lint-ignore no-explicit-any
   ) : Promise<any> {
     await this._getDB();
 
@@ -374,6 +375,7 @@ export class IdbDataStore implements CDataStoreClass {
     _action : TStoreAction,
     _slice : TStoreAction,
     _payload: any,
+    // deno-lint-ignore no-explicit-any
   ) : Promise<any> {
     return Promise.resolve();
   }

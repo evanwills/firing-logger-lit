@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { LitRouter } from './lit-router.ts';
 import { srOnly } from '../../assets/css/sr-only.ts';
 import { linkStyle } from '../../assets/css/link-style.ts';
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
 @customElement('router-link')
 export class RouterLink extends LitElement {
@@ -67,7 +68,7 @@ export class RouterLink extends LitElement {
   // START: helper render methods
 
   renderLabel() {
-    return (typeof this.srLabel === 'string' && this.srLabel.trim() !== '')
+    return (isNonEmptyStr(this, 'srLabel') === true)
       ? html`${this.label} <span class="sr-only">${this.srLabel}</span>`
       : this.label;
   }

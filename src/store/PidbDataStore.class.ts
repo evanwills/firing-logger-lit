@@ -1,9 +1,11 @@
 import { openDB, type IDBPDatabase } from 'idb';
 import type {
   CDataStoreClass,
+  FActionHandler,
+  FDataStoreAction,
   FReadyWatcher,
   TActionList,
-  TStoreAction,
+  // TStoreAction,
   TStoreSlice,
 } from '../types/store.d.ts';
 import type { ID } from '../types/data-simple.d.ts';
@@ -17,9 +19,9 @@ import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
 /**
  * Check whether a value is empty or null
  *
- * @param {any} input value to be tested
+ * @param input value to be tested
  *
- * @returns {boolean} TRUE if input is undefined, NULL or empty string
+ * @returns TRUE if input is undefined, NULL or empty string
  */
 const emptyOrNull = (input : unknown) : boolean => (typeof input === 'undefined'
   || input === null
@@ -136,6 +138,7 @@ export default class PidbDataStore implements CDataStoreClass {
     storeName : string,
     selector : string = '',
     outputMode : string[] | boolean = false,
+    // deno-lint-ignore no-explicit-any
   ) : Promise<any> {
     if (this._db !== null) {
       if (emptyOrNull(selector)) {
@@ -180,6 +183,21 @@ export default class PidbDataStore implements CDataStoreClass {
     return null;
   }
 
+  _bindForLater(
+    action : FActionHandler,
+    // deno-lint-ignore no-explicit-any
+    payload: any = null,
+    PIDB: boolean = true,
+    // deno-lint-ignore no-explicit-any
+  ) : () => Promise<any> {
+    return () => {
+      const db = (PIDB === true && this._db !== null)
+        ? this._db
+        : this;
+      return action(db, payload);
+    }
+  }
+
   /**
    * action() runs a predefined action against the store. Normally,
    * this is used for write actions but it can also be used for
@@ -194,9 +212,11 @@ export default class PidbDataStore implements CDataStoreClass {
    *          write action
    */
   action(
-    action : TStoreAction,
+    action : string,
+    // deno-lint-ignore no-explicit-any
     payload: any = null,
     PIDB: boolean = true,
+    // deno-lint-ignore no-explicit-any
   ) : Promise<any> {
     // console.group('PidbDataStore.action');
     // console.log('this._db:', this._db);
@@ -212,8 +232,14 @@ export default class PidbDataStore implements CDataStoreClass {
       if (this._db !== null) {
         return this._actions[action]((PIDB === true) ? this._db : this, payload);
       } else {
+        // deno-lint-ignore no-explicit-any
         const laterAction = () : Promise<any> => {
-          return this._actions[action]((PIDB === true) ? this._db : this, payload);
+          return this._actions[action](
+            (PIDB === true && this._db !== null)
+              ? this._db
+              : this,
+            payload,
+          );
         };
 
         this.watchReady(laterAction.bind(this))
@@ -244,6 +270,7 @@ export default class PidbDataStore implements CDataStoreClass {
    */
   watch(
     _action : string,
+    // deno-lint-ignore no-explicit-any
     _handler: (slice: any) => void,
     _slice: TStoreSlice,
   ) :ID {

@@ -85,6 +85,7 @@ export class FiringLogger extends LitElement {
     // console.group('<firing-logger>.render()');
     // console.log('this._path:', this._path);
     // console.log('this._ready:', this._ready);
+    // console.log('this._db:', this._db);
     // console.groupEnd();
 
     return (this._ready === true)

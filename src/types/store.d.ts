@@ -44,7 +44,7 @@ export type FReadyWatcher = (isReady: boolean) => void;
  *          write action
  */
 export type FDataStoreAction = (
-  action : TStoreAction,
+  action : string,
   payload: any = null,
   PIDB: boolean = false,
 ) => Promise<any>;
@@ -52,7 +52,7 @@ export type FDataStoreAction = (
 export type FActionHandler = (db : IDBPDatabase | CDataStoreClass, payload: any) => Promise<any>
 
 export interface TActionList extends IKeyValue {
-  [key:TStoreAction] : FActionHandler
+  [key:string] : FActionHandler
 };
 
 // --------------------------------------------------------
@@ -160,7 +160,7 @@ export type CDataStoreClass = {
    *          that action
    */
   watch: (
-    action : TStoreAction,
+    action : string,
     handler: (slice: any) => void,
     slice: TStoreSlice,
   ) => ID,

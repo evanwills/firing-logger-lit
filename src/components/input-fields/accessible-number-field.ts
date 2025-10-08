@@ -69,7 +69,7 @@ export class AccessibleNumberField extends AccessibleWholeField {
       .max=${ifDefined(this.max)}
       .min=${ifDefined(this.min)}
       .list=${ifDefined(this._listID)}
-      ?placeholder=${this.placeholder}
+      .placeholder=${this.placeholder}
       ?readonly=${this.readonly}
       ?required=${this.required}
       .step=${ifDefined(this.step)}

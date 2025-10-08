@@ -1,13 +1,14 @@
 import { nanoid } from 'nanoid';
-import type { CDataStoreClass, FReadyWatcher } from '../types/store.d.ts';
+import type { CDataStoreClass, FReadyWatcher, TStoreAction } from '../types/store.d.ts';
 import { getLimitedObjList, splitSlice } from '../utils/store.utils.ts';
 import { getDataFromSlice } from './fs-data-store.utils.ts';
-import FiringLoggerData from './firing-logger.json' with { type: 'json'; };
+import FiringLoggerData from '../../public/data/firing-logger.json' with { type: 'json' };
+import type { IKeyValue } from "../types/data-simple.d.ts";
 
 let store : CDataStoreClass | null = null;
 
 class FsDataStore implements CDataStoreClass {
-  _data = {};
+  _data : IKeyValue = {};
 
   _readyWatchers : FReadyWatcher[] = [];
 
@@ -26,6 +27,7 @@ class FsDataStore implements CDataStoreClass {
     slice: string = '',
     selector : string = '',
     outputMode : string[] | boolean = false,
+    // deno-lint-ignore no-explicit-any
   ) : Promise<any> {
     if (typeof this._data[slice] === 'undefined') {
       // console.group('FsDataStore.read() - ERROR');
@@ -52,18 +54,26 @@ class FsDataStore implements CDataStoreClass {
     }
   }
 
-  /**
-   * Write data to the store
-   *
-   * @param action  Name of write action to be performed on the store
-   * @param userID  ID of the user performing the write action
-   * @param payload Data to be written to the store
-   *
-   * @returns Empty string if write action worked without issue.
-   *          Error message string if there was a problem with the
-   *          write action
-   */
-  write(action : string, userID : string, payload: any) : Promise<string> {
+    /**
+     * action() runs a predefined action against the store. Normally,
+     * this is used for write actions but it can also be used for
+     * complex read requests.
+     *
+     * @param action  Name of predefined action to be performed on the
+     *                store
+     * @param payload Data to be written to the store
+     *
+     * @returns Empty string if write action worked without issue.
+     *          Error message string if there was a problem with the
+     *          write action
+     */
+    action(
+      _action : TStoreAction,
+      // deno-lint-ignore no-explicit-any
+      _payload: any = null,
+      _PIDB: boolean = true,
+      // deno-lint-ignore no-explicit-any
+    ) : Promise<any> {
     // console.group('FsDataStore.write()');
     // console.log('Action :', action);
     // console.log('UserID :', userID);

@@ -1,12 +1,24 @@
 import type { TemplateResult } from 'lit';
-import type { IKeyValue } from './data-simple.d.ts';
+import type { IKeyScalar, IKeyValue } from './data-simple.d.ts';
 
 export interface IRouteArgs extends IKeyValue {
+  /**
+   * Unknown props are generated from dynamic route values
+   * (i.e. route path steps prefixed with ":")
+   */
   [key: string]: string,
+  /**
+   * URL hash/anchor ID that may be present in the URL
+   */
   _HASH: string,
-  _SEARCH: IKeyValue
+  /**
+   * URL GET variables that may be present in the URL
+   */
+  _SEARCH: IKeyScalar,
+  /**
+   * Data values that may be passed to
+   */
   _DATA: IKeyValue,
-  _GLOBALS: unknown,
   _STORE: unknown,
 };
 

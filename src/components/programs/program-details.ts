@@ -304,7 +304,13 @@ export class ProgramDetails extends LoggerElement {
       label="Edit"
       sr-label="${this._name} for ${this._kilnName}"
       uid="${this.programID}"
-      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>`;
+      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>
+    <router-link
+      class="btn"
+      label="Copy"
+      sr-label="${this._name} for ${this._kilnName}"
+      uid="${this.programID}"
+      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/clone" ></router-link>`;
   }
 
   renderButtons() : TemplateResult | string {
@@ -323,6 +329,10 @@ export class ProgramDetails extends LoggerElement {
       primary-is-program></firing-plot>`;
   }
 
+  renderName() : TemplateResult | string {
+    return this._name;
+  }
+
   //  END:  helper render methods
   // ------------------------------------------------------
   // START: main render method
@@ -334,7 +344,7 @@ export class ProgramDetails extends LoggerElement {
 
     return html`
       <div class="program-view">
-        <h2>${this._name}</h2>
+        <h2>${this.renderName()}</h2>
 
         ${this.renderDetails()}
 

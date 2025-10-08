@@ -248,8 +248,10 @@ export const getOnError = (reject: Fresolver) => (e : Event) : void => {
 };
 
 export const outputAs = async (
+  // deno-lint-ignore no-explicit-any
   input : Promise<any>,
   outputMode : string[] | boolean = false,
+  // deno-lint-ignore no-explicit-any
 ) : Promise<any> => {
   // console.group('outputAs()');
   // console.log('input:', input);
@@ -268,6 +270,7 @@ export const outputAs = async (
   return output;
 };
 
+// deno-lint-ignore no-explicit-any
 export const storeCatch = (reason: any) => { console.error('Error:', reason); };
 
 export const parseKeyValSelector = (selector : string) : IKeyStr[] => selector
@@ -282,6 +285,7 @@ export const getByKeyValue = async (
   db : IDBPDatabase,
   storeName: string,
   selector : string,
+  // deno-lint-ignore no-explicit-any
 ) : Promise<any> => {
   // console.group('getByKeyValue()');
   // console.log('db:', db);
