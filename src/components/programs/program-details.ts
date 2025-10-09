@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { ID, IKeyStr, IKeyValUrl } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { IKiln} from '../../types/kilns.d.ts';
-import type { FiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
+import type { IFiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
   durationFromStep,
@@ -80,6 +80,9 @@ export class ProgramDetails extends LoggerElement {
   _type : string = '';
 
   @state()
+  _id : ID = '';
+
+  @state()
   _name : string = '';
 
   @state()
@@ -110,7 +113,7 @@ export class ProgramDetails extends LoggerElement {
   _duration : number = 0;
 
   @state()
-  _steps : FiringStep[] = [];
+  _steps : IFiringStep[] = [];
 
   @state()
   _programData : IProgram | null = null;
@@ -119,7 +122,7 @@ export class ProgramDetails extends LoggerElement {
   _kilnData : IKiln | null = null;
 
   @state()
-  _tmpSteps : FiringStep[] = [];
+  _tmpSteps : IFiringStep[] = [];
 
   @state()
   _stepCount : number = 0;
@@ -149,6 +152,7 @@ export class ProgramDetails extends LoggerElement {
 
     if (_program !== null) {
       this._programData = _program;
+      this._id = _program.id;
       this._name = _program.name;
       this._kilnID = _program.kilnID;
       this._urlPart = _program.urlPart;

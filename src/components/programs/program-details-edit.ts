@@ -9,7 +9,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 // import type { ID, IKeyStr } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
 import type {
-  FiringStep,
+  IFiringStep,
   // IProgram,
 } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
@@ -29,7 +29,13 @@ import {
   maxTempFromSteps,
 } from '../../utils/conversions.utils.ts';
 import { getTopCone } from '../../utils/getCone.util.ts';
-import InputValue from '../../utils/InputValue.class.ts';
+import InputValueClass from '../../utils/InputValue.class.ts';
+import type { ID, IKeyValue } from "../../types/data-simple.d.ts";
+import { addRemoveField } from "../../utils/validation.utils.ts";
+import { validateProgramStep, stepsAreDifferent } from "../../utils/program.utils.ts";
+import { isFiringStep } from "../../types/program.type-guards.ts";
+import type { TStoreAction } from "../../types/store.d.ts";
+import { nanoid } from "nanoid";
 // import { isIKeyStr } from '../../types/data.type-guards.ts';
 // import { enumToOptions } from '../../utils/lit.utils.ts';
 // import '../shared-components/firing-plot.ts'
@@ -75,7 +81,21 @@ export class ProgramDetailsEdit extends ProgramDetails {
   _canSave : boolean = false;
 
   @state()
-  _firingTypeOptions : TOptionValueLabel[] = []
+  _changedFields : string[] = [];
+
+  _changes : IKeyValue = {};
+
+  @state()
+  _errorFields : string[] = [];
+
+  @state()
+  _firingTypeOptions : TOptionValueLabel[] = [];
+
+  @state()
+  _nothingToSave : boolean = false;
+
+  @state()
+  _stepsChanged : boolean = false;
 
   //  END:  state
   // ------------------------------------------------------
@@ -103,6 +123,49 @@ export class ProgramDetailsEdit extends ProgramDetails {
       : value;
   }
 
+  _setCanSave() : void {
+    if (this._errorFields.length > 0 || this._tmpSteps.length === 0
+    ) {
+      // First round of validation failed.
+      this._canSave === false;
+
+      return;
+    }
+    let diff = 0;
+
+    for (let a = 0; a < this._tmpSteps.length; a += 1) {
+      const tmp = validateProgramStep(this._tmpSteps[a]);
+
+      if (tmp !== null) {
+        throw new Error(tmp);
+      }
+      if (!isFiringStep(this._steps[a]) || stepsAreDifferent(this._tmpSteps[a], this._steps[a])) {
+        diff += 1;
+      }
+    }
+
+    this._stepsChanged = (diff > 0);
+    this._canSave = (this._changedFields.length > 0 || diff > 0);
+  }
+
+  _handleChangeInner(field : InputValueClass) : void {
+    this._nothingToSave = false;
+
+    this._errorFields = addRemoveField(
+      this._errorFields,
+      field.id,
+      field.checkValidity() === false,
+    );
+
+    this._changedFields = addRemoveField(
+      this._changedFields,
+      field.id,
+      field.isNewValue,
+    );
+
+    this._setCanSave();
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: getters
@@ -112,54 +175,32 @@ export class ProgramDetailsEdit extends ProgramDetails {
   // START: event handlers
 
   handleChange(event : CustomEvent) : void {
-    // console.group('<program-details-edit>.handleChange()');
-    // console.log('event:', event);
-    if (event.detail instanceof InputValue) {
-      const target = (event.detail as InputValue);
-      const value = target.value.toString();
-      // console.log('target:', target);
-      // console.log('value:', value);
-      // console.log('target.id:', target.id);
-      // console.log('this._name (before):', this._name);
-      // console.log('this._description (before):', this._description);
-      // console.log('this._type (before):', this._type);
-      // console.log('this._controllerID (before):', this._controllerID);
+    console.group('<program-details-edit>.handleChange()');
+    console.log('event:', event);
+    if (event.detail instanceof InputValueClass) {
+      const field : InputValueClass = event.detail;
+      console.log('field:', field);
+      console.log('field.id:', field.id);
+      console.log('this._changedFields (before):', this._changedFields);
+      console.log('this._errorFields (before):', this._errorFields);
+      console.log(`this._changes[${field.id}] (before):`, this._changes[field.id]);
 
-      if (target.checkValidity() === true) {
-        switch(target.id) {
-          case 'name':
-            this._name = value;
-            break;
-
-          case 'description':
-            this._description = value;
-            break;
-
-          case 'type':
-            this._type = value;
-            break;
-
-          case 'programIndex':
-            this._controllerID = target.valueAsNumber;
-            break;
-
-          default:
-            break;
-        }
-        // console.log('this._name (after):', this._name);
-        // console.log('this._description (after):', this._description);
-        // console.log('this._type (after):', this._type);
-        // console.log('this._controllerID (after):', this._controllerID);
+      if (['name', 'description', 'type', 'programIndex'].includes(field.id)) {
+        this._changes[field.id];
+        this._handleChangeInner(field);
       }
+      console.log(`this._changes[${field.id}] (after):`, this._changes[field.id]);
+      console.log('this._errorFields (after):', this._errorFields);
+      console.log('this._changedFields (after):', this._changedFields);
     }
-    // console.groupEnd();
+    console.groupEnd();
   }
 
   addStep() : void {
     console.group('<program-details-edit>.addStep()');
     console.log('this._tmpSteps (before):', this._tmpSteps);
-    const newStep : FiringStep = {
-      order: this._steps.length + 1,
+    const newStep : IFiringStep = {
+      order: this._tmpSteps.length + 1,
       endTemp: 0,
       rate: 0,
       hold: 0
@@ -188,7 +229,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
     console.log('this._maxTemp (before):', this._maxTemp);
     const target = event.target as HTMLInputElement;
     const i = parseInt(target.dataset.stepOrder as string, 10);
-    const field = target.dataset.field as keyof FiringStep;
+    const field = target.dataset.field as keyof IFiringStep;
 
     console.log('i:', i);
     console.log('field:', field);
@@ -228,6 +269,32 @@ export class ProgramDetailsEdit extends ProgramDetails {
     console.log('handleSave()');
     event.preventDefault();
     event.stopPropagation();
+    if (this._canSave === true) {
+      const output : IKeyValue = {
+        ...this._changes,
+        maxTemp: this._maxTemp,
+        duration: this._duration,
+        cone: this._cone,
+        steps: [...this._tmpSteps],
+      }
+
+      let action : TStoreAction = 'updateProgram';
+      let id : ID = this._id;
+
+      if (this.mode === 'edit') {
+        if (this._stepsChanged === true) {
+          action = 'superseedProgram';
+          id = nanoid(10);
+          output._oldID = this._id
+        } else {
+          action = 'addProgram';
+          id = nanoid(10);
+        }
+      }
+      output.id = id;
+
+      this.store?.action(action, output).then((_response) => {});
+    }
   }
 
   //  END:  event handlers

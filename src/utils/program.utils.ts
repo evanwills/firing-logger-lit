@@ -1,5 +1,5 @@
 import { isID } from "../types/data.type-guards.ts";
-import type { FiringStep, IProgram } from "../types/programs.d.ts";
+import type { IFiringStep, IProgram } from "../types/programs.d.ts";
 import { isNumMinMax, isObj } from "./data.utils.ts";
 import { isNonEmptyStr } from "./string.utils.ts";
 
@@ -34,10 +34,10 @@ const getProgramError = (
   + `valid \`${prop}\` ${type}.`;
 
 /**
- * Validates that the provided data conforms to the FiringStep
+ * Validates that the provided data conforms to the IFiringStep
  * interface.
  *
- * @param step Data that should conform to FiringStep interface
+ * @param step Data that should conform to IFiringStep interface
  *
  * @returns Error string if data is invalid, otherwise null.
  */
@@ -46,18 +46,18 @@ export const validateProgramStep = (step: unknown) : string | null => {
     return 'step is not an object';
   }
 
-  if (isNumMinMax((step as FiringStep).order, 1, 100) === false) {
+  if (isNumMinMax((step as IFiringStep).order, 1, 100) === false) {
     return getProgramError('order', 'number', 'step');
   }
-  const obj = `step[${(step as FiringStep).order}]`;
+  const obj = `step[${(step as IFiringStep).order}]`;
 
-  if (isNumMinMax((step as FiringStep).endTemp, 0, 1500) === false) {
+  if (isNumMinMax((step as IFiringStep).endTemp, 0, 1500) === false) {
     return getProgramError('endTemp', 'number', obj);
   }
-  if (isNumMinMax((step as FiringStep).rate, 0, 500) === false) {
+  if (isNumMinMax((step as IFiringStep).rate, 0, 500) === false) {
     return getProgramError('rate', 'number', obj);
   }
-  if (isNumMinMax((step as FiringStep).hold, 0, 1440) === false) {
+  if (isNumMinMax((step as IFiringStep).hold, 0, 1440) === false) {
     return getProgramError('hold', 'number', obj);
   }
 
@@ -169,4 +169,19 @@ export const validateProgramData = (program: unknown) : string | null => {
   }
 
   return null;
+};
+
+export const stepsAreDifferent = (
+  newStep : IFiringStep,
+  oldStep : IFiringStep,
+) : boolean => {
+  const keys = ['order', 'endTemp', 'rate', 'hold'];
+
+  for (const key of keys) {
+    if (oldStep[key] !== newStep[key]) {
+      return true;
+    }
+  }
+
+  return false;
 };
