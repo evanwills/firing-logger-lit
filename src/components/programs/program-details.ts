@@ -4,6 +4,7 @@ import type { ID, IKeyStr, IKeyValUrl } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { IKiln} from '../../types/kilns.d.ts';
 import type { IFiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
+import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
   durationFromStep,
@@ -15,15 +16,14 @@ import {
   keyValueStyle,
   programViewVars,
   tableStyles,
-} from '../../assets/css/program-view-style.ts';
+} from './programs.css.ts';
+import { isIKeyStr } from '../../types/data.type-guards.ts';
+import { isKiln } from '../../types/kiln.type-guards.ts';
+import { enumToOptions } from '../../utils/lit.utils.ts';
 import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
-import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { isIKeyStr } from "../../types/data.type-guards.ts";
-import { isKiln } from "../../types/kiln.type-guards.ts";
-import { enumToOptions } from "../../utils/lit.utils.ts";
 
 /**
  * An example element.
@@ -192,7 +192,7 @@ export class ProgramDetails extends LoggerElement {
     // console.log('this.kilnPath:', this.kilnPath);
 
     if (this.store !== null) {
-      this.store.action(
+      this.store.dispatch(
         'getProgramData',
         {
           id: this.programID,

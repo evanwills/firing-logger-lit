@@ -22,7 +22,7 @@ import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 //   keyValueStyle,
 //   programViewVars,
 //   tableStyles
-// } from '../../assets/css/program-view-style.ts';
+// } from '../../assets/css/programs.css.ts';
 import { ProgramDetails } from './program-details.ts';
 import {
   durationFromSteps,
@@ -30,12 +30,12 @@ import {
 } from '../../utils/conversions.utils.ts';
 import { getTopCone } from '../../utils/getCone.util.ts';
 import InputValueClass from '../../utils/InputValue.class.ts';
-import type { ID, IKeyValue } from "../../types/data-simple.d.ts";
-import { addRemoveField } from "../../utils/validation.utils.ts";
-import { validateProgramStep, stepsAreDifferent } from "../../utils/program.utils.ts";
-import { isFiringStep } from "../../types/program.type-guards.ts";
-import type { TStoreAction } from "../../types/store.d.ts";
-import { nanoid } from "nanoid";
+import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
+import { addRemoveField } from '../../utils/validation.utils.ts';
+import { validateProgramStep, stepsAreDifferent } from './program.utils.ts';
+import { isFiringStep } from '../../types/program.type-guards.ts';
+import type { TStoreAction } from '../../types/store.d.ts';
+import { nanoid } from 'nanoid';
 // import { isIKeyStr } from '../../types/data.type-guards.ts';
 // import { enumToOptions } from '../../utils/lit.utils.ts';
 // import '../shared-components/firing-plot.ts'
@@ -293,7 +293,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
       }
       output.id = id;
 
-      this.store?.action(action, output).then((_response) => {});
+      this.store?.dispatch(action, output).then((_response) => {});
     }
   }
 

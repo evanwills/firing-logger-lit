@@ -1,5 +1,5 @@
-import { validateProgramData, validateProgramStep } from "../utils/program.utils.ts";
-import type { IFiringStep, IProgram } from "./programs.d.ts";
+import { validateProgramData, validateProgramStep } from '../components/programs/program.utils.ts';
+import type { IFiringStep, IProgram } from './programs.d.ts';
 
 export const isProgram = (obj: unknown) : obj is IProgram => {
   return (validateProgramData(obj) === null);

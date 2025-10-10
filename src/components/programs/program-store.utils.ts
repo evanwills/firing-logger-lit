@@ -1,32 +1,31 @@
-import type { IDBPDatabase } from "idb";
-import type { ID, IKeyStr } from "../types/data-simple.d.ts";
-import type { IKiln } from "../types/kilns.d.ts";
-import { isProgram } from "../types/program.type-guards.ts";
-import type { IProgram, PProgramDetails } from "../types/programs.d.ts";
-import type { CDataStoreClass, FActionHandler } from "../types/store.d.ts";
-import { validateProgramData } from "../utils/program.utils.ts";
-import { isNonEmptyStr } from "../utils/string.utils.ts";
-import { getKiln } from "./kiln-store.utils.ts";
-import { isCDataStoreClass } from "../types/store.type-guards.ts";
+import type { IDBPDatabase } from 'idb';
+import type { ID, IKeyStr } from '../../types/data-simple.d.ts';
+import type { IKiln } from '../../types/kilns.d.ts';
+import type { IProgram, PProgramDetails } from '../../types/programs.d.ts';
+import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
+import { isProgram } from '../../types/program.type-guards.ts';
+import { isCDataStoreClass } from '../../types/store.type-guards.ts';
+import { validateProgramData } from './program.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import { getKiln } from '../kilns/kiln-store.utils.ts';
 
 export const getProgram = async (input : Promise<IProgram|IProgram[]|null|undefined>) : Promise<IProgram|null> => {
-  // console.group('getKiln()');
+  console.group('getKiln()');
   let program = await input;
-  // console.log('kiln (before):', kiln);
+  console.log('program (before):', program);
 
   if (Array.isArray(program) && program.length > 0) {
     program = program[0];
   }
-  // console.log('kiln (after):', kiln);
-  // console.log('isKiln(kiln):', isKiln(kiln));
+  // console.log('program (after):', program);
 
   const _tmp = validateProgramData(program);
-  // console.log('_tmp:', _tmp);
+  console.log('_tmp:', _tmp);
   if (_tmp !== null) {
     console.warn('Kiln data is invalid:', _tmp);
     return null;
   }
-  // console.groupEnd();
+  console.groupEnd();
 
   return isProgram(program)
     ? program
@@ -37,11 +36,11 @@ export const getProgramData : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
   { id, kilnUrlPart, programUrlPart } : { id: ID | null, kilnUrlPart: string | null, programUrlPart: string | null },
 ) : Promise<PProgramDetails> => {
-  // console.group('getProgramData()');
-  // console.log('id:', id);
-  // console.log('kilnUrlPart:', kilnUrlPart);
-  // console.log('kilnUprogramUrlPartrlPart:', programUrlPart);
-  // console.log('db:', db);
+  console.group('getProgramData()');
+  console.log('id:', id);
+  console.log('kilnUrlPart:', kilnUrlPart);
+  console.log('programUrlPart:', programUrlPart);
+  console.log('db:', db);
 
   let program : Promise<IProgram | null> = Promise.resolve(null);
   let kiln : Promise<IKiln | null> = Promise.resolve(null);
@@ -72,10 +71,10 @@ export const getProgramData : FActionHandler = async (
     }
   }
 
-  // console.log('kiln:', kiln);
-  // console.log('program:', program);
-  // console.log('EfiringTypes:', EfiringTypes);
-  // console.groupEnd();
+  console.log('kiln:', kiln);
+  console.log('program:', program);
+  console.log('EfiringTypes:', EfiringTypes);
+  console.groupEnd();
 
   return { EfiringTypes, program, kiln };
 };

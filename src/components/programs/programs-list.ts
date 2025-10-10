@@ -8,7 +8,7 @@ import { getValFromKey } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { getLinkProps } from '../../utils/lit.utils.ts';
-import { tableStyles } from '../../assets/css/program-view-style.ts';
+import { tableStyles } from './programs.css.ts';
 import '../lit-router/router-link.ts';
 
 @customElement('programs-list')

@@ -12,9 +12,14 @@ import {
   populateEmptyKVslice,
   populateEmptySlice,
 } from './idb-data-store.utils.ts';
-import { getAuthUser, updateAuthUser } from './user-data.utils.ts';
-import { getKilnEditData, getKilnViewData, addNewKilnData, updateKilnData } from './kiln-store.utils.ts';
-import { getProgramData } from "./program-store.utils.ts";
+import { getAuthUser, updateAuthUser } from '../components/users/user-data.utils.ts';
+import {
+  getKilnEditData,
+  getKilnViewData,
+  addNewKilnData,
+  updateKilnData,
+} from '../components/kilns/kiln-store.utils.ts';
+import { getProgramData } from '../components/programs/program-store.utils.ts';
 
 let store : CDataStoreClass | null = null;
 

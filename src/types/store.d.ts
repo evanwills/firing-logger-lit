@@ -19,7 +19,7 @@ export type TStoreSlice = string;
 
 export type TStoreAction = 'setLoggedInUser' | 'fetchLatest' | 'replace' | 'append'
   | 'fetchLatestKilns' | 'getKilnEditData' | 'getKilnViewData' | 'updateKiln' | 'addKiln'
-  | 'fetchLatestPrograms' | 'getProgramData' | 'addProgram' | 'updateProgram'
+  | 'fetchLatestPrograms' | 'getProgramData' | 'addProgram' | 'superseedProgram' | 'updateProgram'
   | 'fetchLatestFirings' | 'addFiring' | 'updateFiring' | 'deleteFiring'
   | 'fetchLatestusers' | 'addUser' | 'updateUser' | 'setUserPreferences' | 'clearNoAuthChanges' | 'saveChangeOnHold' | 'reapplyChangesOnHold';
 
@@ -43,7 +43,7 @@ export type FReadyWatcher = (isReady: boolean) => void;
  *          Error message string if there was a problem with the
  *          write action
  */
-export type FDataStoreAction = (
+export type FDataStoreDispatch = (
   action : string,
   payload: any = null,
   PIDB: boolean = false,
@@ -141,7 +141,7 @@ export type CDataStoreClass = {
    *          Error message string if there was a problem with the
    *          write action
    */
-  action : FDataStoreAction,
+  dispatch : FDataStoreDispatch,
 
   /**
    * Add watcher to do something after a successful write action

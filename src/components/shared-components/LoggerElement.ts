@@ -6,7 +6,7 @@ import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { isUser } from '../../types/user.type-guards.ts';
-import { userCan, userHasAuth } from '../../store/user-data.utils.ts';
+import { userCan, userHasAuth } from '../users/user-data.utils.ts';
 import './loading-spinner.ts';
 
 /**
@@ -208,7 +208,7 @@ export class LoggerElement extends LitElement {
     // console.log('this.store:', this.store);
 
     if (this.store !== null) {
-      this.store.action('getLoggedInUser' as TStoreAction)
+      this.store.dispatch('getLoggedInUser' as TStoreAction)
         .then(this._setUser.bind(this))
         .catch(storeCatch);
 

@@ -1,7 +1,7 @@
-import { isID } from "../types/data.type-guards.ts";
-import type { IFiringStep, IProgram } from "../types/programs.d.ts";
-import { isNumMinMax, isObj } from "./data.utils.ts";
-import { isNonEmptyStr } from "./string.utils.ts";
+import { isID } from '../../types/data.type-guards.ts';
+import type { IFiringStep, IProgram } from '../../types/programs.d.ts';
+import { isNumMinMax, isObj } from '../../utils/data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 
 export const getProgramTypeOptions = () : string[] => {
   return [

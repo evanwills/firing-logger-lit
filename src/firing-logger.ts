@@ -37,12 +37,12 @@ export class FiringLogger extends LitElement {
     if (this._db !== null && this._db.ready === true) {
       console.info('Fetching latest data on startup');
       // console.log('this._db:', this._db);
-      // console.group('this._db.action()');
-      // console.log('this._db.actions:', this._db.actions);
+      // console.group('this._db.dispatch()');
+      // console.log('this._db.dispatchs:', this._db.dispatchs);
       // console.groupEnd();
       // We don't await this - we just want to kick it off
       // and let it happen in the background
-      this._db.action('fetchLatest', null).catch((error) => {
+      this._db.dispatch('fetchLatest', null).catch((error) => {
         console.error('Failed to fetch latest data on startup:', error);
       });
     }

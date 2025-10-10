@@ -2,7 +2,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
-import { getCustomErrorMsg } from "../../utils/text-field.utils.ts";
+import { getCustomErrorMsg } from '../../utils/text-field.utils.ts';
 
 /**
  * An example element.

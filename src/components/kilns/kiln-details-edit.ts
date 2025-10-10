@@ -1,21 +1,21 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { nanoid } from "nanoid";
+import { nanoid } from 'nanoid';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import type { ID, IIdObject, IKeyValue } from '../../types/data-simple.d.ts';
-import type { TStoreAction } from "../../types/store.d.ts";
+import type { TStoreAction } from '../../types/store.d.ts';
 import type InputValueClass from '../../utils/InputValue.class.ts';
 import type FocusableInside from '../input-fields/FocusableInside.ts';
-import { emptyOrNull, isNumMinMax } from "../../utils/data.utils.ts";
+import { emptyOrNull, isNumMinMax } from '../../utils/data.utils.ts';
 import { getISO8601date } from '../../utils/date-time.utils.ts';
 import { renderDetails } from '../../utils/render.utils.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
-import { round } from "../../utils/numeric.utils.ts";
+import { round } from '../../utils/numeric.utils.ts';
 import { kebab2Sentance, name2urlPart, ucFirst } from '../../utils/string.utils.ts';
 import { addRemoveField } from '../../utils/validation.utils.ts';
 import { KilnDetails } from './kiln-details.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
-import { reportFiringTypeError } from '../../utils/kiln-data.utils.ts';
+import { reportFiringTypeError } from './kiln-data.utils.ts';
 import '../lit-router/router-link.ts';
 import '../input-fields/accessible-checkbox-list.ts';
 import '../input-fields/accessible-number-field.ts';
@@ -241,7 +241,7 @@ export class KilnDetailsEdit extends KilnDetails {
           this._changes = { ...this._changes, id };
         }
 
-        this.store?.action(action, { ...this._changes })
+        this.store?.dispatch(action, { ...this._changes })
           .then((_response) => {
             const path = (typeof this._changes.urlPart === 'string')
               ? this._changes.urlPart

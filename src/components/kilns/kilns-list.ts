@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
-import { tableStyles } from '../../assets/css/program-view-style.ts';
+import { tableStyles } from '../programs/programs.css.ts';
 import '../lit-router/router-link.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
@@ -125,10 +125,10 @@ export class KilnsList extends LoggerElement {
         url="/kilns/${kilnData.urlPart}"
         label="${kilnData.name}"></router-link></th>
       <td>${getValFromKey(this._fuelSources, kilnData.fuel)}</td>
-      <td>${this._tConverter(kilnData.maxTemp)}&deg;${this._tUnit}</td>
-      <td>${this._lConverter(kilnData.height)}${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.depth)}${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.width)}${this._lUnit}</td>
+      <td>${this._tConverter(kilnData.maxTemp)}<wbr />&deg;${this._tUnit}</td>
+      <td>${this._lConverter(kilnData.height)}<wbr />${this._lUnit}</td>
+      <td>${this._lConverter(kilnData.depth)}<wbr />${this._lUnit}</td>
+      <td>${this._lConverter(kilnData.width)}<wbr />${this._lUnit}</td>
     </tr>`;
   }
 

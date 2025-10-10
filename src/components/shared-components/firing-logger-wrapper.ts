@@ -1,12 +1,11 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { deleteCookie, getCookie } from '../../utils/cookie.utils.ts';
-import { linkStyle } from '../../assets/css/link-style.ts';
-// import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import { linkStyle } from '../../assets/css/links.css.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
+import { LoggerElement } from './LoggerElement.ts';
 import './firing-logger-logo.ts';
 import './login-ui.ts';
-import { LoggerElement } from "./LoggerElement.ts";
 
 @customElement('firing-logger-wrapper')
 export class FiringLoggerWrapper extends LoggerElement {

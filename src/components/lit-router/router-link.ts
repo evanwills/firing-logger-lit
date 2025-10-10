@@ -1,9 +1,9 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { LitRouter } from './lit-router.ts';
-import { srOnly } from '../../assets/css/sr-only.ts';
-import { linkStyle } from '../../assets/css/link-style.ts';
-import { isNonEmptyStr } from "../../utils/string.utils.ts";
+import { srOnly } from '../../assets/css/sr-only.css.ts';
+import { linkStyle } from '../../assets/css/links.css.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 
 @customElement('router-link')
 export class RouterLink extends LitElement {

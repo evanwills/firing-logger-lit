@@ -2,7 +2,7 @@ import { openDB, type IDBPDatabase } from 'idb';
 import type {
   CDataStoreClass,
   FActionHandler,
-  FDataStoreAction,
+  // FDataStoreDispatch,
   FReadyWatcher,
   TActionList,
   // TStoreAction,
@@ -199,7 +199,7 @@ export default class PidbDataStore implements CDataStoreClass {
   }
 
   /**
-   * action() runs a predefined action against the store. Normally,
+   * dispatch() runs a predefined action against the store. Normally,
    * this is used for write actions but it can also be used for
    * complex read requests.
    *
@@ -211,7 +211,7 @@ export default class PidbDataStore implements CDataStoreClass {
    *          Error message string if there was a problem with the
    *          write action
    */
-  action(
+  dispatch(
     action : string,
     // deno-lint-ignore no-explicit-any
     payload: any = null,
