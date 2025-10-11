@@ -4,16 +4,18 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { nanoid } from 'nanoid';
 import type { IFiringStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
-import type { ID, IKeyValue, TNewItemResponse } from '../../types/data-simple.d.ts';
+import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TStoreAction } from '../../types/store.d.ts';
 import { isFiringStep } from '../../types/program.type-guards.ts';
 import { ProgramDetails } from './program-details.ts';
-import { durationFromSteps, maxTempFromSteps } from '../../utils/conversions.utils.ts';
+import { durationFromSteps, hoursFromSeconds, maxTempFromSteps } from '../../utils/conversions.utils.ts';
 import { getTopCone } from '../../utils/getCone.util.ts';
 import { validateProgramStep, stepsAreDifferent } from './program.utils.ts';
 import { addRemoveField } from '../../utils/validation.utils.ts';
-import InputValueClass from '../../utils/InputValue.class.ts';
+import { name2urlPart } from "../../utils/string.utils.ts";
 import { LitRouter } from "../lit-router/lit-router.ts";
+import InputValueClass from '../../utils/InputValue.class.ts';
+import '../input-fields/read-only-field.ts'
 
 /**
  * An example element.
@@ -148,10 +150,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
   }
 
   _handleSaveThen(uid : string) : void {
-    console.group('<program-details-edit>.deleteStep()');
-    console.log('uid:', uid);
     LitRouter.dispatchRouterEvent(this, `/program/${uid}`);
-    console.groupEnd();
   }
 
   //  END:  helper methods
@@ -172,11 +171,17 @@ export class ProgramDetailsEdit extends ProgramDetails {
       console.log('this._changedFields (before):', this._changedFields);
       console.log('this._errorFields (before):', this._errorFields);
       console.log(`this._changes[${field.id}] (before):`, this._changes[field.id]);
+      console.log(`this._changes (before):`, this._changes);
 
       if (['name', 'description', 'type', 'programIndex'].includes(field.id)) {
-        this._changes[field.id];
+        this._changes[field.id] = field.value;
         this._handleChangeInner(field);
+
+        if (field.id === 'name') {
+          this._changes.urlPart = name2urlPart(field.value.toString());
+        }
       }
+      console.log(`this._changes (after):`, this._changes);
       console.log(`this._changes[${field.id}] (after):`, this._changes[field.id]);
       console.log('this._errorFields (after):', this._errorFields);
       console.log('this._changedFields (after):', this._changedFields);
@@ -269,6 +274,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
         duration: this._duration,
         cone: this._cone,
         steps: [...this._tmpSteps],
+        _KILN_URL_PART: this._kilnUrlPart,
       }
 
       let action : TStoreAction = 'updateProgram';
@@ -346,6 +352,21 @@ export class ProgramDetailsEdit extends ProgramDetails {
             .value=${ifDefined(this._getVal(this._controllerID))}
             @change=${this.handleChange}></accessible-select-field>
         </li>
+        <li>
+          <read-only-field
+            label="Max temp"
+            .value=${`${this._tConverter(this._maxTemp)}°${this._tUnit}`}></read-only-field>
+        </li>
+        <li>
+          <read-only-field
+            label="Duration"
+            .value=${hoursFromSeconds(this._duration)}></read-only-field>
+        </li>
+        <li>
+          <read-only-field
+            label="Cone"
+            .value=${this._cone} no-empty></read-only-field>
+        </li>
       </ul>`;
   }
 
@@ -354,7 +375,6 @@ export class ProgramDetailsEdit extends ProgramDetails {
       this._tmpSteps = [...this._steps];
     }
     return html`
-      <p>&lt;program-details-edit&gt;.renderSteps()</p>
       <table>
         <thead>
           <tr>

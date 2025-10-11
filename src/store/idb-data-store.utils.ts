@@ -1,5 +1,12 @@
 import { type IDBPDatabase } from 'idb';
-import type { ID, IIdObject, IKeyStr, IKeyValPair, IKeyValue, TOrderedEnum } from '../types/data-simple.d.ts';
+import type {
+  ID,
+  IIdObject,
+  IKeyStr,
+  IKeyValPair,
+  IKeyValue,
+  TOrderedEnum,
+} from '../types/data-simple.d.ts';
 
 type Fresolver = (value: unknown) => void;
 

@@ -1,6 +1,6 @@
 import type { TUser } from "./users.d.ts";
 
-export const isUser = (user : TUser) : user is TUser => (
+export const isUser = (user : unknown) : user is TUser => (
   typeof (user as TUser).adminLevel === 'number'
   && typeof (user as TUser).canFire === 'boolean'
   && typeof (user as TUser).canLog === 'boolean'

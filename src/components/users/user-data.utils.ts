@@ -5,6 +5,8 @@ import { getCookie } from '../../utils/cookie.utils.ts';
 import { isUser } from '../../types/user.type-guards.ts';
 import { populateEmptyKVslice } from '../../store/idb-data-store.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import type { CDataStoreClass, FActionHandler } from "../../types/store.d.ts";
+import { isCDataStoreClass } from "../../types/store.type-guards.ts";
 
 const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourScheme } : TUser) => {
   populateEmptyKVslice(
@@ -15,7 +17,7 @@ const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourS
   );
 };
 
-export const getLastAuthUser = async (db : IDBPDatabase) : Promise<TUser|null> => {
+export const getLastAuthUser = async (db : IDBPDatabase) : Promise<unknown> => {
   const userID = await db.get('userPreferences', 'id');
 
   return (isNonEmptyStr(userID))
@@ -23,11 +25,18 @@ export const getLastAuthUser = async (db : IDBPDatabase) : Promise<TUser|null> =
     : Promise.resolve(null);
 };
 
-export const getAuthUser = async (db : IDBPDatabase) : Promise<TUser|null> => {
+export const getAuthUser : FActionHandler = async (db : IDBPDatabase | CDataStoreClass, _payload : null = null) : Promise<unknown> => {
   const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
 
   if (userID === null) {
     return Promise.resolve(null);
+  }
+
+  if (isCDataStoreClass(db)) {
+    throw new Error(
+      'getAuthUser() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
   }
 
   const localUser = await db.get('userPreferences', 'id');
@@ -98,32 +107,48 @@ export const userCanNowLater = async (
   key : string = 'any',
   level : number = 2,
 ) : Promise<TUserNowLaterAuth> => {
-  let user : TUser | null = await getAuthUser(db);
+  let tmp : unknown = await getAuthUser(db, null);
+  let user : TUser | null = null;
   let hold : boolean = false;
   let msg : string = '';
 
-  if (user === null) {
-    user = await getLastAuthUser(db);
+  if (isUser(tmp as TUser) === false) {
+    tmp = await getLastAuthUser(db);
     hold = true;
+  }
+
+  if (isUser(tmp) === true) {
+    user = tmp;
   }
 
   if (user === null) {
     msg = ('You must be logged in to');
-  } else if (!userHasAuth(user, level)) {
-    msg = `You (${user.preferredName}) do not have a high enough admin level to`;
-  } else if (key !== 'any' && userCan(user, key, level)) {
-    msg = `You (${user.preferredName}) do not have permission to`;
+  } else if (!userHasAuth(user as TUser, level)) {
+    msg = `You (${(user as TUser).preferredName}) do not have a high enough admin level to`;
+  } else if (key !== 'any' && userCan((user as TUser), key, level)) {
+    msg = `You (${(user as TUser).preferredName}) do not have permission to`;
   }
 
-  return { user, hold, msg };
+  return { user: (user as TUser), hold, msg };
 };
 
-export const updateAuthUser = async (db: IDBPDatabase, data : IKeyValue) : Promise<boolean> => {
-  const user : TUser | null = await getAuthUser(db);
+export const updateAuthUser : FActionHandler = async (
+  db: IDBPDatabase | CDataStoreClass,
+  data : IKeyValue,
+) : Promise<unknown> => {
+  if (isCDataStoreClass(db)) {
+    throw new Error(
+      'updateAuthUser() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
+  }
 
-  if (user === null) {
+  const tmp : unknown = await getAuthUser(db, null);
+
+  if (isUser(tmp) === false) {
     return Promise.resolve(false);
   }
+  const user : TUser = tmp;
 
   const allowedStrKeys = [
     'firstName',
@@ -140,7 +165,7 @@ export const updateAuthUser = async (db: IDBPDatabase, data : IKeyValue) : Promi
   const newData : TUser = { ...user };
 
   for (const key of allowedStrKeys) {
-    if (typeof data[key] === 'string' && data[key].trim() !== '') {
+    if (isNonEmptyStr(data, key) === true) {
       // deno-lint-ignore no-explicit-any
       newData[key] = data[key];
     }

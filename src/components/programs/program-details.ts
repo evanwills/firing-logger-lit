@@ -20,6 +20,7 @@ import {
 import { isIKeyStr } from '../../types/data.type-guards.ts';
 import { isKiln } from '../../types/kiln.type-guards.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
+import { detailsStyle } from "../../assets/css/details.css.ts";
 import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
@@ -136,6 +137,9 @@ export class ProgramDetails extends LoggerElement {
   @state()
   _firingTypeOptions : TOptionValueLabel[] = [];
 
+  @state()
+  _noEdit : boolean = false;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -170,10 +174,19 @@ export class ProgramDetails extends LoggerElement {
       this._ready = true;
     }
 
+    this._noEdit = (this._programData?.superseded === true
+      || this._programData?.locked === true);
+
     if (isKiln(_kiln) === true) {
       this._kilnData = _kiln;
       this._kilnName = _kiln.name;
       this._kilnUrlPart = _kiln.urlPart;
+
+      if (this._noEdit === false
+        && ['retired', 'decommissioned', 'Removed'].includes(this._kilnData.serviceState)
+      ) {
+        this._noEdit = true;
+      }
     }
 
     if (isIKeyStr(_EfiringTypes) && this._kilnData !== null) {
@@ -307,12 +320,16 @@ export class ProgramDetails extends LoggerElement {
   }
 
   renderButtonInner() : TemplateResult {
-    return html`<router-link
-      class="btn"
-      label="Edit"
-      sr-label="${this._name} for ${this._kilnName}"
-      uid="${this.programID}"
-      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>
+    const edit = (this._noEdit === false)
+      ? html`<router-link
+        class="btn"
+        label="Edit"
+        sr-label="${this._name} for ${this._kilnName}"
+        uid="${this.programID}"
+        url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>`
+      : '';
+
+    return html`${edit}
     <router-link
       class="btn"
       label="Copy"
@@ -337,8 +354,8 @@ export class ProgramDetails extends LoggerElement {
       primary-is-program></firing-plot>`;
   }
 
-  renderName() : TemplateResult | string {
-    return this._name;
+  renderName(extra : string = '') : TemplateResult | string {
+    return `${this._name}${extra}`;
   }
 
   //  END:  helper render methods
@@ -348,6 +365,13 @@ export class ProgramDetails extends LoggerElement {
   render() : TemplateResult{
     if (this._ready === false) {
       return html`<loading-spinner label="program details"></loading-spinner>`;
+    }
+
+    if (this.mode !== '' && this._noEdit === true) {
+      return html`
+      <div class="program-view">
+        <h2>${this.renderName(' is not editable')}</h2>
+      </div>`;
     }
 
     return html`
@@ -384,6 +408,7 @@ export class ProgramDetails extends LoggerElement {
     }
     ${tableStyles}
     ${keyValueStyle}
+    ${detailsStyle}
 
     input[type="number"] {
       padding: 0.25rem 0 0.25rem 0.5rem;

@@ -68,13 +68,19 @@ export default [
       .store=${_STORE}></firings-list>`,
   },
   {
+    route: '/old-program/:programID',
+    render: ({ programID, _STORE } : IRouteArgs) : TemplateResult => html`<program-details
+        program-uid="${programID}"
+        .store=${_STORE}></program-details>`,
+  },
+  {
     route: '/program/:programID',
     render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
       redirectProgram(node, _STORE, programID);
 
       return html`<program-details
         program-uid="${programID}"
-        .store=${_STORE}></program-details>`
+        .store=${_STORE}></program-details>`;
     },
   },
   {
@@ -84,7 +90,7 @@ export default [
 
       return html`<program-details-edit
         program-uid="${programID}"
-        .store=${_STORE}></program-details-edit>`
+        .store=${_STORE}></program-details-edit>`;
     },
   },
   {
@@ -95,7 +101,7 @@ export default [
       return html`<program-details-edit
         mode="clone"
         program-uid="${programID}"
-        .store=${_STORE}></program-details-edit>`
+        .store=${_STORE}></program-details-edit>`;
     },
   },
   {

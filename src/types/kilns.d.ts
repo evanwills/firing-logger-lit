@@ -154,3 +154,8 @@ export type PKilnDetails = {
   EkilnOpeningType: Promise<IKeyStr>,
   kiln: Promise<IKiln|null>,
 };
+
+export type TGetKilnDataPayload = {
+  uid: ID,
+  urlPart: string,
+};

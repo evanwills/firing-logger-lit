@@ -49,7 +49,7 @@ export type FDataStoreDispatch = (
   PIDB: boolean = false,
 ) => Promise<any>;
 
-export type FActionHandler = (db : IDBPDatabase | CDataStoreClass, payload: any) => Promise<any>
+export type FActionHandler = (db : IDBPDatabase | CDataStoreClass, payload: any) => Promise<unknown>
 
 export interface TActionList extends IKeyValue {
   [key:string] : FActionHandler

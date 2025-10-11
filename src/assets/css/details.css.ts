@@ -6,7 +6,7 @@ details {
   margin: 0 auto 1rem;
   max-width: var(--max-width, 50rem);
   padding-bottom: 1rem;
-  text-align: start;
+  text-align: var(--details-text-align, start);
 }
 details:first-of-type {
   border-top: 0.05rem solid #ccc;
@@ -14,6 +14,10 @@ details:first-of-type {
 }
 details > summary {
   font-weight: bold;
+
+}
+details > summary:hover {
+  cursor: pointer;
 }
 // details {
 //   content-visibility: auto;

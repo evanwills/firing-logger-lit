@@ -242,6 +242,41 @@
     }
   ],
 
+  "redirects": [
+    {
+      "id" : "ZQfi3zS0Rt",
+      "firing": false,
+      "kiln": true,
+      "program": true,
+      "url": "/kilns/small-woodrow-kiln-2/programs/normal-bisque",
+      "user": false
+    },
+    {
+      "id" : "f6afaRKAiy",
+      "firing": false,
+      "kiln": true,
+      "program": true,
+      "url": "/kilns/large-woodrow-kiln-1/programs/mid-fire-bisque-1210",
+      "user": false
+    },
+    {
+      "id" : "AXARcxcpZN",
+      "firing": false,
+      "kiln": true,
+      "program": false,
+      "url": "/kilns/large-woodrow-kiln-1",
+      "user": false
+     },
+    {
+      "id" : "WpnCnk5aLA",
+      "firing": false,
+      "kiln": true,
+      "program": false,
+      "url": "/kilns/small-woodrow-kiln-2",
+      "user": false
+    }
+  ],
+
   "EfiringType": [
     {
       "order": 0,

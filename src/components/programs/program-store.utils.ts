@@ -3,15 +3,13 @@ import type {
   ID,
   IIdObject,
   IKeyStr,
-  IKeyValue,
-  // TNewItemResponse,
 } from '../../types/data-simple.d.ts';
 import { nanoid } from 'nanoid';
 import type { IKiln } from '../../types/kilns.d.ts';
-import type { IProgram, PProgramDetails } from '../../types/programs.d.ts';
+import type { IProgram } from '../../types/programs.d.ts';
 import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../../types/users.d.ts';
-import { isProgram } from '../../types/program.type-guards.ts';
+import { isPProgramDetails, isProgram } from '../../types/program.type-guards.ts';
 import { isCDataStoreClass } from '../../types/store.type-guards.ts';
 import { validateProgramData } from './program.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
@@ -45,7 +43,7 @@ export const getProgram = async (
 export const getProgramData : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
   { id, kilnUrlPart, programUrlPart } : { id: ID | null, kilnUrlPart: string | null, programUrlPart: string | null },
-) : Promise<PProgramDetails> => {
+) : Promise<unknown> => {
   let program : Promise<IProgram | null> = Promise.resolve(null);
   let kiln : Promise<IKiln | null> = Promise.resolve(null);
   let EfiringTypes : Promise<IKeyStr | null> = Promise.resolve(null);
@@ -78,18 +76,29 @@ export const getProgramData : FActionHandler = async (
   return { EfiringTypes, program, kiln };
 };
 
-export const getProgramURL = async (
+export const getProgramURL : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
   uid : ID,
 ) : Promise<string> => {
-  const { program, kiln } = await getProgramData(
-    db, { id: uid, kilnUrlPart : null, programUrlPart : null }
-  );
-  const _kiln = await kiln;
-  const _program = await program;
+  let kiln : IKiln | null = null;
+  let program : IProgram | null = null;
 
-  if (_kiln !== null && _program !== null) {
-    return `/kilns/${_kiln.urlPart}/programs/${_program.urlPart}`;
+  const tmp : unknown = await getProgramData(
+    db,
+    {
+      id: uid,
+      kilnUrlPart : null,
+      programUrlPart : null,
+    },
+  );
+
+  if (isPProgramDetails(tmp)) {
+    kiln = await tmp.kiln;
+    program = await tmp.program;
+  }
+
+  if (kiln !== null && program !== null) {
+    return `/kilns/${kiln.urlPart}/programs/${program.urlPart}`;
   }
   return '';
 }
@@ -99,6 +108,7 @@ const saveProgramChanges = async (
   _userID : string,
   changes : IIdObject | null,
   program : IProgram,
+  kilnUrlPart : string,
 ) : Promise<IDBValidKey> => {
   const _program : IIdObject = mergeChanges(changes, program);
 
@@ -110,10 +120,27 @@ const saveProgramChanges = async (
 
   const method = changes === null ? 'add' : 'put';
 
+  if (method === 'add' || typeof (changes as IIdObject).urlPart === 'string') {
+    db.put(
+      'redirects', {
+        id: _program.id,
+        firing: false,
+        kiln: true,
+        program: true,
+        url: `/kilns/${kilnUrlPart}/programs/${_program.urlPart}`,
+        user: false,
+      },
+    );
+
+    if (method === 'add') {
+      db.delete('redirects', program.id);
+    }
+  }
+
   try {
     return await db[method]('programs', _program);
   } catch (error) {
-    console.group('saveProgramChanges()');
+    console.group('saveProgramChanges() ERROR:');
     console.log('_userID:', _userID);
     console.log('changes:', changes);
     console.log('program:', program);
@@ -129,7 +156,10 @@ export const updateProgram : FActionHandler = async (
   changes : IIdObject,
 ) : Promise<IDBValidKey> => {
   if (isCDataStoreClass(db)) {
-    throw new Error('updateProgram() expects first param `db` to be a IDBPDatabase type object');
+    throw new Error(
+      'updateProgram() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
   }
 
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
@@ -142,7 +172,7 @@ export const updateProgram : FActionHandler = async (
     throw new Error('Cannot proceed because user is null');
   }
 
-  const { _SUPERSEDE, ...newData } = changes;
+  const { _SUPERSEDE, _KILN_URL_PART, ...newData } = changes;
 
   const program : IProgram | null = await db.get('programs', newData.id);
 
@@ -173,22 +203,44 @@ export const updateProgram : FActionHandler = async (
       saveChangeOnHold(db, 'programs', user.id, oldData, program);
       return saveChangeOnHold(db, 'programs', user.id, _newData, null);
     } else {
-      saveProgramChanges(db, user.id, oldData, program);
-      return saveProgramChanges(db, user.id, null, _newData);
+      saveProgramChanges(db, user.id, oldData, program, _KILN_URL_PART);
+      return saveProgramChanges(db, user.id, null, _newData, _KILN_URL_PART);
     }
   } else if (hold === true) {
     return saveChangeOnHold(db, 'programs', user.id, newData, program);
   } else {
-    return saveProgramChanges(db, user.id, newData, program);
+    return saveProgramChanges(db, user.id, newData, program, _KILN_URL_PART);
   }
 }
 
 export const addProgram : FActionHandler = async (
-  data : IKeyValue
+  db: IDBPDatabase | CDataStoreClass,
+  program : IProgram,
 ) : Promise<IDBValidKey> => {
-  // console.group('addProgram()');
-  console.log('data:', data);
+  if (isCDataStoreClass(db)) {
+    throw new Error(
+      'addProgram() expects first param `db` to be a IDBPDatabase '
+      + 'type object',
+    );
+  }
 
-  return Promise.resolve('');
+  const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
+
+  if (msg !== '') {
+    return Promise.reject(`${msg} update program details`);
+  }
+
+  if (user === null) {
+    throw new Error('Cannot proceed because user is null');
+  }
+
+  const { _SUPERSEDE, _KILN_URL_PART, ...newData } = program;
+  // console.group('addProgram()');
+  console.log('program:', program);
+
+
+  return (hold === true)
+    ? saveChangeOnHold(db, 'kilns', user.id, newData, null)
+    : saveProgramChanges(db, user.id, null, newData, _KILN_URL_PART);
   // console.groupEnd();
 }

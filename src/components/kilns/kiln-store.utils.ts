@@ -1,6 +1,6 @@
 import type { IDBPDatabase } from 'idb';
 import type { ID, IIdObject } from '../../types/data-simple.d.ts';
-import type { IKiln } from '../../types/kilns.d.ts';
+import type { IKiln, TGetKilnDataPayload } from '../../types/kilns.d.ts';
 import type { TUserNowLaterAuth } from '../../types/users.d.ts';
 import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
 import type { PKilnDetails, TKilnDetails } from '../../types/kilns.d.ts';
@@ -54,7 +54,10 @@ export const addNewKilnData : FActionHandler = async (
   newKiln : IKiln,
 ) : Promise<IDBValidKey> => {
   if (isCDataStoreClass(db)) {
-    throw new Error('addNewKilnData() expects first param `db` to be a IDBPDatabase type object');
+    throw new Error(
+      'addNewKilnData() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
   }
 
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
@@ -85,7 +88,10 @@ export const updateKilnData : FActionHandler = async (
   changes : IIdObject,
 ) : Promise<IDBValidKey> => {
   if (isCDataStoreClass(db)) {
-    throw new Error('updateKilnData() expects first param `db` to be a IDBPDatabase type object');
+    throw new Error(
+      'updateKilnData() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
   }
 
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
@@ -187,49 +193,55 @@ export const getKiln = async (input : Promise<IKiln|IKiln[]|null|undefined>) : P
     : null;
 }
 
-export const getKilnViewData = async (
-  db: CDataStoreClass,
-  id: ID | null = null,
-  urlPart: string | null = null,
+export const getKilnViewData : FActionHandler  = async (
+  db: IDBPDatabase | CDataStoreClass,
+  { uid, urlPart } : TGetKilnDataPayload,
 ) : Promise<TKilnDetails> => {
   // console.group('getKiln()');
   // console.log('id:', id);
   // console.log('urlPart:', urlPart);
 
-  const tmp = getBasicKilnData(db, id, urlPart);
-  // console.log('tmp:', tmp);
+  if (isCDataStoreClass(db) === true) {
+    const tmp = getBasicKilnData(db, uid, urlPart);
+    // console.log('tmp:', tmp);
 
-  const kiln = await getKiln(tmp.kiln);
-  // console.log('kiln:', kiln);
-  // console.groupEnd();
+    const kiln = await getKiln(tmp.kiln);
+    // console.log('kiln:', kiln);
+    // console.groupEnd();
 
-  return {
-    ...tmp,
-    kiln,
-    programs: (typeof kiln !== 'undefined' && kiln !== null)
-      ? db.read('programs', `kilnID=${kiln.id}`)
-      : Promise.resolve([]),
-    uniqueNames: [],
-  };
+    return {
+      ...tmp,
+      kiln,
+      programs: (typeof kiln !== 'undefined' && kiln !== null)
+        ? db.read('programs', `kilnID=${kiln.id}`)
+        : Promise.resolve([]),
+      uniqueNames: [],
+    };
+  } else {
+    throw new Error('getKilnViewData() expects first param to be a CDataStoreClass object');
+  }
 };
 
-export const getKilnEditData = async (
-  db: CDataStoreClass,
-  id: ID | null = null,
-  name: string | null = null,
+export const getKilnEditData : FActionHandler = async (
+  db: IDBPDatabase | CDataStoreClass,
+  { uid, urlPart } : TGetKilnDataPayload,
 ) : Promise<TKilnDetails> => {
-  const tmp = getBasicKilnData(db, id, name);
+  if (isCDataStoreClass(db) === true) {
+    const tmp = getBasicKilnData(db, uid, urlPart);
 
-  const kiln = await getKiln(tmp.kiln);
+    const kiln = await getKiln(tmp.kiln);
 
-  const _id = (kiln !== null)
-    ? kiln.id
-    : null;
+    const _id = (kiln !== null)
+      ? kiln.id
+      : null;
 
-  return {
-    ...tmp,
-    kiln,
-    programs: Promise.resolve([]),
-    uniqueNames: getUniqueNameList(await db.read('kilns'), _id),
-  };
+    return {
+      ...tmp,
+      kiln,
+      programs: Promise.resolve([]),
+      uniqueNames: getUniqueNameList(await db.read('kilns'), _id),
+    };
+  } else {
+    throw new Error('getKilnViewData() expects first param to be a CDataStoreClass object');
+  }
 }

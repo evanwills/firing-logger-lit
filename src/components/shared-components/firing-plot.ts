@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { TSvgPathItem, TSvgUnit } from '../../types/data.d.ts';
 import type { IFiringStep } from '../../types/programs.d.ts';
 import { getMax, plotPointsFromSteps } from '../../utils/conversions.utils.ts';
+import { detailsStyle } from "../../assets/css/details.css.ts";
 
 /**
  * An example element.
@@ -246,11 +247,14 @@ export class FiringPlot extends LitElement {
       --font-colour: inherit;
       --font-weight: inherit;
       --font-height: inherit;
+      --details-text-align: center;
     }
     svg {
       margin-top: 0.5rem;
-      max-height: 30rem;
+      max-height: 20rem;
       max-width: 30rem;
+      margin-left: auto;
+      margin-right: auto;
     }
     rect {
       fill: var(--rect-fill, transparent);
@@ -313,6 +317,7 @@ export class FiringPlot extends LitElement {
     details summary {
       text-align: left;
     }
+    ${detailsStyle}
   `
 }
 

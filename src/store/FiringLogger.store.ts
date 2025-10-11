@@ -19,7 +19,7 @@ import {
   addNewKilnData,
   updateKilnData,
 } from '../components/kilns/kiln-store.utils.ts';
-import { getProgramData, getProgramURL, updateProgram } from '../components/programs/program-store.utils.ts';
+import { getProgramData, getProgramURL, updateProgram, addProgram } from '../components/programs/program-store.utils.ts';
 
 let store : CDataStoreClass | null = null;
 
@@ -170,6 +170,18 @@ const upgradeSchema : IDBPupgrade = (
 
     //  END:  cones
     // ----------------------------------------------------------
+    // START: redirects
+
+    if (!db.objectStoreNames.contains('redirects')) {
+      const redirects = db.createObjectStore('redirects', { keyPath: 'id' });
+      redirects.createIndex('firing', 'firing', { unique: false });
+      redirects.createIndex('kiln', 'kiln', { unique: false });
+      redirects.createIndex('program', 'program', { unique: false });
+      redirects.createIndex('user', 'user', { unique: false });
+    }
+
+    //  END:  redirects
+    // ----------------------------------------------------------
     // START: unauthenticated updates
 
     if (!db.objectStoreNames.contains('noAuthChanges')) {
@@ -245,6 +257,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptySlice(db, data.users, 'users');
       populateEmptySlice(db, data.kilns, 'kilns');
       populateEmptySlice(db, data.programs, 'programs');
+      populateEmptySlice(db, data.redirects, 'redirects');
       populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
       populateEmptyEnumSlice(db, data.EprogramState, 'EprogramState');
       populateEmptyEnumSlice(db, data.EkilnReadyStatus, 'EkilnReadyStatus');
@@ -291,6 +304,7 @@ const actions : TActionList = {
   getProgramData,
   getProgramURL,
   updateProgram,
+  addProgram,
 };
 
 export const getDataStoreClassSingleton = (
