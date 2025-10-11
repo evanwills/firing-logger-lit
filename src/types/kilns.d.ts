@@ -140,7 +140,7 @@ export type FiringLogs = FiringLogs[]
 export type TKilnDetails = {
   EfiringTypes: Promise<IKeyStr>,
   EfuelSources: Promise<IKeyStr>,
-  EkilnOpeningType: Promise<IKeyStr>,
+  EkilnOpeningTypes: Promise<IKeyStr>,
   EkilnTypes: Promise<IKeyStr>,
   kiln: IKiln | null,
   programs: Promise<IProgram[]>,
@@ -151,7 +151,7 @@ export type PKilnDetails = {
   EfuelSources: Promise<IKeyStr>,
   EfiringTypes: Promise<IKeyStr>,
   EkilnTypes: Promise<IKeyStr>,
-  EkilnOpeningType: Promise<IKeyStr>,
+  EkilnOpeningTypes: Promise<IKeyStr>,
   kiln: Promise<IKiln|null>,
 };
 

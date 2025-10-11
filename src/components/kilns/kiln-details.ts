@@ -6,6 +6,7 @@ import type { TCheckboxValueLabel } from '../../types/renderTypes.d.ts';
 import type { TUniqueNameItem } from '../../types/data.d.ts';
 import type { IProgram } from '../../types/programs.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
+import { isKiln, isTKilnDetails } from "../../types/kiln.type-guards.ts";
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
@@ -234,18 +235,23 @@ export class KilnDetails extends LoggerElement {
       const tmp = (this.mode === '')
         ? await getKilnViewData(this.store, payload)
         : await getKilnEditData(this.store, payload);
+
+      // console.log('payload:', payload);
       // console.log('tmp:', tmp);
 
-      this._kilnTypes = await tmp.EkilnTypes;
-      this._kilnOpeningTypes = await tmp.EkilnOpeningType;
-      this._fuelSources = await tmp.EfuelSources;
-      this._programs = await tmp.programs;
-      this._uniqueNames = tmp.uniqueNames;
-      tmp.EfiringTypes.then(this._setFiringTypes.bind(this));
-      // console.log('tmp.kiln:', tmp.kiln);
+      if (isTKilnDetails(tmp)) {
 
-      if (tmp.kiln !== null) {
-        this._setKilnData(tmp.kiln);
+        this._kilnTypes = await tmp.EkilnTypes;
+        this._kilnOpeningTypes = await tmp.EkilnOpeningTypes;
+        this._fuelSources = await tmp.EfuelSources;
+        this._programs = await tmp.programs;
+        this._uniqueNames = tmp.uniqueNames;
+        tmp.EfiringTypes.then(this._setFiringTypes.bind(this));
+        console.log('tmp.kiln:', tmp.kiln);
+
+        if (isKiln(tmp.kiln)) {
+          this._setKilnData(tmp.kiln);
+        }
       }
     }
     // console.groupEnd();

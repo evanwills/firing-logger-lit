@@ -1,8 +1,9 @@
 import type { IKeyBool } from '../../types/data-simple.d.ts';
-import type { IKiln } from '../../types/kilns.d.ts';
+import type { IKiln, TKilnDetails } from '../../types/kilns.d.ts';
 import type InputValue from '../../utils/InputValue.class.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { isNumMinMax, isObj, isValidEnumValue } from '../../utils/data.utils.ts';
+import { isKiln } from "../../types/kiln.type-guards.ts";
 
 export const getAllowedFiringTypes = (
   kiln : IKeyBool | null,
@@ -255,3 +256,68 @@ export const validateKilnData = (kiln: unknown) : string | null => {
   // --------------------------------------------
   return null;
 };
+
+export const validateTKilnDetails = (obj: unknown) : string | null => {
+  if (isObj(obj) === false) {
+    return 'TKilnDetails is not an object';
+  }
+
+  if (typeof (obj as TKilnDetails).EfiringTypes === 'undefined') {
+    console.log('obj.EfiringTypes:', (obj as TKilnDetails).EfiringTypes);
+    return 'TKilnDetails.EfiringTypes is UNDEFINED';
+  }
+
+  if ((obj as TKilnDetails).EfiringTypes instanceof Promise === false) {
+    return 'TKilnDetails.EfiringTypes is not a Promise';
+  }
+
+  if (typeof (obj as TKilnDetails).EfuelSources === 'undefined') {
+    return 'TKilnDetails.EfuelSources is UNDEFINED';
+  }
+
+  if ((obj as TKilnDetails).EfuelSources instanceof Promise === false) {
+    return 'TKilnDetails.EfuelSources is not a Promise';
+  }
+
+  if (typeof (obj as TKilnDetails).EkilnOpeningTypes === 'undefined') {
+    return 'TKilnDetails.EkilnOpeningType is UNDEFINED';
+  }
+
+  if ((obj as TKilnDetails).EkilnOpeningTypes instanceof Promise === false) {
+    return 'TKilnDetails.EkilnOpeningType is not a Promise';
+  }
+
+  if (typeof (obj as TKilnDetails).EkilnTypes === 'undefined') {
+    return 'TKilnDetails.EkilnTypes is UNDEFINED';
+  }
+
+  if ((obj as TKilnDetails).EkilnTypes instanceof Promise === false) {
+    return 'TKilnDetails.EkilnTypes is not a Promise';
+  }
+
+  if (typeof (obj as TKilnDetails).programs === 'undefined') {
+    return 'TKilnDetails.programs is UNDEFINED';
+  }
+
+  if ((obj as TKilnDetails).programs instanceof Promise === false) {
+    return 'TKilnDetails.programs is not a Promise';
+  }
+
+  if (typeof (obj as TKilnDetails).uniqueNames === 'undefined') {
+    return 'TKilnDetails.uniqueNames is UNDEFINED';
+  }
+
+  if (Array.isArray((obj as TKilnDetails).uniqueNames) === false) {
+    return 'TKilnDetails.uniqueNames is not a Promise';
+  }
+
+  if (typeof (obj as TKilnDetails).kiln === 'undefined') {
+    return 'TKilnDetails.kiln is UNDEFINED';
+  }
+
+  if (isKiln((obj as TKilnDetails).kiln) || (obj as TKilnDetails).kiln === null) {
+    return null;
+  }
+
+  return 'TKilnDetails.kiln is not an IKiln and is not null';
+}
