@@ -1,13 +1,14 @@
 import type { IDBPDatabase } from 'idb';
 import type { ID, IIdObject } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
-import type { TUser } from '../../types/users.d.ts';
-import type { CDataStoreClass } from '../../types/store.d.ts';
+import type { TUserNowLaterAuth } from '../../types/users.d.ts';
+import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
 import type { PKilnDetails, TKilnDetails } from '../../types/kilns.d.ts';
-import { getAuthUser, getLastAuthUser, userHasAuth } from '../users/user-data.utils.ts';
-import { isNonEmptyStr } from '../../utils/string.utils.ts';
-import { getUniqueNameList } from '../../utils/store.utils.ts';
 import { isKiln } from '../../types/kiln.type-guards.ts';
+import { isCDataStoreClass } from "../../types/store.type-guards.ts";
+import { userCanNowLater } from '../users/user-data.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import { getUniqueNameList, mergeChanges } from '../../utils/store.utils.ts';
 import { getInitialData, saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { validateKilnData } from './kiln-data.utils.ts';
 
@@ -17,15 +18,7 @@ const saveKilnChanges = async (
   changes : IIdObject | null,
   kiln : IKiln,
 ) : Promise<IDBValidKey> => {
-  const _kiln : IKiln = { ...kiln };
-
-  if (changes !== null) {
-    for (const key of Object.keys(changes)) {
-      if (key !== 'id') {
-        _kiln[key] = changes[key];
-      }
-    }
-  }
+  const _kiln : IIdObject = mergeChanges(changes, kiln);
 
   const kilnError = validateKilnData(_kiln);
 
@@ -49,53 +42,62 @@ const saveKilnChanges = async (
   }
 };
 
-export const addNewKilnData = async (
-  db: IDBPDatabase,
+/**
+ * Add a new kiln object to the database
+ *
+ * @param db
+ * @param newKiln
+ * @returns
+ */
+export const addNewKilnData : FActionHandler = async (
+  db: IDBPDatabase | CDataStoreClass,
   newKiln : IKiln,
 ) : Promise<IDBValidKey> => {
-  let user : TUser | null = await getAuthUser(db);
-  let hold : boolean = false;
+  if (isCDataStoreClass(db)) {
+    throw new Error('addNewKilnData() expects first param `db` to be a IDBPDatabase type object');
+  }
 
-  if (user === null) {
-    user = await getLastAuthUser(db);
-    hold = true;
+  const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
+
+  if (msg !== '') {
+    return Promise.reject(`${msg} add new kiln details`);
   }
 
   if (user === null) {
-    return Promise.reject('You must be logged in to update kiln details');
+    // This should never happen because `msg` will contain an error
+    // message if user is null
+    throw new Error('Cannot proceed because user is null');
   }
 
-  if (!userHasAuth(user, 2)) {
-    return Promise.reject(
-      `${user.preferredName} does not have permission to update kiln details.`
-    );
-  }
-
-  return  (hold === true)
+  return (hold === true)
     ? saveChangeOnHold(db, 'kilns', user.id, newKiln, null)
     : saveKilnChanges(db, user.id, null, newKiln);
 };
 
-export const updateKilnData = async (
-  db: IDBPDatabase,
+/**
+ *
+ * @param db
+ * @param changes
+ * @returns
+ */
+export const updateKilnData : FActionHandler = async (
+  db: IDBPDatabase | CDataStoreClass,
   changes : IIdObject,
 ) : Promise<IDBValidKey> => {
-  let user : TUser | null = await getAuthUser(db);
-  let hold : boolean = false;
+  if (isCDataStoreClass(db)) {
+    throw new Error('updateKilnData() expects first param `db` to be a IDBPDatabase type object');
+  }
 
-  if (user === null) {
-    user = await getLastAuthUser(db);
-    hold = true;
+  const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
+
+  if (msg !== '') {
+    return Promise.reject(`${msg} update kiln details`);
   }
 
   if (user === null) {
-    return Promise.reject('You must be logged in to update kiln details');
-  }
-
-  if (!userHasAuth(user, 2)) {
-    return Promise.reject(
-      `${user.preferredName} does not have permission to update kiln details.`
-    );
+    // This should never happen because `msg` will contain an error
+    // message if user is null
+    throw new Error('Cannot proceed because user is null');
   }
 
   const kiln = await db.get('kilns', changes.id);
@@ -115,6 +117,14 @@ export const updateKilnData = async (
     : saveKilnChanges(db, user.id, changes, kiln);
 };
 
+/**
+ * Get a subset of kiln data for kiln matched by ID
+ *
+ * @param db
+ * @param id ID of kiln to return
+ *
+ * @returns
+ */
 export const getProgramsByKilnID = (
   db: CDataStoreClass,
   id: ID

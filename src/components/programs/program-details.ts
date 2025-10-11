@@ -128,6 +128,9 @@ export class ProgramDetails extends LoggerElement {
   _stepCount : number = 0;
 
   @state()
+  _useCount : number = 0;
+
+  @state()
   _firingTypes : IKeyStr | null = null;
 
   @state()
@@ -138,17 +141,17 @@ export class ProgramDetails extends LoggerElement {
   // START: helper methods
 
   async _setProgramData({ EfiringTypes, program, kiln } : PProgramDetails) : Promise<void> {
-    console.group('<program-details>._setProgramData()');
+    // console.group('<program-details>._setProgramData()');
     // console.log('EfiringTypes:', EfiringTypes);
     // console.log('program:', program);
     // console.log('kiln:', kiln);
     const _program = await program;
     const _kiln = await kiln;
     const _EfiringTypes = await EfiringTypes;
-    console.log('_EfiringTypes:', _EfiringTypes);
-    console.log('_program:', _program);
-    console.log('_kiln:', _kiln);
-    console.log('this._edit:', this._edit);
+    // console.log('_EfiringTypes:', _EfiringTypes);
+    // console.log('_program:', _program);
+    // console.log('_kiln:', _kiln);
+    // console.log('this._edit:', this._edit);
 
     if (_program !== null) {
       this._programData = _program;
@@ -162,6 +165,7 @@ export class ProgramDetails extends LoggerElement {
       this._maxTemp = _program.maxTemp;
       this._duration = _program.duration;
       this._steps = _program.steps;
+      this._useCount = _program.useCount;
       this._type = _program.type;
       this._ready = true;
     }
@@ -178,9 +182,9 @@ export class ProgramDetails extends LoggerElement {
         .filter((option : TOptionValueLabel) => (isNonEmptyStr(option.value) === true
           && typeof this._kilnData !== 'undefined'
           && (this._kilnData as IKiln)[option.value] === true));
-      console.log('this._firingTypeOptions:', this._firingTypeOptions);
+      // console.log('this._firingTypeOptions:', this._firingTypeOptions);
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   async _getFromStore() : Promise<void> {

@@ -148,3 +148,17 @@ export const getUniqueNameList = (
 
   return list.map(getUniqueName);
 };
+
+export const mergeChanges = <T>(changes: IIdObject | null, oldData: T) : T => {
+  const _oldData : T = { ...oldData };
+
+  if (changes !== null) {
+    for (const key of Object.keys(changes)) {
+      if (typeof (_oldData as IIdObject)[key] !== 'undefined' && key !== 'id') {
+        (_oldData as IIdObject)[key] = (changes as IIdObject)[key];
+      }
+    }
+  }
+
+  return _oldData;
+}

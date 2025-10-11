@@ -87,7 +87,7 @@ export class ProgramsList extends LoggerElement {
   }
 
   _setProgramList(data : IProgram[]) : void {
-    this._programList = data;
+    this._programList = data.filter((program) => program.superseded === false && program.deleted === false);
     this._ready = true;
   }
 

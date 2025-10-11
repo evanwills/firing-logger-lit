@@ -34,10 +34,10 @@ export class LitRouter extends LitElement {
   _data : IKeyValue = {};
 
   @state()
-  _url : string = '';
+  _lastNode : LitElement | HTMLElement | null = null;
 
   @state()
-  possibleRoute : string[] = [];
+  _url : string = '';
 
   @state()
   _search : IKeyValue = {};
@@ -124,6 +124,7 @@ export class LitRouter extends LitElement {
     // console.group('<lit-router>.handleRouteLink()');
     // console.log('this._url (before):', this._url);
     // console.log('this._data (before):', this._data);
+    // console.log('this._lastNode (before):', this._lastNode);
 
     this._url = event.detail.url;
     this._data = event.detail.data;
@@ -135,6 +136,7 @@ export class LitRouter extends LitElement {
     // console.log('event.detail:', event.detail);
     // console.log('event.detail.url:', event.detail.url);
     // console.log('event.detail.data:', event.detail.data);
+    // console.log('this._lastNode (after):', this._lastNode);
     // console.log('this._data (after):', this._data);
     // console.log('this._url (after):', this._url);
     // console.groupEnd();
@@ -216,7 +218,7 @@ export class LitRouter extends LitElement {
   // ------------------------------------------------------
   // START: main render method
 
-  render() : TemplateResult {
+  render() : TemplateResult | string {
     const { route, search, hash } = splitURL(this._url);
 
     for (const possibleRoute of this._parsedRoutes) {
@@ -242,9 +244,9 @@ export class LitRouter extends LitElement {
       args._STORE = this.store;
 
       // console.log('args (after):', args);
-      // console.groupEnd();
 
-      return this._wrap(possibleRoute.render(args), this._url);
+      // console.groupEnd();
+      return this._wrap(possibleRoute.render(args, this), this._url);
     }
 
     return this._wrap(this.renderNotFound(), this._url);

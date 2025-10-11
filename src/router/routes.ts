@@ -12,6 +12,8 @@ import '../components/firings/firings-list.ts';
 // import '../components/users/user-list.ts';
 import '../components/users/user-details.ts';
 import '../components/users/user-details-edit.ts';
+import { LitRouter } from "../components/lit-router/lit-router.ts";
+import { redirectProgram } from "../components/programs/program.utils.ts";
 
 const home = ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<kilns-list
   filters=${_SEARCH} .store=${_STORE}></kilns-list>`
@@ -67,22 +69,34 @@ export default [
   },
   {
     route: '/program/:programID',
-    render: ({ programID, _STORE } : IRouteArgs) : TemplateResult => html`<program-details
-      programID="${programID}"
-      .store=${_STORE}></program-details>`,
+    render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
+      redirectProgram(node, _STORE, programID);
+
+      return html`<program-details
+        program-uid="${programID}"
+        .store=${_STORE}></program-details>`
+    },
   },
   {
     route: '/program/:programID/edit',
-    render: ({ programID, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
-      programID="${programID}"
-      .store=${_STORE}></program-details-edit>`,
+    render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
+      redirectProgram(node, _STORE, programID, 'edit');
+
+      return html`<program-details-edit
+        program-uid="${programID}"
+        .store=${_STORE}></program-details-edit>`
+    },
   },
   {
     route: '/program/:programID/clone',
-    render: ({ programID, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
-      programID="${programID}"
-      mode="clone"
-      .store=${_STORE}></program-details-edit>`,
+    render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
+      redirectProgram(node, _STORE, programID, 'clone');
+
+      return html`<program-details-edit
+        mode="clone"
+        program-uid="${programID}"
+        .store=${_STORE}></program-details-edit>`
+    },
   },
   {
     route: '/programs',
@@ -156,9 +170,9 @@ export default [
   {
     route: '/kilns/:kilnPath/firings/:firingName/edit',
     render: ({ kilnPath, firingName, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<firing-view-edit
-      kiln-path="${kilnPath}"
       firingName="${firingName}"
       firing-uid="${_DATA.uid}"
+      kiln-path="${kilnPath}"
       .store=${_STORE}></firing-view-edit>`,
   },
   {

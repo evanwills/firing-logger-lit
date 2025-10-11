@@ -18,3 +18,9 @@ export interface TUser implements IKeyValue, IIdObject {
   notMetric: boolean,
   colourScheme: 'auto' | 'light' | 'dark',
 }
+
+export type TUserNowLaterAuth = {
+  hold: boolean,
+  msg: string,
+  user: TUser | null,
+};

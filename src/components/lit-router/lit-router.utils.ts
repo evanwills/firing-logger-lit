@@ -1,7 +1,6 @@
 import type { IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type {
   FGetRouteArgs,
-  IRouteArgs,
   TParsedRoute,
   TRoute,
 } from '../../types/router-types.d.ts';
@@ -98,14 +97,9 @@ export const getGetRouteArgs = (_route : string ) : FGetRouteArgs => {
   }
 };
 
-const dummyRedirect = (_args: IRouteArgs) => '';
-
 const parsedRouteAdapter = (route : TRoute) : TParsedRoute => ({
   ...route,
   getArgs: getGetRouteArgs(route.route),
-  redirect: (typeof route.redirect === 'function')
-    ? route.redirect
-    : dummyRedirect,
 });
 
 export const parseRoutes = (routes : TRoute[]) : TParsedRoute[] => routes.map(parsedRouteAdapter);

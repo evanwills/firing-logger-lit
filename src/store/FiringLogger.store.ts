@@ -19,7 +19,7 @@ import {
   addNewKilnData,
   updateKilnData,
 } from '../components/kilns/kiln-store.utils.ts';
-import { getProgramData } from '../components/programs/program-store.utils.ts';
+import { getProgramData, getProgramURL, updateProgram } from '../components/programs/program-store.utils.ts';
 
 let store : CDataStoreClass | null = null;
 
@@ -126,14 +126,15 @@ const upgradeSchema : IDBPupgrade = (
 
       programs.createIndex('kilnID', 'kilnID', { unique: false });
       programs.createIndex('urlPart', 'urlPart', { unique: false });
-      programs.createIndex('kilnProgramPath', ['kilnID', 'urlPart'], { unique: true });
+      programs.createIndex('kilnProgramPath', ['kilnID', 'urlPart', 'version'], { unique: true });
       programs.createIndex('controllerProgramID', 'controllerProgramID', { unique: false });
       programs.createIndex('maxTemp', 'maxTemp', { unique: false });
       programs.createIndex('cone', 'cone', { unique: false });
       programs.createIndex('duration', 'duration', { unique: false });
       programs.createIndex('createdBy', 'createdBy', { unique: false });
       programs.createIndex('created', 'created', { unique: false });
-      programs.createIndex('parentID', 'parentID', { unique: false });
+      programs.createIndex('supersedesID', 'supersedesID', { unique: false });
+      programs.createIndex('supersededByID', 'supersededByID', { unique: false });
       programs.createIndex('useCount', 'useCount', { unique: false });
       programs.createIndex('deleted', 'deleted', { unique: false });
     }
@@ -288,6 +289,8 @@ const actions : TActionList = {
   getKilnViewData,
   fetchLatest,
   getProgramData,
+  getProgramURL,
+  updateProgram,
 };
 
 export const getDataStoreClassSingleton = (

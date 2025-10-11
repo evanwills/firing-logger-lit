@@ -1,7 +1,10 @@
-import { isID } from '../../types/data.type-guards.ts';
 import type { IFiringStep, IProgram } from '../../types/programs.d.ts';
+import type { CDataStoreClass } from '../../types/store.d.ts';
+import type { ID } from '../../types/data-simple.d.ts';
+import { isID } from '../../types/data.type-guards.ts';
 import { isNumMinMax, isObj } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import { LitRouter } from '../lit-router/lit-router.ts';
 
 export const getProgramTypeOptions = () : string[] => {
   return [
@@ -152,8 +155,12 @@ export const validateProgramData = (program: unknown) : string | null => {
     return getProgramError('superseded', 'boolean');
   }
 
-  if ((program as IProgram).parentID !== null && isID((program as IProgram).parentID) === false) {
-    return getProgramError('parentID', 'string');
+  if ((program as IProgram).supersedesID !== null && isID((program as IProgram).supersedesID) === false) {
+    return getProgramError('supersedesID', 'string and is not NULL');
+  }
+
+  if ((program as IProgram).supersededByID !== null && isID((program as IProgram).supersededByID) === false) {
+    return getProgramError('supersededByID', 'string and is not NULL');
   }
 
   if (isNumMinMax((program as IProgram).useCount, 0, 10000) === false) {
@@ -184,4 +191,34 @@ export const stepsAreDifferent = (
   }
 
   return false;
+};
+
+/**
+ * Force the browser to update the URL for the current program
+ *
+ * @param node HTML element to use as source of event
+ * @param db   Firing logger store
+ * @param uid  ID of the program being redirected
+ * @param mode edit mode for program
+ */
+export const redirectProgram = (
+  node: LitRouter,
+  db: CDataStoreClass,
+  uid : ID,
+  mode: string = '',
+) : void => {
+  db.dispatch('getProgramURL', uid, false).then((url: string) => {
+    if (url !== '') {
+      const _ext = (mode !== '' && mode.startsWith('/') === false)
+        ? `/${mode}`
+        : mode;
+
+      LitRouter.dispatchRouterEvent(
+        node,
+        url + _ext,
+        { uid },
+        'rewrite',
+      );
+    }
+  });
 };

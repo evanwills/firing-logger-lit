@@ -1,5 +1,6 @@
 import type { TemplateResult } from 'lit';
 import type { IKeyScalar, IKeyValue } from './data-simple.d.ts';
+import type { LitRouter } from "../components/lit-router/lit-router.ts";
 
 export interface IRouteArgs extends IKeyValue {
   /**
@@ -22,12 +23,11 @@ export interface IRouteArgs extends IKeyValue {
   _STORE: unknown,
 };
 
-export type FRouteRenderer = (args : IRouteArgs) => TemplateResult;
+export type FRouteRenderer = (args : IRouteArgs, router : LitRouter) => TemplateResult;
 export type FGetRouteArgs = (path: string[]) => IKeyValue | null;
 
 export type TRoute = {
   route: string,
-  redirect?: (args : IRouteArgs) => string,
   render: FRouteRenderer,
 };
 
@@ -35,7 +35,6 @@ export type TRoute = {
 export type TParsedRoute = {
   route: string,
   getArgs: FgetRouteArgs,
-  redirect: (args : IRouteArgs) => string,
   render: FRouteRenderer,
 };
 

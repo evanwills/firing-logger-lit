@@ -100,6 +100,21 @@ export default class PidbDataStore implements CDataStoreClass {
     }
   }
 
+  _bindForLater(
+    action : FActionHandler,
+    // deno-lint-ignore no-explicit-any
+    payload: any = null,
+    PIDB: boolean = true,
+    // deno-lint-ignore no-explicit-any
+  ) : () => Promise<any> {
+    return () => {
+      const db = (PIDB === true && this._db !== null)
+        ? this._db
+        : this;
+      return action(db, payload);
+    }
+  }
+
   //  END:  private methods
   // ------------------------------------------------------
   // START: class getters
@@ -183,21 +198,6 @@ export default class PidbDataStore implements CDataStoreClass {
     return null;
   }
 
-  _bindForLater(
-    action : FActionHandler,
-    // deno-lint-ignore no-explicit-any
-    payload: any = null,
-    PIDB: boolean = true,
-    // deno-lint-ignore no-explicit-any
-  ) : () => Promise<any> {
-    return () => {
-      const db = (PIDB === true && this._db !== null)
-        ? this._db
-        : this;
-      return action(db, payload);
-    }
-  }
-
   /**
    * dispatch() runs a predefined action against the store. Normally,
    * this is used for write actions but it can also be used for
@@ -222,6 +222,7 @@ export default class PidbDataStore implements CDataStoreClass {
     // console.log('this._db:', this._db);
     // console.log('action:', action);
     // console.log('payload:', payload);
+    // console.log('PIDB:', PIDB);
     // console.log('this._actions:', this._actions);
     // console.log(`this._actions.${action}:`, this._actions[action]);
     // console.log(`typeof this._actions.${action}:`, typeof this._actions[action]);
@@ -243,11 +244,14 @@ export default class PidbDataStore implements CDataStoreClass {
         };
 
         this.watchReady(laterAction.bind(this))
-        return Promise.resolve('The database is not yet ready. So, we\'ve added a ready watcher for this action.');
+        return Promise.resolve(
+          'The database is not yet ready. So, we\'ve added a ready '
+          + 'watcher for this action.',
+        );
       }
     }
 
-    // console.error(`Boo!!! No action found for "${action}"`)
+    // console.error(`No action found for "${action}"`)
     // console.groupEnd();
     return Promise.reject(`No action found for "${action}"`);
   }

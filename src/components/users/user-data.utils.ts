@@ -1,6 +1,6 @@
 import type { IDBPDatabase } from 'idb';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { TUser } from '../../types/users.d.ts';
+import type { TUser, TUserNowLaterAuth } from '../../types/users.d.ts';
 import { getCookie } from '../../utils/cookie.utils.ts';
 import { isUser } from '../../types/user.type-guards.ts';
 import { populateEmptyKVslice } from '../../store/idb-data-store.utils.ts';
@@ -93,6 +93,31 @@ export const userCan = (
   return false;
 };
 
+export const userCanNowLater = async (
+  db : IDBPDatabase,
+  key : string = 'any',
+  level : number = 2,
+) : Promise<TUserNowLaterAuth> => {
+  let user : TUser | null = await getAuthUser(db);
+  let hold : boolean = false;
+  let msg : string = '';
+
+  if (user === null) {
+    user = await getLastAuthUser(db);
+    hold = true;
+  }
+
+  if (user === null) {
+    msg = ('You must be logged in to');
+  } else if (!userHasAuth(user, level)) {
+    msg = `You (${user.preferredName}) do not have a high enough admin level to`;
+  } else if (key !== 'any' && userCan(user, key, level)) {
+    msg = `You (${user.preferredName}) do not have permission to`;
+  }
+
+  return { user, hold, msg };
+};
+
 export const updateAuthUser = async (db: IDBPDatabase, data : IKeyValue) : Promise<boolean> => {
   const user : TUser | null = await getAuthUser(db);
 
@@ -116,12 +141,14 @@ export const updateAuthUser = async (db: IDBPDatabase, data : IKeyValue) : Promi
 
   for (const key of allowedStrKeys) {
     if (typeof data[key] === 'string' && data[key].trim() !== '') {
+      // deno-lint-ignore no-explicit-any
       newData[key] = data[key];
     }
   }
 
   for (const key of allowedBoolKeys) {
     if (typeof data[key] === 'boolean') {
+      // deno-lint-ignore no-explicit-any
       newData[key] = data[key];
     }
   }

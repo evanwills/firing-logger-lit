@@ -73,3 +73,8 @@ export type TOrderedEnum = {
   value: string,
   label: string,
 };
+
+export type TNewItemResponse = {
+  uid: ID,
+  urlPart: string,
+}
