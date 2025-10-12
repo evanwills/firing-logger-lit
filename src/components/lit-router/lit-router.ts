@@ -88,7 +88,6 @@ export class LitRouter extends LitElement {
   // ------------------------------------------------------
   // START: helper methods
 
-
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers

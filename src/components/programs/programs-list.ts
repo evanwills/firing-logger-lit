@@ -134,10 +134,21 @@ export class ProgramsList extends LoggerElement {
   _renderTableRow(programData : IKeyValue) : TemplateResult {
     const { name, urlPart, id } = getLinkProps(this._kilnList, programData.kilnID);
     return html`<tr>
-      <th><router-link
+      <th class="flex">
+        <router-link
         data-uid="${programData.id}"
         url="/kilns/${urlPart}/programs/${programData.urlPart}"
-        label="${programData.name}"></router-link></th>
+        label="${programData.name}"></router-link>
+        ${(this._userCan('fire') === true)
+          ? html`<router-link
+                class="btn btn-sm warning"
+                data-uid="${programData.id}"
+                label="New firing"
+                sr-label="for ${programData.name}"
+                url="/firing/new?programUID=${programData.id}"></router-link>`
+          : ''
+        }
+      </th>
       <td>${getValFromKey(this._firingTypes, programData.type)}</td>
       <td><router-link
         data-uid="${id}"

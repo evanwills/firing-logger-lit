@@ -277,12 +277,21 @@ export class KilnDetails extends LoggerElement {
   renderSingleProgram(program : IProgram) : TemplateResult {
     return html`
       <tr>
-        <th>
+        <th class="flex">
           <router-link
             data-uid="${program.id}"
             label="${program.name}"
             sr-label="for ${this._name}"
             url="/kilns/${this._path}/programs/${program.urlPart}"></router-link>
+            ${(this._userCan('fire') === true)
+              ? html`<router-link
+                class="btn btn-sm warning"
+                data-uid="${program.id}"
+                label="New firing"
+                sr-label="for ${this._name}"
+                url="/firing/new?programUID=${program.id}"></router-link>`
+              : ''
+            }
         </th>
         <td>${program.controllerProgramID}</td>
         <td>${program.maxTemp}&deg;${this._tUnit}</td>
@@ -367,7 +376,6 @@ export class KilnDetails extends LoggerElement {
   }
 
   _renderPrograms(detailName : string | null, openOthers : boolean) : TemplateResult {
-
     const newProgramBtn =  (isNonEmptyStr(this._id) === true && this._userCan('program'))
       ? html`<p><router-link
         class="btn"

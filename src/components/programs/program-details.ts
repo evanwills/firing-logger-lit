@@ -281,7 +281,7 @@ export class ProgramDetails extends LoggerElement {
 
     return html`<item-details
           description="${this._description}"
-          .pairs=${data}></item-details>`;
+          .pairs=${data}>${this.renderNewFiringBtn()}</item-details>`;
   }
 
   renderSteps() : TemplateResult {
@@ -329,13 +329,13 @@ export class ProgramDetails extends LoggerElement {
         url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/edit" ></router-link>`
       : '';
 
-    return html`${edit}
+    return html`<p class="btn-wrap">${edit}
     <router-link
-      class="btn"
+      class="btn secondary"
       label="Copy"
       sr-label="${this._name} for ${this._kilnName}"
       uid="${this.programID}"
-      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/clone" ></router-link>`;
+      url="/kilns/${this._kilnUrlPart}/programs/${this._urlPart}/clone" ></router-link></p>`;
   }
 
   renderButtons() : TemplateResult | string {
@@ -356,6 +356,15 @@ export class ProgramDetails extends LoggerElement {
 
   renderName(extra : string = '') : TemplateResult | string {
     return `${this._name}${extra}`;
+  }
+
+  renderNewFiringBtn() : TemplateResult | string {
+    return html`<p class="new-firing"><router-link
+      class="btn btn-lg warning"
+      data-uid="${this._id}"
+      label="New firing"
+      sr-label="for ${this._name}"
+      url="/firing/new?programUID=${this._id}"></router-link></p>`;
   }
 
   //  END:  helper render methods
@@ -418,6 +427,12 @@ export class ProgramDetails extends LoggerElement {
     .kv-list {
       --label-width: 7.5rem;
       --label-align: right;
+    }
+    .btn-wrap {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 1rem;
     }`;
 
   //  END:  styles

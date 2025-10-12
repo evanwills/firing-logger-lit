@@ -456,7 +456,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
 
   renderButtonInner() : TemplateResult {
     const path = `/kilns/${this._kilnUrlPart}/programs/${this._urlPart}`;
-    return html`
+    return html`<p class="btn-wrap">
       <router-link
         button
         class="btn"
@@ -464,12 +464,13 @@ export class ProgramDetailsEdit extends ProgramDetails {
         label="Save"
         srLabel="changes to ${this._name}"
         url="${path}"
-        @click=${this.handleSave}></router-link><router-link
-      class="btn"
-      label="Cancel"
-      sr-label="${this._name} for ${this._kilnName}"
-      uid="${this.programID}"
-      url="${path}" ></router-link>`;
+        @click=${this.handleSave}></router-link>
+      <router-link
+        class="btn secondary"
+        label="Cancel"
+        sr-label="${this._name} for ${this._kilnName}"
+        uid="${this.programID}"
+        url="${path}" ></router-link></p>`;
   }
 
   renderPlot() : TemplateResult | string {
@@ -489,6 +490,10 @@ export class ProgramDetailsEdit extends ProgramDetails {
     return (this.mode === 'clone')
       ? html`Copy of <em>${this._name}</em>`
       : `Edit ${this._name}`;
+  }
+
+  renderNewFiringBtn() : TemplateResult | string {
+    return '';
   }
 
   //  END:  helper render methods

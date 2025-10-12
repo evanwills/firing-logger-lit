@@ -81,7 +81,10 @@ export class ItemDetails extends LitElement {
 
     return html`<div class="summary-outer"><div class="summary">
       ${(hasDesc === true)
-        ? html`<p>${this.description}</p>`
+        ? html`<div class="description">
+          <p>${this.description}</p>
+          <slot></slot>
+          </div>`
         : ''
       }
       ${(hasPairs === true)
@@ -114,12 +117,17 @@ export class ItemDetails extends LitElement {
       list-style-type: none;
       width: 100%;
     }
-    p {
+    .description {
       margin: 0 0 1rem 0;
-      font-style: italic;
-      text-align: left;
       padding-bottom: 1rem;
       border-bottom: 0.05rem solid var(--table-border-colour, #ccc);
+      display: flex;
+      flex-direction: column;
+      align-items: space-between;
+    }
+    p {
+      font-style: italic;
+      text-align: left;
     }
     .summary-outer {
       container-name: summary-block;
@@ -142,22 +150,22 @@ export class ItemDetails extends LitElement {
         column-gap: 1rem;
         align-items: stretch;
       }
-      .summary {
-        > p {
-          border-bottom: none;
-          padding-bottom: 0;
-          margin: 0;
-          padding-right: 1rem;
-          border-right: 0.05rem solid var(--table-border-colour, #ccc);
-          max-width: 20rem;
-          width: calc((100% - 1rem) / 2)
-        }
-        > ul {
-          flex-grow: 1;
-          flex-shrink: 0;
-          width: calc((100% - 1rem) / 2);
-
-        }
+      .description {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin: 0;
+        padding-right: 1rem;
+        border-right: 0.05rem solid var(--table-border-colour, #ccc);
+        max-width: 20rem;
+        width: calc((100% - 1rem) / 2)
+      }
+      .summary > ul {
+        flex-grow: 1;
+        flex-shrink: 0;
+        width: calc((100% - 1rem) / 2);
+      }
+      .description > p {
+        flex-grow: 1;
       }
     }
   `;

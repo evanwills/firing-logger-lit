@@ -52,6 +52,13 @@ thead th, thead td {
 tbody th {
   text-align: left;
 }
+tbody th.flex {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
 tbody th, tbody td {
   border-left: 0.05rem solid var(--table-border-colour, #ccc);
   border-top: 0.05rem solid var(--table-border-colour, #ccc);
