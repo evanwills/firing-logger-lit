@@ -45,7 +45,6 @@ export interface ReportRow {
 };
 
 export interface FiringLogEntry {
-  firingID: ID
   userID: ID,
   time: ISO8601,
   isTemp: boolean,
@@ -53,7 +52,6 @@ export interface FiringLogEntry {
 };
 
 export interface TempLogEntry extends FiringLogEntry {
-  firingID: ID
   userID: ID,
   time: ISO8601,
   isTemp: true,

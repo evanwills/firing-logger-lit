@@ -107,7 +107,7 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
   black: boolean,
   useCount: number,
   readyState: 'unavailable' | 'available' | 'packing' | 'packed' | 'heating' | 'holding' | 'cooling' | 'cold' | 'unpacking' | 'pricing' | 'emptied',
-  serviceState: 'purchased' | 'delivered' | 'installed' | 'working' | 'maintenance' | 'awaitingRepair' | 'beingRepaired' | 'retired' | 'decommissioned' | 'Removed',
+  serviceState: 'purchased' | 'delivered' | 'installed' | 'working' | 'maintenance' | 'awaitingRepair' | 'beingRepaired' | 'retired' | 'decommissioned' | 'removed',
 }
 
 export type MaintenanceLog = {
@@ -134,8 +134,13 @@ export type KilnState = {
   isHot: boolean
 }
 
-export type KilnStates = KilnState[]
-export type FiringLogs = FiringLogs[]
+export type KilnStates = KilnState[];
+export type FiringLogs = FiringLogs[];
+
+export type TKilnDetailsForProgram = {
+  EfiringTypes: Promise<IKeyStr>,
+  kiln: Promise<IKiln | null>,
+};
 
 export type TKilnDetails = {
   EfiringTypes: Promise<IKeyStr>,

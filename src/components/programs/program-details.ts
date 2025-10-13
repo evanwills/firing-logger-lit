@@ -2,7 +2,7 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { ID, IKeyStr, IKeyValUrl } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
-import type { IKiln} from '../../types/kilns.d.ts';
+import type { EfiringType, IKiln, TKilnDetailsForProgram} from '../../types/kilns.d.ts';
 import type { IFiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
@@ -25,6 +25,7 @@ import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
+import { validateKilnData } from "../kilns/kiln-data.utils.ts";
 
 /**
  * An example element.
@@ -144,14 +145,62 @@ export class ProgramDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
+  _setKilnData(kiln : IKiln | null) : void {
+    // console.group('<program-details>._setKilnData()');
+    // console.log('kiln:', kiln);
+    const _kiln = (Array.isArray(kiln))
+      ? kiln[0]
+      : kiln;
+    // console.log('_kiln:', _kiln);
+    // console.log('validateKilnData(_kiln):', validateKilnData(_kiln));
+    // console.log('this._kilnData (before):', this._kilnData);
+    // console.log('this._kilnName (before):', this._kilnName);
+    // console.log('this._kilnUrlPart (before):', this._kilnUrlPart);
+    // console.log('this._noEdit (before):', this._noEdit);
+    if (isKiln(_kiln) === true) {
+      this._kilnData = _kiln;
+      this._kilnID = _kiln.id;
+      this._kilnName = _kiln.name;
+      this._kilnUrlPart = _kiln.urlPart;
+
+      if (this._noEdit === false
+        && ['retired', 'decommissioned', 'Removed'].includes(this._kilnData.serviceState)
+      ) {
+        this._noEdit = true;
+      }
+    }
+    this._ready = true;
+    // console.log('this._noEdit (after):', this._noEdit);
+    // console.log('this._kilnUrlPart (after):', this._kilnUrlPart);
+    // console.log('this._kilnName (after):', this._kilnName);
+    // console.log('this._kilnData (after):', this._kilnData);
+    // console.groupEnd();
+  }
+
+  _setFiringTypes(firingTypes : IKeyStr | null) : void {
+    // console.group('<program-details>._setFiringTypes()');
+    // console.log('firingTypes:', firingTypes);
+    // console.log('this._firingTypes (before):', this._firingTypes);
+    // console.log('this._firingTypeOptions (before):', this._firingTypeOptions);
+    if (isIKeyStr(firingTypes) && this._kilnData !== null) {
+      this._firingTypes = firingTypes;
+      this._firingTypeOptions = enumToOptions(this._firingTypes)
+        .filter((option : TOptionValueLabel) => (isNonEmptyStr(option.value) === true
+          && typeof this._kilnData !== 'undefined'
+          && (this._kilnData as IKiln)[option.value] === true));
+      // console.log('this._firingTypeOptions:', this._firingTypeOptions);
+    }
+    // console.log('this._firingTypes (after):', this._firingTypes);
+    // console.log('this._firingTypeOptions (after):', this._firingTypeOptions);
+    // console.groupEnd();
+  }
+
   async _setProgramData({ EfiringTypes, program, kiln } : PProgramDetails) : Promise<void> {
     // console.group('<program-details>._setProgramData()');
     // console.log('EfiringTypes:', EfiringTypes);
     // console.log('program:', program);
     // console.log('kiln:', kiln);
     const _program = await program;
-    const _kiln = await kiln;
-    const _EfiringTypes = await EfiringTypes;
     // console.log('_EfiringTypes:', _EfiringTypes);
     // console.log('_program:', _program);
     // console.log('_kiln:', _kiln);
@@ -177,26 +226,18 @@ export class ProgramDetails extends LoggerElement {
     this._noEdit = (this._programData?.superseded === true
       || this._programData?.locked === true);
 
-    if (isKiln(_kiln) === true) {
-      this._kilnData = _kiln;
-      this._kilnName = _kiln.name;
-      this._kilnUrlPart = _kiln.urlPart;
 
-      if (this._noEdit === false
-        && ['retired', 'decommissioned', 'Removed'].includes(this._kilnData.serviceState)
-      ) {
-        this._noEdit = true;
-      }
-    }
+    this._setKilnData(await kiln);
+    this._setFiringTypes(await EfiringTypes);
+    // console.groupEnd();
+  }
 
-    if (isIKeyStr(_EfiringTypes) && this._kilnData !== null) {
-      this._firingTypes = _EfiringTypes;
-      this._firingTypeOptions = enumToOptions(this._firingTypes)
-        .filter((option : TOptionValueLabel) => (isNonEmptyStr(option.value) === true
-          && typeof this._kilnData !== 'undefined'
-          && (this._kilnData as IKiln)[option.value] === true));
-      // console.log('this._firingTypeOptions:', this._firingTypeOptions);
-    }
+  async _setNewProgramData({ EfiringTypes, kiln } : TKilnDetailsForProgram) : Promise<void> {
+    // console.group('<program-details>._getFromStore()');
+    // console.log('EfiringTypes:', EfiringTypes);
+    // console.log('kiln:', kiln);
+    this._setKilnData(await kiln);
+    this._setFiringTypes(await EfiringTypes);
     // console.groupEnd();
   }
 
@@ -209,15 +250,23 @@ export class ProgramDetails extends LoggerElement {
     // console.log('this.kilnPath:', this.kilnPath);
 
     if (this.store !== null) {
-      this.store.dispatch(
-        'getProgramData',
-        {
-          id: this.programID,
-          kilnUrlPart: this.kilnPath,
-          programUrlPart: this.programPath
-        },
-        false,
-      ).then(this._setProgramData.bind(this));
+      if (this.mode !== 'new') {
+        this.store.dispatch(
+          'getProgramData',
+          {
+            id: this.programID,
+            kilnUrlPart: this.kilnPath,
+            programUrlPart: this.programPath
+          },
+          false,
+        ).then(this._setProgramData.bind(this));
+      } else {
+        this.store.dispatch(
+          'getKilnDataForProgram',
+          { uid: '', urlPart: this.kilnPath },
+          false,
+        ).then(this._setNewProgramData.bind(this));
+      }
     } else {
       this._ready = true;
     }

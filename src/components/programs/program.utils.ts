@@ -105,7 +105,7 @@ export const validateProgramData = (program: unknown) : string | null => {
     return getProgramError('urlPart', 'string');
   }
 
-  if (isNonEmptyStr(program, 'description') === false) {
+  if (typeof (program as IProgram).description !== 'string') {
     return getProgramError('description',' string');
   }
 
@@ -135,6 +135,7 @@ export const validateProgramData = (program: unknown) : string | null => {
     const tmp = validateProgramStep(step);
 
     if (tmp !== null) {
+      console.log('step:', step);
       return tmp;
     }
   }

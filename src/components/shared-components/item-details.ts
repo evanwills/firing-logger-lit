@@ -80,13 +80,13 @@ export class ItemDetails extends LitElement {
     }
 
     return html`<div class="summary-outer"><div class="summary">
-      ${(hasDesc === true)
-        ? html`<div class="description">
-          <p>${this.description}</p>
-          <slot></slot>
-          </div>`
-        : ''
-      }
+      <div class="description">
+        <div class="other"><slot></slot></div>
+        ${(hasDesc === true)
+          ? html`<p class="desc">${this.description}</p>`
+          : ''
+        }
+      </div>
       ${(hasPairs === true)
         ? html`
             <ul>
@@ -157,7 +157,9 @@ export class ItemDetails extends LitElement {
         padding-right: 1rem;
         border-right: 0.05rem solid var(--table-border-colour, #ccc);
         max-width: 20rem;
-        width: calc((100% - 1rem) / 2)
+        width: calc((100% - 1rem) / 2);
+        > .desc { order: 1; }
+        > .other { order: 2; }
       }
       .summary > ul {
         flex-grow: 1;

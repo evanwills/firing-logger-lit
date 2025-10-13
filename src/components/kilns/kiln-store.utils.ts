@@ -1,6 +1,6 @@
 import type { IDBPDatabase } from 'idb';
 import type { ID, IIdObject } from '../../types/data-simple.d.ts';
-import type { IKiln, TGetKilnDataPayload } from '../../types/kilns.d.ts';
+import type { IKiln, TGetKilnDataPayload, TKilnDetailsForProgram } from '../../types/kilns.d.ts';
 import type { TUserNowLaterAuth } from '../../types/users.d.ts';
 import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
 import type { PKilnDetails, TKilnDetails } from '../../types/kilns.d.ts';
@@ -12,6 +12,7 @@ import { getUniqueNameList, mergeChanges } from '../../utils/store.utils.ts';
 import { getInitialData, saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { validateKilnData } from './kiln-data.utils.ts';
 import type { TUniqueNameItem } from "../../types/data.d.ts";
+import { addRedirect, updateRedirect } from "../../store/redirect.utils.ts";
 
 const saveKilnChanges = async (
   db: IDBPDatabase,
@@ -30,6 +31,11 @@ const saveKilnChanges = async (
   const method = changes === null ? 'add' : 'put';
 
   try {
+    if (method === 'add') {
+      addRedirect(db, { id: _kiln.id, kiln: true, url: `/kilns/${_kiln.urlPart}` });
+    } else if (typeof changes?.urlPath === 'string') {
+      updateRedirect(db, { id: _kiln.id, url: `/kilns/${_kiln.urlPart}` });
+    }
     return await db[method]('kilns', _kiln);
   } catch (error) {
     console.group('saveKilnChanges()');
@@ -141,19 +147,50 @@ export const getProgramsByKilnID = (
   ['id', 'type', 'name', 'urlPart', 'controllerProgramID', 'maxTemp', 'cone', 'duration'],
 );
 
+export const getKilnDataForProgram : FActionHandler = (
+  db: IDBPDatabase | CDataStoreClass,
+  { uid, urlPart } : TGetKilnDataPayload,
+) : Promise<TKilnDetailsForProgram> => {
+  console.group('getKilnDataForProgram()');
+  console.log('uid:', uid);
+  console.log('urlPart:', urlPart);
+  if (isCDataStoreClass(db) === true) {
+    let selector = '';
+
+    if (isNonEmptyStr(uid)) {
+      selector = `#${uid}`;
+    } else if (isNonEmptyStr(urlPart)) {
+      selector = `urlPart=${urlPart}`;
+    }
+    console.log('selector:', selector);
+    console.groupEnd();
+
+    return Promise.resolve({
+      EfiringTypes: db.read('EfiringType', '', true),
+      kiln: (selector !== '')
+        ? db.read('kilns', selector)
+        : Promise.resolve(null),
+    });
+  } else {
+    console.groupEnd();
+    throw new Error(
+      'getKilnDataForProgram() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
+  }
+}
 
 const getBasicKilnData = (
   db: CDataStoreClass,
-  id: ID | null = null,
-  urlPart: string | null = null,
+  { uid, urlPart } : TGetKilnDataPayload,
 ) : PKilnDetails => {
   // console.group('getBasicKilnData()');
   // console.log('id:', id);
   // console.log('urlPart:', urlPart);
   let selector = '';
 
-  if (isNonEmptyStr(id)) {
-    selector = `#${id}`;
+  if (isNonEmptyStr(uid)) {
+    selector = `#${uid}`;
   } else if (isNonEmptyStr(urlPart)) {
     selector = `urlPart=${urlPart}`;
   }
@@ -203,7 +240,7 @@ export const getKilnViewData : FActionHandler  = async (
   // console.log('urlPart:', urlPart);
 
   if (isCDataStoreClass(db) === true) {
-    const tmp = getBasicKilnData(db, uid, urlPart);
+    const tmp = getBasicKilnData(db, { uid, urlPart });
     // console.log('tmp:', tmp);
 
     const kiln = await getKiln(tmp.kiln);

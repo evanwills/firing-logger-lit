@@ -18,6 +18,7 @@ import {
   getKilnViewData,
   addNewKilnData,
   updateKilnData,
+  getKilnDataForProgram,
 } from '../components/kilns/kiln-store.utils.ts';
 import { getProgramData, getProgramURL, updateProgram, addProgram } from '../components/programs/program-store.utils.ts';
 
@@ -257,6 +258,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptySlice(db, data.users, 'users');
       populateEmptySlice(db, data.kilns, 'kilns');
       populateEmptySlice(db, data.programs, 'programs');
+      populateEmptySlice(db, data.firings, 'firings');
       populateEmptySlice(db, data.redirects, 'redirects');
       populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
       populateEmptyEnumSlice(db, data.EprogramState, 'EprogramState');
@@ -300,6 +302,7 @@ const actions : TActionList = {
   addKiln: addNewKilnData,
   getKilnEditData,
   getKilnViewData,
+  getKilnDataForProgram,
   fetchLatest,
   getProgramData,
   getProgramURL,

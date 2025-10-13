@@ -213,7 +213,7 @@ export default [
   },
   {
     route: '/kilns/:kilnPath/programs/new',
-    render: ({ kilnPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<program-details
+    render: ({ kilnPath, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<program-details-edit
       kiln-path="${kilnPath}"
       kiln-uid="${_DATA.uid}"
       mode="new"

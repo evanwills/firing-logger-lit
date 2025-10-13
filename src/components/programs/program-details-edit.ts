@@ -12,7 +12,7 @@ import { durationFromSteps, hoursFromSeconds, maxTempFromSteps } from '../../uti
 import { getTopCone } from '../../utils/getCone.util.ts';
 import { validateProgramStep, stepsAreDifferent } from './program.utils.ts';
 import { addRemoveField } from '../../utils/validation.utils.ts';
-import { name2urlPart } from "../../utils/string.utils.ts";
+import { isNonEmptyStr, name2urlPart } from "../../utils/string.utils.ts";
 import { LitRouter } from "../lit-router/lit-router.ts";
 import InputValueClass from '../../utils/InputValue.class.ts';
 import '../input-fields/read-only-field.ts'
@@ -83,9 +83,15 @@ export class ProgramDetailsEdit extends ProgramDetails {
       && this._kilnData[type.value] === true);
   }
 
-  _getVal<T>(value : T) : T | null {
-    return (this.mode === 'clone')
-      ? null
+  _getVal<T>(value : T, _default : T | null = null ) : T | null {
+    // console.group('<program-details-edit>._getVal()');
+    // console.log('value:', value);
+    // console.log('_default:', _default);
+    // console.log('this.mode:', this.mode);
+    // console.log("'['copy', 'clone', 'new'].includes(this.mode):", ['copy', 'clone', 'new'].includes(this.mode));
+    // console.groupEnd();
+    return (['copy', 'clone', 'new'].includes(this.mode) === true)
+      ? _default
       : value;
   }
 
@@ -94,16 +100,16 @@ export class ProgramDetailsEdit extends ProgramDetails {
       return null;
     }
 
-    return (typeof value === 'number')
+    return (typeof value !== 'string')
       ? value.toString()
       : value;
   }
 
   _setCanSave() : void {
-    console.group('<program-details-edit>._setCanSave()');
-    console.log('this._errorFields:', this._errorFields);
-    console.log('this._errorFields.length:', this._errorFields.length);
-    console.log('this._errorFields.length > 0:', this._errorFields.length > 0);
+    // console.group('<program-details-edit>._setCanSave()');
+    // console.log('this._errorFields:', this._errorFields);
+    // console.log('this._errorFields.length:', this._errorFields.length);
+    // console.log('this._errorFields.length > 0:', this._errorFields.length > 0);
 
     if (this._errorFields.length > 0 || this._tmpSteps.length === 0) {
       // First round of validation failed.
@@ -128,7 +134,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
 
     this._stepsChanged = (diff > 0 || this._steps.length !== this._tmpSteps.length);
     this._canSave = (this._changedFields.length > 0 || this._stepsChanged === true);
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   _handleChangeInner(field : InputValueClass) : void {
@@ -162,18 +168,18 @@ export class ProgramDetailsEdit extends ProgramDetails {
   // START: event handlers
 
   handleChange(event : CustomEvent) : void {
-    console.group('<program-details-edit>.handleChange()');
-    console.log('event:', event);
+    // console.group('<program-details-edit>.handleChange()');
+    // console.log('event:', event);
     if (event.detail instanceof InputValueClass) {
       const field : InputValueClass = event.detail;
-      console.log('field:', field);
-      console.log('field.id:', field.id);
-      console.log('this._changedFields (before):', this._changedFields);
-      console.log('this._errorFields (before):', this._errorFields);
-      console.log(`this._changes[${field.id}] (before):`, this._changes[field.id]);
-      console.log(`this._changes (before):`, this._changes);
+      // console.log('field:', field);
+      // console.log('field.id:', field.id);
+      // console.log('this._changedFields (before):', this._changedFields);
+      // console.log('this._errorFields (before):', this._errorFields);
+      // console.log(`this._changes[${field.id}] (before):`, this._changes[field.id]);
+      // console.log(`this._changes (before):`, this._changes);
 
-      if (['name', 'description', 'type', 'programIndex'].includes(field.id)) {
+      if (['name', 'description', 'type', 'controllerProgramID'].includes(field.id)) {
         this._changes[field.id] = field.value;
         this._handleChangeInner(field);
 
@@ -181,17 +187,17 @@ export class ProgramDetailsEdit extends ProgramDetails {
           this._changes.urlPart = name2urlPart(field.value.toString());
         }
       }
-      console.log(`this._changes (after):`, this._changes);
-      console.log(`this._changes[${field.id}] (after):`, this._changes[field.id]);
-      console.log('this._errorFields (after):', this._errorFields);
-      console.log('this._changedFields (after):', this._changedFields);
+      // console.log(`this._changes (after):`, this._changes);
+      // console.log(`this._changes[${field.id}] (after):`, this._changes[field.id]);
+      // console.log('this._errorFields (after):', this._errorFields);
+      // console.log('this._changedFields (after):', this._changedFields);
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   addStep() : void {
-    console.group('<program-details-edit>.addStep()');
-    console.log('this._tmpSteps (before):', this._tmpSteps);
+    // console.group('<program-details-edit>.addStep()');
+    // console.log('this._tmpSteps (before):', this._tmpSteps);
     const newStep : IFiringStep = {
       order: this._tmpSteps.length + 1,
       endTemp: 0,
@@ -200,19 +206,19 @@ export class ProgramDetailsEdit extends ProgramDetails {
     };
 
     this._tmpSteps = [...this._tmpSteps, newStep];
-    console.log('this._tmpSteps (after):', this._tmpSteps);
-    console.groupEnd();
+    // console.log('this._tmpSteps (after):', this._tmpSteps);
+    // console.groupEnd();
   }
 
   deleteStep(event : InputEvent) : void {
-    console.group('<program-details-edit>.deleteStep()');
-    console.log('this._tmpSteps (before):', this._tmpSteps);
+    // console.group('<program-details-edit>.deleteStep()');
+    // console.log('this._tmpSteps (before):', this._tmpSteps);
     const i = parseInt((event.target as HTMLButtonElement).value, 10);
 
     this._tmpSteps = this._tmpSteps.filter((step) => step.order !== i);
-    console.log('this._tmpSteps (after):', this._tmpSteps);
+    // console.log('this._tmpSteps (after):', this._tmpSteps);
     this._setCanSave();
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   updateStep(event : InputEvent) : void {
@@ -272,6 +278,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
         ...this._changes,
         maxTemp: this._maxTemp,
         duration: this._duration,
+        averageRate: (this._maxTemp / (this._duration / 3600)),
         cone: this._cone,
         steps: [...this._tmpSteps],
         _KILN_URL_PART: this._kilnUrlPart,
@@ -284,14 +291,24 @@ export class ProgramDetailsEdit extends ProgramDetails {
       if (this.mode !== 'edit') {
         action = 'addProgram';
         id = nanoid(10);
+        if (this.mode === 'new') {
+          output.kilnID = this._kilnID;
+        }
+        if (isNonEmptyStr(output, 'description') === false) {
+          output.description = '';
+        }
+
       } else {
         supersede = (this._useCount > 0 && this._stepsChanged === true);
       }
       output.id = id;
       output._SUPERSEDE = supersede;
+      console.log('action:', action);
+      console.log('output:', output);
 
       this.store?.dispatch(action, output).then(this._handleSaveThen.bind(this));
     }
+    console.groupEnd();
   }
 
   //  END:  event handlers
@@ -303,8 +320,17 @@ export class ProgramDetailsEdit extends ProgramDetails {
   // START: helper render methods
 
   renderDetails() : TemplateResult {
+    // console.group('renderDetails()');
+    // console.log('this._description:', this._description);
+    // console.log('this._getVal(this._description, ""):', this._getVal(this._description, ''));
+    // console.groupEnd();
     return html`
       <ul class="kv-list">
+        <li>
+          <read-only-field
+            label="Kiln"
+            value="${this._kilnName}"></read-only-field>
+        </li>
         <li>
           <accessible-text-field
             field-id="name"
@@ -327,7 +353,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
             maxlength="255"
             .placeholder=${ifDefined(this._getPlace(this._description))}
             validate-on-keyup
-            .value=${ifDefined(this._getVal(this._description))}
+            .value=${ifDefined(this._getVal(this._description, ''))}
             @change=${this.handleChange}
             @keyup=${this.handleChange}></accessible-textarea-field>
         </li>
@@ -342,7 +368,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
         </li>
         <li>
           <accessible-number-field
-            field-id="programIndex"
+            field-id="controllerProgramID"
             help-msg="The number this program is identified by in the kiln controller"
             label="Program #"
             min="1"
@@ -372,7 +398,9 @@ export class ProgramDetailsEdit extends ProgramDetails {
 
   renderSteps() : TemplateResult {
     if (this._tmpSteps.length === 0) {
-      this._tmpSteps = [...this._steps];
+      this._tmpSteps = (this._steps.length > 0)
+        ? [...this._steps]
+        : [{ order: 1, endTemp: 0, rate: 0, hold: 0 }];
     }
     return html`
       <table>

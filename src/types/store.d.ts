@@ -55,6 +55,24 @@ export interface TActionList extends IKeyValue {
   [key:string] : FActionHandler
 };
 
+export interface IRedirectDataNew {
+  id: ID,
+  firing?: boolean,
+  kiln?: boolean,
+  program?: boolean,
+  url: string,
+  user?: boolean
+};
+
+export interface IRedirectData {
+  id: ID,
+  firing: boolean,
+  kiln: boolean,
+  program: boolean,
+  url: string,
+  user: boolean
+};
+
 // --------------------------------------------------------
 // START: IndexedDB only types
 

@@ -7,7 +7,7 @@ import type {
 import { nanoid } from 'nanoid';
 import type { IKiln } from '../../types/kilns.d.ts';
 import type { IProgram } from '../../types/programs.d.ts';
-import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
+import type { CDataStoreClass, FActionHandler, IRedirectDataNew } from '../../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../../types/users.d.ts';
 import { isPProgramDetails, isProgram } from '../../types/program.type-guards.ts';
 import { isCDataStoreClass } from '../../types/store.type-guards.ts';
@@ -17,6 +17,7 @@ import { getKiln } from '../kilns/kiln-store.utils.ts';
 import { saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { userCanNowLater } from '../users/user-data.utils.ts';
 import { mergeChanges } from '../../utils/store.utils.ts';
+import { addRedirect, supersedeProgramRedirect, updateRedirect } from "../../store/redirect.utils.ts";
 
 export const getProgram = async (
   input : Promise<IProgram|IProgram[]|null|undefined>,
@@ -109,34 +110,42 @@ const saveProgramChanges = async (
   changes : IIdObject | null,
   program : IProgram,
   kilnUrlPart : string,
+  oldID : string = '',
 ) : Promise<IDBValidKey> => {
+  console.group('saveProgramChanges()');
+  console.log('_userID:', _userID);
+  console.log('changes:', changes);
+  console.log('program:', program);
   const _program : IIdObject = mergeChanges(changes, program);
+  console.log('_program:', _program);
 
   const programError = validateProgramData(_program);
+  console.log('programError:', programError);
 
   if (programError !== null) {
+    console.groupEnd();
     return Promise.reject(programError);
   }
 
   const method = changes === null ? 'add' : 'put';
-
-  if (method === 'add' || typeof (changes as IIdObject).urlPart === 'string') {
-    db.put(
-      'redirects', {
-        id: _program.id,
-        firing: false,
-        kiln: true,
-        program: true,
-        url: `/kilns/${kilnUrlPart}/programs/${_program.urlPart}`,
-        user: false,
-      },
-    );
-
-    if (method === 'add') {
-      db.delete('redirects', program.id);
+  const redir : IRedirectDataNew = { id: _program.id, url: `/kilns/${kilnUrlPart}/programs/${_program.urlPart}` }
+  console.log('method:', method);
+  console.log('redir:', redir);
+  if (method === 'add') {
+    if (oldID !== '') {
+      console.info('Attempting to superseed program redirect');
+      supersedeProgramRedirect(db, redir, oldID);
+    } else {
+      redir.program = true;
+      console.info('Adding new program redirect');
+      addRedirect(db, redir);
     }
+  } else if (typeof (changes as IIdObject).urlPart === 'string') {
+    console.info('Updating existing program redirect');
+    updateRedirect(db, redir);
   }
 
+  console.groupEnd();
   try {
     return await db[method]('programs', _program);
   } catch (error) {
@@ -200,16 +209,53 @@ export const updateProgram : FActionHandler = async (
     newData.createdBy = user.id;
 
     if (hold === true) {
-      saveChangeOnHold(db, 'programs', user.id, oldData, program);
-      return saveChangeOnHold(db, 'programs', user.id, _newData, null);
+      saveChangeOnHold(
+        db,
+        'programs',
+        user.id,
+        oldData,
+        program,
+      );
+      return saveChangeOnHold(
+        db,
+        'programs',
+        user.id,
+        _newData,
+        null,
+      );
     } else {
-      saveProgramChanges(db, user.id, oldData, program, _KILN_URL_PART);
-      return saveProgramChanges(db, user.id, null, _newData, _KILN_URL_PART);
+      saveProgramChanges(
+        db,
+        user.id,
+        oldData,
+        program,
+        _KILN_URL_PART,
+      );
+      return saveProgramChanges(
+        db,
+        user.id,
+        null,
+        _newData,
+        _KILN_URL_PART,
+        program.id,
+      );
     }
   } else if (hold === true) {
-    return saveChangeOnHold(db, 'programs', user.id, newData, program);
+    return saveChangeOnHold(
+      db,
+      'programs',
+      user.id,
+      newData,
+      program,
+    );
   } else {
-    return saveProgramChanges(db, user.id, newData, program, _KILN_URL_PART);
+    return saveProgramChanges(
+      db,
+      user.id,
+      newData,
+      program,
+      _KILN_URL_PART,
+    );
   }
 }
 
@@ -217,6 +263,7 @@ export const addProgram : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
   program : IProgram,
 ) : Promise<IDBValidKey> => {
+  console.group('addProgram()');
   if (isCDataStoreClass(db)) {
     throw new Error(
       'addProgram() expects first param `db` to be a IDBPDatabase '
@@ -235,9 +282,25 @@ export const addProgram : FActionHandler = async (
   }
 
   const { _SUPERSEDE, _KILN_URL_PART, ...newData } = program;
+
+  newData.created = new Date().toISOString();
+  newData.createdBy = user.id;
+  newData.superseded = false;
+  newData.deleted = false;
+  newData.locked = false;
+  newData.supersedesID = null;
+  newData.supersededByID = null;
+  newData.useCount = 0;
+
+  if (_SUPERSEDE === false) {
+    newData.version = 1;
+  }
   // console.group('addProgram()');
   console.log('program:', program);
-
+  console.log('newData:', newData);
+  console.log('_KILN_URL_PART:', _KILN_URL_PART);
+  console.log('_SUPERSEDE:', _SUPERSEDE);
+  console.groupEnd();
 
   return (hold === true)
     ? saveChangeOnHold(db, 'kilns', user.id, newData, null)
