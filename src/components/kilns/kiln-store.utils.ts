@@ -273,7 +273,7 @@ export const getKilnEditData : FActionHandler = async (
   // console.log('urlPart:', urlPart);
 
   if (isCDataStoreClass(db) === true) {
-    const tmp = getBasicKilnData(db, uid, urlPart);
+    const tmp = getBasicKilnData(db, { uid, urlPart });
     // console.log('tmp:', tmp);
 
     const kiln = await getKiln(tmp.kiln);

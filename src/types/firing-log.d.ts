@@ -1,5 +1,11 @@
-import type { SVGTemplateResult, TemplateResult } from 'lit';
-import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601 } from './data-simple.d.ts';
+// import type { SVGTemplateResult, TemplateResult } from 'lit';
+import type {
+  ID,
+  // IKeyValue,
+  // ILinkObject,
+  // IIdObject,
+  ISO8601,
+} from './data-simple.d.ts';
 
 
 export enum EProgramLogState {
@@ -44,37 +50,58 @@ export interface ReportRow {
   expectedRate: number,
 };
 
-export interface FiringLogEntry {
+export interface IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  created: ISO8601,
   userID: ID,
-  time: ISO8601,
-  isTemp: boolean,
-  notes: string,
+  type: 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'resonsible',
+  notes: string|null,
 };
 
-export interface TempLogEntry extends FiringLogEntry {
+export interface TempLogEntry extends IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  created: ISO8601,
   userID: ID,
-  time: ISO8601,
-  isTemp: true,
+  type: 'temp',
   timeOffset: number,
   tempExpected: number,
   tempActual: number,
   state: EtemperatureState,
-  notes: string,
+  notes: string|null,
 };
 
-export interface CombustionLogEntry extends TempLogEntry {
+export interface CombustionLogEntry extends IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  created: ISO8601,
+  userID: ID,
+  type: 'damper',
   damperAdjustment: number,
+  notes: string|null,
 };
 
-export type BurnerState = {
+export interface BurnerState  extends IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  created: ISO8601,
+  userID: ID,
+  type: 'burner',
   burnerID: ID,
   burnerPosition: string,
   burnerType: string,
   valvePosition: number,
   primaryAir: number,
+  notes: string|null,
 };
 
-export interface GasLogEntry extends CombustionLogEntry {
+export interface GasLogEntry extends IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  created: ISO8601,
+  userID: ID,
+  type: 'gas',
   /**
    * The pressure in kPa
    *
@@ -87,28 +114,22 @@ export interface GasLogEntry extends CombustionLogEntry {
    * @property {number} gasFlow
    */
   burnerStates: [BurnerState],
+  notes: string,
 };
 
-export interface ResponsibleLogEntry {
-  time: ISO8601,
+export interface ResponsibleLogEntry extends IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  created: ISO8601,
+  userID: ID,
+  type: 'resonsible',
   isStart: boolean,
   userID: ID,
   responsibilityType: EResponsibilityType,
   notes: string|null,
 };
 
-export type burnerState = {
-  burnerID: ID,
-  burnerPosition: string,
-  burnerType: string,
-  valvePosition: number,
-  primaryAir: number,
-  notes: string|null,
-  time: ISO8601,
-  userID: ID,
-};
-
-export interface FiringLog {
+export interface Firing {
   id: ID,
   kilnID: ID,
   programID: ID,
@@ -118,32 +139,49 @@ export interface FiringLog {
   scheduledStart: ISO8601|null,
   scheduledEnd: ISO8601|null,
   scheduledCold: ISO8601|null,
+  packed: ISO8601|null,
   actualStart: ISO8601|null,
   actualEnd: ISO8601|null,
   actualCold: ISO8601|null,
-  started: boolean,
-  complete: boolean,
-  cold: boolean,
+  unpacked: ISO8601|null,
   maxTemp: number,
-  programState: 'idle' | 'ready' | 'active' | 'complete' | 'aborted',
-  temperatureState: 'underError' | 'under' | 'nominal' | 'over' | 'overError',
+  cone: string,
+  firingState: 'idle' | 'packing' | 'ready' | 'active' | 'complete' | 'cold' | 'unpacking' | 'aborted',
+  temperatureState: 'underError' | 'under' | 'nominal' | 'over' | 'overError' | 'n/a',
   currentTemp: number,
   notes: string|null,
-  tempLog: [FiringLogEntry],
+  log: [FiringLogEntry],
   responsibleLog: [ResponsibleLogEntry],
   burnerStates: [burnerState],
 };
 
 export interface FiringReport {
-    kilnName: string,
-    program: firingProgram,
-    firingType: EfiringType,
-    kilnState: EprogramState,
-    responsible: string,
-    startTime: Date,
-    endTime: Date,
-    programState: EprogramState,
-    tempState: EtemperatureState,
-    log: [reportRow]
-    currentRate: number
+  kilnName: string,
+  program: firingProgram,
+  firingType: EfiringType,
+  kilnState: EprogramState,
+  responsible: string,
+  startTime: Date,
+  endTime: Date,
+  programState: EprogramState,
+  tempState: EtemperatureState,
+  log: [reportRow]
+  currentRate: number
 };
+
+export type TFiringListItem = {
+  firingID: ID,
+  programID: ID,
+  programName: string,
+  programURL: string,
+  kilnID: ID,
+  kilnName: string,
+  kilnURL: string,
+  type: string,
+  maxTemp: number,
+  cone: string,
+  duration: number,
+  programState: string,
+  actualStart: ISO8601|null,
+  actualEnd: ISO8601|null,
+}

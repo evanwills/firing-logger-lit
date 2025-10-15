@@ -118,6 +118,34 @@ const upgradeSchema : IDBPupgrade = (
       kilns.createIndex('width', 'width', { unique: false });
     }
 
+
+    if (!db.objectStoreNames.contains('kilnsStatusLog')) {
+      const kilnsStatusLog = db.createObjectStore('kilnsStatusLog', { keyPath: 'id' });
+
+      kilnsStatusLog.createIndex('kilnID', 'kilnID', { unique: false });
+      kilnsStatusLog.createIndex('created', 'created', { unique: false });
+      kilnsStatusLog.createIndex('userID', 'userID', { unique: false });
+      kilnsStatusLog.createIndex('type', 'type', { unique: false });
+      kilnsStatusLog.createIndex('oldState', 'oldState', { unique: false });
+      kilnsStatusLog.createIndex('newState', 'newState', { unique: false });
+    }
+
+
+    if (!db.objectStoreNames.contains('kilnsList')) {
+      const kilnsList = db.createObjectStore('kilnsList', { keyPath: 'id' });
+
+      kilnsList.createIndex('depth', 'depth', { unique: false });
+      kilnsList.createIndex('fuel', 'fuel', { unique: false });
+      kilnsList.createIndex('height', 'height', { unique: false });
+      kilnsList.createIndex('maxTemp', 'maxTemp', { unique: false });
+      kilnsList.createIndex('name', 'name', { unique: true });
+      kilnsList.createIndex('width', 'width', { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains('kilnNamesList')) {
+      db.createObjectStore('kilnNamesList', { keyPath: 'name' });
+    }
+
     //  END:  kilns
     // ----------------------------------------------------------
     // START: programs
@@ -140,6 +168,31 @@ const upgradeSchema : IDBPupgrade = (
       programs.createIndex('deleted', 'deleted', { unique: false });
     }
 
+    if (!db.objectStoreNames.contains('programsList')) {
+      const programsList = db.createObjectStore('programs', { keyPath: 'programID' });
+
+      programsList.createIndex('programName', 'programName', { unique: false });
+      programsList.createIndex('programURL', 'programURL', { unique: false });
+      programsList.createIndex('kilnID', 'kilnID', { unique: false });
+      programsList.createIndex('kilnName', 'kilnName', { unique: false });
+      programsList.createIndex('kilnURL', 'kilnURL', { unique: false });
+      programsList.createIndex('kilnProgramPath', ['programID', 'kilnID', 'version'], { unique: true });
+      programsList.createIndex('kilnProgramPath', ['programURL', 'kilnURL', 'version'], { unique: true });
+      programsList.createIndex('controllerProgramID', 'controllerProgramID', { unique: false });
+      programsList.createIndex('maxTemp', 'maxTemp', { unique: false });
+      programsList.createIndex('cone', 'cone', { unique: false });
+      programsList.createIndex('duration', 'duration', { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains('programNameLists')) {
+      const programNameLists = db.createObjectStore('programNameLists');
+
+      programNameLists.createIndex('programName', 'programName', { unique: false });
+      programNameLists.createIndex('kilnID', 'kilnID', { unique: false });
+      programNameLists.createIndex('kilnProgramName', ['programName', 'kilnID'], { unique: false });
+    }
+
+
     //  END:  programs
     // ----------------------------------------------------------
     // START: firings
@@ -154,7 +207,41 @@ const upgradeSchema : IDBPupgrade = (
       firings.createIndex('firingState', 'firingState', { unique: false });
       firings.createIndex('maxTemp', 'maxTemp', { unique: false });
       firings.createIndex('cone', 'cone', { unique: false });
-      firings.createIndex('responsibleID', 'responsibleID', { unique: false });
+      firings.createIndex('ownerID', 'ownerID', { unique: false });
+      firings.createIndex('actualStart', 'actualStart', { unique: false });
+      firings.createIndex('actualEnd', 'actualEnd', { unique: false });
+      firings.createIndex('packed', 'packed', { unique: false });
+      firings.createIndex('unpacked', 'unpacked', { unique: false });
+      firings.createIndex('programState', 'programState', { unique: false });
+      firings.createIndex('temperatureState', 'temperatureState', { unique: false });
+      firings.createIndex('actualStartEnd', ['actualStart', 'actualEnd'], { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains('firingLogs')) {
+      const firingLogs = db.createObjectStore('firingLogs', { keyPath: 'id' });
+
+      firingLogs.createIndex('firingID', 'firingID', { unique: false });
+      firingLogs.createIndex('created', 'created', { unique: false });
+      firingLogs.createIndex('type', 'type', { unique: false });
+      firingLogs.createIndex('userID', 'userID', { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains('firingsList')) {
+      const firingsList = db.createObjectStore('firingsListList', { keyPath: 'id' });
+
+      firingsList.createIndex('programID', 'programID', { unique: false });
+      firingsList.createIndex('programName', 'programName', { unique: false });
+      firingsList.createIndex('programURL', 'programURL', { unique: false });
+      firingsList.createIndex('kilnID', 'kilnID', { unique: false });
+      firingsList.createIndex('kilnName', 'kilnName', { unique: false });
+      firingsList.createIndex('kilnURL', 'kilnURL', { unique: false });
+      firingsList.createIndex('type', 'type', { unique: false });
+      firingsList.createIndex('maxTemp', 'maxTemp', { unique: false });
+      firingsList.createIndex('cone', 'cone', { unique: false });
+      firingsList.createIndex('duration', 'duration', { unique: false });
+      firingsList.createIndex('programState', 'programState', { unique: false });
+      firingsList.createIndex('actualStart', 'actualStart', { unique: false });
+      firingsList.createIndex('actualEnd', 'actualEnd', { unique: false });
     }
 
     //  END:  firings
@@ -296,18 +383,59 @@ const migrateData : IDBPmigrate = async (
 }
 
 const actions : TActionList = {
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   getLoggedInUser: getAuthUser,
   updateLoggedInUser: updateAuthUser,
+  // updateCurrentUser,
+  // updateUserData,
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   updateKiln: updateKilnData,
+  // updateKilnStatus,
   addKiln: addNewKilnData,
   getKilnEditData,
   getKilnViewData,
   getKilnDataForProgram,
-  fetchLatest,
+  // getKilnList,
+  // addToKilnList,
+  // updateKilnList,
+  // deleteFromKilnList,
+  // getKilnNames,
+  // updateKilnName,
+  // addKilnName,
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   getProgramData,
   getProgramURL,
   updateProgram,
   addProgram,
+  // getProgramList,
+  // addToProgramList,
+  // updateProgramList,
+  // deleteFromProgramList,
+  // getProgramNames,
+  // addProgramName,
+  // updateProgramName,
+  // deleteProgramName,
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  // getFiringList,
+  // getFiring,
+  // updateFiring,
+  // updateFiringState,
+  // addFiringLogEntry,
+  // updateFiringLogEntry,
+  // addToFiringList,
+  // updateFiringList,
+  // deleteFromFiringList,
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  fetchLatest,
 };
 
 export const getDataStoreClassSingleton = (

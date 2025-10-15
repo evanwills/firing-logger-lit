@@ -112,15 +112,15 @@ const saveProgramChanges = async (
   kilnUrlPart : string,
   oldID : string = '',
 ) : Promise<IDBValidKey> => {
-  console.group('saveProgramChanges()');
-  console.log('_userID:', _userID);
-  console.log('changes:', changes);
-  console.log('program:', program);
+  // console.group('saveProgramChanges()');
+  // console.log('_userID:', _userID);
+  // console.log('changes:', changes);
+  // console.log('program:', program);
   const _program : IIdObject = mergeChanges(changes, program);
-  console.log('_program:', _program);
+  // console.log('_program:', _program);
 
   const programError = validateProgramData(_program);
-  console.log('programError:', programError);
+  // console.log('programError:', programError);
 
   if (programError !== null) {
     console.groupEnd();
@@ -129,23 +129,23 @@ const saveProgramChanges = async (
 
   const method = changes === null ? 'add' : 'put';
   const redir : IRedirectDataNew = { id: _program.id, url: `/kilns/${kilnUrlPart}/programs/${_program.urlPart}` }
-  console.log('method:', method);
-  console.log('redir:', redir);
+  // console.log('method:', method);
+  // console.log('redir:', redir);
   if (method === 'add') {
     if (oldID !== '') {
-      console.info('Attempting to superseed program redirect');
+      // console.info('Attempting to superseed program redirect');
       supersedeProgramRedirect(db, redir, oldID);
     } else {
       redir.program = true;
-      console.info('Adding new program redirect');
+      // console.info('Adding new program redirect');
       addRedirect(db, redir);
     }
   } else if (typeof (changes as IIdObject).urlPart === 'string') {
-    console.info('Updating existing program redirect');
+    // console.info('Updating existing program redirect');
     updateRedirect(db, redir);
   }
 
-  console.groupEnd();
+  // console.groupEnd();
   try {
     return await db[method]('programs', _program);
   } catch (error) {

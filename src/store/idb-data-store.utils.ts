@@ -7,6 +7,9 @@ import type {
   IKeyValue,
   TOrderedEnum,
 } from '../types/data-simple.d.ts';
+import type { FActionHandler } from '../types/store.d.ts';
+import type { CDataStoreClass } from '../types/store.d.ts';
+import { isCDataStoreClass } from "../types/store.type-guards.ts";
 
 type Fresolver = (value: unknown) => void;
 
@@ -443,12 +446,19 @@ export const fetchLatestUsers = async (db : IDBPDatabase) : Promise<void|(void|I
   await pullStoreData(db, 'users', '/data/users.json', true).catch(storeCatch);
 };
 
-export const fetchLatest = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
-  console.info('fetchLatest()');
-  await Promise.all([
-    // fetchLatestFirings(db),
-    fetchLatestKilns(db),
-    fetchLatestPrograms(db),
-    // fetchLatestUsers(db),
-  ]).catch(storeCatch).finally(() => { console.groupEnd(); });
+export const fetchLatest : FActionHandler = async (db : IDBPDatabase | CDataStoreClass) : Promise<void> => {
+  if (isCDataStoreClass(db) === false) {
+    console.info('fetchLatest()');
+    await Promise.all([
+      // fetchLatestFirings(db),
+      fetchLatestKilns(db),
+      fetchLatestPrograms(db),
+      // fetchLatestUsers(db),
+    ]).catch(storeCatch).finally(() => { console.groupEnd(); });
+  } else {
+    throw new Error(
+      'fetchLatest() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
+  }
 };

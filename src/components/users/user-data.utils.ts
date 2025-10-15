@@ -1,12 +1,12 @@
 import type { IDBPDatabase } from 'idb';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TUser, TUserNowLaterAuth } from '../../types/users.d.ts';
-import { getCookie } from '../../utils/cookie.utils.ts';
-import { isUser } from '../../types/user.type-guards.ts';
-import { populateEmptyKVslice } from '../../store/idb-data-store.utils.ts';
-import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import type { CDataStoreClass, FActionHandler } from "../../types/store.d.ts";
 import { isCDataStoreClass } from "../../types/store.type-guards.ts";
+import { isUser } from '../../types/user.type-guards.ts';
+import { getCookie } from '../../utils/cookie.utils.ts';
+import { populateEmptyKVslice } from '../../store/idb-data-store.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
 
 const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourScheme } : TUser) => {
   populateEmptyKVslice(
@@ -25,7 +25,10 @@ export const getLastAuthUser = async (db : IDBPDatabase) : Promise<unknown> => {
     : Promise.resolve(null);
 };
 
-export const getAuthUser : FActionHandler = async (db : IDBPDatabase | CDataStoreClass, _payload : null = null) : Promise<unknown> => {
+export const getAuthUser : FActionHandler = async (
+  db : IDBPDatabase | CDataStoreClass,
+  _payload : null = null,
+) : Promise<unknown> => {
   const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
 
   if (userID === null) {

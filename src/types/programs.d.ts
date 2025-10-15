@@ -44,3 +44,17 @@ export type PProgramDetails = {
   kiln: Promise<IKiln|null>,
   EfiringTypes: Promise<IKeyStr>,
 }
+
+
+export type TProgramListRenderItem = {
+  programID: ID,
+  programName: string,
+  programURL: string,
+  kilnID: ID,
+  kilnName: string,
+  kilnURL: string,
+  type: string,
+  maxTemp: number,
+  cone: string,
+  duration: number,
+}

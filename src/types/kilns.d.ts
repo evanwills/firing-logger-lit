@@ -142,6 +142,16 @@ export type TKilnDetailsForProgram = {
   kiln: Promise<IKiln | null>,
 };
 
+export type IKilnStatusLogEntry = {
+  kilnID: ID,
+  created: ISO8601,
+  userID: ID,
+  type: 'fault' | 'observation' | 'note' | 'serviceState' | 'readyState',
+  old: string,
+  new: string,
+  notes: string,
+}
+
 export type TKilnDetails = {
   EfiringTypes: Promise<IKeyStr>,
   EfuelSources: Promise<IKeyStr>,
@@ -164,3 +174,14 @@ export type TGetKilnDataPayload = {
   uid: ID,
   urlPart: string,
 };
+
+export type TKilnListItem = {
+  id: ID,
+  depth: number,
+  fuel: string,
+  height: number,
+  maxTemp: number,
+  name: string,
+  width: number,
+  urlPart: string,
+}

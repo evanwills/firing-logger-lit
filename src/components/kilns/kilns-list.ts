@@ -126,9 +126,9 @@ export class KilnsList extends LoggerElement {
         label="${kilnData.name}"></router-link></th>
       <td>${getValFromKey(this._fuelSources, kilnData.fuel)}</td>
       <td>${this._tConverter(kilnData.maxTemp)}<wbr />&deg;${this._tUnit}</td>
-      <td>${this._lConverter(kilnData.height)}<wbr />${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.depth)}<wbr />${this._lUnit}</td>
       <td>${this._lConverter(kilnData.width)}<wbr />${this._lUnit}</td>
+      <td>${this._lConverter(kilnData.depth)}<wbr />${this._lUnit}</td>
+      <td>${this._lConverter(kilnData.height)}<wbr />${this._lUnit}</td>
     </tr>`;
   }
 
@@ -150,9 +150,9 @@ export class KilnsList extends LoggerElement {
             <th>Name</th>
             <th>Energy source</th>
             <th>Max temp</th>
-            <th>Height</th>
-            <th>Depth</th>
             <th>Width</th>
+            <th>Depth</th>
+            <th>Height</th>
           </tr>
         </thead>
         <tbody>
