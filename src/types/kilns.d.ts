@@ -24,7 +24,7 @@ export enum EkilnOpeningType {
   front,  // Front loading kiln
   top,    // Top loading kiln
   tophat, // Top hat kiln
-  trolly, // Trolly kiln
+  trolley, // Trolley kiln
 }
 
 export enum EfiringType {
@@ -89,7 +89,7 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
   installDate: ISO8601|null,
   fuel: 'electric' | 'gas' | 'wood' | 'oil' | 'other',
   type: 'general' | 'raku' | 'platter' | 'black' | 'annagamma',
-  openingType: 'front' | 'top' | 'tophat' | 'trolly',
+  openingType: 'front' | 'top' | 'tophat' | 'trolley',
   maxTemp: number,
   maxProgramCount: number,
   volume: number,
@@ -146,9 +146,9 @@ export type IKilnStatusLogEntry = {
   kilnID: ID,
   created: ISO8601,
   userID: ID,
-  type: 'fault' | 'observation' | 'note' | 'serviceState' | 'readyState',
-  old: string,
-  new: string,
+  type: 'fault' | 'observation' | 'mantenance' | 'note' | 'serviceState',
+  oldState: string,
+  newState: string,
   notes: string,
 }
 

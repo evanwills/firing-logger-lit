@@ -93,15 +93,11 @@ const upgradeSchema : IDBPupgrade = (
       kilns.createIndex('glaze', 'glaze', { unique: false });
       kilns.createIndex('height', 'height', { unique: false });
       kilns.createIndex('installDate', 'installDate', { unique: false });
-      // kilns.createIndex('isRetired', 'isRetired', { unique: false });
-      // kilns.createIndex('isWorking', 'isWorking', { unique: false });
       kilns.createIndex('luster', 'luster', { unique: false });
       kilns.createIndex('maxProgramCount', 'maxProgramCount', { unique: false });
       kilns.createIndex('maxTemp', 'maxTemp', { unique: false });
       kilns.createIndex('model', 'model', { unique: false });
-      // kilns.createIndex('name', 'name', { unique: false });
       kilns.createIndex('name', 'name', { unique: true });
-      // kilns.createIndex('pit', 'pit', { unique: false });
       kilns.createIndex('onglaze', 'onglaze', { unique: false });
       kilns.createIndex('openingType', 'openingType', { unique: false });
       kilns.createIndex('raku', 'raku', { unique: false });
@@ -111,13 +107,11 @@ const upgradeSchema : IDBPupgrade = (
       kilns.createIndex('serviceState', 'serviceState', { unique: false });
       kilns.createIndex('single', 'single', { unique: false });
       kilns.createIndex('type', 'type', { unique: false });
-      // kilns.createIndex('urlPart', 'urlPart', { unique: false });
       kilns.createIndex('urlPart', 'urlPart', { unique: true });
       kilns.createIndex('useCount', 'useCount', { unique: false });
       kilns.createIndex('volume', 'volume', { unique: false });
       kilns.createIndex('width', 'width', { unique: false });
     }
-
 
     if (!db.objectStoreNames.contains('kilnsStatusLog')) {
       const kilnsStatusLog = db.createObjectStore('kilnsStatusLog', { keyPath: 'id' });
@@ -169,14 +163,14 @@ const upgradeSchema : IDBPupgrade = (
     }
 
     if (!db.objectStoreNames.contains('programsList')) {
-      const programsList = db.createObjectStore('programs', { keyPath: 'programID' });
+      const programsList = db.createObjectStore('programsList', { keyPath: 'programID' });
 
       programsList.createIndex('programName', 'programName', { unique: false });
       programsList.createIndex('programURL', 'programURL', { unique: false });
       programsList.createIndex('kilnID', 'kilnID', { unique: false });
       programsList.createIndex('kilnName', 'kilnName', { unique: false });
       programsList.createIndex('kilnURL', 'kilnURL', { unique: false });
-      programsList.createIndex('kilnProgramPath', ['programID', 'kilnID', 'version'], { unique: true });
+      programsList.createIndex('kilnProgramID', ['programID', 'kilnID', 'version'], { unique: true });
       programsList.createIndex('kilnProgramPath', ['programURL', 'kilnURL', 'version'], { unique: true });
       programsList.createIndex('controllerProgramID', 'controllerProgramID', { unique: false });
       programsList.createIndex('maxTemp', 'maxTemp', { unique: false });
@@ -221,7 +215,7 @@ const upgradeSchema : IDBPupgrade = (
       const firingLogs = db.createObjectStore('firingLogs', { keyPath: 'id' });
 
       firingLogs.createIndex('firingID', 'firingID', { unique: false });
-      firingLogs.createIndex('created', 'created', { unique: false });
+      firingLogs.createIndex('time', 'time', { unique: false });
       firingLogs.createIndex('type', 'type', { unique: false });
       firingLogs.createIndex('userID', 'userID', { unique: false });
     }
@@ -293,17 +287,17 @@ const upgradeSchema : IDBPupgrade = (
     // ----------------------------------------------------------
     // START: enums
 
+    initEnum(db, 'EadminLevels');
     initEnum(db, 'EfiringType');
-    initEnum(db, 'EprogramState');
+    initEnum(db, 'EfiringState');
+    initEnum(db, 'EfuelSource');
+    initEnum(db, 'EkilnOpeningType');
     initEnum(db, 'EkilnReadyStatus');
     initEnum(db, 'EkilnServiceStatus');
-    initEnum(db, 'EtemperatureState');
-    initEnum(db, 'EfuelSource');
+    initEnum(db, 'EkilnStatusLogEntryType');
     initEnum(db, 'EkilnType');
-    initEnum(db, 'EkilnOpeningType');
+    initEnum(db, 'EtemperatureState');
     initEnum(db, 'EequipmentLogType');
-    initEnum(db, 'EprogramStatus');
-    initEnum(db, 'EAdminLevels');
 
     //  END:  enums
     // ----------------------------------------------------------
@@ -322,9 +316,11 @@ const migrateData : IDBPmigrate = async (
   const dbVersion = await db.get('_meta', 'version');
   if (typeof dbVersion === 'undefined' || dbVersion === null || dbVersion.value < version) {
     const loggerData = await globalThis.fetch('/data/firing-logger.json');
+    // console.log('loggerData:', loggerData);
 
     if (loggerData.ok === true)  {
       const data = await loggerData.json();
+      // console.log('data:', data);
 
       const now = Date.now();
       populateEmptyKVslice(
@@ -340,23 +336,25 @@ const migrateData : IDBPmigrate = async (
         '_meta',
         'replace',
       );
-      console.log('db.getAll("_meta"):', await db.getAll('_meta'));
+      // console.log('db.getAll("_meta"):', await db.getAll('_meta'));
 
-      populateEmptySlice(db, data.users, 'users');
+      populateEmptySlice(db, data.firings, 'firings');
       populateEmptySlice(db, data.kilns, 'kilns');
       populateEmptySlice(db, data.programs, 'programs');
-      populateEmptySlice(db, data.firings, 'firings');
+      populateEmptySlice(db, data.programsList, 'programsList');
       populateEmptySlice(db, data.redirects, 'redirects');
+      populateEmptySlice(db, data.users, 'users');
+      populateEmptyEnumSlice(db, data.EadminLevels, 'EadminLevels');
+      populateEmptyEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
+      populateEmptyEnumSlice(db, data.EfiringState, 'EfiringState');
       populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
-      populateEmptyEnumSlice(db, data.EprogramState, 'EprogramState');
+      populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
+      populateEmptyEnumSlice(db, data.EkilnOpeningType, 'EkilnOpeningType');
       populateEmptyEnumSlice(db, data.EkilnReadyStatus, 'EkilnReadyStatus');
       populateEmptyEnumSlice(db, data.EkilnServiceStatus, 'EkilnServiceStatus');
-      populateEmptyEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
-      populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
+      populateEmptyEnumSlice(db, data.EkilnStatusLogEntryType, 'EkilnStatusLogEntryType');
       populateEmptyEnumSlice(db, data.EkilnType, 'EkilnType');
-      populateEmptyEnumSlice(db, data.EkilnOpeningType, 'EkilnOpeningType');
-      populateEmptyEnumSlice(db, data.EequipmentLogType, 'EequipmentLogType');
-      populateEmptyEnumSlice(db, data.EprogramStatus, 'EprogramStatus');
+      populateEmptyEnumSlice(db, data.EtemperatureState, 'EtemperatureState');
       populateEmptyKVslice(
         db,
         {

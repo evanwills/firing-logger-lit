@@ -83,7 +83,7 @@ export const getKilnPropOptions = (prop : string) : string[] => {
     case 'type':
       return ['general', 'raku', 'platter', 'black', 'annagamma'];
     case 'openingType':
-      return ['front', 'top', 'tophat', 'trolly'];
+      return ['front', 'top', 'tophat', 'trolley'];
     case 'readyState':
       return ['unavailable', 'available', 'packing', 'packed', 'heating', 'holding', 'cooling', 'cold', 'unpacking', 'pricing', 'emptied'];
     case 'serviceState':

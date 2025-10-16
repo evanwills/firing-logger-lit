@@ -53,7 +53,7 @@ export interface ReportRow {
 export interface IFiringLogEntry {
   id: ID,
   firingID: ID,
-  created: ISO8601,
+  time: ISO8601,
   userID: ID,
   type: 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'resonsible',
   notes: string|null,
@@ -62,7 +62,7 @@ export interface IFiringLogEntry {
 export interface TempLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  created: ISO8601,
+  time: ISO8601,
   userID: ID,
   type: 'temp',
   timeOffset: number,
@@ -75,7 +75,7 @@ export interface TempLogEntry extends IFiringLogEntry {
 export interface CombustionLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  created: ISO8601,
+  time: ISO8601,
   userID: ID,
   type: 'damper',
   damperAdjustment: number,
@@ -85,7 +85,7 @@ export interface CombustionLogEntry extends IFiringLogEntry {
 export interface BurnerState  extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  created: ISO8601,
+  time: ISO8601,
   userID: ID,
   type: 'burner',
   burnerID: ID,
@@ -99,7 +99,7 @@ export interface BurnerState  extends IFiringLogEntry {
 export interface GasLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  created: ISO8601,
+  time: ISO8601,
   userID: ID,
   type: 'gas',
   /**
@@ -120,7 +120,7 @@ export interface GasLogEntry extends IFiringLogEntry {
 export interface ResponsibleLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  created: ISO8601,
+  time: ISO8601,
   userID: ID,
   type: 'resonsible',
   isStart: boolean,
@@ -146,13 +146,9 @@ export interface Firing {
   unpacked: ISO8601|null,
   maxTemp: number,
   cone: string,
-  firingState: 'idle' | 'packing' | 'ready' | 'active' | 'complete' | 'cold' | 'unpacking' | 'aborted',
-  temperatureState: 'underError' | 'under' | 'nominal' | 'over' | 'overError' | 'n/a',
-  currentTemp: number,
-  notes: string|null,
+  firingState: 'scheduled' | 'packing' | 'ready' | 'active' | 'complete' | 'cold' | 'unpacking' | 'empty' | 'aborted',
+  temperatureState: 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a',
   log: [FiringLogEntry],
-  responsibleLog: [ResponsibleLogEntry],
-  burnerStates: [burnerState],
 };
 
 export interface FiringReport {

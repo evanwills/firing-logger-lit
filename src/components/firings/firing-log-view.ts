@@ -29,8 +29,14 @@ export class FiringLogView extends LoggerElement {
   // readOnly : boolean = false;
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  @property({ type: String, attribute: 'firing-log-uid' })
-  firingLogID : ID = '';
+  @property({ type: String, attribute: 'firing-uid' })
+  firingID : ID = '';
+
+  @property({ type: String, attribute: 'program-uid' })
+  programID : ID = '';
+
+  @property({ type: String, attribute: 'mode' })
+  mode : string = '';
 
   //  END:  properties/attributes
   // -----------------------------
@@ -68,12 +74,12 @@ export class FiringLogView extends LoggerElement {
     super._getFromStore();
 
     if (this.store !== null) {
-      if (this.firingLogID !== '') {
-        this.store.read(`firings.#${this.firingLogID}`).then((firingResult : FiringLog | null ) => {
+      if (this.firingID !== '') {
+        this.store.read(`firings.#${this.firingID}`).then((firingResult : FiringLog | null ) => {
           if (firingResult !== null) {
             this._ready = true;
 
-            this.store?.read(`logs.firingID=${this.firingLogID}`).then((logResult : IFiringLogEntry[]) => {
+            this.store?.read(`logs.firingID=${this.firingID}`).then((logResult : IFiringLogEntry[]) => {
               this._rawLog = logResult;
               this._log = logResult.filter(isTempLog);
               this._responsibleLog = logResult.filter(isRespLog);

@@ -1,9 +1,15 @@
 import type { IDBPDatabase } from 'idb';
 import type { ID, IIdObject } from '../../types/data-simple.d.ts';
-import type { IKiln, TGetKilnDataPayload, TKilnDetailsForProgram } from '../../types/kilns.d.ts';
-import type { TUserNowLaterAuth } from '../../types/users.d.ts';
+import type { TUniqueNameItem } from "../../types/data.d.ts";
+import type {
+  IKiln,
+  TGetKilnDataPayload,
+  TKilnDetailsForProgram,
+  PKilnDetails,
+  TKilnDetails,
+} from '../../types/kilns.d.ts';
 import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
-import type { PKilnDetails, TKilnDetails } from '../../types/kilns.d.ts';
+import type { TUserNowLaterAuth } from '../../types/users.d.ts';
 import { isKiln } from '../../types/kiln.type-guards.ts';
 import { isCDataStoreClass } from "../../types/store.type-guards.ts";
 import { userCanNowLater } from '../users/user-data.utils.ts';
@@ -11,7 +17,6 @@ import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { getUniqueNameList, mergeChanges } from '../../utils/store.utils.ts';
 import { getInitialData, saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { validateKilnData } from './kiln-data.utils.ts';
-import type { TUniqueNameItem } from "../../types/data.d.ts";
 import { addRedirect, updateRedirect } from "../../store/redirect.utils.ts";
 
 const saveKilnChanges = async (

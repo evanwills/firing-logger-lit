@@ -18,6 +18,10 @@ export const populateSlice = (
   items : IIdObject[],
   slice : string,
 ) : Promise<(void | IDBValidKey)[]> => {
+  if (Array.isArray(items) === false) {
+    throw new Error(`No data for ${slice}`);
+  }
+
   const tx = db.transaction(slice, 'readwrite');
 
   const rows = [];
@@ -59,6 +63,10 @@ export const populateEmptySlice = async (
     newItems = items.filter((item : IIdObject) : boolean => !existing.includes(item.id));
   }
 
+  if (Array.isArray(newItems) === false) {
+    throw new Error(`No data for ${slice}`);
+  }
+
   return (newItems.length > 0)
     ? populateSlice(db, items, slice)
     : Promise.resolve([]);
@@ -79,6 +87,10 @@ export const populateKVslice = (
   slice : string,
   put : boolean = false,
 ) : Promise<(void | IDBValidKey)[]> => {
+  if (typeof obj === 'undefined') {
+    throw new Error(`No data for ${slice}`);
+  }
+
   const tx = db.transaction(slice, 'readwrite');
   const method = (put === true)
     ? 'put'
@@ -125,6 +137,10 @@ export const populateEmptyKVslice = async(
         newObj[key] = obj[key]
       }
     }
+  }
+
+  if (typeof newObj === 'undefined') {
+    throw new Error(`No data for ${slice}`);
   }
 
   return (Object.keys(newObj).length > 0)
@@ -193,6 +209,9 @@ export const populateEmptyEnumSlice = async(
         newEnum.push(entry)
       }
     }
+  }
+  if (typeof newEnum === 'undefined') {
+    throw new Error(`No enum data for ${slice}`);
   }
 
   return (newEnum.length > 0)

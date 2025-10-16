@@ -5,7 +5,6 @@
       "kilnID": "WpnCnk5aLA",
       "programID": "ZQfi3zS0Rt",
       "ownerID": "wfj_myxTAV",
-      "diaryID": null,
       "firingType": "bisque",
       "scheduledStart": "2025-09-08T04:30:00+10:00",
       "scheduledEnd": "2025-09-08T14:58:00+10:00",
@@ -13,388 +12,16 @@
       "actualStart": "2025-09-08T04:30:00+10:00",
       "actualEnd": "2025-09-08T15:39:00+10:00",
       "actualCold": "2025-09-09T19:16:00+10:00",
-      "started": true,
-      "complete": true,
-      "cold": true,
       "maxTemp": 1000,
+      "cone": "06",
       "programState": "complete",
-      "temperatureState": "nominal",
-      "currentTemp": 0,
-      "notes": null,
-      "tempLog": [
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T04:30:00+10:00",
-          "isTemp": true,
-          "timeOffset": 0,
-          "tempExpected": 18,
-          "tempActual": 18,
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T05:02:00+10:00",
-          "isTemp": true,
-          "timeOffset": "1920",
-          "tempExpected": "58",
-          "tempActual": "52",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T06:02:00+10:00",
-          "isTemp": true,
-          "timeOffset": "5520",
-          "tempExpected": "133",
-          "tempActual": "128",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T07:29:00+10:00",
-          "isTemp": true,
-          "timeOffset": "10740",
-          "tempExpected": "242",
-          "tempActual": "241",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T08:18:00+10:00",
-          "isTemp": true,
-          "timeOffset": "13680",
-          "tempExpected": "364",
-          "tempActual": "371",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T08:37:00+10:00",
-          "isTemp": true,
-          "timeOffset": "14820",
-          "tempExpected": "412",
-          "tempActual": "418",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T08:55:00+10:00",
-          "isTemp": true,
-          "timeOffset": "15900",
-          "tempExpected": "457",
-          "tempActual": "462",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T09:14:00+10:00",
-          "isTemp": true,
-          "timeOffset": "17040",
-          "tempExpected": "504",
-          "tempActual": "504",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T09:31:00+10:00",
-          "isTemp": true,
-          "timeOffset": "18060",
-          "tempExpected": "547",
-          "tempActual": "533",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T09:43:00+10:00",
-          "isTemp": true,
-          "timeOffset": "18780",
-          "tempExpected": "567",
-          "tempActual": "552",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T10:02:00+10:00",
-          "isTemp": true,
-          "timeOffset": "19920",
-          "tempExpected": "598",
-          "tempActual": "579",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T10:13:00+10:00",
-          "isTemp": true,
-          "timeOffset": "20580",
-          "tempExpected": "617",
-          "tempActual": "594",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T10:23:00+10:00",
-          "isTemp": true,
-          "timeOffset": "21180",
-          "tempExpected": "633",
-          "tempActual": "608",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T10:33:00+10:00",
-          "isTemp": true,
-          "timeOffset": "21780",
-          "tempExpected": "650",
-          "tempActual": "627",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T10:46:00+10:00",
-          "isTemp": true,
-          "timeOffset": "22560",
-          "tempExpected": "672",
-          "tempActual": "641",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T11:02:00+10:00",
-          "isTemp": true,
-          "timeOffset": "23520",
-          "tempExpected": "698",
-          "tempActual": "664",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T11:16:00+10:00",
-          "isTemp": true,
-          "timeOffset": "24360",
-          "tempExpected": "722",
-          "tempActual": "682",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T11:27:00+10:00",
-          "isTemp": true,
-          "timeOffset": "25020",
-          "tempExpected": "740",
-          "tempActual": "697",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T11:38:00+10:00",
-          "isTemp": true,
-          "timeOffset": "25680",
-          "tempExpected": "754",
-          "tempActual": "709",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T11:53:00+10:00",
-          "isTemp": true,
-          "timeOffset": "26580",
-          "tempExpected": "773",
-          "tempActual": "732",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T12:48:00+10:00",
-          "isTemp": true,
-          "timeOffset": "29880",
-          "tempExpected": "841",
-          "tempActual": "800",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T13:02:00+10:00",
-          "isTemp": true,
-          "timeOffset": "30720",
-          "tempExpected": "859",
-          "tempActual": "817",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T13:33:00+10:00",
-          "isTemp": true,
-          "timeOffset": "32580",
-          "tempExpected": "898",
-          "tempActual": "856",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T13:47:00+10:00",
-          "isTemp": true,
-          "timeOffset": "33420",
-          "tempExpected": "915",
-          "tempActual": "873",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T14:23:00+10:00",
-          "isTemp": true,
-          "timeOffset": "35580",
-          "tempExpected": "960",
-          "tempActual": "918",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T14:33:00+10:00",
-          "isTemp": true,
-          "timeOffset": "36180",
-          "tempExpected": "973",
-          "tempActual": "930",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T14:43:00+10:00",
-          "isTemp": true,
-          "timeOffset": "36780",
-          "tempExpected": "985",
-          "tempActual": "942",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T14:54:00+10:00",
-          "isTemp": true,
-          "timeOffset": "37440",
-          "tempExpected": "999",
-          "tempActual": "953",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T15:04:00+10:00",
-          "isTemp": true,
-          "timeOffset": "38040",
-          "tempExpected": "1,011",
-          "tempActual": "964",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T15:14:00+10:00",
-          "isTemp": true,
-          "timeOffset": "38640",
-          "tempExpected": "1,024",
-          "tempActual": "973",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T15:24:00+10:00",
-          "isTemp": true,
-          "timeOffset": "39240",
-          "tempExpected": "1,036",
-          "tempActual": "983",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T15:34:00+10:00",
-          "isTemp": true,
-          "timeOffset": "39840",
-          "tempExpected": "1,049",
-          "tempActual": "993",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "firingID": "idaufP51yz",
-          "userID": "wfj_myxTAV",
-          "time": "2025-09-08T15:39:00+10:00",
-          "isTemp": true,
-          "timeOffset": "40140",
-          "tempExpected": "1,055",
-          "tempActual": "1,000",
-          "state": "nominal",
-          "notes": ""
-        }
-      ],
-      "responsibleLog": [],
-      "burnerStates": []
+      "temperatureState": "nominal"
     },
     {
       "id": "JWW15Qsmac",
       "kilnID": "AXARcxcpZN",
       "programID": "f6afaRKAiy",
       "ownerID": "wfj_myxTAV",
-      "diaryID": null,
       "firingType": "glaze",
       "scheduledStart": "2025-09-02T04:30:00+10:00",
       "scheduledEnd": "2025-09-02T18:06:00+10:00",
@@ -402,268 +29,10 @@
       "actualStart": "2025-09-02T04:30:00+10:00",
       "actualEnd": "2025-09-02T18:18:00+10:00",
       "actualCold": "2025-09-03T18:18:00+10:00",
-      "started": true,
-      "complete": true,
-      "cold": true,
       "maxTemp": 1200,
+      "cone": "6",
       "programState": "complete",
-      "temperatureState": "nominal",
-      "currentTemp": 0,
-      "notes": null,
-      "tempLog": [
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T04:30:00+10:00",
-          "tempExpected": "18",
-          "timeOffset": 0,
-          "tempActual": "18",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T05:31:00+10:00",
-          "tempExpected": "120",
-          "timeOffset": 3660,
-          "tempActual": "81",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T06:31:00+10:00",
-          "tempExpected": "220",
-          "timeOffset": 7260,
-          "tempActual": "158",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T07:31:00+10:00",
-          "tempExpected": "320",
-          "timeOffset": 10860,
-          "tempActual": "249",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T08:31:00+10:00",
-          "tempExpected": "420",
-          "timeOffset": 14460,
-          "tempActual": "343",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T09:27:00+10:00",
-          "tempExpected": "513",
-          "timeOffset": 17820,
-          "tempActual": "437",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T09:38:00+10:00",
-          "tempExpected": "531",
-          "timeOffset": 18480,
-          "tempActual": "454",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T09:50:00+10:00",
-          "tempExpected": "551",
-          "timeOffset": 19200,
-          "tempActual": "474",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T10:00:00+10:00",
-          "tempExpected": "568",
-          "timeOffset": 19800,
-          "tempActual": "492",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T10:34:00+10:00",
-          "tempExpected": "625",
-          "timeOffset": 21840,
-          "tempActual": "546",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T10:44:00+10:00",
-          "tempExpected": "641",
-          "timeOffset": 22440,
-          "tempActual": "564",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T11:04:00+10:00",
-          "tempExpected": "675",
-          "timeOffset": 23640,
-          "tempActual": "602",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T11:15:00+10:00",
-          "tempExpected": "693",
-          "timeOffset": 24300,
-          "tempActual": "618",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T12:57:00+10:00",
-          "tempExpected": "863",
-          "timeOffset": 30420,
-          "tempActual": "780",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T13:57:00+10:00",
-          "tempExpected": "963",
-          "timeOffset": 34020,
-          "tempActual": "874",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T14:39:00+10:00",
-          "tempExpected": "1,033",
-          "timeOffset": 36540,
-          "tempActual": "932",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T15:11:00+10:00",
-          "tempExpected": "1,076",
-          "timeOffset": 38460,
-          "tempActual": "972",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T15:26:00+10:00",
-          "tempExpected": "1,096",
-          "timeOffset": 39360,
-          "tempActual": "992",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T15:45:00+10:00",
-          "tempExpected": "1,121",
-          "timeOffset": 40500,
-          "tempActual": "1012",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T16:18:00+10:00",
-          "tempExpected": "1,143",
-          "timeOffset": 42480,
-          "tempActual": "1042",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T16:30:00+10:00",
-          "tempExpected": "1,151",
-          "timeOffset": 43200,
-          "tempActual": "1057",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T16:44:00+10:00",
-          "tempExpected": "1,160",
-          "timeOffset": 44040,
-          "tempActual": "1070",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T17:09:00+10:00",
-          "tempExpected": "1,177",
-          "timeOffset": 45540,
-          "tempActual": "1095",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T17:25:00+10:00",
-          "tempExpected": "1,188",
-          "timeOffset": 46500,
-          "tempActual": "1109",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-09-02T18:18:00+10:00",
-          "tempExpected": "1,223",
-          "timeOffset": 49680,
-          "tempActual": "1135",
-          "state": "nominal",
-          "notes": ""
-        }
-      ],
-      "responsibleLog": [],
-      "burnerStates": []
+      "temperatureState": "nominal"
     },
     {
       "id": "pmwQGdppZh",
@@ -678,228 +47,10 @@
       "actualStart": "2025-08-28T04:30:00+10:00",
       "actualEnd": "2025-08-28T15:56:00+10:00",
       "actualCold": "2025-08-29T15:56:00+10:00",
-      "started": true,
-      "complete": true,
-      "cold": true,
       "maxTemp": 1000,
+      "cone": "06",
       "programState": "complete",
-      "temperatureState": "nominal",
-      "currentTemp": 0,
-      "notes": null,
-      "tempLog": [
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T04:30:00+10:00",
-          "tempExpected": "15.00",
-          "timeOffset": 0,
-          "tempActual": "15",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T05:31:00+10:00",
-          "tempExpected": "91.25",
-          "timeOffset": 3660,
-          "tempActual": "92",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T06:31:00+10:00",
-          "tempExpected": "166.25",
-          "timeOffset": 7260,
-          "tempActual": "164",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T07:31:00+10:00",
-          "tempExpected": "241.25",
-          "timeOffset": 10860,
-          "tempActual": "244",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T08:04:00+10:00",
-          "tempExpected": "323.75",
-          "timeOffset": 12840,
-          "tempActual": "336",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T08:22:00+10:00",
-          "tempExpected": "368.75",
-          "timeOffset": 13920,
-          "tempActual": "381",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T08:40:00+10:00",
-          "tempExpected": "413.75",
-          "timeOffset": 15000,
-          "tempActual": "426",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T09:29:00+10:00",
-          "tempExpected": "536.25",
-          "timeOffset": 17940,
-          "tempActual": "525",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T09:45:00+10:00",
-          "tempExpected": "562.92",
-          "timeOffset": 18900,
-          "tempActual": "549",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T10:02:00+10:00",
-          "tempExpected": "591.25",
-          "timeOffset": 19920,
-          "tempActual": "573",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T10:12:00+10:00",
-          "tempExpected": "607.92",
-          "timeOffset": 20520,
-          "tempActual": "587",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T10:50:00+10:00",
-          "tempExpected": "671.25",
-          "timeOffset": 22800,
-          "tempActual": "645",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T11:38:00+10:00",
-          "tempExpected": "751.25",
-          "timeOffset": 25680,
-          "tempActual": "717",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T12:00:00+10:00",
-          "tempExpected": "778.75",
-          "timeOffset": 27000,
-          "tempActual": "748",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T13:13:00+10:00",
-          "tempExpected": "870.00",
-          "timeOffset": 31380,
-          "tempActual": "834",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T14:16:00+10:00",
-          "tempExpected": "948.75",
-          "timeOffset": 35160,
-          "tempActual": "907",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T14:38:00+10:00",
-          "tempExpected": "976.25",
-          "timeOffset": 36480,
-          "tempActual": "930",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T15:28:00+10:00",
-          "tempExpected": "1,038.75",
-          "timeOffset": 39480,
-          "tempActual": "978",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T15:45:00+10:00",
-          "tempExpected": "1,060.00",
-          "timeOffset": 40500,
-          "tempActual": "992",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T15:54:00+10:00",
-          "tempExpected": "1,071.25",
-          "timeOffset": 41040,
-          "tempActual": "998",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-28T15:56:00+10:00",
-          "tempExpected": "1,073.75",
-          "timeOffset": 41160,
-          "tempActual": "1000",
-          "state": "nominal",
-          "notes": ""
-        }
-      ],
-      "responsibleLog": [],
-      "burnerStates": []
+      "temperatureState": "nominal"
     },
     {
       "id": "7B4Sphl0B6",
@@ -914,122 +65,1085 @@
       "actualStart": "2025-08-26T04:30:00+10:00",
       "actualEnd": "2025-08-26T15:04:00+10:00",
       "actualCold": "2025-08-27T15:04:00+10:00",
-      "started": true,
-      "complete": true,
-      "cold": true,
       "maxTemp": 1000,
+      "cone": "06",
       "programState": "complete",
-      "temperatureState": "nominal",
-      "currentTemp": 0,
-      "notes": null,
-      "tempLog": [
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T04:30:00+10:00",
-          "tempExpected": "9.00",
-          "timeOffset": 0,
-          "tempActual": "15",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T09:11:00+10:00",
-          "tempExpected": "711.50",
-          "timeOffset": 16860,
-          "tempActual": "627",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T10:32:00+10:00",
-          "tempExpected": "846.50",
-          "timeOffset": 21720,
-          "tempActual": "736",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T10:52:00+10:00",
-          "tempExpected": "871.50",
-          "timeOffset": 22920,
-          "tempActual": "761",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T12:13:00+10:00",
-          "tempExpected": "972.75",
-          "timeOffset": 27780,
-          "tempActual": "857",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T13:16:00+10:00",
-          "tempExpected": "1,051.50",
-          "timeOffset": 31560,
-          "tempActual": "916",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T13:50:00+10:00",
-          "tempExpected": "1,094.00",
-          "timeOffset": 33600,
-          "tempActual": "945",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T14:37:00+10:00",
-          "tempExpected": "1,152.75",
-          "timeOffset": 36420,
-          "tempActual": "981",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T14:48:00+10:00",
-          "tempExpected": "1,166.50",
-          "timeOffset": 37080,
-          "tempActual": "989",
-          "state": "nominal",
-          "notes": ""
-        },
-        {
-          "userID": "wfj_myxTAV",
-          "isTemp": true,
-          "time": "2025-08-26T15:04:00+10:00",
-          "tempExpected": "1,186.50",
-          "timeOffset": 38040,
-          "tempActual": "1000",
-          "state": "nominal",
-          "notes": ""
-        }
-      ],
-      "responsibleLog": [],
-      "burnerStates": []
+      "temperatureState": "nominal"
+    }
+  ],
+  "firingLogs": [
+    {
+      "id": "qHNmwBL0w",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T04:30:00+10:00",
+      "type": "temp",
+      "timeOffset": 0,
+      "tempExpected": 18,
+      "tempActual": 18,
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "aR3ENIYtgL",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T05:02:00+10:00",
+      "type": "temp",
+      "timeOffset": "1920",
+      "tempExpected": "58",
+      "tempActual": "52",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "llUMHFpM24",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T06:02:00+10:00",
+      "type": "temp",
+      "timeOffset": "5520",
+      "tempExpected": "133",
+      "tempActual": "128",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "VxIWE-BAFh",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T07:29:00+10:00",
+      "type": "temp",
+      "timeOffset": "10740",
+      "tempExpected": "242",
+      "tempActual": "241",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "iwRoXbRIfo",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T08:18:00+10:00",
+      "type": "temp",
+      "timeOffset": "13680",
+      "tempExpected": "364",
+      "tempActual": "371",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "70sjaXQINy",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T08:37:00+10:00",
+      "type": "temp",
+      "timeOffset": "14820",
+      "tempExpected": "412",
+      "tempActual": "418",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "PlABwEZCAd",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T08:55:00+10:00",
+      "type": "temp",
+      "timeOffset": "15900",
+      "tempExpected": "457",
+      "tempActual": "462",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "kSBkkYaHFr",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T09:14:00+10:00",
+      "type": "temp",
+      "timeOffset": "17040",
+      "tempExpected": "504",
+      "tempActual": "504",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "iKVgxyRqsO",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T09:31:00+10:00",
+      "type": "temp",
+      "timeOffset": "18060",
+      "tempExpected": "547",
+      "tempActual": "533",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "40F0rqUXN8",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T09:43:00+10:00",
+      "type": "temp",
+      "timeOffset": "18780",
+      "tempExpected": "567",
+      "tempActual": "552",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "IK1NKMUWIS",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T10:02:00+10:00",
+      "type": "temp",
+      "timeOffset": "19920",
+      "tempExpected": "598",
+      "tempActual": "579",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Y8qYmTtyVW",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T10:13:00+10:00",
+      "type": "temp",
+      "timeOffset": "20580",
+      "tempExpected": "617",
+      "tempActual": "594",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "RNiphoVYS1",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T10:23:00+10:00",
+      "type": "temp",
+      "timeOffset": "21180",
+      "tempExpected": "633",
+      "tempActual": "608",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Zlufpn7-5V",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T10:33:00+10:00",
+      "type": "temp",
+      "timeOffset": "21780",
+      "tempExpected": "650",
+      "tempActual": "627",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "eVqJF7FZ_k",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T10:46:00+10:00",
+      "type": "temp",
+      "timeOffset": "22560",
+      "tempExpected": "672",
+      "tempActual": "641",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "YnCanEErFP",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T11:02:00+10:00",
+      "type": "temp",
+      "timeOffset": "23520",
+      "tempExpected": "698",
+      "tempActual": "664",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "811eVmSCV0",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T11:16:00+10:00",
+      "type": "temp",
+      "timeOffset": "24360",
+      "tempExpected": "722",
+      "tempActual": "682",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "lpPXa-gUrP",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T11:27:00+10:00",
+      "type": "temp",
+      "timeOffset": "25020",
+      "tempExpected": "740",
+      "tempActual": "697",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "nXtzrztlMK",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T11:38:00+10:00",
+      "type": "temp",
+      "timeOffset": "25680",
+      "tempExpected": "754",
+      "tempActual": "709",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "jZ0c2t53aW",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T11:53:00+10:00",
+      "type": "temp",
+      "timeOffset": "26580",
+      "tempExpected": "773",
+      "tempActual": "732",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "CFng0TV49C",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T12:48:00+10:00",
+      "type": "temp",
+      "timeOffset": "29880",
+      "tempExpected": "841",
+      "tempActual": "800",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "1yeWLuM3R7",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T13:02:00+10:00",
+      "type": "temp",
+      "timeOffset": "30720",
+      "tempExpected": "859",
+      "tempActual": "817",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T13:33:00+10:00",
+      "type": "temp",
+      "timeOffset": "32580",
+      "tempExpected": "898",
+      "tempActual": "856",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "9LVwapgYjW",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T13:47:00+10:00",
+      "type": "temp",
+      "timeOffset": "33420",
+      "tempExpected": "915",
+      "tempActual": "873",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "MkXoCOb8dG",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T14:23:00+10:00",
+      "type": "temp",
+      "timeOffset": "35580",
+      "tempExpected": "960",
+      "tempActual": "918",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "fAbPvACvSX",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T14:33:00+10:00",
+      "type": "temp",
+      "timeOffset": "36180",
+      "tempExpected": "973",
+      "tempActual": "930",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "nn2pW_0mFg",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T14:43:00+10:00",
+      "type": "temp",
+      "timeOffset": "36780",
+      "tempExpected": "985",
+      "tempActual": "942",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "RjrS8BRGcq",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T14:54:00+10:00",
+      "type": "temp",
+      "timeOffset": "37440",
+      "tempExpected": "999",
+      "tempActual": "953",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "SQ8WFFbcft",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T15:04:00+10:00",
+      "type": "temp",
+      "timeOffset": "38040",
+      "tempExpected": "1,011",
+      "tempActual": "964",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "F81QPwz4rZ",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T15:14:00+10:00",
+      "type": "temp",
+      "timeOffset": "38640",
+      "tempExpected": "1,024",
+      "tempActual": "973",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "hcpCz9gX-N",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T15:24:00+10:00",
+      "type": "temp",
+      "timeOffset": "39240",
+      "tempExpected": "1,036",
+      "tempActual": "983",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "II_5Q33uDH",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T15:34:00+10:00",
+      "type": "temp",
+      "timeOffset": "39840",
+      "tempExpected": "1,049",
+      "tempActual": "993",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "jXmk0TL_KI",
+      "firingID": "idaufP51yz",
+      "userID": "wfj_myxTAV",
+      "time": "2025-09-08T15:39:00+10:00",
+      "type": "temp",
+      "timeOffset": "40140",
+      "tempExpected": "1,055",
+      "tempActual": "1,000",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "8h9cASdnzX",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T04:30:00+10:00",
+      "tempExpected": "18",
+      "timeOffset": 0,
+      "tempActual": "18",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "L8fhFTbkTk",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T05:31:00+10:00",
+      "tempExpected": "120",
+      "timeOffset": 3660,
+      "tempActual": "81",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "pd8ZtZU6nR",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T06:31:00+10:00",
+      "tempExpected": "220",
+      "timeOffset": 7260,
+      "tempActual": "158",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "7G6ajIAPI1",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T07:31:00+10:00",
+      "tempExpected": "320",
+      "timeOffset": 10860,
+      "tempActual": "249",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "RmdD4oArF3",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T08:31:00+10:00",
+      "tempExpected": "420",
+      "timeOffset": 14460,
+      "tempActual": "343",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "3c21vIhmJm",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T09:27:00+10:00",
+      "tempExpected": "513",
+      "timeOffset": 17820,
+      "tempActual": "437",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "LxEJcIXKu7",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T09:38:00+10:00",
+      "tempExpected": "531",
+      "timeOffset": 18480,
+      "tempActual": "454",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "KhBbY7xz_v",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T09:50:00+10:00",
+      "tempExpected": "551",
+      "timeOffset": 19200,
+      "tempActual": "474",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "kWNP2gXAUx",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T10:00:00+10:00",
+      "tempExpected": "568",
+      "timeOffset": 19800,
+      "tempActual": "492",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "6VB5KTmpEF",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T10:34:00+10:00",
+      "tempExpected": "625",
+      "timeOffset": 21840,
+      "tempActual": "546",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "q-GtWmR6PT",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T10:44:00+10:00",
+      "tempExpected": "641",
+      "timeOffset": 22440,
+      "tempActual": "564",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "JLjA41iw3A",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T11:04:00+10:00",
+      "tempExpected": "675",
+      "timeOffset": 23640,
+      "tempActual": "602",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "NsXHXDEHg_",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T11:15:00+10:00",
+      "tempExpected": "693",
+      "timeOffset": 24300,
+      "tempActual": "618",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "KvalAgfN4N",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T12:57:00+10:00",
+      "tempExpected": "863",
+      "timeOffset": 30420,
+      "tempActual": "780",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "YJZYnjbBFq",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T13:57:00+10:00",
+      "tempExpected": "963",
+      "timeOffset": 34020,
+      "tempActual": "874",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "3HiNcdPAVk",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T14:39:00+10:00",
+      "tempExpected": "1,033",
+      "timeOffset": 36540,
+      "tempActual": "932",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Hvj3SWe7wV",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T15:11:00+10:00",
+      "tempExpected": "1,076",
+      "timeOffset": 38460,
+      "tempActual": "972",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "JkZoHoLvSm",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T15:26:00+10:00",
+      "tempExpected": "1,096",
+      "timeOffset": 39360,
+      "tempActual": "992",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "7jFi7V5eCg",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T15:45:00+10:00",
+      "tempExpected": "1,121",
+      "timeOffset": 40500,
+      "tempActual": "1012",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "YJMCbp6pCb",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T16:18:00+10:00",
+      "tempExpected": "1,143",
+      "timeOffset": 42480,
+      "tempActual": "1042",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "37cXTCeY01",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T16:30:00+10:00",
+      "tempExpected": "1,151",
+      "timeOffset": 43200,
+      "tempActual": "1057",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "5IWWMuibWD",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T16:44:00+10:00",
+      "tempExpected": "1,160",
+      "timeOffset": 44040,
+      "tempActual": "1070",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "DjHlo2quYO",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T17:09:00+10:00",
+      "tempExpected": "1,177",
+      "timeOffset": 45540,
+      "tempActual": "1095",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "7SJxOckBg-",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T17:25:00+10:00",
+      "tempExpected": "1,188",
+      "timeOffset": 46500,
+      "tempActual": "1109",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "-X_T0AEndc",
+      "firingID": "JWW15Qsmac",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-09-02T18:18:00+10:00",
+      "tempExpected": "1,223",
+      "timeOffset": 49680,
+      "tempActual": "1135",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Nfwxtvxxoj",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T04:30:00+10:00",
+      "tempExpected": "15.00",
+      "timeOffset": 0,
+      "tempActual": "15",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "nVirs8FUNx",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T05:31:00+10:00",
+      "tempExpected": "91.25",
+      "timeOffset": 3660,
+      "tempActual": "92",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "7o5DV_vdY3",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T06:31:00+10:00",
+      "tempExpected": "166.25",
+      "timeOffset": 7260,
+      "tempActual": "164",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "6pPAmWpqJx",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T07:31:00+10:00",
+      "tempExpected": "241.25",
+      "timeOffset": 10860,
+      "tempActual": "244",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "T9Tl5Du799",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T08:04:00+10:00",
+      "tempExpected": "323.75",
+      "timeOffset": 12840,
+      "tempActual": "336",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "bXHKlNDnUy",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T08:22:00+10:00",
+      "tempExpected": "368.75",
+      "timeOffset": 13920,
+      "tempActual": "381",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Y1Nr7bDWjR",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T08:40:00+10:00",
+      "tempExpected": "413.75",
+      "timeOffset": 15000,
+      "tempActual": "426",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "pqIx7SI3mb",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T09:29:00+10:00",
+      "tempExpected": "536.25",
+      "timeOffset": 17940,
+      "tempActual": "525",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "5llGe-mhRz",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T09:45:00+10:00",
+      "tempExpected": "562.92",
+      "timeOffset": 18900,
+      "tempActual": "549",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "6g0PMa_ZWS",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T10:02:00+10:00",
+      "tempExpected": "591.25",
+      "timeOffset": 19920,
+      "tempActual": "573",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "UavNfNJxp5",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T10:12:00+10:00",
+      "tempExpected": "607.92",
+      "timeOffset": 20520,
+      "tempActual": "587",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "yhqSxYb3tY",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T10:50:00+10:00",
+      "tempExpected": "671.25",
+      "timeOffset": 22800,
+      "tempActual": "645",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "hVCtpBzYYy",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T11:38:00+10:00",
+      "tempExpected": "751.25",
+      "timeOffset": 25680,
+      "tempActual": "717",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "ZiXYfOrQoq",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T12:00:00+10:00",
+      "tempExpected": "778.75",
+      "timeOffset": 27000,
+      "tempActual": "748",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "YxrXfPSZdq",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T13:13:00+10:00",
+      "tempExpected": "870.00",
+      "timeOffset": 31380,
+      "tempActual": "834",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Yp9xEuKRR2",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T14:16:00+10:00",
+      "tempExpected": "948.75",
+      "timeOffset": 35160,
+      "tempActual": "907",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "O2HuMnsGPX",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T14:38:00+10:00",
+      "tempExpected": "976.25",
+      "timeOffset": 36480,
+      "tempActual": "930",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "TzANall4Xj",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T15:28:00+10:00",
+      "tempExpected": "1,038.75",
+      "timeOffset": 39480,
+      "tempActual": "978",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "jdIsQwHNXf",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T15:45:00+10:00",
+      "tempExpected": "1,060.00",
+      "timeOffset": 40500,
+      "tempActual": "992",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "GJTOE1XSd_",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T15:54:00+10:00",
+      "tempExpected": "1,071.25",
+      "timeOffset": 41040,
+      "tempActual": "998",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "499vcss39X",
+      "firingID": "pmwQGdppZh",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-28T15:56:00+10:00",
+      "tempExpected": "1,073.75",
+      "timeOffset": 41160,
+      "tempActual": "1000",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "HLGmA-rd5Y",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T04:30:00+10:00",
+      "tempExpected": "9.00",
+      "timeOffset": 0,
+      "tempActual": "15",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "k6f3Q4BRcH",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T09:11:00+10:00",
+      "tempExpected": "711.50",
+      "timeOffset": 16860,
+      "tempActual": "627",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "Vn0ghBIYvT",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T10:32:00+10:00",
+      "tempExpected": "846.50",
+      "timeOffset": 21720,
+      "tempActual": "736",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "8cshhnSojv",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T10:52:00+10:00",
+      "tempExpected": "871.50",
+      "timeOffset": 22920,
+      "tempActual": "761",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "NtztasPYDf",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T12:13:00+10:00",
+      "tempExpected": "972.75",
+      "timeOffset": 27780,
+      "tempActual": "857",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "ECw8gIHMYF",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T13:16:00+10:00",
+      "tempExpected": "1,051.50",
+      "timeOffset": 31560,
+      "tempActual": "916",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "ECw8gIHMYF",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T13:50:00+10:00",
+      "tempExpected": "1,094.00",
+      "timeOffset": 33600,
+      "tempActual": "945",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "2SuXATjxev",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T14:37:00+10:00",
+      "tempExpected": "1,152.75",
+      "timeOffset": 36420,
+      "tempActual": "981",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "FMulNrg97o",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T14:48:00+10:00",
+      "tempExpected": "1,166.50",
+      "timeOffset": 37080,
+      "tempActual": "989",
+      "state": "expected",
+      "notes": ""
+    },
+    {
+      "id": "lugyPUzSrB",
+      "firingID": "7B4Sphl0B6",
+      "userID": "wfj_myxTAV",
+      "type": "temp",
+      "time": "2025-08-26T15:04:00+10:00",
+      "tempExpected": "1,186.50",
+      "timeOffset": 38040,
+      "tempActual": "1000",
+      "state": "expected",
+      "notes": ""
     }
   ],
   "kilns": [
     {
+      "id": "ZmzhPnx1P1",
       "bisque": true,
       "black": false,
       "brand": "Tetlow",
@@ -1037,7 +1151,6 @@
       "fuel": "electric",
       "glaze": true,
       "height": 700,
-      "id": "ZmzhPnx1P1",
       "installDate": "2010-02-01",
       "luster": true,
       "maxProgramCount": 10,
@@ -1059,6 +1172,7 @@
       "width": 600
     },
     {
+      "id": "AXARcxcpZN",
       "bisque": true,
       "black": false,
       "brand": "Woodrow",
@@ -1066,7 +1180,6 @@
       "fuel": "electric",
       "glaze": true,
       "height": 740,
-      "id": "AXARcxcpZN",
       "installDate": "2025-07-17",
       "luster": true,
       "maxProgramCount": 20,
@@ -1088,6 +1201,7 @@
       "width": 700
     },
     {
+      "id": "WpnCnk5aLA",
       "bisque": true,
       "black": false,
       "brand": "Woodrow",
@@ -1095,7 +1209,6 @@
       "fuel": "electric",
       "glaze": true,
       "height": 575,
-      "id": "WpnCnk5aLA",
       "installDate": "2025-07-17",
       "luster": true,
       "maxProgramCount": 20,
@@ -1117,7 +1230,7 @@
       "width": 450
     }
   ],
-  "logs": [],
+  "kilnStatusLogs": [],
   "programs": [
     {
       "id": "ZQfi3zS0Rt",
@@ -1129,7 +1242,7 @@
       "version": 1,
       "description": "Cone 06 bisque firing for small to medium sized work",
       "maxTemp": 1000,
-      "duration": 38400,
+      "duration": 45600,
       "cone": "06",
       "averageRate": 93.75,
       "created": "2025-08-25T18:30:00+10:00",
@@ -1178,7 +1291,7 @@
       "version": 1,
       "description": "Cone 6 glaze firing",
       "maxTemp": 1210,
-      "duration": 38400,
+      "duration": 34800,
       "cone": "6",
       "averageRate": 93.75,
       "created": "2025-09-12T21:05:00+10:00",
@@ -1208,14 +1321,40 @@
           "endTemp": 1200,
           "rate": 60,
           "hold": 10
-        },
-        {
-          "order": 4,
-          "endTemp": 1000,
-          "rate": 75,
-          "hold": 0
         }
       ]
+    }
+  ],
+  "programsList": [
+    {
+      "programID": "ZQfi3zS0Rt",
+      "programName": "Normal bisque",
+      "programURL": "normal-bisque",
+      "kilnID": "WpnCnk5aLA",
+      "kilnName": "Small Woodrow (kiln 2)",
+      "kilnURL": "small-woodrow-kiln-2",
+      "type": "bisque",
+      "maxTemp": 1000,
+      "cone": "06",
+      "duration": 45600,
+      "redirect": false,
+      "superseded": false,
+      "url": ""
+    },
+    {
+      "programID": "f6afaRKAiy",
+      "programName": "Normal bisque",
+      "programURL": "normal-bisque",
+      "kilnID": "AXARcxcpZN",
+      "kilnName": "Large Woodrow (kiln 1)",
+      "kilnURL": "large-woodrow-kiln-1",
+      "type": "glaze",
+      "maxTemp": 1210,
+      "cone": "6",
+      "duration": 34800,
+      "redirect": false,
+      "superseded": false,
+      "url": ""
     }
   ],
   "users": [
@@ -1225,7 +1364,7 @@
       "firstName": "Evan",
       "lastName": "Wills",
       "preferredName": "Evan",
-      "phone": "+610412345678",
+      "phone": "+61412345678",
       "email": "evanwills@example.com",
       "canFire": true,
       "canLog": true,
@@ -1243,7 +1382,7 @@
       "firstName": "Robyn",
       "lastName": "",
       "preferredName": "Robyn",
-      "phone": "+610423456789",
+      "phone": "+61423456789",
       "email": "robyn@example.com",
       "canFire": true,
       "canLog": true,
@@ -1261,7 +1400,7 @@
       "firstName": "Scarlet",
       "lastName": "",
       "preferredName": "Scarlet",
-      "phone": "+610434567890",
+      "phone": "+61434567890",
       "email": "scarlet@example.com",
       "canFire": false,
       "canLog": true,
@@ -1279,7 +1418,7 @@
       "firstName": "Monica",
       "lastName": "",
       "preferredName": "Mon",
-      "phone": "+610445678901",
+      "phone": "+61445678901",
       "email": "monica@example.com",
       "canFire": false,
       "canLog": true,
@@ -1324,6 +1463,92 @@
       "program": false,
       "url": "/kilns/small-woodrow-kiln-2",
       "user": false
+    }
+  ],
+  "EadminLevels": [
+    {
+      "order": 0,
+      "value": "none",
+      "label": "Standard member"
+    },
+    {
+      "order": 1,
+      "value": "logger",
+      "label": "Firing logger"
+    },
+    {
+      "order": 2,
+      "value": "admin",
+      "label": "Admin"
+    },
+    {
+      "order": 3,
+      "value": "super",
+      "label": "Super admin"
+    }
+  ],
+  "EequipmentLogType": [
+    {
+      "order": 0,
+      "value": "usage",
+      "label": "Usage"
+    },
+    {
+      "order": 1,
+      "value": "maintenance",
+      "label": "Maintenance"
+    },
+    {
+      "order": 2,
+      "value": "problem",
+      "label": "Problem"
+    }
+  ],
+  "EfiringState": [
+    {
+      "order": 0,
+      "value": "scheduled",
+      "label": "Scheduled"
+    },
+    {
+      "order": 1,
+      "value": "packing",
+      "label": "Packing"
+    },
+    {
+      "order": 2,
+      "value": "ready",
+      "label": "Ready"
+    },
+    {
+      "order": 3,
+      "value": "active",
+      "label": "Active"
+    },
+    {
+      "order": 4,
+      "value": "completed",
+      "label": "Completed"
+    },
+    {
+      "order": 5,
+      "value": "cold",
+      "label": "Cold"
+    },
+    {
+      "order": 6,
+      "value": "unpacking",
+      "label": "Unpacking"
+    },
+    {
+      "order": 7,
+      "value": "empty",
+      "label": "Empty"
+    },
+    {
+      "order": 8,
+      "value": "aborted",
+      "label": "Aborted"
     }
   ],
   "EfiringType": [
@@ -1373,81 +1598,108 @@
       "label": "Use saggers"
     }
   ],
-  "EprogramState": [
+  "EfuelSource": [
     {
       "order": 0,
-      "value": "idle",
-      "label": "Idle"
+      "value": "electric",
+      "label": "Electric"
     },
     {
       "order": 1,
-      "value": "pending",
-      "label": "Pending"
+      "value": "gas",
+      "label": "Gas"
     },
     {
       "order": 2,
-      "value": "active",
-      "label": "Active"
+      "value": "wood",
+      "label": "Wood"
     },
     {
       "order": 3,
-      "value": "completed",
-      "label": "Completed"
+      "value": "oil",
+      "label": "Oil"
     },
     {
       "order": 4,
-      "value": "aborted",
-      "label": "Aborted"
+      "value": "other",
+      "label": "Other"
+    }
+  ],
+  "EkilnOpeningType": [
+    {
+      "order": 0,
+      "value": "front",
+      "label": "Front loading"
+    },
+    {
+      "order": 1,
+      "value": "top",
+      "label": "Top loading"
+    },
+    {
+      "order": 2,
+      "value": "tophat",
+      "label": "Top hat"
+    },
+    {
+      "order": 3,
+      "value": "trolley",
+      "label": "Trolley"
     }
   ],
   "EkilnReadyStatus": [
     {
       "order": 0,
+      "value": "unavailable",
+      "label": "Unavailable"
+    },
+    {
+      "order": 1,
       "value": "available",
       "label": "Available"
     },
     {
-      "order": 1,
+      "order": 2,
       "value": "packing",
       "label": "Packing"
     },
     {
-      "order": 2,
+      "order": 3,
       "value": "packed",
       "label": "Packed"
     },
     {
-      "order": 3,
+      "order": 4,
       "value": "heating",
       "label": "Heating"
     },
     {
-      "order": 4,
+      "order": 5,
       "value": "holding",
       "label": "Holding"
     },
     {
-      "order": 5,
+      "order": 6,
       "value": "cooling",
       "label": "Cooling"
     },
     {
-      "order": 6,
+      "order": 7,
       "value": "cold",
       "label": "Ready to open"
     },
     {
-      "order": 7,
+      "order": 8,
       "value": "unpacking",
       "label": "Unpacking"
     },
     {
-      "order": 8,
+      "order": 9,
       "value": "pricing",
       "label": "Pricing"
     },
     {
-      "order": 9,
+      "order": 10,
       "value": "emptied",
       "label": "Emptied"
     }
@@ -1504,58 +1756,31 @@
       "label": "Removed"
     }
   ],
-  "EtemperatureState": [
+  "EkilnStatusLogEntryType": [
     {
       "order": 0,
-      "value": "underError",
-      "label": "UnderError"
+      "value": "serviceState",
+      "label": "Change service state"
     },
     {
       "order": 1,
-      "value": "under",
-      "label": "Under"
+      "value": "observation",
+      "label": "Observation"
     },
     {
       "order": 2,
-      "value": "expected",
-      "label": "expected"
+      "value": "maintenance",
+      "label": "Quick maintenance"
     },
     {
       "order": 3,
-      "value": "over",
-      "label": "Over"
+      "value": "fault",
+      "label": "Report a fault/problem"
     },
     {
       "order": 4,
-      "value": "overError",
-      "label": "OverError"
-    }
-  ],
-  "EfuelSource": [
-    {
-      "order": 0,
-      "value": "electric",
-      "label": "Electric"
-    },
-    {
-      "order": 1,
-      "value": "gas",
-      "label": "Gas"
-    },
-    {
-      "order": 2,
-      "value": "wood",
-      "label": "Wood"
-    },
-    {
-      "order": 3,
-      "value": "oil",
-      "label": "Oil"
-    },
-    {
-      "order": 4,
-      "value": "other",
-      "label": "Other"
+      "value": "note",
+      "label": "General note"
     }
   ],
   "EkilnType": [
@@ -1585,82 +1810,36 @@
       "label": "Annagamma"
     }
   ],
-  "EkilnOpeningType": [
+  "EtemperatureState": [
     {
       "order": 0,
-      "value": "front",
-      "label": "Front loading"
+      "value": "underError",
+      "label": "UnderError"
     },
     {
       "order": 1,
-      "value": "top",
-      "label": "Top loading"
+      "value": "under",
+      "label": "Under"
     },
     {
       "order": 2,
-      "value": "tophat",
-      "label": "Top hat"
+      "value": "expected",
+      "label": "expected"
     },
     {
       "order": 3,
-      "value": "trolly",
-      "label": "Trolly"
-    }
-  ],
-  "EequipmentLogType": [
-    {
-      "order": 0,
-      "value": "usage",
-      "label": "Usage"
+      "value": "over",
+      "label": "Over"
     },
     {
-      "order": 1,
-      "value": "maintenance",
-      "label": "Maintenance"
+      "order": 4,
+      "value": "overError",
+      "label": "OverError"
     },
     {
-      "order": 2,
-      "value": "problem",
-      "label": "Problem"
-    }
-  ],
-  "EprogramStatus": [
-    {
-      "order": 0,
-      "value": "unused",
-      "label": "Unused"
-    },
-    {
-      "order": 1,
-      "value": "selected",
-      "label": "Selected"
-    },
-    {
-      "order": 2,
-      "value": "used",
-      "label": "Used"
-    }
-  ],
-  "EAdminLevels": [
-    {
-      "order": 0,
-      "value": "none",
-      "label": "Standard member"
-    },
-    {
-      "order": 1,
-      "value": "logger",
-      "label": "Firing logger"
-    },
-    {
-      "order": 2,
-      "value": "admin",
-      "label": "Admin"
-    },
-    {
-      "order": 3,
-      "value": "super",
-      "label": "Super admin"
+      "order": 5,
+      "value": "n/a",
+      "label": "Not applicable"
     }
   ]
 }

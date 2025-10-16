@@ -57,4 +57,7 @@ export type TProgramListRenderItem = {
   maxTemp: number,
   cone: string,
   duration: number,
+  superseded: boolean,
+  redirect: boolean,
+  url: string | null,
 }
