@@ -5,7 +5,10 @@ import type {
   // ILinkObject,
   // IIdObject,
   ISO8601,
+  TCone,
 } from './data-simple.d.ts';
+import type { IKiln } from "./kilns.d.ts";
+import type { IProgram, TFiringType } from "./programs.d.ts";
 
 
 export enum EProgramLogState {
@@ -50,16 +53,20 @@ export interface ReportRow {
   expectedRate: number,
 };
 
+export type TFiringLogEntryType = 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible';
+export type TFiringState = 'scheduled' | 'packing' | 'ready' | 'active' | 'complete' | 'cold' | 'unpacking' | 'empty' | 'aborted';
+export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
+
 export interface IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
   userID: ID,
-  type: 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'resonsible',
+  type: TFiringLogEntryType,
   notes: string|null,
 };
 
-export interface TempLogEntry extends IFiringLogEntry {
+export interface ITempLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
@@ -72,21 +79,32 @@ export interface TempLogEntry extends IFiringLogEntry {
   notes: string|null,
 };
 
-export interface CombustionLogEntry extends IFiringLogEntry {
+export interface IStateLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
   userID: ID,
+  type: 'firingState',
+  newState: string,
+  oldState: string,
+  notes: string|null,
+};
+
+export interface IDamperLogEntry extends IFiringLogEntry {
+  id: ID,
+  firingID: ID,
+  userID: ID,
+  time: ISO8601,
   type: 'damper',
   damperAdjustment: number,
   notes: string|null,
 };
 
-export interface BurnerState  extends IFiringLogEntry {
+export interface IBurnerState  extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  time: ISO8601,
   userID: ID,
+  time: ISO8601,
   type: 'burner',
   burnerID: ID,
   burnerPosition: string,
@@ -96,7 +114,7 @@ export interface BurnerState  extends IFiringLogEntry {
   notes: string|null,
 };
 
-export interface GasLogEntry extends IFiringLogEntry {
+export interface IGasLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
@@ -113,29 +131,28 @@ export interface GasLogEntry extends IFiringLogEntry {
    *
    * @property {number} gasFlow
    */
-  burnerStates: [BurnerState],
+  IburnerStates: [IBurnerState],
   notes: string,
 };
 
-export interface ResponsibleLogEntry extends IFiringLogEntry {
+export interface IResponsibleLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
+  userID: ID,
   time: ISO8601,
-  userID: ID,
-  type: 'resonsible',
+  type: 'responsible',
   isStart: boolean,
-  userID: ID,
   responsibilityType: EResponsibilityType,
   notes: string|null,
 };
 
-export interface Firing {
+export interface IFiring {
   id: ID,
   kilnID: ID,
   programID: ID,
   ownerID: ID,
   diaryID: ID|null,
-  firingType: EfiringType,
+  firingType: TFiringType,
   scheduledStart: ISO8601|null,
   scheduledEnd: ISO8601|null,
   scheduledCold: ISO8601|null,
@@ -145,13 +162,13 @@ export interface Firing {
   actualCold: ISO8601|null,
   unpacked: ISO8601|null,
   maxTemp: number,
-  cone: string,
-  firingState: 'scheduled' | 'packing' | 'ready' | 'active' | 'complete' | 'cold' | 'unpacking' | 'empty' | 'aborted',
-  temperatureState: 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a',
+  cone: TCone,
+  firingState: TFiringState,
+  temperatureState: TTemperatureState,
   log: [FiringLogEntry],
 };
 
-export interface FiringReport {
+export interface IFiringReport {
   kilnName: string,
   program: firingProgram,
   firingType: EfiringType,
@@ -165,19 +182,25 @@ export interface FiringReport {
   currentRate: number
 };
 
-export type TFiringListItem = {
-  firingID: ID,
+export type TFiringsListItem = {
+  id: ID,
   programID: ID,
   programName: string,
   programURL: string,
   kilnID: ID,
   kilnName: string,
   kilnURL: string,
-  type: string,
+  firingType: TFiringType,
   maxTemp: number,
-  cone: string,
-  duration: number,
-  programState: string,
+  cone: TCone,
+  firingState: TFiringState,
   actualStart: ISO8601|null,
   actualEnd: ISO8601|null,
 }
+
+export type TGetFirningDataPayload = {
+  firing: Promise<IFiring>,
+  kiln: Promise<IKiln>,
+  log: Promise<IFiringLogEntry[]>,
+  program: Promise<IProgram>,
+};

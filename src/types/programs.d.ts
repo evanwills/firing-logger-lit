@@ -1,5 +1,5 @@
 import type { SVGTemplateResult, TemplateResult } from 'lit';
-import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601 } from './data-simple.d.ts';
+import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601, TCone } from './data-simple.d.ts';
 
 export interface IFiringStep extends IKeyValue {
   order: number,   // step order in program, starting at 1
@@ -8,16 +8,18 @@ export interface IFiringStep extends IKeyValue {
   hold: number     // minutes to hold at end temperature
 }
 
+export type TFiringType = 'bisque' | 'glaze' | 'single' | 'luster' | 'onglaze' | 'raku' | 'salt' | 'black';
+
 export interface IProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObject {
   id: ID,
   kilnID: ID,
   controllerProgramID: number,
-  type: 'bisque' | 'glaze' | 'single' | 'luster' | 'onglaze' | 'raku' | 'salt' | 'black',
+  type: TFiringType,
   name: string,
   urlPart: string,
   description: string,
   maxTemp: number,
-  cone: string,
+  cone: TCone,
   duration: number,
   averageRate: number,
   steps: IFiringStep[],
@@ -55,7 +57,7 @@ export type TProgramListRenderItem = {
   kilnURL: string,
   type: string,
   maxTemp: number,
-  cone: string,
+  cone: TCone,
   duration: number,
   superseded: boolean,
   redirect: boolean,

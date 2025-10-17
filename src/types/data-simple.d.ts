@@ -6,6 +6,7 @@ import type { TemplateResult } from 'lit';
 export type ISO8601 = string;
 export type TTimeStamp = number;
 export type ID = string;
+export type TCone = string;
 
 //  END:  Basic scalar types
 // ------------------------------------------------------------------
@@ -77,4 +78,9 @@ export type TOrderedEnum = {
 export type TNewItemResponse = {
   uid: ID,
   urlPart: string,
+}
+
+export type TDateRange = {
+  start?: ISO8601,
+  end?: ISO8601,
 }

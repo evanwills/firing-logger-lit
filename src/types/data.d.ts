@@ -58,7 +58,7 @@ export interface FiringLog implements IKeyValue, IIdObject {
   responsibleID: ID,
   notes: string,
   tempLog: [TemperatureLogEntry]
-  responsibleLog: [ResponsibleLogEntry]
+  responsibleLog: [IResponsibleLogEntry]
 }
 
 export interface IFiringLogEntry {
@@ -79,7 +79,7 @@ export interface TemperatureLogEntry extends IFiringLogEntry {
   notes: string,
 }
 
-export interface ResponsibleLogEntry extends IFiringLogEntry {
+export interface IResponsibleLogEntry extends IFiringLogEntry {
   userID: ID,
   firingID: ID,
   time: Date,

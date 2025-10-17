@@ -21,6 +21,7 @@ import {
   getKilnDataForProgram,
 } from '../components/kilns/kiln-store.utils.ts';
 import { getProgramData, getProgramURL, updateProgram, addProgram } from '../components/programs/program-store.utils.ts';
+import { getFiringData, getFiringsList } from "../components/firings/firings-store.utils.ts";
 
 let store : CDataStoreClass | null = null;
 
@@ -233,7 +234,7 @@ const upgradeSchema : IDBPupgrade = (
       firingsList.createIndex('maxTemp', 'maxTemp', { unique: false });
       firingsList.createIndex('cone', 'cone', { unique: false });
       firingsList.createIndex('duration', 'duration', { unique: false });
-      firingsList.createIndex('programState', 'programState', { unique: false });
+      firingsList.createIndex('firingState', 'firingState', { unique: false });
       firingsList.createIndex('actualStart', 'actualStart', { unique: false });
       firingsList.createIndex('actualEnd', 'actualEnd', { unique: false });
     }
@@ -421,8 +422,8 @@ const actions : TActionList = {
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  // getFiringList,
-  // getFiring,
+  getFiringsList,
+  getFiringData,
   // updateFiring,
   // updateFiringState,
   // addFiringLogEntry,

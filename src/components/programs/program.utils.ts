@@ -5,6 +5,7 @@ import { isID } from '../../types/data.type-guards.ts';
 import { isNumMinMax, isObj } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
+import { isTFiringType } from "../../types/program.type-guards.ts";
 
 export const getProgramTypeOptions = () : string[] => {
   return [
@@ -91,9 +92,7 @@ export const validateProgramData = (program: unknown) : string | null => {
     return getProgramError('controllerProgramID', 'number');
   }
 
-  if (isNonEmptyStr(program, 'type') === false
-    || getProgramTypeOptions().includes((program as IProgram).type) === false
-  ) {
+  if (isTFiringType((program as IProgram).type) === true) {
     return getProgramError('type','string');
   }
 

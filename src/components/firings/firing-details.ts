@@ -4,12 +4,12 @@ import type { ID } from '../../types/data-simple.d.ts';
 import type {
   FiringLog,
   IFiringLogEntry,
-  ResponsibleLogEntry,
+  IResponsibleLogEntry,
   StateChangeLogEntry,
 } from '../../types/data.d.ts';
 import type { IProgram } from '../../types/programs.d.ts';
-import type { TempLogEntry } from '../../types/firing-log.d.ts';
-import { isChangeLog, isRespLog, isTempLog } from '../../types/data.type-guards.ts';
+import type { ITempLogEntry } from '../../types/firings.d.ts';
+import { isStateChangeLog, isRespLog, isTempLog } from '../../types/firing.type-guards.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 
 /**
@@ -60,9 +60,9 @@ export class FiringLogView extends LoggerElement {
   @state()
   _edit : boolean = false;
 
-  _log : TempLogEntry[] = []
+  _log : ITempLogEntry[] = []
   _changeLog : StateChangeLogEntry[]  = []
-  _responsibleLog : ResponsibleLogEntry[]  = []
+  _responsibleLog : IResponsibleLogEntry[]  = []
   _rawLog : IFiringLogEntry[] = [];
   _program : IProgram | null = null;
 
@@ -79,11 +79,17 @@ export class FiringLogView extends LoggerElement {
           if (firingResult !== null) {
             this._ready = true;
 
-            this.store?.read(`logs.firingID=${this.firingID}`).then((logResult : IFiringLogEntry[]) => {
+            this.store?.read(`firingLogs.firingID=${this.firingID}`).then((logResult : IFiringLogEntry[]) => {
               this._rawLog = logResult;
-              this._log = logResult.filter(isTempLog);
-              this._responsibleLog = logResult.filter(isRespLog);
-              this._changeLog = logResult.filter(isChangeLog);
+              for (const item of logResult) {
+                if (isTempLog(item)) {
+                  this._log.push(item);
+                } else if (isRespLog(item)) {
+                  this._responsibleLog.push(item);
+                } else if (isStateChangeLog(item)) {
+                  this._changeLog.push(item);
+                }
+              }
             });
 
             this.store?.read(`programs.#${firingResult.programID}`).then((programResult : IProgram | null) => {
