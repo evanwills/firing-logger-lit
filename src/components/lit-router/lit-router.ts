@@ -120,25 +120,25 @@ export class LitRouter extends LitElement {
   handleRouteLink(event: CustomEvent) : void {
     event.preventDefault();
 
-    // console.group('<lit-router>.handleRouteLink()');
-    // console.log('this._url (before):', this._url);
-    // console.log('this._data (before):', this._data);
-    // console.log('this._lastNode (before):', this._lastNode);
+    console.group('<lit-router>.handleRouteLink()');
+    console.log('this._url (before):', this._url);
+    console.log('this._data (before):', this._data);
+    console.log('this._lastNode (before):', this._lastNode);
 
     this._url = event.detail.url;
     this._data = event.detail.data;
 
     globalThis.history.pushState({ ...event.detail.data }, '', event.detail.url);
 
-    // console.log('event:', event);
-    // console.log('event.target:', event.target);
-    // console.log('event.detail:', event.detail);
-    // console.log('event.detail.url:', event.detail.url);
-    // console.log('event.detail.data:', event.detail.data);
-    // console.log('this._lastNode (after):', this._lastNode);
-    // console.log('this._data (after):', this._data);
-    // console.log('this._url (after):', this._url);
-    // console.groupEnd();
+    console.log('event:', event);
+    console.log('event.target:', event.target);
+    console.log('event.detail:', event.detail);
+    console.log('event.detail.url:', event.detail.url);
+    console.log('event.detail.data:', event.detail.data);
+    console.log('this._lastNode (after):', this._lastNode);
+    console.log('this._data (after):', this._data);
+    console.log('this._url (after):', this._url);
+    console.groupEnd();
   }
 
   handlePopState(_event : PopStateEvent) : void {

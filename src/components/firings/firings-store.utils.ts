@@ -4,7 +4,8 @@ import type { CDataStoreClass, FActionHandler } from "../../types/store.d.ts";
 import type { ID, TDateRange } from "../../types/data-simple.d.ts";
 import { isCDataStoreClass } from "../../types/store.type-guards.ts";
 import { isIFiring, isTFiringsListItem } from "../../types/firing.type-guards.ts";
-import { isISO8601 } from "../../types/data.type-guards.ts";
+import { getKeyRange } from '../../store/idb-data-store.utils.ts';
+import { validateFiringData } from "./firing-data.utils.ts";
 
 export const getFiringsList : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
@@ -17,41 +18,35 @@ export const getFiringsList : FActionHandler = async (
     );
   }
 
-  const lower = isISO8601(start);
-  const upper = isISO8601(end);
+  const range = getKeyRange(start, end);
 
-  let range;
+  if (range !== null) {
+    const tx = db.transaction('firingsList', 'readonly');
+    const index = tx.store.index('actualStart');
+    let cursor = await index.openCursor(range);
+    const firingList : TFiringsListItem[] = [];
 
-  if (lower === true && upper === true) {
-    range = (start > end)
-      ? IDBKeyRange.bound(end, start)
-      : IDBKeyRange.bound(start, end);
-  } else if (lower === true) {
-    range = IDBKeyRange.lowerBound(start)
-  } else if (upper === true) {
-    range = IDBKeyRange.upperBound(end);
-  }
+    while (cursor) {
+      if (isTFiringsListItem(cursor)) {
+        firingList.push(cursor as TFiringsListItem);
+      }
 
-  const tx = db.transaction('firings', 'readonly');
-  const index = tx.store.index('actualStart');
-  let cursor = await index.openCursor(range);
-  const firingList : TFiringsListItem[] = [];
-
-  while (cursor) {
-    if (isTFiringsListItem(cursor)) {
-      firingList.push(cursor as TFiringsListItem);
+      cursor = await cursor.continue();
     }
 
-    cursor = await cursor.continue();
+    return firingList;
   }
 
-  return firingList;
+  return db.getAll('firingsList');
 };
 
 export const getFiringData : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
-  uid: ID,
+  { uid },
 )  : Promise<TGetFirningDataPayload|null> => {
+  console.group('FiringStoreUtils.getFiringData()');
+  console.log('uid:', uid);
+  console.log('db:', db);
   if (isCDataStoreClass(db)) {
     throw new Error(
       'addNewKilnData() expects first param `db` to be a '
@@ -59,12 +54,16 @@ export const getFiringData : FActionHandler = async (
     );
   }
 
+  console.info(`About to get data for firing "#${uid}"`);
   const firing = await db.get('firings', uid);
+  console.log('firing:', firing);
+  console.log('isIFiring(firing):', isIFiring(firing));
+  console.log('validateFiringData(firing):', validateFiringData(firing));
 
   if (isIFiring(firing)) {
     const tx = db.transaction('firingLogs', 'readonly');
     const index = tx.store.index('firingID');
-    const log = index.getAll(firing.id);
+    const log = index.getAll(uid);
     return {
       firing: Promise.resolve(firing),
       kiln: db.get('kilns', firing.kilnID),

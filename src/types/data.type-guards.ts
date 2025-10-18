@@ -28,6 +28,9 @@ export const isIkeyValue = (item : unknown) : item is IKeyValue => {
   return Object.keys(item as IKeyValue).every((key: unknown) => (typeof key === 'string'));
 };
 
+export const isStrNum = (input : unknown) : input is string | number => (
+  typeof input === 'string' || typeof input === 'number');
+
 export const isIKeyStr = (item : unknown) : item is IKeyStr => {
   if (isIkeyValue(item) === false) {
     return false;
@@ -68,8 +71,20 @@ export const isIKeyNum = (item : unknown) : item is IKeyNum => {
   return true;
 };
 
+// export const isIdObject = (item : unknown) : item is IIdObject => {
+//   console.group('isIdObject()');
+//   console.log('isObj(item):', Object.prototype.toString.call(item) === '[object Object]');
+//   console.log('typeof (item as IIdObject).id:', typeof (item as IIdObject).id);
+//   console.log('typeof (item as IIdObject).id === "string":', typeof (item as IIdObject).id === 'string');
+//   console.groupEnd();
+//   return (
+//     (Object.prototype.toString.call(item) !== '[object Object]')
+//     && typeof (item as IIdObject).id === 'string'
+//   );
+// };
+
 export const isIdObject = (item : unknown) : item is IIdObject => (
-  (Object.prototype.toString.call(item) !== '[object Object]')
+  (Object.prototype.toString.call(item) === '[object Object]')
   && typeof (item as IIdObject).id === 'string'
 );
 

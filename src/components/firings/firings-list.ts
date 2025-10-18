@@ -1,9 +1,8 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { IKiln } from '../../types/kilns.d.ts';
+import type { IKeyValue, ISO8601 } from '../../types/data-simple.d.ts';
+import type { TFiringsListItem } from "../../types/firings.d.ts";
 import { tableStyles } from '../programs/programs.css.ts';
-import { getValFromKey } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
@@ -42,7 +41,7 @@ export class FiringsList extends LoggerElement {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     @state()
-    _firingList : IKiln[] = [];
+    _firingList : TFiringsListItem[] = [];
 
     @state()
     _firingTypes : IKeyValue = {};
@@ -54,38 +53,14 @@ export class FiringsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnTypes(data : IKeyValue) : void {
-    // console.group('<kilns-list>._setKilnTypes()');
-    // console.log('data:', data);
-    this._firingTypes = data;
-    // console.groupEnd()
-  }
-
-  _setFuelSources(data : IKeyValue) : void {
-    // console.group('<kilns-list>._setFuelSources()');
-    // console.log('data:', data);
-    this._fuelSources = data;
-    // console.groupEnd()
-  }
-
-  _setKilnList(data : IKiln[]) : void {
-    console.group('<kilns-list>._setKilnList()');
-    console.log('data:', data);
-    console.log('this._firingList (after):', this._firingList);
-    console.log('this._ready (before):', this._ready);
-    this._firingList = [];
+  _setDataThen(data : TFiringsListItem[]) : void {
+    this._firingList = data;
     this._ready = true;
-
-    console.log('this._ready (before):', this._ready);
-    console.log('this._firingList (after):', this._firingList);
-    console.groupEnd();
   }
 
-  _setData(_ok : boolean) : void {
+  _setData() : void {
     if (this.store !== null) {
-      this.store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this)).catch(storeCatch);
-      this.store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this)).catch(storeCatch);
-      this.store.read('kilns').then(this._setKilnList.bind(this)).catch(storeCatch);
+      this.store.dispatch('getFiringsList', {}).then(this._setDataThen.bind(this)).catch(storeCatch);
     }
   }
 
@@ -97,7 +72,7 @@ export class FiringsList extends LoggerElement {
       if (this.store.ready === false) {
         this.store.watchReady(this._setData.bind(this));
       } else {
-        this._setData(true)
+        this._setData()
       }
     }
     console.groupEnd();
@@ -121,20 +96,34 @@ export class FiringsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper render methods
 
-  _renderTableRow(kilnData : IKeyValue) : TemplateResult {
-    console.group('<firings-list>._renderTableRow()');
-    console.log('kilnData:', kilnData);
-    console.groupEnd();
+  _renderDate(date : ISO8601 | null) : TemplateResult | string {
+    if (date === null) {
+      return '';
+    }
+
+    return html`<abbr title="${date}">${new Date(date).toLocaleDateString()}</abbr>`;
+  }
+
+  _renderTableRow(data : TFiringsListItem) : TemplateResult {
     return html`<tr>
       <th><router-link
-        data-uid="${kilnData.id}"
-        url="/kilns/${kilnData.urlPart}"
-        label="${kilnData.name}"></router-link></th>
-      <td>${getValFromKey(this._fuelSources, kilnData.fuel)}</td>
-      <td>${this._tConverter(kilnData.maxTemp)}&deg;${this._tUnit}</td>
-      <td>${this._lConverter(kilnData.height)}${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.depth)}${this._lUnit}</td>
-      <td>${this._lConverter(kilnData.width)}${this._lUnit}</td>
+        data-firing-id="${data.id}"
+        data-kiln-id="${data.kilnID}"
+        data-program-id="${data.programID}"
+        url="/firing/${data.id}">${this._renderDate(data.actualStart)}</router-link></th>
+      <!-- <td>${this._renderDate(data.actualEnd)}</td> -->
+      <td><router-link
+        data-uid="${data.programID}"
+        url="/kilns/${data.programURL}"
+        label="${data.programName}"></router-link></td>
+      <td><router-link
+        data-uid="${data.kilnID}"
+        url="/kilns/${data.kilnURL}"
+        label="${data.kilnName}"></router-link></td>
+      <td>${data.firingType}</td>
+      <td>${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</td>
+      <td>${data.cone}</td>
+      <td>${data.firingState}</td>
     </tr>`;
   }
 
@@ -143,23 +132,20 @@ export class FiringsList extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    console.group('<firings-list>.render()');
-    console.log('this._ready:', this._ready);
-    console.log('this._firingList:', this._firingList);
-    console.groupEnd();
-
     return html`<h2>Firings list</h2>
 
     ${(this._ready === true && this._firingList !== null)
       ? html`<table>
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Kiln</th>
+            <th>Start</th>
+            <!-- <th>End</th> -->
             <th>Program</th>
+            <th>Kiln</th>
+            <th>Type</th>
             <th>Top temp</th>
-            <!-- <th>Cone</th>
-            <th>Duration</th> -->
+            <th>Cone</th>
+            <!-- <th>Duration</th> -->
             <th>Status</th>
           </tr>
         </thead>

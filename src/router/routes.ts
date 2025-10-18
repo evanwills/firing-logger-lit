@@ -1,5 +1,5 @@
 import { html, type TemplateResult } from 'lit';
-import type { IRouteArgs } from '../types/router-types';
+import type { IRouteArgs } from '../types/router-types.d.ts';
 import '../components/programs/programs-list.ts';
 import '../components/programs/program-details.ts';
 import '../components/programs/program-details-edit.ts';
@@ -7,8 +7,8 @@ import '../components/kilns/kilns-list.ts';
 import '../components/kilns/kiln-details.ts';
 import '../components/kilns/kiln-details-edit.ts';
 import '../components/firings/firings-list.ts';
-// import '../components/firings/firing-view.ts';
-// import '../components/firings/firing-view-edit.ts';
+import '../components/firings/firing-details.ts';
+// import '../components/firings/firing-details-edit.ts';
 // import '../components/users/user-list.ts';
 import '../components/users/user-details.ts';
 import '../components/users/user-details-edit.ts';
@@ -45,21 +45,26 @@ export default [
 
   {
     route: '/firing/:firingID',
-    render: ({ firingID, _STORE } : IRouteArgs) : TemplateResult => html`<firing-view
+    render: ({ firingID, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details
       firing-uid="${firingID}"
-      .store=${_STORE}></firing-view>`,
+      kiln-uid="${_DATA.kilnId}"
+      program-uid="${_DATA.programId}"
+      .store=${_STORE}></firing-details>`,
   },
   {
     route: '/firing/:firingID/edit',
-    render: ({ firingID, _STORE } : IRouteArgs) : TemplateResult => html`<firing-view-edit
-      firing-uid="${firingID}"
-      .store=${_STORE}></firing-view-edit>`,
+    render: ({ firingId, kilnId, programId, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details-edit
+      firing-uid="${firingId}"
+      kiln-uid="${kilnId}"
+      program-uid="${programId}"
+      .store=${_STORE}></firing-details-edit>`,
   },
   {
     route: '/firing/new',
-    render: ({ firingID, _STORE } : IRouteArgs) : TemplateResult => html`<firing-view-edit
-      firing-uid="${firingID}"
-      .store=${_STORE}></firing-view-edit>`,
+    render: ({ kilnId, programId, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details-edit
+      kiln-uid="${kilnId}"
+      program-uid="${programId}"
+      .store=${_STORE}></firing-details-edit>`,
   },
   {
     route: '/firings',

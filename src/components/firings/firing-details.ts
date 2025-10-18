@@ -2,22 +2,23 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { ID } from '../../types/data-simple.d.ts';
 import type {
-  FiringLog,
+  // FiringLog,
   IFiringLogEntry,
   IResponsibleLogEntry,
   StateChangeLogEntry,
 } from '../../types/data.d.ts';
 import type { IProgram } from '../../types/programs.d.ts';
-import type { ITempLogEntry } from '../../types/firings.d.ts';
-import { isStateChangeLog, isRespLog, isTempLog } from '../../types/firing.type-guards.ts';
+import type { ITempLogEntry, TGetFirningDataPayload } from '../../types/firings.d.ts';
+// import { isStateChangeLog, isRespLog, isTempLog } from '../../types/firing.type-guards.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import { storeCatch } from "../../store/idb-data-store.utils.ts";
 
 /**
  * An example element.
  *
  */
-@customElement('firing-log-view')
-export class FiringLogView extends LoggerElement {
+@customElement('firing-details')
+export class FiringDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
@@ -31,6 +32,9 @@ export class FiringLogView extends LoggerElement {
 
   @property({ type: String, attribute: 'firing-uid' })
   firingID : ID = '';
+
+  @property({ type: String, attribute: 'kiln-uid' })
+  kilnID : ID = '';
 
   @property({ type: String, attribute: 'program-uid' })
   programID : ID = '';
@@ -70,37 +74,34 @@ export class FiringLogView extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
+  _setDataThen(data : TGetFirningDataPayload) : void {
+    console.group('<firing-details>._setDataThen()');
+    console.log('data:', data);
+
+    console.groupEnd();
+  }
+
+  _setData() : void {
+    console.group('<firing-details>._setData()');
+    if (this.store !== null) {
+      this.store.dispatch('getFiringData', { uid: this.firingID }).then((this._setDataThen.bind(this))).catch(storeCatch);
+    }
+    console.groupEnd();
+  }
+
   _getFromStore() : void {
     super._getFromStore();
+    console.group('<firing-details>._getFromStore()');
 
     if (this.store !== null) {
-      if (this.firingID !== '') {
-        this.store.read(`firings.#${this.firingID}`).then((firingResult : FiringLog | null ) => {
-          if (firingResult !== null) {
-            this._ready = true;
-
-            this.store?.read(`firingLogs.firingID=${this.firingID}`).then((logResult : IFiringLogEntry[]) => {
-              this._rawLog = logResult;
-              for (const item of logResult) {
-                if (isTempLog(item)) {
-                  this._log.push(item);
-                } else if (isRespLog(item)) {
-                  this._responsibleLog.push(item);
-                } else if (isStateChangeLog(item)) {
-                  this._changeLog.push(item);
-                }
-              }
-            });
-
-            this.store?.read(`programs.#${firingResult.programID}`).then((programResult : IProgram | null) => {
-              this._program = programResult;
-            })
-          }
-        });
+      if (this.store.ready === false) {
+        this.store.watchReady(this._setData.bind(this));
       } else {
-        this._edit = true;
+        this._setData();
       }
     }
+
+    console.groupEnd();
   }
 
   //  END:  helper methods
@@ -126,6 +127,11 @@ export class FiringLogView extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
+    console.group('<firing-details>.render()');
+    console.log('this.firingID:', this.firingID)
+    console.log('this.kilnID:', this.kilnID)
+    console.log('this.programID:', this.programID)
+    console.groupEnd();
     return html``;
   }
 
@@ -141,6 +147,6 @@ export class FiringLogView extends LoggerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'firing-log-view': FiringLogView,
+    'firing-details': FiringDetails,
   }
 };

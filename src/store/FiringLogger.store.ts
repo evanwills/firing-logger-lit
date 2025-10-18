@@ -222,7 +222,7 @@ const upgradeSchema : IDBPupgrade = (
     }
 
     if (!db.objectStoreNames.contains('firingsList')) {
-      const firingsList = db.createObjectStore('firingsListList', { keyPath: 'id' });
+      const firingsList = db.createObjectStore('firingsList', { keyPath: 'id' });
 
       firingsList.createIndex('programID', 'programID', { unique: false });
       firingsList.createIndex('programName', 'programName', { unique: false });
@@ -340,6 +340,9 @@ const migrateData : IDBPmigrate = async (
       // console.log('db.getAll("_meta"):', await db.getAll('_meta'));
 
       populateEmptySlice(db, data.firings, 'firings');
+      populateEmptySlice(db, data.firingsList, 'firingsList');
+      console.log('data.firingLogs:', data.firingLogs);
+      populateEmptySlice(db, data.firingLogs, 'firingLogs');
       populateEmptySlice(db, data.kilns, 'kilns');
       populateEmptySlice(db, data.programs, 'programs');
       populateEmptySlice(db, data.programsList, 'programsList');

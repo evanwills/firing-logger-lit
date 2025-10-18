@@ -10,6 +10,7 @@ import type {
 import type { FActionHandler } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
 import { isCDataStoreClass } from "../types/store.type-guards.ts";
+import { isStrNum } from "../types/data.type-guards.ts";
 
 type Fresolver = (value: unknown) => void;
 
@@ -481,3 +482,31 @@ export const fetchLatest : FActionHandler = async (db : IDBPDatabase | CDataStor
     );
   }
 };
+
+export const getKeyRange = (
+  start : string | number | unknown,
+  end : string | number | unknown,
+) : IDBKeyRange | null => {
+  const lower = isStrNum(start)
+    ? start
+    : null;
+  const upper = isStrNum(end)
+    ? end
+    : null;
+
+  if (lower !== null && upper !== null) {
+    return (lower > upper)
+      ? IDBKeyRange.bound(upper, lower)
+      : IDBKeyRange.bound(lower, upper);
+  }
+
+  if (upper !== null) {
+    return IDBKeyRange.upperBound(upper);
+  }
+
+  if (lower !== null) {
+    return IDBKeyRange.lowerBound(lower)
+  }
+
+  return null;
+}
