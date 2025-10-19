@@ -1,11 +1,13 @@
+import { html, type TemplateResult } from 'lit';
 import type { IFiringStep, IProgram } from '../../types/programs.d.ts';
 import type { CDataStoreClass } from '../../types/store.d.ts';
-import type { ID } from '../../types/data-simple.d.ts';
+import type { FConverter, ID } from '../../types/data-simple.d.ts';
 import { isID, isISO8601, isTCone } from '../../types/data.type-guards.ts';
 import { isNumMinMax, isObj } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
-import { isTFiringType } from "../../types/program.type-guards.ts";
+import { isTFiringType } from '../../types/program.type-guards.ts';
+import { durationFromStep } from '../../utils/conversions.utils.ts';
 
 export const getProgramTypeOptions = () : string[] => {
   return [
@@ -32,7 +34,7 @@ export const getProgramTypeOptions = () : string[] => {
  */
 const getProgramError = (
   prop: string,
-  value: any,
+  value: unknown,
   type: string = 'value',
   obj : string = 'program',
 ) : string | null => {
@@ -226,4 +228,43 @@ export const redirectProgram = (
       );
     }
   });
+};
+
+export const renderFiringSteps = (
+  steps : IFiringStep[],
+  converter : FConverter,
+  unit : string,
+) : TemplateResult => {
+    return html`<table>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>
+            End Temp<br />
+            <span class="unit">(°${unit})
+            </span>
+          </th>
+          <th>
+            Rate<br />
+            <span class="unit">(°${unit}/hr)</span>
+          </th>
+          <th>
+            Hold<br />
+            <span class="unit">(min)</span>
+          </th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${steps.map((step, i) => html`
+          <tr>
+            <th>${step.order}</th>
+            <td>${converter(step.endTemp)}</td>
+            <td>${step.rate}</td>
+            <td>${step.hold}</td>
+            <td>${durationFromStep(steps, i)}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>`;
 };

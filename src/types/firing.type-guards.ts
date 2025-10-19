@@ -34,7 +34,7 @@ export const isFiringLogEntry = (item: unknown) : item is IFiringLogEntry => (
   && isID((item as IFiringLogEntry).firingID) === true
   && isID((item as IFiringLogEntry).userID) === true
   && isISO8601((item as IFiringLogEntry).time) === true
-  && isTFiringLogEntryType(item as IFiringLogEntry)
+  && isTFiringLogEntryType((item as IFiringLogEntry).type)
   && (typeof (item as IFiringLogEntry).notes === 'string'
   || (item as IFiringLogEntry).notes === null)
 );

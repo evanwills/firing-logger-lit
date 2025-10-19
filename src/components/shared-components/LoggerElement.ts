@@ -1,6 +1,6 @@
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../../types/data-simple.d.ts';
+import type { FConverter, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TUser } from '../../types/users.d.ts';
 import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
@@ -91,7 +91,7 @@ export class LoggerElement extends LitElement {
    * @var _tConverter
    */
   @state()
-  _tConverter : (T : number) => number = x2x;
+  _tConverter : FConverter = x2x;
 
   /**
    * Convert temperature from Fahrenheit to Celcius
@@ -100,7 +100,7 @@ export class LoggerElement extends LitElement {
    * @var _tConverter
    */
   @state()
-  _tConverterRev : (T : number) => number = x2x;
+  _tConverterRev : FConverter = x2x;
 
   /**
    * Convert length from Millimetres to Inches
@@ -109,7 +109,7 @@ export class LoggerElement extends LitElement {
    * @var _lConverter
    */
   @state()
-  _lConverter : (T : number) => number = x2x;
+  _lConverter : FConverter = x2x;
 
   /**
    * Convert length from Inches to Millimetres
@@ -118,7 +118,7 @@ export class LoggerElement extends LitElement {
    * @var _lConverter
    */
   @state()
-  _lConverterRev : (T : number) => number = x2x;
+  _lConverterRev : FConverter = x2x;
 
   /**
    * Convert temperature from Celcius to Fahrenheit
@@ -127,7 +127,7 @@ export class LoggerElement extends LitElement {
    * @var _tConverter
    */
   @state()
-  _vConverter : (T : number) => number = x2x;
+  _vConverter : FConverter = x2x;
 
   /**
    * Convert temperature from Fahrenheit to Celcius
@@ -136,7 +136,7 @@ export class LoggerElement extends LitElement {
    * @var _tConverter
    */
   @state()
-  _vConverterRev : (T : number) => number = x2x;
+  _vConverterRev : FConverter = x2x;
 
   /**
    * @var _tUnit Temperature unit indicator to match user's preference

@@ -69,7 +69,7 @@ export interface IKeyValUrl implements IKeyValue {
   value: string,
 }
 
-export type TOrderedEnum = {
+export interface IOrderedEnum implements IKeyScalar {
   order: number,
   value: string,
   label: string,
@@ -84,3 +84,5 @@ export type TDateRange = {
   start?: ISO8601,
   end?: ISO8601,
 }
+
+export type FConverter = (number) => number;

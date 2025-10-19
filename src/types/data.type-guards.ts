@@ -9,7 +9,7 @@ import type {
   ILinkObject,
   ISO8601,
   TCone,
-  TOrderedEnum,
+  IOrderedEnum,
 } from "./data-simple.d.ts";
 
 export const isID = (id : unknown) : id is string => (typeof id === 'string' && id.length === 10);
@@ -97,14 +97,14 @@ export const isILinkObject = (item : unknown) : item is ILinkObject => (
   && typeof (item as ILinkObject).urlPart === 'string'
 );
 
-export const isTOrderedEnum = (item : unknown) : item is TOrderedEnum => (
+export const isIOrderedEnum = (item : unknown) : item is IOrderedEnum => (
   (Object.prototype.toString.call(item) === '[object Object]')
-  && typeof (item as TOrderedEnum).order === 'number'
-  && typeof (item as TOrderedEnum).label === 'string'
-  && typeof (item as TOrderedEnum).value === 'string'
+  && typeof (item as IOrderedEnum).order === 'number'
+  && typeof (item as IOrderedEnum).label === 'string'
+  && typeof (item as IOrderedEnum).value === 'string'
 );
 
-export const isTOrderedEnumList = (item : unknown) : item is TOrderedEnum[] => (
+export const isIOrderedEnumList = (item : unknown) : item is IOrderedEnum[] => (
   Array.isArray(item)
-  && item.every(isTOrderedEnum)
+  && item.every(isIOrderedEnum)
 );

@@ -1,4 +1,4 @@
-import type { IKeyStr, IKeyValue } from '../types/data-simple.d.ts';
+import type { IKeyStr, IKeyValue, IOrderedEnum } from '../types/data-simple.d.ts';
 import { isNonEmptyStr } from "./string.utils.ts";
 
 /**
@@ -13,7 +13,7 @@ import { isNonEmptyStr } from "./string.utils.ts";
 
 export const arrayRemoveValue = <t>(
   arr : Array<t>,
-  value : any
+  value : unknown
 ) : Array<t> => arr.filter((el) => el !== value);
 
 /**
@@ -293,6 +293,11 @@ export const calculateExpectedTemp = (
 export const deepClone = <T>(input : T) : T => JSON.parse(JSON.stringify(input));
 
 export const getValFromKey = (obj : IKeyValue, key : string) => {
+  console.group('getValFromKey()');
+  console.log('obj:', obj);
+  console.log('key:', key);
+  console.log(`obj[${key}]`, obj[key]);
+  console.groupEnd();
   return (typeof obj[key] === 'string')
     ? obj[key]
     : '';
@@ -304,3 +309,13 @@ export const isValidEnumValue = (
   options: string[],
 ) : boolean => (isNonEmptyStr(input, key) === true
   && options.includes((input as IKeyStr)[key]) === true);
+
+
+export const orderedEnum2enum = (input : IOrderedEnum[]) : IKeyStr => {
+  const output : IKeyStr = {};
+  for (const { value, label } of input) {
+    output[value] = label;
+  }
+
+  return output;
+};

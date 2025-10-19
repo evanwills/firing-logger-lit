@@ -24,6 +24,8 @@ export const keyValueStyle = css`
 export const tableStyles = css`
 table {
   --rl-font-weight: normal;
+  --table-body-th-align: center;
+  --table-body-td-align: center;
   border-collapse: collapse;
   margin: 1rem auto;
 }
@@ -50,7 +52,10 @@ thead th, thead td {
   vertical-align: bottom;
 }
 tbody th {
-  text-align: left;
+  text-align: var(--table-body-th-align);
+}
+tbody td {
+  text-align: var(--table-body-td-align);
 }
 tbody th.flex {
   box-sizing: border-box;

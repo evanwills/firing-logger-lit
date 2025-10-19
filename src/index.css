@@ -106,6 +106,8 @@
   --subtitle-feature-font-size: 2rem;
   --table-border-colour: var(--border-colour, #aaa);
   --table-cell-padding: 0.25em 0.5em;
+  --table-body-th-align: left;
+  --table-body-td-align: left;
   --textarea-height: 3.5rem;
   --textarea-height-trans-time: 0.25s;
   --title-font: 'Harlow Solid', cursive;

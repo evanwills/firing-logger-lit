@@ -2,12 +2,16 @@ import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { ID, IKeyStr, IKeyValUrl } from '../../types/data-simple.d.ts';
 // import type { TSvgPathItem } from '../../types/data.d.ts';
-import type { EfiringType, IKiln, TKilnDetailsForProgram} from '../../types/kilns.d.ts';
+import type {
+  // EfiringType,
+  IKiln,
+  TKilnDetailsForProgram,
+} from '../../types/kilns.d.ts';
 import type { IFiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
-  durationFromStep,
+  // durationFromStep,
   hoursFromSeconds,
   // durationFromSteps,
   // maxTempFromSteps,
@@ -20,12 +24,14 @@ import {
 import { isIKeyStr } from '../../types/data.type-guards.ts';
 import { isKiln } from '../../types/kiln.type-guards.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
-import { detailsStyle } from "../../assets/css/details.css.ts";
+import { renderFiringSteps } from './program.utils.ts';
+import { detailsStyle } from '../../assets/css/details.css.ts';
 import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
-import { validateKilnData } from "../kilns/kiln-data.utils.ts";
+import '../shared-components/loading-spinner.ts';
+// import { validateKilnData } from '../kilns/kiln-data.utils.ts';
 
 /**
  * An example element.
@@ -334,38 +340,10 @@ export class ProgramDetails extends LoggerElement {
   }
 
   renderSteps() : TemplateResult {
-    return html`<table>
-      <thead>
-        <tr>
-          <th>Step</th>
-          <th>
-            End Temp<br />
-            <span class="unit">(°${this._tUnit})
-            </span>
-          </th>
-          <th>
-            Rate<br />
-            <span class="unit">(°${this._tUnit}/hr)</span>
-          </th>
-          <th>
-            Hold<br />
-            <span class="unit">(min)</span>
-          </th>
-          <th>Duration</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${this._steps.map((step, i) => html`
-          <tr>
-            <th>${step.order}</th>
-            <td>${this._tConverter(step.endTemp)}</td>
-            <td>${step.rate}</td>
-            <td>${step.hold}</td>
-            <td>${durationFromStep(this._steps, i)}</td>
-          </tr>
-        `)}
-      </tbody>
-    </table>`;
+    return html`<program-steps-table
+      .steps=${this._steps}
+      .converter=${this._tConverter}
+      unit="${this._tUnit}"></program-steps-table>`;
   }
 
   renderButtonInner() : TemplateResult {

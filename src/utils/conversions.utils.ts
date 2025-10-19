@@ -1,5 +1,6 @@
+import type { FConverter } from "../types/data-simple.d.ts";
 import type { TSvgPathItem } from '../types/data.d.ts';
-import type { IFiringStep } from '../types/programs';
+import type { IFiringStep } from '../types/programs.d.ts';
 import { round } from './numeric.utils.ts';
 
 /**
@@ -9,7 +10,7 @@ import { round } from './numeric.utils.ts';
  *
  * @returns degrees in celsius
  */
-export const f2c = (input : number) : number => round(((input - 32) / 1.8), 1);
+export const f2c : FConverter = (input : number) : number => round(((input - 32) / 1.8), 1);
 
 /**
  * Convert degrees in celsius to degrees fahrenheit
@@ -18,7 +19,7 @@ export const f2c = (input : number) : number => round(((input - 32) / 1.8), 1);
  *
  * @returns degrees in fahrenheit
  */
-export const c2f = (input : number) : number => round(((input * 1.8) + 32), 1);
+export const c2f : FConverter  = (input : number) : number => round(((input * 1.8) + 32), 1);
 
 /**
  * Convert length in millimetres to length in inches
@@ -27,7 +28,7 @@ export const c2f = (input : number) : number => round(((input * 1.8) + 32), 1);
  *
  * @returns length in inches
  */
-export const m2i = (input : number) : number => round((input / 25.4), 2);
+export const m2i : FConverter  = (input : number) : number => round((input / 25.4), 2);
 
 /**
  * Convert length in inches to length in millimetres
@@ -36,7 +37,7 @@ export const m2i = (input : number) : number => round((input / 25.4), 2);
  *
  * @returns length in millimetres
  */
-export const i2m = (input : number) : number => round((input * 25.4));
+export const i2m : FConverter  = (input : number) : number => round((input * 25.4));
 
 /**
  * x2x() is a dummy function used when no conversion is required but
@@ -45,7 +46,7 @@ export const i2m = (input : number) : number => round((input * 25.4));
  * @param input input number
  * @returns unchanged input number
  */
-export const x2x = (input : number) : number => input;
+export const x2x : FConverter  = (input : number) : number => input;
 
 export const getMax = (input : TSvgPathItem[], key : string, max: number = 0) : number => {
   const getter = (key === 'temp')

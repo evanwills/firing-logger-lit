@@ -5,7 +5,7 @@ import type {
   IKeyStr,
   IKeyValPair,
   IKeyValue,
-  TOrderedEnum,
+  IOrderedEnum,
 } from '../types/data-simple.d.ts';
 import type { FActionHandler } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
@@ -160,7 +160,7 @@ export const populateEmptyKVslice = async(
  */
 export const populateEnumSlice = (
   db : IDBPDatabase,
-  oEnum : TOrderedEnum[],
+  oEnum : IOrderedEnum[],
   slice : string,
   put : boolean = false,
 ) : Promise<(void | IDBValidKey)[]> => {
@@ -193,18 +193,18 @@ export const populateEnumSlice = (
  */
 export const populateEmptyEnumSlice = async(
   db : IDBPDatabase,
-  oEnum : TOrderedEnum[],
+  oEnum : IOrderedEnum[],
   slice : string,
   action : '' | 'update' | 'replace' = '',
 ) => {
-  const inDB : TOrderedEnum[] = await db.getAll(slice);
-  let newEnum : TOrderedEnum[] = [];
+  const inDB : IOrderedEnum[] = await db.getAll(slice);
+  let newEnum : IOrderedEnum[] = [];
 
   if (inDB.length === 0 || action === 'replace') {
     newEnum = oEnum;
     db.clear(slice)
   } else if (action === 'update' || oEnum.length !== inDB.length) {
-    const existing : string[] = inDB.map((item : TOrderedEnum) : string => item.value);
+    const existing : string[] = inDB.map((item : IOrderedEnum) : string => item.value);
     for (const entry of oEnum) {
       if (existing.includes(entry.value) === false) {
         newEnum.push(entry)
@@ -220,10 +220,10 @@ export const populateEmptyEnumSlice = async(
     : Promise.resolve([]);
 };
 
-const asObjKV = (data : TOrderedEnum[]) : IKeyValue => {
+const asObjKV = (data : IOrderedEnum[]) : IKeyValue => {
   const output : IKeyValue = {};
 
-  data.sort((a : TOrderedEnum, b : TOrderedEnum) : -1 | 0 |1 => {
+  data.sort((a : IOrderedEnum, b : IOrderedEnum) : -1 | 0 |1 => {
     if (a.order < b.order) {
       return -1;
     } else if (a.order > b.order) {

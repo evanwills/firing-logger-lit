@@ -1,7 +1,9 @@
+import type { TSvgPathItem } from "../../types/data.d.ts";
 import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
-import { isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
-import type { IFiring } from "../../types/firings.d.ts";
+import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
+import type { IFiring, IFiringLogEntry, ITempLogEntry } from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
+import { isObj } from "../../utils/data.utils.ts";
 
 /**
  * Generates a standard error message for invalid program (or program
@@ -15,12 +17,13 @@ import { isTFiringType } from "../../types/program.type-guards.ts";
  */
 const getFiringError = (
   prop: string,
-  value: any,
+  value: unknown,
   type: string = 'value',
+  objType: string = 'firing',
 ) : string | null => {
   console.log(`firing.${prop}:`, value);
 
-  return `firing data is invalid! It does not have a valid `
+  return `${objType} data is invalid! It does not have a valid `
   + `\`${prop}\` ${type}.`;
 }
 
@@ -100,3 +103,63 @@ export const validateFiringData = (item: unknown) : string | null => {
 
   return null;
 };
+
+export const validateFiringLogEntry = (item: unknown) : string | null => {
+  if (isObj(item) === false) {
+    console.log('item:', item);
+    console.log('isFiringLogEntry(item):', isFiringLogEntry(item));
+    return 'firing temp log data is not a firing log entry object';
+  }
+
+  if (isID((item as IFiringLogEntry).id) === false) {
+    return getFiringError('id', (item as IFiringLogEntry).id, 'string', 'IFiringLogEntry');
+  }
+  if (isID((item as IFiringLogEntry).firingID) === false) {
+    return getFiringError('firingID', (item as IFiringLogEntry).firingID, 'string', 'IFiringLogEntry');
+  }
+  if (isID((item as IFiringLogEntry).userID) === false) {
+    return getFiringError('userID', (item as IFiringLogEntry).userID, 'string', 'IFiringLogEntry');
+  }
+  if (isISO8601((item as IFiringLogEntry).time) === false) {
+    return getFiringError('time', (item as IFiringLogEntry).time, 'string', 'IFiringLogEntry');
+  }
+  if (isTFiringLogEntryType((item as IFiringLogEntry).type) === false) {
+    return getFiringError('type', (item as IFiringLogEntry).type, 'string', 'IFiringLogEntry');
+  }
+  if (typeof (item as IFiringLogEntry).notes !== 'string' &&  (item as IFiringLogEntry).notes !== null) {
+    return getFiringError('notes', (item as IFiringLogEntry).notes, 'string or null', 'IFiringLogEntry');
+  }
+
+  return null;
+};
+
+export const validateTempLogEntry = (item: unknown) : string | null => {
+  const tmp = validateFiringLogEntry(item);
+
+  if (tmp !== null) {
+    return tmp;
+  }
+  if ((item as ITempLogEntry).type !== 'temp') {
+    return getFiringError('type', (item as ITempLogEntry).type, 'string', 'ITempLogEntry');
+  }
+  if (typeof (item as ITempLogEntry).timeOffset !== 'number') {
+    return getFiringError('timeOffset', (item as ITempLogEntry).timeOffset, 'number', 'ITempLogEntry');
+  }
+  if (typeof (item as ITempLogEntry).tempExpected !== 'number') {
+    return getFiringError('tempExpected', (item as ITempLogEntry).tempExpected, 'number', 'ITempLogEntry');
+  }
+  if (typeof (item as ITempLogEntry).tempActual !== 'number') {
+    return getFiringError('tempActual', (item as ITempLogEntry).tempActual, 'number', 'ITempLogEntry');
+  }
+  if (typeof (item as ITempLogEntry).state !== 'string') {
+    return getFiringError('state', (item as ITempLogEntry).state, 'string', 'ITempLogEntry');
+  }
+
+  return null;
+}
+
+export const tempLog2SvgPathItem = (item : ITempLogEntry) : TSvgPathItem => ({
+  timeOffset: item.timeOffset,
+  actualTime: item.time,
+  temp: item.tempActual,
+});

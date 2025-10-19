@@ -42,6 +42,13 @@ export class FiringPlot extends LitElement {
   @property({ type: Boolean, attribute: 'open' })
   open : boolean = false;
 
+  /**
+   * @property Whether or not the details wrapper should be open by
+   *           default
+   */
+  @property({ type: Boolean, attribute: 'no-wrap' })
+  noWrap : boolean = false;
+
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
@@ -171,11 +178,7 @@ export class FiringPlot extends LitElement {
     return output.map((item) => svg`<tspan x="${item.offset}" y="${this._gridY - 40}">${item.value}</tspan>`);
   }
 
-  //  END:  helper render methods
-  // ------------------------------------------------------
-  // START: main render method
-
-  render() {
+  renderSVG() : SVGTemplateResult {
     const primary : TSvgPathItem[] = (this.primaryIsProgram)
       ? plotPointsFromSteps(this.primary as IFiringStep[])
       : this.primary as TSvgPathItem[];
@@ -193,35 +196,48 @@ export class FiringPlot extends LitElement {
     const hLines = this.getLines(this._maxTemp + this._xOffset - 100);
     const vLines = this.getLines((this._maxTime + 250), 250);
 
+    return svg`
+      <svg width="100%" height="100%" viewBox="${vb}">
+        <rect
+          x="${this._xOffset}"
+          y="0"
+          width="${this._gridX - this._xOffset}"
+          height="${this._gridY -this._yOffset}" />
+        <g id="grid">
+          <g id="horizontal-lines">
+            ${hLines.map(this.hGrid.bind(this))}
+          </g>
+          <g id="vertical-lines">
+            ${vLines.map(this.vGrid.bind(this))}
+          </g>
+        </g>
+
+        <g id="units">
+          <text id="degrees" class="units">${this.getTempSteps()}</text>
+          <text id="hours" class="units">${this.getTimeSteps()}</text>
+        </g>
+
+        ${(secondary.length > 0)
+          ? svg`<path class="secondary" d="${this.getPathD(secondary)}" />`
+          : ''}
+        <path class="primary" d="${this.getPathD(primary)}" />
+      </svg>`
+
+  }
+
+  //  END:  helper render methods
+  // ------------------------------------------------------
+  // START: main render method
+
+  render() {
+    if (this.noWrap === true) {
+      return this.renderSVG();
+    }
+
     return html`
     <details ?open=${this.open}>
       <summary>View firing graph</summary>
-      ${svg`
-        <svg width="100%" height="100%" viewBox="${vb}">
-          <rect
-            x="${this._xOffset}"
-            y="0"
-            width="${this._gridX - this._xOffset}"
-            height="${this._gridY -this._yOffset}" />
-          <g id="grid">
-            <g id="horizontal-lines">
-              ${hLines.map(this.hGrid.bind(this))}
-            </g>
-            <g id="vertical-lines">
-              ${vLines.map(this.vGrid.bind(this))}
-            </g>
-          </g>
-
-          <g id="units">
-            <text id="degrees" class="units">${this.getTempSteps()}</text>
-            <text id="hours" class="units">${this.getTimeSteps()}</text>
-          </g>
-
-          ${(secondary.length > 0)
-            ? svg`<path class="secondary" d="${this.getPathD(secondary)}" />`
-            : ''}
-          <path class="primary" d="${this.getPathD(primary)}" />
-        </svg>`}
+        ${this.renderSVG()}
       </details>
     `;
   }

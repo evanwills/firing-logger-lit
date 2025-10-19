@@ -6,6 +6,7 @@ import type {
   // IIdObject,
   ISO8601,
   TCone,
+  IOrderedEnum,
 } from './data-simple.d.ts';
 import type { IKiln } from "./kilns.d.ts";
 import type { IProgram, TFiringType } from "./programs.d.ts";
@@ -61,6 +62,7 @@ export interface IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
+  timeOffset: number | null,
   userID: ID,
   type: TFiringLogEntryType,
   notes: string|null,
@@ -75,7 +77,7 @@ export interface ITempLogEntry extends IFiringLogEntry {
   timeOffset: number,
   tempExpected: number,
   tempActual: number,
-  state: EtemperatureState,
+  state: TTemperatureState,
   notes: string|null,
 };
 
@@ -83,6 +85,7 @@ export interface IStateLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
+  timeOffset: number | null,
   userID: ID,
   type: 'firingState',
   newState: string,
@@ -93,8 +96,9 @@ export interface IStateLogEntry extends IFiringLogEntry {
 export interface IDamperLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  userID: ID,
   time: ISO8601,
+  timeOffset: number,
+  userID: ID,
   type: 'damper',
   damperAdjustment: number,
   notes: string|null,
@@ -103,8 +107,9 @@ export interface IDamperLogEntry extends IFiringLogEntry {
 export interface IBurnerState  extends IFiringLogEntry {
   id: ID,
   firingID: ID,
-  userID: ID,
   time: ISO8601,
+  timeOffset: number,
+  userID: ID,
   type: 'burner',
   burnerID: ID,
   burnerPosition: string,
@@ -118,6 +123,7 @@ export interface IGasLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
   time: ISO8601,
+  timeOffset: number,
   userID: ID,
   type: 'gas',
   /**
@@ -140,6 +146,7 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
   firingID: ID,
   userID: ID,
   time: ISO8601,
+  timeOffset: number | null,
   type: 'responsible',
   isStart: boolean,
   responsibilityType: EResponsibilityType,
@@ -203,4 +210,7 @@ export type TGetFirningDataPayload = {
   kiln: Promise<IKiln>,
   log: Promise<IFiringLogEntry[]>,
   program: Promise<IProgram>,
+  firingStates: Promise<IOrderedEnum[]>,
+  firingTypes: Promise<IOrderedEnum[]>,
+  temperatureStates: Promise<IOrderedEnum[]>,
 };
