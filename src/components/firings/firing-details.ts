@@ -9,28 +9,29 @@ IFiring,
   IStateLogEntry,
   ITempLogEntry,
   TGetFirningDataPayload,
-
 } from '../../types/firings.d.ts';
 import type { IKiln } from "../../types/kilns.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
+import type { TSvgPathItem } from "../../types/data.d.ts";
 import { isRespLog, isStateChangeLog, isTempLog } from '../../types/firing.type-guards.ts'
 import { isISO8601 } from "../../types/data.type-guards.ts";
 // import { isStateChangeLog, isRespLog, isTempLog } from '../../types/firing.type-guards.ts';
 import { storeCatch } from "../../store/idb-data-store.utils.ts";
 import { enumToOptions } from "../../utils/lit.utils.ts";
 import { getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
+import { tempLog2SvgPathItem } from "./firing-data.utils.ts";
+import { hoursFromSeconds } from "../../utils/conversions.utils.ts";
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
+import { detailsStyle } from "../../assets/css/details.css.ts";
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../shared-components/loading-spinner.ts';
 // import { renderFiringSteps } from "../programs/program.utils.ts";
 import '../programs/program-steps-table.ts';
 import '../input-fields/read-only-field.ts';
 import '../input-fields/accessible-select-field.ts';
+import '../input-fields/accessible-temporal-field.ts';
 import '../shared-components/firing-plot.ts';
-import { tempLog2SvgPathItem } from "./firing-data.utils.ts";
-import type { TSvgPathItem } from "../../types/data.d.ts";
-import { hoursFromSeconds } from "../../utils/conversions.utils.ts";
-import { isNonEmptyStr } from "../../utils/string.utils.ts";
-import { detailsStyle } from "../../assets/css/details.css.ts";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
  * An example element.
@@ -413,59 +414,39 @@ export class FiringDetails extends LoggerElement {
     return '';
   }
 
-  //  END:  helper render methods
-  // ------------------------------------------------------
-  // START: main render method
+  _renderExpectedStart() : TemplateResult {
+    if (this._userCan('fire') && ['scheduled', 'packing', 'ready'].includes(this.mode)) {
+      const min = (this._userHasAuth(2))
+        ? undefined
+        : new Date().toISOString();
+      const max = new Date(Date.now() + 86400000 * 90).toISOString();
 
-  render() : TemplateResult {
-    // console.group('<firing-details>.render()');
-    // console.log('this.firingID:', this.firingID);
-    // console.log('this.kilnID:', this.kilnID);
-    // console.log('this.programID:', this.programID);
-    // console.log('this._firing:', this._firing);
-    // console.log('this._kiln:', this._kiln);
-    // console.log('this._program:', this._program);
-    // console.log('this._rawLog:', this._rawLog);
-    // console.log('this._firingTypes:', this._firingTypes);
-    // console.log('this._firingType:', this._firingType);
-    // console.log('this._firingStates:', this._firingStates);
-    // console.log('this._currentState:', this._currentState);
-    // console.log('this._firingStateOptions:', this._firingStateOptions);
-    if (this._ready === false) {
-      return html`<loading-spinner label="Firing details"></loading-spinner>`;
+      return html`<li><accessible-temporal-field
+        id="scheduledStart"
+        min=${ifDefined(min)}
+        max="${max}"
+        type="datetime-loca"
+        value="${ifDefined(this._firing?.scheduledStart)}"></accessible-temporal-field></li>`;
     }
 
-    const can : boolean = this._userCan('log');
+    const value = (isISO8601(this._firing?.scheduledStart))
+      ? new Date(this._firing?.scheduledStart).toLocaleString()
+      : '[To be advised]';
 
-    let start : string = 'New';
-    let details = true;
-    let graph = false;
+    return html`<li><read-only-field
+              label="Expected start"
+              value="${value}"></read-only-field></li>`;
+  }
 
-    if (this._firing !== null) {
-      if (this._firing.actualStart !== null) {
-        details = false;
-        graph = true;
-        start = new Date(this._firing.actualStart).toLocaleDateString();
-      } else if (this._firing.scheduledStart !== null) {
-        start = new Date(this._firing.scheduledStart).toLocaleDateString();
-      }
-    }
-
-    // console.log('can:', can);
-    // console.log('start:', start);
-    // console.log('this._svgSteps:', this._svgSteps);
-    // console.log('this._programSteps:', this._programSteps);
-
-    // console.groupEnd();
+  _renderFiringDetails() : TemplateResult {
     return html`
-      <h1>${this._program?.name} - ${start}</h1>
-      <details name="details" ?open=${details}>
+      <details name="details" ?open=${this.mode === 'new'}>
         <summary>Firing details</summary>
 
         <ul class="firing-details">
           <li><read-only-field label="Firing type" value="${this._firingType}"></read-only-field></li>
           <li><read-only-field label="Firing state" value="${this._currentState}"></read-only-field></li>
-          ${(can === true && this._firingStateOptions.length > 0)
+          ${(this._userCan('log') === true && this._firingStateOptions.length > 0)
             ? html`<li><accessible-select-field label="Update firing state" .options=${this._firingStateOptions}></accessible-select-field></li>`
             : ''
           }
@@ -475,12 +456,7 @@ export class FiringDetails extends LoggerElement {
             : ''
           }
           ${this._renderTopTemp()}
-          ${(isISO8601(this._firing?.scheduledStart))
-            ? html`<li><read-only-field
-                label="Expected start"
-                value="${new Date(this._firing?.scheduledStart).toLocaleString()}"></read-only-field></li>`
-            : ''
-          }
+          ${this._renderExpectedStart()}
           ${(isISO8601(this._firing?.actualStart))
             ? html`<li><read-only-field
                 label="Actual start"
@@ -513,7 +489,53 @@ export class FiringDetails extends LoggerElement {
           }
 
         </ul>
-      </details>
+      </details>`
+
+  }
+
+  //  END:  helper render methods
+  // ------------------------------------------------------
+  // START: main render method
+
+  render() : TemplateResult {
+    // console.group('<firing-details>.render()');
+    // console.log('this.firingID:', this.firingID);
+    // console.log('this.kilnID:', this.kilnID);
+    // console.log('this.programID:', this.programID);
+    // console.log('this._firing:', this._firing);
+    // console.log('this._kiln:', this._kiln);
+    // console.log('this._program:', this._program);
+    // console.log('this._rawLog:', this._rawLog);
+    // console.log('this._firingTypes:', this._firingTypes);
+    // console.log('this._firingType:', this._firingType);
+    // console.log('this._firingStates:', this._firingStates);
+    // console.log('this._currentState:', this._currentState);
+    // console.log('this._firingStateOptions:', this._firingStateOptions);
+    if (this._ready === false) {
+      return html`<loading-spinner label="Firing details"></loading-spinner>`;
+    }
+
+    let start : string = 'New';
+    let graph = false;
+
+    if (this._firing !== null) {
+      if (this._firing.actualStart !== null) {
+        graph = true;
+        start = new Date(this._firing.actualStart).toLocaleDateString();
+      } else if (this._firing.scheduledStart !== null) {
+        start = new Date(this._firing.scheduledStart).toLocaleDateString();
+      }
+    }
+
+    // console.log('can:', can);
+    // console.log('start:', start);
+    // console.log('this._svgSteps:', this._svgSteps);
+    // console.log('this._programSteps:', this._programSteps);
+
+    // console.groupEnd();
+    return html`
+      <h1>${this._program?.name} - ${start}</h1>
+      ${this._renderFiringDetails()}
       <details name="details">
         <summary>Program steps</summary>
         <program-steps-table
