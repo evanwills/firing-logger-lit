@@ -1,9 +1,9 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../../types/data-simple.d.ts';
+import type { IKeyScalar, IKeyValue } from '../../types/data-simple.d.ts';
 import type { IRouteArgs, TParsedRoute } from '../../types/router-types.d.ts';
 import type { FWrapOutput } from '../../types/renderTypes.d.ts';
-import { parseRoutes, splitURL } from './lit-router.utils.ts';
+import { getRouteSearch, parseRoutes, splitURL } from './lit-router.utils.ts';
 import routes from '../../router/routes.ts';
 
 const wrapOutput : FWrapOutput = (input : TemplateResult | string) => (typeof input === 'string')
@@ -19,6 +19,12 @@ export class LitRouter extends LitElement {
 
   @property({ type: String, attribute: 'initial-route'})
   initialRoute : string = '';
+
+  @property({ type: String, attribute: 'initial-search'})
+  initialSearch : string = '';
+
+  @property({ type: String, attribute: 'initial-hash'})
+  initialHash : string = '';
 
   @property({ type: Function, attribute: 'wrapperFunc'})
   wrapperFunc : FWrapOutput | null = null;
@@ -40,7 +46,10 @@ export class LitRouter extends LitElement {
   _url : string = '';
 
   @state()
-  _search : IKeyValue = {};
+  _hash : string = '';
+
+  @state()
+  _search : IKeyScalar | null = null;
 
   @state()
   _navHistory : IKeyValue = [];
@@ -88,6 +97,12 @@ export class LitRouter extends LitElement {
   // ------------------------------------------------------
   // START: helper methods
 
+  _clearInitial() : void {
+    // Reset initial search and hash values
+    this._search = null;
+    this._hash = '';
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -102,6 +117,8 @@ export class LitRouter extends LitElement {
     event.preventDefault();
 
     globalThis.history.pushState({ ...event.detail.data }, '', event.detail.url);
+
+    this._clearInitial();
 
     // console.group('<lit-router>.handleRouteRewrite()');
     // console.log('event:', event);
@@ -120,25 +137,27 @@ export class LitRouter extends LitElement {
   handleRouteLink(event: CustomEvent) : void {
     event.preventDefault();
 
-    console.group('<lit-router>.handleRouteLink()');
-    console.log('this._url (before):', this._url);
-    console.log('this._data (before):', this._data);
-    console.log('this._lastNode (before):', this._lastNode);
+    // console.group('<lit-router>.handleRouteLink()');
+    // console.log('this._url (before):', this._url);
+    // console.log('this._data (before):', this._data);
+    // console.log('this._lastNode (before):', this._lastNode);
 
     this._url = event.detail.url;
     this._data = event.detail.data;
 
+    this._clearInitial();
+
     globalThis.history.pushState({ ...event.detail.data }, '', event.detail.url);
 
-    console.log('event:', event);
-    console.log('event.target:', event.target);
-    console.log('event.detail:', event.detail);
-    console.log('event.detail.url:', event.detail.url);
-    console.log('event.detail.data:', event.detail.data);
-    console.log('this._lastNode (after):', this._lastNode);
-    console.log('this._data (after):', this._data);
-    console.log('this._url (after):', this._url);
-    console.groupEnd();
+    // console.log('event:', event);
+    // console.log('event.target:', event.target);
+    // console.log('event.detail:', event.detail);
+    // console.log('event.detail.url:', event.detail.url);
+    // console.log('event.detail.data:', event.detail.data);
+    // console.log('this._lastNode (after):', this._lastNode);
+    // console.log('this._data (after):', this._data);
+    // console.log('this._url (after):', this._url);
+    // console.groupEnd();
   }
 
   handlePopState(_event : PopStateEvent) : void {
@@ -160,6 +179,8 @@ export class LitRouter extends LitElement {
     const data = this._data;
     this._url = event.detail.url;
     this._data = event.detail.data;
+
+    this._clearInitial();
 
     const later = () => {
       this._url = url;
@@ -199,9 +220,19 @@ export class LitRouter extends LitElement {
       : wrapOutput;
     this._parsedRoutes = parseRoutes(routes);
 
+    // console.log('this.initialHash:', this.initialHash);
+    // console.log('this.initialRoute:', this.initialRoute);
+    // console.log('this.initialSearch:', this.initialSearch);
     // console.log('this._url (before):', this._url);
+    // console.log('this._search (before):', this._search);
+    // console.log('this._hash (before):', this._hash);
     this._url = this.initialRoute;
-    // console.log('this._url (before):', this._url);
+    this._search = getRouteSearch(this.initialSearch);
+    this._hash = this.initialHash.replace(/^#/, '');
+
+    // console.log('this._hash (after):', this._hash);
+    // console.log('this._search (after):', this._search);
+    // console.log('this._url (after):', this._url);
     // console.groupEnd();
   }
 
@@ -228,23 +259,29 @@ export class LitRouter extends LitElement {
       }
 
       // console.group('<lit-router>.render()');
+      // console.log('this._url:', this._url);
       // console.log('route:', route);
       // console.log('possibleRoute:', possibleRoute);
       // console.log('search:', search);
       // console.log('hash:', hash);
       // console.log('this._data:', this._data);
+      // console.log('this._search:', this._search);
       // console.log('this._url:', this._url);
       // console.log('this.store:', this.store);
       // console.log('args (before):', args);
 
-      args._HASH = hash;
-      args._SEARCH = search;
+      args._HASH = (this._hash !== '')
+        ? this._hash
+        : hash;
+      args._SEARCH = (this._search !== null)
+        ? this._search
+        : search;
       args._DATA = this._data;
       args._STORE = this.store;
 
       // console.log('args (after):', args);
-
       // console.groupEnd();
+
       return this._wrap(possibleRoute.render(args, this), this._url);
     }
 

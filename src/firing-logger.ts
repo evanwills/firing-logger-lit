@@ -1,6 +1,6 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { nanoid } from "nanoid";
+// import { nanoid } from 'nanoid';
 import type { CDataStoreClass } from './types/store.d.ts';
 import { getDataStoreClassSingleton } from './store/FiringLogger.store.ts';
 import { wrapApp } from './utils/lit.utils.ts';
@@ -29,6 +29,12 @@ export class FiringLogger extends LitElement {
 
   @state()
   _path : string = '';
+
+  @state()
+  _search : string = '';
+
+  @state()
+  _hash : string = '';
 
   _updateReady() {
     // console.group('<firing-logger>._updateReady()');
@@ -62,12 +68,17 @@ export class FiringLogger extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+
     // console.group('<firing-logger>.connectedCallback()');
+    // console.info('ID:', nanoid(10));
+    // console.log('globalThis.location:', globalThis.location);
 
-    console.info('ID:', nanoid(10));
-
+    this._hash = globalThis.location.hash;
     this._path = globalThis.location.pathname;
+    this._search = globalThis.location.search;
+    // console.log('this._hash:', this._hash);
     // console.log('this._path:', this._path);
+    // console.log('this._search:', this._search);
 
     getDataStoreClassSingleton().then(this._addReadyWatcher.bind(this));
     // console.groupEnd();
@@ -90,7 +101,9 @@ export class FiringLogger extends LitElement {
 
     return (this._ready === true)
       ? html`<lit-router
+          initial-hash="${this._hash}"
           initial-route="${this._path}"
+          initial-search="${this._search}"
           .store=${this._db}
           .wrapperFunc=${wrapApp}></lit-router>`
       : 'Not ready yet';

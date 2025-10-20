@@ -1,5 +1,7 @@
 import { html, type TemplateResult } from 'lit';
 import type { IRouteArgs } from '../types/router-types.d.ts';
+import { LitRouter } from '../components/lit-router/lit-router.ts';
+import { redirectProgram } from '../components/programs/program.utils.ts';
 import '../components/programs/programs-list.ts';
 import '../components/programs/program-details.ts';
 import '../components/programs/program-details-edit.ts';
@@ -12,8 +14,6 @@ import '../components/firings/firing-details.ts';
 // import '../components/users/user-list.ts';
 import '../components/users/user-details.ts';
 import '../components/users/user-details-edit.ts';
-import { LitRouter } from "../components/lit-router/lit-router.ts";
-import { redirectProgram } from "../components/programs/program.utils.ts";
 
 const home = ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<kilns-list
   filters=${_SEARCH} .store=${_STORE}></kilns-list>`
@@ -44,27 +44,19 @@ export default [
   },
 
   {
+    route: '/firing/new',
+    render: ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details
+      mode="new"
+      program-uid="${_SEARCH.programUID}"
+      .store=${_STORE}></firing-details>`,
+  },
+  {
     route: '/firing/:firingID',
     render: ({ firingID, _DATA, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details
       firing-uid="${firingID}"
       kiln-uid="${_DATA.kilnId}"
       program-uid="${_DATA.programId}"
       .store=${_STORE}></firing-details>`,
-  },
-  {
-    route: '/firing/:firingID/edit',
-    render: ({ firingId, kilnId, programId, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details-edit
-      firing-uid="${firingId}"
-      kiln-uid="${kilnId}"
-      program-uid="${programId}"
-      .store=${_STORE}></firing-details-edit>`,
-  },
-  {
-    route: '/firing/new',
-    render: ({ kilnId, programId, _STORE } : IRouteArgs) : TemplateResult => html`<firing-details-edit
-      kiln-uid="${kilnId}"
-      program-uid="${programId}"
-      .store=${_STORE}></firing-details-edit>`,
   },
   {
     route: '/firings',

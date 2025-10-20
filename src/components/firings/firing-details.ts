@@ -32,6 +32,7 @@ import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../shared-components/firing-plot.ts';
 import { ifDefined } from "lit/directives/if-defined.js";
+import { nanoid } from "nanoid";
 
 /**
  * An example element.
@@ -88,6 +89,7 @@ export class FiringDetails extends LoggerElement {
   _firing : IFiring | null = null;
   _kiln : IKiln | null = null;
   _program : IProgram | null = null;
+  _kilnID : string = '';
   _responsibleLog : IResponsibleLogEntry[]  = []
   _rawLog : IFiringLogEntry[] = [];
   _tempLog : ITempLogEntry[] = [];
@@ -135,9 +137,10 @@ export class FiringDetails extends LoggerElement {
       // console.log('this._firing.firingState:', this._firing.firingState);
 
       if (this._firing.firingState === 'empty') {
-            this._currentState = 'Completed and emptied';
+        this._currentState = 'Completed and emptied';
       } else {
         let allowed : string[] = [];
+
         switch (this._firing.firingState) {
           case 'scheduled':
             allowed = ['packing', 'ready', 'active', 'aborted'];
@@ -227,7 +230,7 @@ export class FiringDetails extends LoggerElement {
     this._duration = output;
   }
 
-  _setLogs(logs : IFiringLogEntry[]) : void {
+  _setLogs(logs : IFiringLogEntry[] | null) : void {
     // console.group('<firing-details>._setLogs()');
     // console.log('logs:', logs);
     // console.log('this._rawLog (before):', this._rawLog);
@@ -236,19 +239,21 @@ export class FiringDetails extends LoggerElement {
     // console.log('this._changeLog (before):', this._changeLog);
     // console.log('this._svgSteps (before):', this._svgSteps);
     // console.log('this._duration (before):', this._duration);
-    this._rawLog = logs;
-    this._rawLog.sort((a : IFiringLogEntry, b : IFiringLogEntry) : number => {
-      if (a.time < b.time) { return -1; }
-      if (a.time > b.time) { return 1; }
-      return 0;
-    });
-    this._tempLog = this._rawLog.filter(isTempLog);
-    this._responsibleLog = this._rawLog.filter(isRespLog);
-    this._changeLog = this._rawLog.filter(isStateChangeLog);
-    this._svgSteps = this._tempLog.map(tempLog2SvgPathItem);
-    this._setReady();
+    if (logs !== null) {
+      this._rawLog = logs;
+      this._rawLog.sort((a : IFiringLogEntry, b : IFiringLogEntry) : number => {
+        if (a.time < b.time) { return -1; }
+        if (a.time > b.time) { return 1; }
+        return 0;
+      });
+      this._tempLog = this._rawLog.filter(isTempLog);
+      this._responsibleLog = this._rawLog.filter(isRespLog);
+      this._changeLog = this._rawLog.filter(isStateChangeLog);
+      this._svgSteps = this._tempLog.map(tempLog2SvgPathItem);
+      this._setReady();
 
-    this._setDuration();
+      this._setDuration();
+    }
 
     // console.log('this._duration (after):', this._duration);
     // console.log('this._svgSteps (after):', this._svgSteps);
@@ -260,7 +265,7 @@ export class FiringDetails extends LoggerElement {
     // console.groupEnd();
   }
 
-  _setFiring(firing : IFiring) : void {
+  _setFiring(firing : IFiring | null) : void {
     this._firing = firing;
     this._setFiringStateOptions();
     this._setReady();
@@ -268,13 +273,43 @@ export class FiringDetails extends LoggerElement {
 
   _setKiln(kiln : IKiln) : void {
     this._kiln = kiln;
+    if (isNonEmptyStr(this._kilnID) === false) {
+      this._kilnID = kiln.id;
+    }
     this._setReady(true);
   }
+
   _setProgram(program : IProgram) : void {
     this._program = program;
     this._programSteps = program.steps;
     this._setProgramType();
     this._setReady(true);
+
+    this._kilnID = program.kilnID;
+
+    if (this.mode === 'new') {
+      this._firing = {
+        id: nanoid(10),
+        kilnID: this._kilnID,
+        programID: this.programID,
+        ownerID: this._user?.id,
+        diaryID: null,
+        firingType: this._program.type,
+        scheduledStart: null,
+        scheduledEnd: null,
+        scheduledCold: null,
+        packed: null,
+        actualStart: null,
+        actualEnd: null,
+        actualCold: null,
+        unpacked: null,
+        maxTemp: this._program.maxTemp,
+        cone: this._program.cone,
+        firingState: 'scheduled',
+        temperatureState: 'n/a',
+        log: [],
+      };
+    }
 
     this._setDuration();
   }
@@ -317,7 +352,7 @@ export class FiringDetails extends LoggerElement {
   _setData() : void {
     // console.group('<firing-details>._setData()');
     if (this.store !== null) {
-      this.store.dispatch('getFiringData', { uid: this.firingID })
+      this.store.dispatch('getFiringData', { uid: this.firingID, programID : this.programID })
         .then((this._setDataThen.bind(this)))
         .catch(storeCatch);
     }
@@ -438,9 +473,9 @@ export class FiringDetails extends LoggerElement {
               value="${value}"></read-only-field></li>`;
   }
 
-  _renderFiringDetails() : TemplateResult {
+  _renderFiringDetails(open : boolean) : TemplateResult {
     return html`
-      <details name="details" ?open=${this.mode === 'new'}>
+      <details name="details" ?open=${open}>
         <summary>Firing details</summary>
 
         <ul class="firing-details">
@@ -498,9 +533,13 @@ export class FiringDetails extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    // console.group('<firing-details>.render()');
-    // console.log('this.firingID:', this.firingID);
+    console.group('<firing-details>.render()');
+    console.log('this.firingID:', this.firingID);
+    console.log('this._firing:', this._firing);
+    console.log('this._firing.actualStart:', this._firing?.actualStart);
+    console.log('this._firing.scheduledStart:', this._firing?.scheduledStart);
     // console.log('this.kilnID:', this.kilnID);
+    // console.log('this._kilnID:', this._kilnID);
     // console.log('this.programID:', this.programID);
     // console.log('this._firing:', this._firing);
     // console.log('this._kiln:', this._kiln);
@@ -528,14 +567,14 @@ export class FiringDetails extends LoggerElement {
     }
 
     // console.log('can:', can);
-    // console.log('start:', start);
+    console.log('start:', start);
     // console.log('this._svgSteps:', this._svgSteps);
     // console.log('this._programSteps:', this._programSteps);
 
-    // console.groupEnd();
+    console.groupEnd();
     return html`
       <h1>${this._program?.name} - ${start}</h1>
-      ${this._renderFiringDetails()}
+      ${this._renderFiringDetails(start === 'New')}
       <details name="details">
         <summary>Program steps</summary>
         <program-steps-table
@@ -543,7 +582,7 @@ export class FiringDetails extends LoggerElement {
           .converter=${this._tConverter}
           unit="${this._tUnit}"></program-steps-table>
       </details>
-      <details name="details">
+      <details name="details" ?open=${start !== 'New'}>
         <summary>Firing graph</summary>
         <firing-plot
           no-wrap
@@ -557,7 +596,7 @@ export class FiringDetails extends LoggerElement {
             : []
           }></friing-plot>
       </details>
-      <details name="details" open>
+      <details name="details">
         <summary>Log</summary>
         <ul class="log-list">
           ${this._rawLog.map(this._renderLogEntry.bind(this))}

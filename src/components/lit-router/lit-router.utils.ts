@@ -1,23 +1,34 @@
-import type { IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
+import type { IKeyScalar, IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type {
   FGetRouteArgs,
   TParsedRoute,
   TRoute,
 } from '../../types/router-types.d.ts';
 
+export const getRouteSearch = (search : string) : IKeyScalar => {
+  const tmp = search.replace(/^\?/, '').split('&').map((item) => item.split('='));
+  const output : IKeyScalar = {};
+
+  for (const [key, value] of tmp) {
+    if (typeof value === 'undefined') {
+      output[key] = true;
+    } else if (/^\d+(?:\.\d+)?$/.test(value)) {
+      output[key] = (value.includes('.'))
+        ? parseFloat(value)
+        : parseInt(value, 10);
+    } else {
+      output[key] = value;
+    }
+  }
+
+  return output;
+}
+
 export const splitURL = (path : string) : { route: string[], search: IKeyValue, hash: string }=> {
-  const search : IKeyValue = {};
+  let search : IKeyScalar = {};
 
   if (path.includes('?')) {
-    const _queryParts = path.replace(/^[^?]*\?([^#/]+)(?:[/#].*)?$/, '$1').split('&');
-
-    for (const get of _queryParts) {
-      const [key, value] = get.split('=');
-
-      search[key] = (typeof value === 'string')
-        ? value
-        : true;
-    }
+    search = getRouteSearch(path.replace(/^[^?]*\?([^#/]+)(?:[/#].*)?$/, '$1'));
   }
 
   return {

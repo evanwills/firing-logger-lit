@@ -172,7 +172,7 @@ export interface IFiring {
   cone: TCone,
   firingState: TFiringState,
   temperatureState: TTemperatureState,
-  log: [FiringLogEntry],
+  log: FiringLogEntry[],
 };
 
 export interface IFiringReport {
@@ -206,7 +206,7 @@ export type TFiringsListItem = {
 }
 
 export type TGetFirningDataPayload = {
-  firing: Promise<IFiring>,
+  firing: Promise<IFiring|null>,
   kiln: Promise<IKiln>,
   log: Promise<IFiringLogEntry[]>,
   program: Promise<IProgram>,

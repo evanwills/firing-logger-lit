@@ -24,13 +24,13 @@ import {
 import { isIKeyStr } from '../../types/data.type-guards.ts';
 import { isKiln } from '../../types/kiln.type-guards.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
-import { renderFiringSteps } from './program.utils.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
 import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
 import '../shared-components/loading-spinner.ts';
+import './program-steps-table.ts';
 // import { validateKilnData } from '../kilns/kiln-data.utils.ts';
 
 /**
