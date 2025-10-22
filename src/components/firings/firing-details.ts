@@ -11,6 +11,7 @@ IFiring,
   IStateLogEntry,
   ITempLogEntry,
   TFiringActiveState,
+  TFiringLogEntryType,
   TFiringState,
   TGetFirningDataPayload,
   TTemperatureState,
@@ -26,7 +27,7 @@ import { getLabelFromOrderedEnum, getValFromKey, orderedEnum2enum } from '../../
 import { getLocalISO8601 } from '../../utils/date-time.utils.ts';
 import { tempLog2SvgPathItem } from './firing-data.utils.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
-import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 // import { renderFiringSteps } from '../programs/program.utils.ts';
@@ -37,6 +38,8 @@ import '../input-fields/accessible-temporal-field.ts';
 import '../programs/program-steps-table.ts';
 import '../shared-components/firing-plot.ts';
 import '../shared-components/loading-spinner.ts';
+import '../lit-router/router-link.ts';
+import { LitRouter } from "../lit-router/lit-router.ts";
 
 @customElement('firing-details')
 export class FiringDetails extends LoggerElement {
@@ -107,6 +110,10 @@ export class FiringDetails extends LoggerElement {
   _firingTypes : IOrderedEnum[] = [];
   _firingTypeOptions : TOptionValueLabel[] = [];
   _temperatureStates : IKeyStr = {};
+  _actualStartTime : number = 0;
+
+  @state()
+  _canEnd : string = '';
   @state()
   _allSetCount : number = 0;
   _duration : TemplateResult | string = '';
@@ -220,7 +227,7 @@ export class FiringDetails extends LoggerElement {
       if (force === true || this._firingStates.length > 0) {
         // console.log('this._firing.firingState:', this._firing.firingState);
 
-        if (this._firing.firingState === 'empty') {
+        if (this._firingState === 'empty') {
           this._currentState = 'Completed and emptied';
         } else {
           let allowed : string[] = [];
@@ -228,27 +235,35 @@ export class FiringDetails extends LoggerElement {
           switch (this._firing.firingState) {
             case 'created':
               allowed = ['scheduled', 'cancelled'];
+              this._canEnd = 'cancel';
               break;
             case 'scheduled':
               allowed = ['packing', 'ready', 'active', 'cancelled'];
+              this._canEnd = 'cancel';
               break;
             case 'packing':
               allowed = ['ready', 'active', 'unpacking', 'cancelled'];
+              this._canEnd = 'cancel';
               break;
             case 'ready':
               allowed = ['active', 'unpacking', 'cancelled'];
+              this._canEnd = 'cancel';
               break;
             case 'active':
               allowed = ['complete', 'aborted'];
+              this._canEnd = 'abort';
               break;
             case 'complete':
               allowed = ['cold', 'unpacking', 'empty'];
+              this._canEnd = '';
               break;
             case 'cold':
               allowed = ['unpacking', 'empty'];
+              this._canEnd = '';
               break;
             case 'unpacking':
               allowed = ['empty'];
+              this._canEnd = '';
               break;
           }
 
@@ -365,6 +380,10 @@ export class FiringDetails extends LoggerElement {
       this._scheduledEnd = firing.scheduledEnd;
       this._packed = firing.packed;
       this._actualStart = firing.actualStart;
+      if (isISO8601(this._actualStart)) {
+
+        this._actualStartTime = new Date(this._actualStart).getTime();
+      }
       this._actualEnd = firing.actualEnd;
       this._actualCold = firing.actualCold;
       this._unpacked = firing.unpacked;
@@ -493,6 +512,26 @@ export class FiringDetails extends LoggerElement {
     // console.groupEnd();
   }
 
+  _getBasicLogEntry(type : TFiringLogEntryType) : IFiringLogEntry {
+    const now = Date.now();
+
+    return {
+      id: nanoid(10),
+      firingID: (typeof this._firing?.id === 'string')
+        ? this._firing.id
+        : this.firingID,
+      time: getLocalISO8601(now),
+      timeOffset: (this._actualStartTime > 0 && ['active', 'complete', 'cold'].includes(this._firingState))
+        ? ((now - this._actualStartTime) / 1000)
+        : null,
+      userID: (typeof this._user?.id === 'string')
+        ? this._user.id
+        : 'unknown',
+      type,
+      notes: null,
+    };
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -511,17 +550,14 @@ export class FiringDetails extends LoggerElement {
         this._scheduledStart = this._firing.scheduledStart;
 
         if (this._program !== null) {
-          this._firing.scheduledEnd = getLocalISO8601(tmp.getTime() + this._program.duration * 1000);
-          this._firing.scheduledCold = getLocalISO8601(tmp.getTime() + this._program.duration * 3000);
-          this._scheduledEnd = this._firing.scheduledEnd;
-          this._scheduledCold = this._firing.scheduledCold;
+          this._scheduledEnd = getLocalISO8601(tmp.getTime() + this._program.duration * 1000);
+          this._scheduledCold = getLocalISO8601(tmp.getTime() + this._program.duration * 3000);
         }
 
         if (this._firing.firingState === 'created'
           && this._firing.firingActiveState === 'normal'
         ) {
-          this._firing.firingState = 'scheduled';
-          this._firingState = this._firing.firingState;
+          this._firingState = 'scheduled';
           this._currentState = getLabelFromOrderedEnum(this._firingStates, this._firingState, this._currentState);
         }
 
@@ -532,6 +568,51 @@ export class FiringDetails extends LoggerElement {
       }
     }
     console.groupEnd();
+  }
+
+  _handleEnd(event : CustomEvent) : void {
+    if (this._firingState === 'created') {
+      if (this.mode !== 'new') {
+        // this.store?.delete('firings', this.firingID);
+      }
+
+      const kilnID : string = (typeof this._kiln?.id === 'string')
+        ? this._kiln.id
+        : this.kilnID;
+
+      const programID : string = (typeof this._program?.id === 'string')
+        ? this._program.id
+        : this.programID;
+
+      LitRouter.dispatchRouterEvent(
+        this,
+        `/kilns/${kilnID}/programs/${programID}`,
+      );
+
+      return;
+    }
+
+    const oldState : TFiringState = this._firingState;
+
+    if (this._canEnd === 'cancel') {
+      this._firingState = 'cancelled';
+      this._firingActiveState = 'cancelled';
+    } else if (this._firingState === 'active') {
+      this._firingState = 'aborted';
+      this._firingActiveState = 'aborted';
+    }
+
+    if (this._canEnd !== '' && this.store !== null) {
+      const logEntry : IStateLogEntry = {
+        ...this._getBasicLogEntry('firingState') as IStateLogEntry,
+        newState: this._firingState,
+        oldState: (typeof this._firing?.firingState === 'string')
+          ? this._firing.firingState
+          : oldState,
+      }
+      this.store.dispatch('addFiringLogEntry', logEntry);
+      this._rawLog.push(logEntry);
+    }
   }
 
   //  END:  event handlers
@@ -696,6 +777,14 @@ export class FiringDetails extends LoggerElement {
           }
 
         </ul>
+        ${(this._canEnd !== '')
+          ? html`<router-link
+           button
+           class="btn"
+           label="${ucFirst(this._canEnd)}"
+           @handleEnd=${this._handleEnd}></router-link>`
+          : ''
+        }
       </details>`;
   }
 

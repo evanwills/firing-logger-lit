@@ -1,13 +1,15 @@
 import type { IDBPDatabase } from 'idb';
-import type { TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
+import type { IFiring, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
 import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
-import type { ID, TDateRange } from '../../types/data-simple.d.ts';
+import type { ID, IIdObject, TDateRange } from '../../types/data-simple.d.ts';
 import { isCDataStoreClass } from '../../types/store.type-guards.ts';
 import { isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts';
 import { isProgram } from '../../types/program.type-guards.ts';
 import { getKeyRange } from '../../store/idb-data-store.utils.ts';
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
 import { isUser } from "../../types/user.type-guards.ts";
+import type { TUserNowLaterAuth } from "../../types/users.d.ts";
+import { userCanNowLater } from "../users/user-data.utils.ts";
 // import { validateProgramData } from "../programs/program.utils.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
@@ -135,3 +137,43 @@ export const getFiringData : FActionHandler = (
     ? _getFiringDataByFiringID(db, uid)
     : _getFiringDataByProgamID(db, programID);
 };
+
+export const updateFiringData : FActionHandler = async(
+  db: IDBPDatabase | CDataStoreClass,
+  changes : IFiring,
+) : Promise<IDBValidKey> => {
+  if (isCDataStoreClass(db)) {
+    throw new Error(
+      'updateKilnData() expects first param `db` to be a '
+      + 'IDBPDatabase type object',
+    );
+  }
+
+  const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
+
+  if (msg !== '') {
+    return Promise.reject(`${msg} update kiln details`);
+  }
+
+  if (user === null) {
+    // This should never happen because `msg` will contain an error
+    // message if user is null
+    throw new Error('Cannot proceed because user is null');
+  }
+
+  const firing = await db.get('firings', changes.id);
+
+  if (!isIFiring(firing)) {
+    return Promise.reject(`Could not find firing matching "${changes.id}"`);
+  }
+
+  const initial : IIdObject | string = getInitialData(changes, firing);
+
+  if (typeof initial === 'string') {
+    return Promise.reject(initial);
+  }
+
+  return  (hold === true)
+    ? saveChangeOnHold(db, 'kilns', user.id, changes, initial)
+    : saveKilnChanges(db, user.id, changes, firing);
+}
