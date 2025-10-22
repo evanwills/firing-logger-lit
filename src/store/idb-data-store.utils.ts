@@ -553,7 +553,7 @@ export const addUpdateHelper = async (
 
 
   let { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
-  let thing = null,
+  let thing = null;
 
   if (msg === '') {
     if (user === null) {
