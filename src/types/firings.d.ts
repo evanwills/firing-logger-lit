@@ -55,8 +55,9 @@ export interface ReportRow {
 };
 
 export type TFiringLogEntryType = 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible';
-export type TFiringState = 'scheduled' | 'packing' | 'ready' | 'active' | 'complete' | 'cold' | 'unpacking' | 'empty' | 'aborted';
+export type TFiringState = 'created' | 'scheduled' | 'packing' | 'ready' | 'cancelled' | 'active' | 'complete' | 'aborted' | 'cold' | 'unpacking' | 'empty';
 export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
+export type TFiringActiveState = 'normal' | 'cancelled' | 'aborted';
 
 export interface IFiringLogEntry {
   id: ID,
@@ -171,6 +172,7 @@ export interface IFiring {
   maxTemp: number,
   cone: TCone,
   firingState: TFiringState,
+  firingActiveState: TFiringActiveState,
   temperatureState: TTemperatureState,
   log: FiringLogEntry[],
 };

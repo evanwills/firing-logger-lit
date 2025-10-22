@@ -12,6 +12,7 @@ import type {
   TTemperatureState,
   TFiringState,
   TFiringsListItem,
+  TFiringActiveState,
 } from "./firings.d.ts";
 import { isTFiringType } from './program.type-guards.ts';
 
@@ -19,10 +20,16 @@ export const isTFiringLogEntryType = (value : unknown) : value is TFiringLogEntr
   typeof value === 'string'
   && ['temp', 'firingState', 'damper', 'burner', 'gas', 'wood', 'responsible'].includes(value)
 );
+
 export const isTFiringState = (value : unknown) : value is TFiringState => (
   typeof value === 'string'
-  && ['scheduled', 'packing', 'ready', 'active', 'complete', 'cold', 'unpacking', 'empty', 'aborted'].includes(value)
+  && ['created', 'scheduled', 'packing', 'ready', 'cancelled', 'active', 'complete', 'aborted', 'cold', 'unpacking', 'empty'].includes(value)
 );
+
+export const isTFiringActiveState = (value : unknown) : value is TFiringActiveState => (
+  typeof value === 'string' && ['normal', 'cancelled', 'aborted'].includes(value)
+);
+
 export const isTTemperatureState = (value : unknown) : value is TTemperatureState => (
   typeof value === 'string'
   && ['underError', 'under', 'expected', 'over', 'overError', 'n/a'].includes(value)
@@ -98,6 +105,7 @@ export const isIFiring = (item: unknown) : item is IFiring => (
   && typeof (item as IFiring).maxTemp === 'number'
   && isTCone((item as IFiring).cone) === true
   && isTFiringState((item as IFiring).firingState) === true
+  && isTFiringActiveState((item as IFiring).firingActiveState) === true
   && isTTemperatureState((item as IFiring).temperatureState) === true
 );
 

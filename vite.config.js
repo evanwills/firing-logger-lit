@@ -3,8 +3,8 @@ import { nanoid } from 'nanoid';
 
 // const offset = -60000; // 1 minute in the past
 // const offset = 10000; // 10 seconds in the future
-const offset = 300000; // 5 minutes in the future
-// const offset = 1800000; // 30 minutes in the future
+// const offset = 300000; // 5 minutes in the future
+const offset = 1800000; // 30 minutes in the future
 
 const userID = 'wfj_myxTAV';
 // const userID = nanoid();

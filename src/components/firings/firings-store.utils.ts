@@ -7,7 +7,7 @@ import { isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts
 import { isProgram } from '../../types/program.type-guards.ts';
 import { getKeyRange } from '../../store/idb-data-store.utils.ts';
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
-import { validateProgramData } from "../programs/program.utils.ts";
+// import { validateProgramData } from "../programs/program.utils.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
 export const getFiringsList : FActionHandler = async (
@@ -47,8 +47,8 @@ const _getFiringDataByFiringID = async (
   db: IDBPDatabase,
   uid : ID
 ) : Promise<TGetFirningDataPayload|null> => {
-  console.group('FiringStoreUtils._getFiringDataByFiringID()');
-  console.info(`About to get data for firing "#${uid}"`);
+  // console.groupCollapsed('FiringStoreUtils._getFiringDataByFiringID()');
+  // console.info(`About to get data for firing "#${uid}"`);
 
   const firing = await db.get('firings', uid);
   // console.log('firing:', firing);
@@ -82,15 +82,15 @@ const _getFiringDataByProgamID = async (
   db: IDBPDatabase,
   uid : ID
 ) : Promise<TGetFirningDataPayload|null> => {
-  console.group('FiringStoreUtils._getFiringDataByProgamID()');
-  console.log('uid:', uid);
+  // console.groupCollapsed('FiringStoreUtils._getFiringDataByProgamID()');
+  // console.log('uid:', uid);
 
   const program = await db.get('programs', uid);
 
-  console.log('program:', program);
-  console.log('isProgram(program):', isIFiring(program));
-  console.log('validateProgramData(program):', validateProgramData(program));
-  console.groupEnd();
+  // console.log('program:', program);
+  // console.log('isProgram(program):', isIFiring(program));
+  // console.log('validateProgramData(program):', validateProgramData(program));
+  // console.groupEnd();
 
   if (isProgram(program)) {
 
@@ -112,10 +112,10 @@ export const getFiringData : FActionHandler = (
   db: IDBPDatabase | CDataStoreClass,
   { uid, programID },
 )  : Promise<TGetFirningDataPayload|null> => {
-  console.group('FiringStoreUtils.getFiringData()');
-  console.log('uid:', uid);
-  console.log('programID:', programID);
-  console.log('db:', db);
+  // console.groupCollapsed('FiringStoreUtils.getFiringData()');
+  // console.log('uid:', uid);
+  // console.log('programID:', programID);
+  // console.log('db:', db);
   if (isCDataStoreClass(db)) {
     throw new Error(
       'addNewKilnData() expects first param `db` to be a '
@@ -123,7 +123,7 @@ export const getFiringData : FActionHandler = (
     );
   }
 
-  console.groupEnd();
+  // console.groupEnd();
   return (isNonEmptyStr(uid) && uid !== 'new')
     ? _getFiringDataByFiringID(db, uid)
     : _getFiringDataByProgamID(db, programID);

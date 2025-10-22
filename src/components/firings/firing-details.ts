@@ -106,10 +106,34 @@ export class FiringDetails extends LoggerElement {
   _duration : TemplateResult | string = '';
   _showDuration : boolean = false;
   _readyCount : number = 7;
+  _canDo : string[] = [];
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
+
+  _setCan() : void {
+    if (this._firing !== null && this._canDo.length === 0) {
+      if (this._userCan('fire') && ['scheduled', 'packing', 'ready'].includes(this._firing.firingState)) {
+        this._canDo.push('schedule');
+      }
+
+      if (this._userCan('log')
+        && ['empty', 'aborted'].includes(this._firing.firingState) === false
+        && this._firing.scheduledStart !== null
+      ) {
+        this._canDo.push('log');
+      }
+
+      if (this._canDo.length === 0) {
+        this._canDo.push('nothing');
+      }
+    }
+  }
+
+  _can(action : string) : boolean {
+    return this._canDo.includes(action);
+  }
 
   _setReady(always = false) : void {
     // console.group('<firing-details>._setReady()');
@@ -123,70 +147,86 @@ export class FiringDetails extends LoggerElement {
 
     if (this._allSetCount === this._readyCount) {
       this._ready = true;
+
+      this._setCan();
     }
     // console.log('this._ready (after):', this._ready);
     // console.log('this._allSetCount (after):', this._allSetCount);
     // console.groupEnd();
   }
 
-  _setFiringStateOptions() : void {
-    // console.group('<firing-details>._setFiringStateOptions()');
-    // console.log('this._firing:', this._firing);
-    // console.log('this._firingStates.length:', this._firingStates.length);
-    if (this._firing !== null && this._firingStates.length > 0) {
-      // console.log('this._firing.firingState:', this._firing.firingState);
+  _setFiringStateOptions(force : boolean = false) : void {
+    console.group('<firing-details>._setFiringStateOptions()');
+    console.log('this._firing:', this._firing);
+    console.log('this._firing.firingState:', this._firing?.firingState);
+    console.log('force:', force);
+    console.log('this._firingStates.length:', this._firingStates.length);
+    console.log('this._firingStates.length > 0:', this._firingStates.length > 0);
+    console.log('this._firingStates (before):', this._firingStates);
+    console.log('this._firingStateOptions (before):', this._firingStateOptions);
+    console.log('this._currentState (before):', this._currentState);
+    if (this._firing !== null) {
+      if (force === true || this._firingStates.length > 0) {
+        console.log('this._firing.firingState:', this._firing.firingState);
 
-      if (this._firing.firingState === 'empty') {
-        this._currentState = 'Completed and emptied';
-      } else {
-        let allowed : string[] = [];
+        if (this._firing.firingState === 'empty') {
+          this._currentState = 'Completed and emptied';
+        } else {
+          let allowed : string[] = [];
 
-        switch (this._firing.firingState) {
-          case 'scheduled':
-            allowed = ['packing', 'ready', 'active', 'aborted'];
-            break;
-          case 'packing':
-            allowed = ['ready', 'active', 'unpacking', 'aborted'];
-            break;
-          case 'ready':
-            allowed = ['active', 'unpacking', 'aborted'];
-            break;
-          case 'active':
-            allowed = ['complete', 'aborted'];
-            break;
-          case 'complete':
-            allowed = ['cold', 'unpacking', 'empty'];
-            break;
-          case 'cold':
-            allowed = ['unpacking', 'empty'];
-            break;
-          case 'unpacking':
-            allowed = ['empty'];
-            break;
-        }
-
-        const newOptions : IKeyStr = {};
-
-        for (const state of this._firingStates) {
-          // console.group(`<firing-details>._setFiringStateOptions("${state.order}")`);
-          // console.log('state.value:', state.value);
-          // console.log('state.label:', state.label);
-          // console.log('this._firing.firingState:', this._firing.firingState);
-          // console.log('state.value === this._firing.firingState:', state.value === this._firing.firingState);
-          if (allowed.includes(state.value) && typeof state.label === 'string') {
-            newOptions[state.value] = state.label;
+          switch (this._firing.firingState) {
+            case 'created':
+              allowed = ['scheduled', 'cancelled'];
+              break;
+            case 'scheduled':
+              allowed = ['packing', 'ready', 'active', 'cancelled'];
+              break;
+            case 'packing':
+              allowed = ['ready', 'active', 'unpacking', 'cancelled'];
+              break;
+            case 'ready':
+              allowed = ['active', 'unpacking', 'cancelled'];
+              break;
+            case 'active':
+              allowed = ['complete', 'aborted'];
+              break;
+            case 'complete':
+              allowed = ['cold', 'unpacking', 'empty'];
+              break;
+            case 'cold':
+              allowed = ['unpacking', 'empty'];
+              break;
+            case 'unpacking':
+              allowed = ['empty'];
+              break;
           }
-          if (this._firing.firingState === state.value) {
-            this._currentState = state.label;
-          }
-          // console.log('newOptions:', newOptions);
-          // console.groupEnd();
-        }
 
-        this._firingStateOptions = enumToOptions(newOptions);
+          const newOptions : IKeyStr = {};
+
+          for (const state of this._firingStates) {
+            console.group(`<firing-details>._setFiringStateOptions("${state.order}")`);
+            console.log('state.value:', state.value);
+            console.log('state.label:', state.label);
+            console.log('this._firing.firingState:', this._firing.firingState);
+            console.log('state.value === this._firing.firingState:', state.value === this._firing.firingState);
+            if (allowed.includes(state.value) && typeof state.label === 'string') {
+              newOptions[state.value] = state.label;
+            }
+            if (this._firing.firingState === state.value) {
+              this._currentState = state.label;
+            }
+            console.log('newOptions:', newOptions);
+            console.groupEnd();
+          }
+
+          this._firingStateOptions = enumToOptions(newOptions);
+        }
       }
     }
-    // console.groupEnd();
+    console.log('this._currentState (after):', this._currentState);
+    console.log('this._firingStateOptions (after):', this._firingStateOptions);
+    console.log('this._firingStates (after):', this._firingStates);
+    console.groupEnd();
   }
 
   _setProgramType() {
@@ -201,11 +241,6 @@ export class FiringDetails extends LoggerElement {
   }
 
   _setDuration() : void {
-    const expected = (this._program !== null)
-      ? this._program.duration
-      : 0;
-
-
     const l = this._tempLog.length - 1;
     const actual = (l >= 0)
       ? this._tempLog[l].tempActual
@@ -217,14 +252,18 @@ export class FiringDetails extends LoggerElement {
 
     if (output !== '') {
       this._showDuration = true;
-    }
+    } else {
+      const expected = (this._program !== null)
+        ? this._program.duration
+        : 0;
 
-    if (expected > 0) {
-      const tmp = hoursFromSeconds(expected);
-      output = (output === '')
-        ? tmp
-        : html`${output} <em>(Expected: ${tmp})</em>`;
-      this._showDuration = true;
+      if (expected > 0) {
+        const tmp = hoursFromSeconds(expected);
+        output = (output === '')
+          ? tmp
+          : html`${output} <em>(Expected: ${tmp})</em>`;
+        this._showDuration = true;
+      }
     }
 
     this._duration = output;
@@ -266,9 +305,16 @@ export class FiringDetails extends LoggerElement {
   }
 
   _setFiring(firing : IFiring | null) : void {
-    this._firing = firing;
-    this._setFiringStateOptions();
-    this._setReady();
+    console.group('<firing-details>._setFiring()');
+    console.log('firing (before):', firing);
+    console.log('this._firing (before):', this._firing);
+    if (this._firing === null && firing !== null) {
+      this._firing = firing;
+      this._setFiringStateOptions();
+      this._setReady();
+    }
+    console.log('this._firing (after):', this._firing);
+    console.groupEnd();
   }
 
   _setKiln(kiln : IKiln) : void {
@@ -306,18 +352,24 @@ export class FiringDetails extends LoggerElement {
         maxTemp: this._program.maxTemp,
         cone: this._program.cone,
         firingState: 'scheduled',
+        firingActiveState: 'normal',
         temperatureState: 'n/a',
         log: [],
       };
+
+      this._setFiringStateOptions();
     }
 
     this._setDuration();
   }
 
   _setFiringStates(firingStates : IOrderedEnum[]) : void {
+    // console.group('<firing-details>._setFiringStates()');
+    // console.log('firingStates:', firingStates);
     this._firingStates = firingStates;
     this._setFiringStateOptions();
     this._setReady(true);
+    // console.groupEnd();
   }
 
   _setTemperatureStates(firingStates : IOrderedEnum[]) : void {
@@ -450,7 +502,7 @@ export class FiringDetails extends LoggerElement {
   }
 
   _renderExpectedStart() : TemplateResult {
-    if (this._userCan('fire') && ['scheduled', 'packing', 'ready'].includes(this.mode)) {
+    if (this._can('schedule') === true) {
       const min = (this._userHasAuth(2))
         ? undefined
         : new Date().toISOString();
@@ -460,7 +512,8 @@ export class FiringDetails extends LoggerElement {
         id="scheduledStart"
         min=${ifDefined(min)}
         max="${max}"
-        type="datetime-loca"
+        type="datetime-local"
+        label="Scheduled start"
         value="${ifDefined(this._firing?.scheduledStart)}"></accessible-temporal-field></li>`;
     }
 
@@ -481,13 +534,13 @@ export class FiringDetails extends LoggerElement {
         <ul class="firing-details">
           <li><read-only-field label="Firing type" value="${this._firingType}"></read-only-field></li>
           <li><read-only-field label="Firing state" value="${this._currentState}"></read-only-field></li>
-          ${(this._userCan('log') === true && this._firingStateOptions.length > 0)
+          ${(this._can('log') === true && this._firingStateOptions.length > 0)
             ? html`<li><accessible-select-field label="Update firing state" .options=${this._firingStateOptions}></accessible-select-field></li>`
             : ''
           }
           ${(this._showDuration === true)
             ? html`<li><read-only-field
-                label="Duration">${this._duration}</read-only-field></li>`
+                label="Duration"><span slot="value">${this._duration}</slot></read-only-field></li>`
             : ''
           }
           ${this._renderTopTemp()}
@@ -533,11 +586,11 @@ export class FiringDetails extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult {
-    console.group('<firing-details>.render()');
-    console.log('this.firingID:', this.firingID);
-    console.log('this._firing:', this._firing);
-    console.log('this._firing.actualStart:', this._firing?.actualStart);
-    console.log('this._firing.scheduledStart:', this._firing?.scheduledStart);
+    // console.group('<firing-details>.render()');
+    // console.log('this.firingID:', this.firingID);
+    // console.log('this._firing:', this._firing);
+    // console.log('this._firing.actualStart:', this._firing?.actualStart);
+    // console.log('this._firing.scheduledStart:', this._firing?.scheduledStart);
     // console.log('this.kilnID:', this.kilnID);
     // console.log('this._kilnID:', this._kilnID);
     // console.log('this.programID:', this.programID);
@@ -567,7 +620,7 @@ export class FiringDetails extends LoggerElement {
     }
 
     // console.log('can:', can);
-    console.log('start:', start);
+    // console.log('start:', start);
     // console.log('this._svgSteps:', this._svgSteps);
     // console.log('this._programSteps:', this._programSteps);
 

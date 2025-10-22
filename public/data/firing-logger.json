@@ -17,6 +17,7 @@
       "maxTemp": 1000,
       "cone": "06",
       "firingState": "empty",
+      "firingActiveState": "normal",
       "temperatureState": "n/a"
     },
     {
@@ -36,6 +37,7 @@
       "maxTemp": 1200,
       "cone": "6",
       "firingState": "empty",
+      "firingActiveState": "normal",
       "temperatureState": "n/a"
     },
     {
@@ -56,6 +58,7 @@
       "maxTemp": 1000,
       "cone": "06",
       "firingState": "empty",
+      "firingActiveState": "normal",
       "temperatureState": "n/a"
     },
     {
@@ -76,6 +79,7 @@
       "maxTemp": 1000,
       "cone": "06",
       "firingState": "empty",
+      "firingActiveState": "normal",
       "temperatureState": "n/a"
     }
   ],
@@ -1577,48 +1581,58 @@
   "EfiringState": [
     {
       "order": 0,
+      "value": "created",
+      "label": "Created but not scheduled"
+    },
+    {
+      "order": 1,
       "value": "scheduled",
       "label": "Scheduled"
     },
     {
-      "order": 1,
+      "order": 2,
       "value": "packing",
       "label": "Packing"
     },
     {
-      "order": 2,
+      "order": 3,
       "value": "ready",
       "label": "Ready"
     },
     {
-      "order": 3,
+      "order": 4,
+      "value": "cancelled",
+      "label": "Cancelled"
+    },
+    {
+      "order": 5,
       "value": "active",
       "label": "Active"
     },
     {
-      "order": 4,
+      "order": 6,
       "value": "complete",
       "label": "Completed"
     },
     {
-      "order": 5,
+      "order": 7,
+      "value": "aborted",
+      "label": "Aborted"
+    },
+    {
+      "order": 8,
       "value": "cold",
       "label": "Cold"
     },
     {
-      "order": 6,
+      "order": 9,
       "value": "unpacking",
       "label": "Unpacking"
     },
     {
-      "order": 7,
+      "order": 10,
       "value": "empty",
       "label": "Empty"
-    },
-    {
-      "order": 8,
-      "value": "aborted",
-      "label": "Aborted"
     }
   ],
   "EfiringType": [
