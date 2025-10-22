@@ -50,7 +50,7 @@ export const name2urlPart = (input : string) : string => input.toLowerCase().rep
 export const isNonEmptyStr = (
   obj : unknown,
   prop : string | null = null,
-) : boolean => {
+) : obj is string => {
   if (prop === null && typeof obj === 'string') {
     return (obj.trim() !== '');
   }

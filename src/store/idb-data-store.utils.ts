@@ -559,19 +559,19 @@ export const addUpdateHelper = async (
     if (user === null) {
       // This should never happen because `msg` will contain an error
       // message if user is null
-      msg = 'Cannot proceed because user is null';
+      throw new Error('Cannot proceed because user is null');
     } else {
       if (isNonEmptyStr(id)) {
         thing = await db.get(storeName, id);
 
         if (!isThing(thing)) {
-          msg = `Could not find ${itemType} matching "${id}"`;
+          throw new Error(`Could not find ${itemType} matching "${id}"`);
         }
       }
     }
   } else {
-    msg += ` ${_action} ${itemType} ${_type}`;
+    throw new Error(`${msg} ${_action} ${itemType} ${_type}`);
   }
 
-  return { user, hold, msg, thing };
+  return { hold, idbp: db, thing, user };
 }

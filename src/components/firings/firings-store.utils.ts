@@ -184,79 +184,74 @@ export const updateFiringData : FActionHandler = async(
   db: IDBPDatabase | CDataStoreClass,
   changes : IIdObject,
 ) : Promise<IDBValidKey> => {
-  const { user, hold, msg, thing } : IUpdateHelperData = await addUpdateHelper(
-    db,
-    changes.id,
-    'updateFiringData',
-    'firings',
-    'firing',
-    isIFiring,
-    {
-      permissionLevel: 1,
-      allowed: 'fire'
+  try {
+    const { user, hold, idbp, thing } : IUpdateHelperData = await addUpdateHelper(
+      db,
+      'updateFiringData',
+      'firings',
+      'firing',
+      isIFiring,
+      {
+        permissionLevel: 1,
+        allowed: 'fire',
+        id: changes.id,
+      }
+    );
+
+    const initial : IIdObject | string = getInitialData(changes, thing as IFiring);
+
+    if (typeof initial === 'string') {
+      return Promise.reject(initial);
     }
-  );
 
-  if (msg !== '') {
-    return Promise.reject(msg);
+    return  (hold === true)
+      ? saveChangeOnHold(
+          idbp,
+          'firings',
+          user.id,
+          changes,
+          initial,
+        )
+      : saveFiringChanges(
+          idbp,
+          user.id,
+          changes,
+          thing as IFiring
+        );
+  } catch(error) {
+    throw error;
   }
-
-  const initial : IIdObject | string = getInitialData(changes, thing as IFiring);
-
-  if (typeof initial === 'string') {
-    return Promise.reject(initial);
-  }
-
-  return  (hold === true)
-    ? saveChangeOnHold(
-        db as IDBPDatabase,
-        'firings',
-        user.id,
-        changes,
-        initial,
-      )
-    : saveFiringChanges(
-        db as IDBPDatabase,
-        user.id,
-        changes,
-        thing as IFiring
-      );
 }
 
 export const addFiringLogEntry : FActionHandler = async (
   db: IDBPDatabase | CDataStoreClass,
   data : IIdObject,
 ) : Promise<IDBValidKey> => {
-  const { user, hold, msg } : IUpdateHelperData = await addUpdateHelper(
-    db,
-    null,
-    'addFiringLogEntry',
-    'firingLogs',
-    'firing log enty',
-    isIFiring,
-    {
-      permissionLevel: 1,
-      allowed: 'log'
-    }
-  );
-
-  if (msg !== '') {
-    return Promise.reject(msg);
-  }
-
-  if (hold === true) {
-    return saveChangeOnHold(
-      db as IDBPDatabase,
-      'firings',
-      user.id,
-      data,
-      null,
+  try {
+    const { user, hold, idbp } : IUpdateHelperData = await addUpdateHelper(
+      db,
+      'addFiringLogEntry',
+      'firingLogs',
+      'firing log enty',
+      isIFiring,
+      {
+        permissionLevel: 1,
+        allowed: 'log'
+      }
     );
-  }
 
-  if (db instanceof PidbDataStore) {
-    return db.add('firingLogs', data);
-  }
+    if (hold === true) {
+      return saveChangeOnHold(
+        idbp,
+        'firings',
+        user.id,
+        data,
+        null,
+      );
+    }
 
-  return Promise.reject('No PidbDataStore');
+    return idbp.add('firingLogs', data);
+  } catch(error : unknown) {
+    throw error;
+  }
 };
