@@ -2,6 +2,7 @@ import type { IDBPDatabase } from 'idb';
 import type { ID, IKeyValPair, IKeyValue } from './data-simple.d.ts';
 import type { IKiln, IUser } from './data.d.ts';
 import type PidbDataStore from "../store/PidbDataStore.class.ts";
+import type { TUserNowLaterAuth } from './users';
 
 /**
  * TStoreSlice is a dot-separated string matching the following regular expression pattern
@@ -269,3 +270,17 @@ export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
 
 //  END:  IndexedDB only types
 // --------------------------------------------------------
+
+export interface IUpdateHelperData extends TUserNowLaterAuth {
+  hold: boolean,
+  msg: string,
+  user: TUser | null,
+  thing: unknown,
+}
+
+export type TUpdateHelperOptions = {
+  permissionLevel? : number,
+  allowed? : string,
+  action? : string,
+  type? : string,
+}

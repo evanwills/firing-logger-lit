@@ -7,10 +7,13 @@ import type {
   IKeyValue,
   IOrderedEnum,
 } from '../types/data-simple.d.ts';
-import type { FActionHandler } from '../types/store.d.ts';
+import type { FActionHandler, IUpdateHelperData, TUpdateHelperOptions } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
 import { isCDataStoreClass } from "../types/store.type-guards.ts";
 import { isStrNum } from "../types/data.type-guards.ts";
+import type { TUserNowLaterAuth } from '../types/users';
+import { userCanNowLater } from '../components/users/user-data.utils.ts';
+import { isNonEmptyStr } from '../utils/string.utils.ts';
 
 type Fresolver = (value: unknown) => void;
 
@@ -509,4 +512,66 @@ export const getKeyRange = (
   }
 
   return null;
+}
+
+export const addUpdateHelper = async (
+  db: IDBPDatabase | CDataStoreClass,
+  id: ID | null,
+  method: string,
+  storeName: string,
+  itemType: string,
+  isThing: (input: unknown) => boolean,
+  {
+    permissionLevel,
+    allowed,
+    action,
+    type,
+  } : TUpdateHelperOptions = {},
+) : Promise<IUpdateHelperData> => {
+  if (isCDataStoreClass(db)) {
+    throw new Error(
+      `${method}() expects first param \`db\` to be a `
+      + 'IDBPDatabase type object',
+    );
+  }
+
+  const _permissionLevel : number = (typeof permissionLevel === 'number')
+    ? permissionLevel
+    : 2;
+
+  const _allowed : string = (typeof allowed === 'string')
+    ? allowed
+    : 'any';
+
+  const _action : string = (typeof action === 'string')
+    ? action
+    : 'update';
+
+  const _type : string = (typeof type === 'string')
+    ? type
+    : 'details';
+
+
+  let { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
+  let thing = null,
+
+  if (msg === '') {
+    if (user === null) {
+      // This should never happen because `msg` will contain an error
+      // message if user is null
+      msg = 'Cannot proceed because user is null';
+    } else {
+      if (isNonEmptyStr(id)) {
+        thing = await db.get(storeName, id);
+
+        if (!isThing(thing)) {
+          msg = `Could not find ${itemType} matching "${id}"`;
+        }
+      }
+    }
+  } else {
+    msg += ` ${_action} ${itemType} ${_type}`;
+  }
+
+  return { user, hold, msg, thing };
 }

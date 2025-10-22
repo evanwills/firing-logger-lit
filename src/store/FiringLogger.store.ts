@@ -1,4 +1,4 @@
-import { type IDBPDatabase, type IDBPTransaction } from 'idb';
+import type { IDBPDatabase, IDBPTransaction } from 'idb';
 import type {
   CDataStoreClass,
   FReadyWatcher,
@@ -14,14 +14,24 @@ import {
 } from './idb-data-store.utils.ts';
 import { getAuthUser, updateAuthUser } from '../components/users/user-data.utils.ts';
 import {
+  addNewKilnData,
+  getKilnDataForProgram,
   getKilnEditData,
   getKilnViewData,
-  addNewKilnData,
   updateKilnData,
-  getKilnDataForProgram,
 } from '../components/kilns/kiln-store.utils.ts';
-import { getProgramData, getProgramURL, updateProgram, addProgram } from '../components/programs/program-store.utils.ts';
-import { getFiringData, getFiringsList } from "../components/firings/firings-store.utils.ts";
+import {
+  addProgram,
+  getProgramData,
+  getProgramURL,
+  updateProgram,
+} from '../components/programs/program-store.utils.ts';
+import {
+  addFiringLogEntry,
+  getFiringData,
+  getFiringsList,
+  updateFiringData,
+} from "../components/firings/firings-store.utils.ts";
 
 let store : CDataStoreClass | null = null;
 
@@ -427,9 +437,9 @@ const actions : TActionList = {
 
   getFiringsList,
   getFiringData,
-  // updateFiring,
+  updateFiringData,
   // updateFiringState,
-  // addFiringLogEntry,
+  addFiringLogEntry,
   // updateFiringLogEntry,
   // addToFiringList,
   // updateFiringList,
