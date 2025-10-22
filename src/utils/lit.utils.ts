@@ -7,6 +7,7 @@ import type {
   IKeyBool,
   IKeyStr,
   ILinkObject,
+  IOrderedEnum,
  } from '../types/data-simple.d.ts';
 import type { FWrapOutput, TCheckboxValueLabel, TOptionValueLabel } from '../types/renderTypes.d.ts';
 import { kebab2Sentance } from './string.utils.ts';
@@ -96,6 +97,29 @@ export const enumToOptions = (input : IKeyStr) : TOptionValueLabel[] => {
   }
 
   return output;
+};
+
+export const sortOrderedEnum = (input : IOrderedEnum[]) : IOrderedEnum[] => {
+  const tmp = [...input];
+
+  tmp.sort((a : IOrderedEnum, b: IOrderedEnum) : number => {
+    if (a.order < b.order) {
+      return -1;
+    }
+    if (a.order > b.order) {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  return tmp
+}
+
+export const orderedEnumToOptions = (input : IOrderedEnum[]) : TOptionValueLabel[] => {
+  const tmp = sortOrderedEnum(input);
+
+  return tmp.map((item : IOrderedEnum) : TOptionValueLabel => ({ value: item.value, label: item.label }));
 };
 
 export const getCheckableOptions = (

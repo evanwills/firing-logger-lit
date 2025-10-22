@@ -40,6 +40,7 @@ export const getLocalISO8601 = (when : number | Date | null) : string => {
 
   let off = _when.getTimezoneOffset();
   let sign = 'GMT';
+
   if (off > 0) {
     sign = '-';
   } else if (off < 0) {

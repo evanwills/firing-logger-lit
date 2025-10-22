@@ -293,14 +293,33 @@ export const calculateExpectedTemp = (
 export const deepClone = <T>(input : T) : T => JSON.parse(JSON.stringify(input));
 
 export const getValFromKey = (obj : IKeyValue, key : string) => {
-  console.group('getValFromKey()');
-  console.log('obj:', obj);
-  console.log('key:', key);
-  console.log(`obj[${key}]`, obj[key]);
-  console.groupEnd();
+  // console.group('getValFromKey()');
+  // console.log('obj:', obj);
+  // console.log('key:', key);
+  // console.log(`obj[${key}]`, obj[key]);
+  // console.groupEnd();
   return (typeof obj[key] === 'string')
     ? obj[key]
     : '';
+}
+
+export const getLabelFromOrderedEnum = (
+  enumList : IOrderedEnum[],
+  value : string,
+  defaultVal = '',
+) : string => {
+  // console.group('getLabelFromOrderedEnum()');
+  // console.log('enumList:', enumList);
+  // console.log('value:', value);
+  // console.log('defaultVal', defaultVal);
+  // console.groupEnd();
+  for (const item of enumList) {
+    if (item.value === value) {
+      return item.label;
+    }
+  }
+
+  return defaultVal;
 }
 
 export const isValidEnumValue = (

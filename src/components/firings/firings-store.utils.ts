@@ -7,6 +7,7 @@ import { isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts
 import { isProgram } from '../../types/program.type-guards.ts';
 import { getKeyRange } from '../../store/idb-data-store.utils.ts';
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
+import { isUser } from "../../types/user.type-guards.ts";
 // import { validateProgramData } from "../programs/program.utils.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
@@ -60,6 +61,8 @@ const _getFiringDataByFiringID = async (
     const index = tx.store.index('firingID');
     const log = index.getAll(uid);
 
+    const user = await db.get('users', firing.ownerID);
+
     // console.groupEnd();
 
     return {
@@ -70,6 +73,9 @@ const _getFiringDataByFiringID = async (
       firingStates: db.getAll('EfiringState'),
       firingTypes: db.getAll('EfiringType'),
       temperatureStates: db.getAll('EtemperatureState'),
+      ownerName: (isUser(user))
+        ? user.preferredName
+        : 'unknown',
     }
   }
 
@@ -102,6 +108,7 @@ const _getFiringDataByProgamID = async (
       firingStates: db.getAll('EfiringState'),
       firingTypes: db.getAll('EfiringType'),
       temperatureStates: db.getAll('EtemperatureState'),
+      ownerName: 'unknown',
     }
   }
 

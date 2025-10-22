@@ -215,4 +215,5 @@ export type TGetFirningDataPayload = {
   firingStates: Promise<IOrderedEnum[]>,
   firingTypes: Promise<IOrderedEnum[]>,
   temperatureStates: Promise<IOrderedEnum[]>,
+  ownerName: string,
 };

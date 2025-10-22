@@ -1,5 +1,5 @@
 import { html, type TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 
@@ -34,6 +34,9 @@ export class AccessibleTemporalField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: state
 
+  @state()
+  _tValue : string | null = null;
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -56,6 +59,12 @@ export class AccessibleTemporalField extends AccessibleWholeField {
           + `${this.type}" is not a valid type`,
         );
       }
+
+      if (typeof this.value === 'string' && this.value.trim() !== '') {
+        this._tValue = (this.type === 'datetime-local')
+          ? this.value.replace(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}).*$/, '$1')
+          : this.value
+      }
     }
 
   //  END:  lifecycle ethods
@@ -63,6 +72,10 @@ export class AccessibleTemporalField extends AccessibleWholeField {
   // START: helper render methods
 
   renderField() : TemplateResult {
+    // console.group('<accessible-temporal-field>.renderField()');
+    // console.log('this.fieldID:', this.fieldID);
+    // console.log('this.value:', this.value);
+    // console.groupEnd();
     return html`<input
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
@@ -75,7 +88,7 @@ export class AccessibleTemporalField extends AccessibleWholeField {
       ?required=${this.required}
       .step=${ifDefined(this.step)}
       .type=${this.type}
-      .value=${ifDefined(this.value)}
+      .value=${ifDefined(this._tValue)}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup} />`;
   }
