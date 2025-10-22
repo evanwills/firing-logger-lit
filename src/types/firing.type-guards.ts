@@ -118,8 +118,8 @@ export const isTFiringsListItem = (item : unknown) : item is TFiringsListItem =>
   && typeof (item as TFiringsListItem).kilnName === 'string'
   && typeof (item as TFiringsListItem).kilnURL === 'string'
   && isTFiringType((item as TFiringsListItem).firingType) === true
-  && typeof (item as IFiring).maxTemp === 'number'
-  && isTCone((item as IFiring).cone) === true
-  && (isISO8601((item as IFiring).actualStart) || (item as IFiring).actualStart === null)
-  && (isISO8601((item as IFiring).actualEnd) || (item as IFiring).actualEnd === null)
+  && typeof (item as TFiringsListItem).maxTemp === 'number'
+  && isTCone((item as TFiringsListItem).cone) === true
+  && (isISO8601((item as TFiringsListItem).start) || (item as TFiringsListItem).start === null)
+  && (isISO8601((item as TFiringsListItem).end) || (item as TFiringsListItem).end === null)
 );

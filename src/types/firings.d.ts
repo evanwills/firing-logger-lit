@@ -203,8 +203,8 @@ export type TFiringsListItem = {
   maxTemp: number,
   cone: TCone,
   firingState: TFiringState,
-  actualStart: ISO8601|null,
-  actualEnd: ISO8601|null,
+  start: ISO8601|null,
+  end: ISO8601|null,
 }
 
 export type TGetFirningDataPayload = {

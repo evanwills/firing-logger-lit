@@ -334,6 +334,9 @@ export class FiringDetails extends LoggerElement {
     this._kilnID = program.kilnID;
 
     if (this.mode === 'new') {
+      if (this._user === null) {
+        throw new Error('Cannot create a new firing');
+      }
       this._firing = {
         id: nanoid(10),
         kilnID: this._kilnID,
@@ -603,8 +606,15 @@ export class FiringDetails extends LoggerElement {
     // console.log('this._firingStates:', this._firingStates);
     // console.log('this._currentState:', this._currentState);
     // console.log('this._firingStateOptions:', this._firingStateOptions);
+
     if (this._ready === false) {
       return html`<loading-spinner label="Firing details"></loading-spinner>`;
+    }
+
+    if (this.mode === 'new' && this._userCan('fire') === false) {
+      return html`<http-error
+        code="403"
+        message="You do not have permission to create a new firing"></http-error>`
     }
 
     let start : string = 'New';
@@ -649,12 +659,16 @@ export class FiringDetails extends LoggerElement {
             : []
           }></friing-plot>
       </details>
-      <details name="details">
-        <summary>Log</summary>
-        <ul class="log-list">
-          ${this._rawLog.map(this._renderLogEntry.bind(this))}
-        </ul>
-      </details>
+      ${(this._rawLog.length > 0)
+        ? html`
+          <details name="details">
+            <summary>Log</summary>
+            <ul class="log-list">
+              ${this._rawLog.map(this._renderLogEntry.bind(this))}
+            </ul>
+          </details>`
+        : ''
+      }
     `;
   }
 

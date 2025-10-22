@@ -54,6 +54,25 @@ export class FiringsList extends LoggerElement {
   // START: helper methods
 
   _setDataThen(data : TFiringsListItem[]) : void {
+    data.sort((a : TFiringsListItem, b : TFiringsListItem) : number => {
+      if (a.start !== null && b.start !== null) {
+        if (a.start < b.start) {
+          return 1;
+        }
+        if (a.start > b.start) {
+          return -1;
+        }
+        return 0;
+      }
+
+      if (a.start === null && b.start !== null) {
+        return 1
+      }
+      if (a.start !== null && b.start === null) {
+        return -1
+      }
+      return 0;
+    });
     this._firingList = data;
     this._ready = true;
   }
@@ -110,8 +129,8 @@ export class FiringsList extends LoggerElement {
         data-firing-id="${data.id}"
         data-kiln-id="${data.kilnID}"
         data-program-id="${data.programID}"
-        url="/firing/${data.id}">${this._renderDate(data.actualStart)}</router-link></th>
-      <!-- <td>${this._renderDate(data.actualEnd)}</td> -->
+        url="/firing/${data.id}">${this._renderDate(data.start)}</router-link></th>
+      <!-- <td>${this._renderDate(data.end)}</td> -->
       <td><router-link
         data-uid="${data.programID}"
         url="/kilns/${data.programURL}"
