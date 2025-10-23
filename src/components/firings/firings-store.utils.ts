@@ -2,20 +2,16 @@ import type { IDBPDatabase } from 'idb';
 import type { IFiring, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
 import type { CDataStoreClass, FActionHandler, IUpdateHelperData } from '../../types/store.d.ts';
 import type { ID, IIdObject, TDateRange } from '../../types/data-simple.d.ts';
-// import type { TUserNowLaterAuth } from "../../types/users.d.ts";
 import { isCDataStoreClass } from '../../types/store.type-guards.ts';
 import { isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts';
 import { isProgram } from '../../types/program.type-guards.ts';
 import { addUpdateHelper, getKeyRange } from '../../store/idb-data-store.utils.ts';
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
 import { isUser } from "../../types/user.type-guards.ts";
-// import { userCanNowLater } from "../users/user-data.utils.ts";
 import { getInitialData, saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { mergeChanges } from '../../utils/store.utils.ts';
 import { validateFiringData } from './firing-data.utils.ts';
 import { addRedirect, updateRedirect } from '../../store/redirect.utils.ts';
-import PidbDataStore from '../../store/PidbDataStore.class.ts';
-// import { validateProgramData } from "../programs/program.utils.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
 export const getFiringsList : FActionHandler = async (

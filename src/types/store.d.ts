@@ -273,9 +273,9 @@ export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
 
 export interface IUpdateHelperData extends TUserNowLaterAuth {
   hold: boolean,
-  user: TUser,
-  thing: unknown,
   idbp : IDBPDatabase,
+  thing: unknown,
+  user: TUser,
 }
 
 export type TUpdateHelperOptions = {

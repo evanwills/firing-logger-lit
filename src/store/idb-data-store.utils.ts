@@ -10,7 +10,7 @@ import type {
 import type { FActionHandler, IUpdateHelperData, TUpdateHelperOptions } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
 import { isCDataStoreClass } from "../types/store.type-guards.ts";
-import { isStrNum } from "../types/data.type-guards.ts";
+import { isID, isStrNum } from "../types/data.type-guards.ts";
 import type { TUserNowLaterAuth } from '../types/users';
 import { userCanNowLater } from '../components/users/user-data.utils.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
@@ -516,15 +516,15 @@ export const getKeyRange = (
 
 export const addUpdateHelper = async (
   db: IDBPDatabase | CDataStoreClass,
-  id: ID | null,
   method: string,
   storeName: string,
   itemType: string,
   isThing: (input: unknown) => boolean,
   {
-    permissionLevel,
-    allowed,
     action,
+    allowed,
+    id,
+    permissionLevel,
     type,
   } : TUpdateHelperOptions = {},
 ) : Promise<IUpdateHelperData> => {
@@ -550,7 +550,9 @@ export const addUpdateHelper = async (
   const _type : string = (typeof type === 'string')
     ? type
     : 'details';
-
+  const _id : ID | null = (isID(id))
+    ? id
+    : null;
 
   let { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
   let thing = null;
@@ -561,11 +563,11 @@ export const addUpdateHelper = async (
       // message if user is null
       throw new Error('Cannot proceed because user is null');
     } else {
-      if (isNonEmptyStr(id)) {
-        thing = await db.get(storeName, id);
+      if (isNonEmptyStr(_id)) {
+        thing = await db.get(storeName, _id);
 
         if (!isThing(thing)) {
-          throw new Error(`Could not find ${itemType} matching "${id}"`);
+          throw new Error(`Could not find ${itemType} matching "${_id}"`);
         }
       }
     }
