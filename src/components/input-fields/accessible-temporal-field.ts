@@ -37,6 +37,8 @@ export class AccessibleTemporalField extends AccessibleWholeField {
   @state()
   _tValue : string | null = null;
 
+  _types : Set<string> = new Set(['date', 'time', 'datetime-local']);
+
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
@@ -52,7 +54,7 @@ export class AccessibleTemporalField extends AccessibleWholeField {
     connectedCallback() : void {
       super.connectedCallback();
 
-      if (['date', 'time', 'datetime-local'].includes(this.type) === false) {
+      if (this._types.has(this.type) === false) {
         throw new Error(
           '<accessible-temporal-field> expects the "type" attribute '
           + 'to be either "date", "time" or "datetime-local". "'

@@ -23,6 +23,7 @@ import {
 import {
   addProgram,
   getProgramData,
+  getProgramsList,
   getProgramURL,
   updateProgram,
 } from '../components/programs/program-store.utils.ts';
@@ -424,7 +425,7 @@ const actions : TActionList = {
   getProgramURL,
   updateProgram,
   addProgram,
-  // getProgramList,
+  getProgramsList,
   // addToProgramList,
   // updateProgramList,
   // deleteFromProgramList,

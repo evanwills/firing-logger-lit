@@ -17,5 +17,5 @@ export const isUser = (user : unknown) : user is TUser => (
   && typeof (user as TUser).phone === 'string'
   && typeof (user as TUser).preferredName === 'string'
   && typeof (user as TUser).username === 'string'
-  && ['auto', 'light', 'dark'].includes((user as TUser).colourScheme)
+  && new Set(['auto', 'light', 'dark']).has((user as TUser).colourScheme)
 );

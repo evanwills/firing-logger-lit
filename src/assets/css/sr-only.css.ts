@@ -11,4 +11,4 @@ export const srOnly = css`
     padding:0;
     position:absolute;
     overflow:hidden
-  };`;
+  }`;

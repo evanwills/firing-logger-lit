@@ -1,5 +1,5 @@
 import type { SVGTemplateResult, TemplateResult } from 'lit';
-import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601, TCone } from './data-simple.d.ts';
+import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601, TCone, IOrderedEnum } from './data-simple.d.ts';
 
 export interface IFiringStep extends IKeyValue {
   order: number,   // step order in program, starting at 1
@@ -63,3 +63,8 @@ export type TProgramListRenderItem = {
   redirect: boolean,
   url: string | null,
 }
+
+export type TProgramListData = {
+  list: Promise<TProgramListRenderItem[]>,
+  types: Promise<IOrderedEnum[]>,
+};

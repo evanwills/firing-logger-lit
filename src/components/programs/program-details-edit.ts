@@ -57,12 +57,12 @@ export class ProgramDetailsEdit extends ProgramDetails {
   _canSave : boolean = false;
 
   @state()
-  _changedFields : string[] = [];
+  _changedFields : Set<string> = new Set();
 
   _changes : IKeyValue = {};
 
   @state()
-  _errorFields : string[] = [];
+  _errorFields : Set<string> = new Set();
 
   @state()
   _firingTypeOptions : TOptionValueLabel[] = [];
@@ -72,6 +72,8 @@ export class ProgramDetailsEdit extends ProgramDetails {
 
   @state()
   _stepsChanged : boolean = false;
+
+  _newDetails : Set<string> = new Set(['copy', 'clone', 'new']);
 
   //  END:  state
   // ------------------------------------------------------
@@ -88,9 +90,9 @@ export class ProgramDetailsEdit extends ProgramDetails {
     // console.log('value:', value);
     // console.log('_default:', _default);
     // console.log('this.mode:', this.mode);
-    // console.log("'['copy', 'clone', 'new'].includes(this.mode):", ['copy', 'clone', 'new'].includes(this.mode));
+    // console.log('this._newDetails.has(this.mode):', this._newDetails.has(this.mode));
     // console.groupEnd();
-    return (['copy', 'clone', 'new'].includes(this.mode) === true)
+    return (this._newDetails.has(this.mode) === true)
       ? _default
       : value;
   }
@@ -111,7 +113,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
     // console.log('this._errorFields.length:', this._errorFields.length);
     // console.log('this._errorFields.length > 0:', this._errorFields.length > 0);
 
-    if (this._errorFields.length > 0 || this._tmpSteps.length === 0) {
+    if (this._errorFields.size > 0 || this._tmpSteps.length === 0) {
       // First round of validation failed.
       this._canSave === false;
 
@@ -133,7 +135,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
     }
 
     this._stepsChanged = (diff > 0 || this._steps.length !== this._tmpSteps.length);
-    this._canSave = (this._changedFields.length > 0 || this._stepsChanged === true);
+    this._canSave = (this._changedFields.size > 0 || this._stepsChanged === true);
     // console.groupEnd();
   }
 

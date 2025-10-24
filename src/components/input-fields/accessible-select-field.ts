@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
 /**
  * An example element.
@@ -20,6 +21,12 @@ export class AccessibleSelectField extends AccessibleWholeField {
 
   @property({ type: Array, attribute: 'options' })
   options : TOptionValueLabel[] = [];
+
+  @property({ type: String, attribute: 'empty-label' })
+  emptyLabel : string = '-- Please choose --';
+
+  @property({ type: Boolean, attribute: 'show-empty' })
+  showEmpty : boolean = false;
 
   //  END:  Standard HTML <input type="number"> properties
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,6 +68,10 @@ export class AccessibleSelectField extends AccessibleWholeField {
       .value=${ifDefined(this.value)}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup}>
+      ${(this.showEmpty === true && isNonEmptyStr(this.emptyLabel))
+        ? html`<option value="">${this.emptyLabel}</option>`
+        : ''
+      }
       ${this.options.map(
         (option : TOptionValueLabel) : TemplateResult => html`
           <option

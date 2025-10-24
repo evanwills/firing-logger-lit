@@ -9,9 +9,9 @@ import type {
 } from '../types/data-simple.d.ts';
 import type { FActionHandler, IUpdateHelperData, TUpdateHelperOptions } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
+import type { TUserNowLaterAuth } from '../types/users.d.ts';
 import { isCDataStoreClass } from "../types/store.type-guards.ts";
 import { isID, isStrNum } from "../types/data.type-guards.ts";
-import type { TUserNowLaterAuth } from '../types/users';
 import { userCanNowLater } from '../components/users/user-data.utils.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
 
@@ -554,7 +554,7 @@ export const addUpdateHelper = async (
     ? id
     : null;
 
-  let { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
+  const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
   let thing = null;
 
   if (msg === '') {

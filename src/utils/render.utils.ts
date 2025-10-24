@@ -135,9 +135,24 @@ export const boolToStr = (input: boolean, str = 'yes') : string => {
 }
 
 export const renderReadonlyCheckable = (
-  option : TCheckboxValueLabel
+  option : TCheckboxValueLabel,
 ) : TemplateResult => html`
     <li><read-only-field
       label="${option.label}"
-      value="${boolToStr(option.checked)}"></read-only-field></li>
-  `;
+      value="${boolToStr(option.checked)}"></read-only-field></li>`;
+
+export const orderOptionsByLabel = (list : TOptionValueLabel[]) : TOptionValueLabel[] => {
+  const output = [...list];
+
+  output.sort((a: TOptionValueLabel, b : TOptionValueLabel) : number => {
+    if (a.label < b.label) {
+      return -1;
+    }
+    if (a.label > b.label) {
+      return 1;
+    }
+    return 0;
+  });
+
+  return output;
+}

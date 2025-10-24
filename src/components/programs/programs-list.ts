@@ -1,13 +1,11 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { IKiln} from '../../types/kilns.d.ts';
-import type { IProgram } from '../../types/programs.d.ts';
+import type { TProgramListData, TProgramListRenderItem } from '../../types/programs.d.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
-import { getValFromKey } from '../../utils/data.utils.ts';
+import { getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
-import { getLinkProps } from '../../utils/lit.utils.ts';
 import { tableStyles } from './programs.css.ts';
 import '../lit-router/router-link.ts';
 
@@ -45,16 +43,7 @@ export class ProgramsList extends LoggerElement {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     @state()
-    _kilnList : IKiln[] = [];
-
-    @state()
-    _programList : IProgram[] = [];
-
-    @state()
-    _kilnTypes : IKeyValue = {};
-
-    @state()
-    _fuelSources : IKeyValue = {};
+    _programList : TProgramListRenderItem[] = [];
 
     @state()
     _firingTypes : IKeyValue = {};
@@ -63,41 +52,17 @@ export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnTypes(data : IKeyValue) : void {
-    // console.group('<kilns-list>._setKilnTypes()');
-    // console.log('data:', data);
-    this._kilnTypes = data;
-    // console.groupEnd()
-  }
-
-  _setFuelSources(data : IKeyValue) : void {
-    // console.group('<kilns-list>._setFuelSources()');
-    // console.log('data:', data);
-    this._fuelSources = data;
-    // console.groupEnd()
-  }
-
-  _setFiringTypes(data : IKeyValue) : void {
-    this._firingTypes = data;
-  }
-
-  _setKilnList(data : IKiln[]) : void {
-    this._kilnList = data;
-    this._ready = true;
-  }
-
-  _setProgramList(data : IProgram[]) : void {
-    this._programList = data.filter((program) => program.superseded === false && program.deleted === false);
+  async _setProgramList(data : TProgramListData) : Promise<void> {
+    this._programList = await data.list;
+    this._firingTypes = orderedEnum2enum(await data.types);
     this._ready = true;
   }
 
   _setData(_ok : boolean) : void {
     if (this.store !== null) {
-      this.store.read('EfiringType', '', true).then(this._setFiringTypes.bind(this)).catch(storeCatch);
-      this.store.read('EfuelSource', '', true).then(this._setFuelSources.bind(this)).catch(storeCatch);
-      this.store.read('EkilnType', '', true).then(this._setKilnTypes.bind(this)).catch(storeCatch);
-      this.store.read('kilns').then(this._setKilnList.bind(this)).catch(storeCatch);
-      this.store.read('programs').then(this._setProgramList.bind(this)).catch(storeCatch);
+      this.store.dispatch('getProgramsList', '', true)
+        .then(this._setProgramList.bind(this))
+        .catch(storeCatch);
     }
   }
 
@@ -131,32 +96,31 @@ export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper render methods
 
-  _renderTableRow(programData : IKeyValue) : TemplateResult {
-    const { name, urlPart, id } = getLinkProps(this._kilnList, programData.kilnID);
+  _renderTableRow(data : TProgramListRenderItem) : TemplateResult {
     return html`<tr>
       <th class="flex">
         <router-link
-        data-uid="${programData.id}"
-        url="/kilns/${urlPart}/programs/${programData.urlPart}"
-        label="${programData.name}"></router-link>
+        data-uid="${data.programID}"
+        url="/kilns/${data.kilnURL}/programs/${data.programURL}"
+        label="${data.programName}"></router-link>
         ${(this._userCan('fire') === true)
           ? html`<router-link
                 class="btn btn-sm warning"
-                data-uid="${programData.id}"
+                data-uid="${data.programID}"
                 label="New firing"
-                sr-label="for ${programData.name}"
-                url="/firing/new?programUID=${programData.id}"></router-link>`
+                sr-label="for ${data.programName}"
+                url="/firing/new?programUID=${data.programID}"></router-link>`
           : ''
         }
       </th>
-      <td>${getValFromKey(this._firingTypes, programData.type)}</td>
+      <td>${getValFromKey(this._firingTypes, data.type)}</td>
       <td><router-link
-        data-uid="${id}"
-        url="/kilns/${urlPart}"
-        label="${name}"></router-link></td>
-      <td>${this._tConverter(programData.maxTemp)}&deg;${this._tUnit}</td>
-      <td>${programData.cone}</td>
-      <td>${hoursFromSeconds(programData.duration)}</td>
+        data-uid="${data.kilnID}"
+        url="/kilns/${data.kilnURL}"
+        label="${data.kilnName}"></router-link></td>
+      <td>${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</td>
+      <td>${data.cone}</td>
+      <td>${hoursFromSeconds(data.duration)}</td>
     </tr>`;
   }
 

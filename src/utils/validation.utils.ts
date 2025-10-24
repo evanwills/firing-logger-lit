@@ -1,11 +1,8 @@
-export const addRemoveField = (fieldList : string[], key : string, add : boolean = true) : string[] => {
+export const addRemoveField = (fieldList : Set<string>, key : string, add : boolean = true) : Set<string> => {
   if (add === true) {
-    if (fieldList.includes(key) === false) {
-      fieldList.push(key);
-    }
-
-    return fieldList;
+    fieldList.add(key);
+  } else {
+    fieldList.delete(key);
   }
-
-  return fieldList.filter((item) => (item !== key));
+  return fieldList;
 }

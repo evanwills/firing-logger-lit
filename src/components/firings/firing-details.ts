@@ -122,7 +122,7 @@ export class FiringDetails extends LoggerElement {
   @state()
   _readyCount : number = 7;
   @state()
-  _canDo : string[] = [];
+  _canDo : Set<string> = new Set();
   _updated : number = 0;
   @state()
   _scheduledStart : ISO8601 | null = null;
@@ -161,21 +161,22 @@ export class FiringDetails extends LoggerElement {
     console.log('this._firing.firingState:', this._firing?.firingState);
     console.log('this._firing.scheduledStart:', this._firing?.scheduledStart);
     console.log('this._canDo (before):', this._canDo);
-    if (this._firing !== null && (this._canDo.length === 0 || force === true)) {
-      this._canDo = [];
-      if (this._userCan('fire') && ['created', 'scheduled', 'packing', 'ready'].includes(this._firing.firingState)) {
-        this._canDo.push('schedule');
+    if (this._firing !== null && (this._canDo.size === 0 || force === true)) {
+      this._canDo.clear();
+      if (this._userCan('fire')
+        && new Set(['created', 'scheduled', 'packing', 'ready']).has(this._firing.firingState)) {
+        this._canDo.add('schedule');
       }
 
       if (this._userCan('log')
-        && ['created', 'empty'].includes(this._firing.firingState) === false
+        && new Set(['created', 'empty']).has(this._firing.firingState) === false
         && this._firing.scheduledStart !== null
       ) {
-        this._canDo.push('log');
+        this._canDo.add('log');
       }
 
-      if (this._canDo.length === 0) {
-        this._canDo.push('nothing');
+      if (this._canDo.size === 0) {
+        this._canDo.add('nothing');
       }
     }
     console.log('this._canDo (after):', this._canDo);
@@ -183,7 +184,7 @@ export class FiringDetails extends LoggerElement {
   }
 
   _can(action : string) : boolean {
-    return this._canDo.includes(action);
+    return this._canDo.has(action);
   }
 
   _setReady(always = false) : void {
@@ -230,39 +231,52 @@ export class FiringDetails extends LoggerElement {
         if (this._firingState === 'empty') {
           this._currentState = 'Completed and emptied';
         } else {
-          let allowed : string[] = [];
+          const allowed : Set<string> = new Set();
 
           switch (this._firing.firingState) {
             case 'created':
-              allowed = ['scheduled', 'cancelled'];
+              allowed.add('scheduled');
+              allowed.add('cancelled');
               this._canEnd = 'cancel';
               break;
             case 'scheduled':
-              allowed = ['packing', 'ready', 'active', 'cancelled'];
+              allowed.add('packing');
+              allowed.add('ready');
+              allowed.add('active');
+              allowed.add('cancelled');
               this._canEnd = 'cancel';
               break;
             case 'packing':
-              allowed = ['ready', 'active', 'unpacking', 'cancelled'];
+              allowed.add('ready');
+              allowed.add('active');
+              allowed.add('unpacking');
+              allowed.add('cancelled');
               this._canEnd = 'cancel';
               break;
             case 'ready':
-              allowed = ['active', 'unpacking', 'cancelled'];
+              allowed.add('active');
+              allowed.add('unpacking');
+              allowed.add('cancelled');
               this._canEnd = 'cancel';
               break;
             case 'active':
-              allowed = ['complete', 'aborted'];
+              allowed.add('complete');
+              allowed.add('aborted');
               this._canEnd = 'abort';
               break;
             case 'complete':
-              allowed = ['cold', 'unpacking', 'empty'];
+              allowed.add('cold');
+              allowed.add('unpacking');
+              allowed.add('empty');
               this._canEnd = '';
               break;
             case 'cold':
-              allowed = ['unpacking', 'empty'];
+              allowed.add('unpacking');
+              allowed.add('empty');
               this._canEnd = '';
               break;
             case 'unpacking':
-              allowed = ['empty'];
+              allowed.add('empty');
               this._canEnd = '';
               break;
           }
@@ -275,7 +289,7 @@ export class FiringDetails extends LoggerElement {
             // console.log('state.label:', state.label);
             // console.log('this._firing.firingState:', this._firing.firingState);
             // console.log('state.value === this._firing.firingState:', state.value === this._firing.firingState);
-            if (allowed.includes(state.value) && typeof state.label === 'string') {
+            if (allowed.has(state.value) && typeof state.label === 'string') {
               newOptions[state.value] = state.label;
             }
             if (this._firing.firingState === state.value) {
@@ -570,7 +584,7 @@ export class FiringDetails extends LoggerElement {
     console.groupEnd();
   }
 
-  _handleEnd(event : CustomEvent) : void {
+  _handleEnd(_event : CustomEvent) : void {
     if (this._firingState === 'created') {
       if (this.mode !== 'new') {
         // this.store?.delete('firings', this.firingID);

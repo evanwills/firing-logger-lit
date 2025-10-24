@@ -1,4 +1,5 @@
 :root {
+  --backdrop: rgba(0, 0, 0, 0.8);
   --bg-colour: #101112;
   --bg-colour-success: #005411;
   --bg-colour-warning: #864907;
@@ -41,6 +42,7 @@
   --logo-margin-top: -0.5rem;
   --logo-translate-y: 0.25rem;
   --max-width: 40rem;
+  --modal-border-radius: 0.5rem;
   --multi-col-list-margin-block: 1rem;
   --multi-col-list-margin-inline-start: 0;
   --primary-stroke: #cc5eff;

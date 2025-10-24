@@ -31,6 +31,7 @@ import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
 import '../shared-components/loading-spinner.ts';
 import './program-steps-table.ts';
+import { getValFromKey } from "../../utils/data.utils.ts";
 // import { validateKilnData } from '../kilns/kiln-data.utils.ts';
 
 /**
@@ -139,13 +140,15 @@ export class ProgramDetails extends LoggerElement {
   _useCount : number = 0;
 
   @state()
-  _firingTypes : IKeyStr | null = null;
+  _firingTypes : IKeyStr = {};
 
   @state()
   _firingTypeOptions : TOptionValueLabel[] = [];
 
   @state()
   _noEdit : boolean = false;
+
+  _lockedStates : Set<string> = new Set(['retired', 'decommissioned', 'Removed']);
 
   //  END:  state
   // ------------------------------------------------------
@@ -170,7 +173,7 @@ export class ProgramDetails extends LoggerElement {
       this._kilnUrlPart = _kiln.urlPart;
 
       if (this._noEdit === false
-        && ['retired', 'decommissioned', 'Removed'].includes(this._kilnData.serviceState)
+        && this._lockedStates.has(this._kilnData.serviceState)
       ) {
         this._noEdit = true;
       }
@@ -184,21 +187,21 @@ export class ProgramDetails extends LoggerElement {
   }
 
   _setFiringTypes(firingTypes : IKeyStr | null) : void {
-    // console.group('<program-details>._setFiringTypes()');
-    // console.log('firingTypes:', firingTypes);
-    // console.log('this._firingTypes (before):', this._firingTypes);
-    // console.log('this._firingTypeOptions (before):', this._firingTypeOptions);
+    console.group('<program-details>._setFiringTypes()');
+    console.log('firingTypes:', firingTypes);
+    console.log('this._firingTypes (before):', this._firingTypes);
+    console.log('this._firingTypeOptions (before):', this._firingTypeOptions);
     if (isIKeyStr(firingTypes) && this._kilnData !== null) {
       this._firingTypes = firingTypes;
       this._firingTypeOptions = enumToOptions(this._firingTypes)
         .filter((option : TOptionValueLabel) => (isNonEmptyStr(option.value) === true
           && typeof this._kilnData !== 'undefined'
           && (this._kilnData as IKiln)[option.value] === true));
-      // console.log('this._firingTypeOptions:', this._firingTypeOptions);
+      console.log('this._firingTypeOptions:', this._firingTypeOptions);
     }
-    // console.log('this._firingTypes (after):', this._firingTypes);
-    // console.log('this._firingTypeOptions (after):', this._firingTypeOptions);
-    // console.groupEnd();
+    console.log('this._firingTypes (after):', this._firingTypes);
+    console.log('this._firingTypeOptions (after):', this._firingTypeOptions);
+    console.groupEnd();
   }
 
   async _setProgramData({ EfiringTypes, program, kiln } : PProgramDetails) : Promise<void> {
@@ -306,7 +309,7 @@ export class ProgramDetails extends LoggerElement {
   // ------------------------------------------------------
   // START: helper render methods
 
-  renderDetails() : TemplateResult {
+  renderDetails() : TemplateResult | string {
     const data : IKeyValUrl[] = [
       {
         key: 'Kiln',
@@ -316,7 +319,7 @@ export class ProgramDetails extends LoggerElement {
       },
       {
         key: 'Type',
-        value: this._type,
+        value: getValFromKey(this._firingTypes, this._type),
         noEmpty: true,
       },
       {

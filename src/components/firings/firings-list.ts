@@ -6,6 +6,8 @@ import { tableStyles } from '../programs/programs.css.ts';
 import { storeCatch } from '../../store/idb-data-store.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
+import '../shared-components/firing-logger-modal.ts';
+import './new-firing-selector.ts';
 
 @customElement('firings-list')
 export class FiringsList extends LoggerElement {
@@ -133,7 +135,7 @@ export class FiringsList extends LoggerElement {
       <!-- <td>${this._renderDate(data.end)}</td> -->
       <td><router-link
         data-uid="${data.programID}"
-        url="/kilns/${data.programURL}"
+        url="/kilns/${data.kilnURL}/programs/${data.programURL}"
         label="${data.programName}"></router-link></td>
       <td><router-link
         data-uid="${data.kilnID}"
@@ -171,7 +173,11 @@ export class FiringsList extends LoggerElement {
         <tbody>
           ${this._firingList.map(this._renderTableRow.bind(this))}
         </tbody>
-      </table>`
+      </table>
+      ${this._userCan('fire')
+        ? html`<firing-logger-modal btn-text="New firing" heading="New firing"><new-firing-selector .store=${this.store}></new-firing-selector></firing-modal>`
+        : ''
+      }`
       : html`<p>Loading...</p>`
     }
     `;

@@ -31,10 +31,12 @@ export class AccessibleTextField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: state
 
-  regexes : {[key:string]:RegExp} = {
+  _regexes : {[key:string]:RegExp} = {
     name: /\w[\w\- .,\(\):\&\/]{2,49}/,
     title: /[\w\d][\d\w\- .,\(\):\&\/\+]{2,49}/,
   }
+
+  _knownTypes = new Set(['name', 'title']);
 
   //  END:  state
   // ------------------------------------------------------
@@ -45,8 +47,8 @@ export class AccessibleTextField extends AccessibleWholeField {
       return this.pattern;
     }
 
-    if (typeof this.regexes[this.validationType] !== 'undefined') {
-      return this.regexes[this.validationType].source;
+    if (typeof this._regexes[this.validationType] !== 'undefined') {
+      return this._regexes[this.validationType].source;
     }
 
     return null;
@@ -63,7 +65,7 @@ export class AccessibleTextField extends AccessibleWholeField {
   connectedCallback() : void {
     super.connectedCallback();
 
-    if (['name', 'title'].includes(this.validationType)) {
+    if (this._knownTypes.has(this.validationType)) {
       if (this.getErrorMsg === null) {
         this._getErrorMsg = getCustomErrorMsg(
           this.label,

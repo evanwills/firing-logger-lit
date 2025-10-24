@@ -76,10 +76,10 @@ export class KilnDetailsEdit extends KilnDetails {
   _firingOptions : TCheckboxValueLabel[] = [];
 
   @state()
-  _changedFields : string[] = [];
+  _changedFields : Set<string> = new Set();
 
   @state()
-  _errorFields : string[] = [];
+  _errorFields : Set<string> = new Set();
 
   _changes : IKeyValue = {};
 
@@ -94,7 +94,7 @@ export class KilnDetailsEdit extends KilnDetails {
   // START: helper methods
 
   _setCanSave() : void {
-    this._canSave = (this._changedFields.length > 0 && this._errorFields.length === 0);
+    this._canSave = (this._changedFields.size > 0 && this._errorFields.size === 0);
   }
 
   _handleChangeInner(field : InputValueClass) : void {
@@ -225,9 +225,9 @@ export class KilnDetailsEdit extends KilnDetails {
   handleSave(event : Event) : void {
     event.preventDefault();
 
-    if (this._errorFields.length === 0) {
+    if (this._errorFields.size === 0) {
       // All good!!! No errors
-      if (this._changedFields.length > 0) {
+      if (this._changedFields.size > 0) {
         // Something has changed. We can save this data.
         let action : TStoreAction = 'updateKiln';
         let id : ID = this._id;
@@ -259,7 +259,7 @@ export class KilnDetailsEdit extends KilnDetails {
       // Bummer there are some errors
       // We need to send the user to the first field with an error
       for (const key of this._kilnKeys) {
-        if (this._errorFields.includes(key)) {
+        if (this._errorFields.has(key)) {
           // This is the first field with an error, we'll go to that.
           const target : FocusableInside | null = this.renderRoot.querySelector(`[field-id=${key}]`);
 
@@ -533,7 +533,7 @@ export class KilnDetailsEdit extends KilnDetails {
   }
 
   _errorAlert() {
-    if (this._errorFields.length === 0) {
+    if (this._errorFields.size === 0) {
       return '';
     }
     const errors : string[] = [];
@@ -541,7 +541,7 @@ export class KilnDetailsEdit extends KilnDetails {
     // console.log('this._errorFields:', this._errorFields);
     // console.log('this._errorFields.length:', this._errorFields.length);
     for (const key of this._kilnKeys) {
-      if (this._errorFields.includes(key)) {
+      if (this._errorFields.has(key)) {
         errors.push(kebab2Sentance(key));
       }
     }

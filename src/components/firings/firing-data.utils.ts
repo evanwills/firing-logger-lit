@@ -1,9 +1,13 @@
+import type { FConverter, ID } from "../../types/data-simple.d.ts";
 import type { TSvgPathItem } from "../../types/data.d.ts";
 import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
 import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
 import type { IFiring, IFiringLogEntry, ITempLogEntry } from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
+import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
+import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
 import { isObj } from "../../utils/data.utils.ts";
+import { orderOptionsByLabel } from "../../utils/render.utils.ts";
 
 /**
  * Generates a standard error message for invalid program (or program
@@ -163,3 +167,34 @@ export const tempLog2SvgPathItem = (item : ITempLogEntry) : TSvgPathItem => ({
   actualTime: item.time,
   temp: item.tempActual,
 });
+
+export const getKilnsByFiringType = (
+  list : TProgramListRenderItem[],
+  type : TFiringType | null,
+) : TOptionValueLabel[] => {
+  const tmp = list.filter((item : TProgramListRenderItem) : boolean => item.type === type)
+    .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.kilnID, label: item.kilnName}));
+
+  const output = [];
+  const ids : Set<string> = new Set();
+
+  for (const item of tmp) {
+    if (ids.has(item.value) === false) {
+      ids.add(item.value);
+      output.push(item);
+    }
+  }
+
+  return orderOptionsByLabel(output);
+};
+
+export const getProgramsByTypeAndKiln = (
+  list : TProgramListRenderItem[],
+  type : TFiringType | null,
+  kilnID : ID | null,
+  tConverter : FConverter,
+  tUnit : string,
+) : TOptionValueLabel[] => orderOptionsByLabel(
+  list.filter((item : TProgramListRenderItem) : boolean => (item.type === type && item.kilnID === kilnID))
+    .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.programID, label: `${item.programName} (Cone: ${item.cone} - ${tConverter(item.maxTemp)}°${tUnit}})` })),
+);

@@ -6,7 +6,7 @@ import type {
 } from '../../types/data-simple.d.ts';
 import { nanoid } from 'nanoid';
 import type { IKiln } from '../../types/kilns.d.ts';
-import type { IProgram } from '../../types/programs.d.ts';
+import type { IProgram, TProgramListData } from '../../types/programs.d.ts';
 import type { CDataStoreClass, FActionHandler, IRedirectDataNew } from '../../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../../types/users.d.ts';
 import { isPProgramDetails, isProgram } from '../../types/program.type-guards.ts';
@@ -307,3 +307,18 @@ export const addProgram : FActionHandler = async (
     : saveProgramChanges(db, user.id, null, newData, _KILN_URL_PART);
   // console.groupEnd();
 }
+
+export const getProgramsList : FActionHandler =  (
+  db: IDBPDatabase | CDataStoreClass,
+) : Promise<TProgramListData> => {
+  if (isCDataStoreClass(db) === true) {
+    throw new TypeError(
+      'getProgramList() expects first argument to be and IDBPDatabase object',
+    );
+  }
+
+  return Promise.resolve({
+    list: db.getAll('programsList'),
+    types: db.getAll('EfiringType'),
+  });
+};

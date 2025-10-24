@@ -18,21 +18,21 @@ import { isTFiringType } from './program.type-guards.ts';
 
 export const isTFiringLogEntryType = (value : unknown) : value is TFiringLogEntryType => (
   typeof value === 'string'
-  && ['temp', 'firingState', 'damper', 'burner', 'gas', 'wood', 'responsible'].includes(value)
+  && new Set(['temp', 'firingState', 'damper', 'burner', 'gas', 'wood', 'responsible']).has(value)
 );
 
 export const isTFiringState = (value : unknown) : value is TFiringState => (
   typeof value === 'string'
-  && ['created', 'scheduled', 'packing', 'ready', 'cancelled', 'active', 'complete', 'aborted', 'cold', 'unpacking', 'empty'].includes(value)
+  && new Set(['created', 'scheduled', 'packing', 'ready', 'cancelled', 'active', 'complete', 'aborted', 'cold', 'unpacking', 'empty']).has(value)
 );
 
 export const isTFiringActiveState = (value : unknown) : value is TFiringActiveState => (
-  typeof value === 'string' && ['normal', 'cancelled', 'aborted'].includes(value)
+  typeof value === 'string' && new Set(['normal', 'cancelled', 'aborted']).has(value)
 );
 
 export const isTTemperatureState = (value : unknown) : value is TTemperatureState => (
   typeof value === 'string'
-  && ['underError', 'under', 'expected', 'over', 'overError', 'n/a'].includes(value)
+  && new Set(['underError', 'under', 'expected', 'over', 'overError', 'n/a']).has(value)
 );
 
 export const isFiringLogEntry = (item: unknown) : item is IFiringLogEntry => (

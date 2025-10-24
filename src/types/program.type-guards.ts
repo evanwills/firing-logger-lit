@@ -20,5 +20,5 @@ export const isPProgramDetails = (obj : unknown) : obj is PProgramDetails => (
 
 export const isTFiringType = (value : unknown) : value is TFiringType => (
   typeof value === 'string'
-  && ['bisque', 'glaze', 'single', 'luster', 'onglaze', 'raku', 'salt', 'black'].includes(value)
+  && new Set(['bisque', 'glaze', 'single', 'luster', 'onglaze', 'raku', 'salt', 'black']).has(value)
 );
