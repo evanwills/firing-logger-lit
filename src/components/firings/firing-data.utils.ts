@@ -238,7 +238,7 @@ export const getNewLogEntry = (
     ? timeOffset
     : null,
   userID,
-  type : (isTFiringType(type))
+  type : (isTFiringLogEntryType(type))
     ? type
     : 'temp',
   notes : isNonEmptyStr(notes)

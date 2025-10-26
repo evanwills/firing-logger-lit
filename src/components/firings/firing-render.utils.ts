@@ -6,9 +6,10 @@ import { hoursFromSeconds } from "../../utils/conversions.utils.ts";
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
 import { getLabelFromOrderedEnum, getValFromKey } from "../../utils/data.utils.ts";
 import '../lit-router/router-link.ts';
-import type { IProgram } from "../../types/programs.d.ts";
+import type { IFiringStep, IProgram } from "../../types/programs.d.ts";
 import { isISO8601 } from "../../types/data.type-guards.ts";
 import { ifDefined } from "lit/directives/if-defined.js";
+import type { TSvgPathItem } from "../../types/data.d.ts";
 
 export const renderTopTemp = (
   firing : IFiring | null,
@@ -95,7 +96,7 @@ const renderTime = (item: IFiringLogEntry) : TemplateResult => {
 
 const renderUser = (user : TUser, canViewUser: boolean) : TemplateResult | string => {
   return (canViewUser === true)
-    ? html`<router-link label="${user.preferredName}" url="/user/${user.id}"></router-link>`
+    ? html`<router-link class="user" label="${user.preferredName}" url="/user/${user.id}"></router-link>`
     : html`<span class="user">${user.preferredName}</span>`;
 };
 
@@ -133,6 +134,9 @@ export const renderStatusLogEntry = (
 ) : TemplateResult => {
   console.group('renderStatusLogEntry()');
   console.log('item:', item);
+  console.log('item.id:', item.id);
+  console.log('item.oldState:', item.oldState);
+  console.log('item.newState:', item.newState);
   console.log('firingStates:', firingStates);
   console.log('user:', user);
   console.log('canViewUser:', canViewUser);
@@ -140,12 +144,12 @@ export const renderStatusLogEntry = (
 
   return html`<li class="log log-status">
     ${renderTime(item)}
-    ${renderUser(user, canViewUser)}
-    <span class="status">
+    <span class="firing-status">
       <strong>New Status:</strong>
-      ${getLabelFromOrderedEnum(firingStates, item.newState.toLowerCase())}
-      (was ${getLabelFromOrderedEnum(firingStates, item.oldState.toLowerCase())})
+      ${getLabelFromOrderedEnum(firingStates, item.newState.toLowerCase())} <br />
+      <em>(was ${getLabelFromOrderedEnum(firingStates, item.oldState.toLowerCase())})</em>
     </span>
+    ${renderUser(user, canViewUser)}
     ${renderNotes(item)}
   </li>`;
 };
@@ -160,3 +164,34 @@ export const renderFiringLogEntry = (
 
     ${renderNotes(item)}
   </li>`;
+
+export const renderFiringPlot = (
+  programSteps : IFiringStep[],
+  svgSteps : TSvgPathItem[],
+  notMetric : boolean,
+  isNew: boolean,
+) : TemplateResult => {
+  let primary : Array<TSvgPathItem|IFiringStep> = [];
+  let secondary : Array<IFiringStep> = [];
+  let primaryIsProgram : boolean = true;
+
+  if (svgSteps.length > 0) {
+    primaryIsProgram = false;
+    primary = svgSteps;
+    secondary = programSteps;
+  } else {
+    primary = programSteps;
+  }
+
+  return html`
+    <details name="details" ?open=${!isNew}>
+      <summary>Firing graph</summary>
+
+      <firing-plot
+        no-wrap
+        ?not-metric=${notMetric}
+        .primary=${primary}
+        ?primary-is-program=${primaryIsProgram}
+        .secondary=${secondary}></friing-plot>
+    </details>`;
+}

@@ -335,7 +335,7 @@ export const addToFiringList : FActionHandler = async (
       );
     }
 
-    return db.put('firingsList', data);
+    return db.add('firingsList', data);
   } catch(error : unknown) {
     throw error;
   }
@@ -345,6 +345,7 @@ export const updateFiringList : FActionHandler = async (
   db: CDataStoreClass,
   data : unknown,
 ) : Promise<IDBValidKey> => {
+  console.group('updateFiringList()');
   try {
     const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
@@ -360,6 +361,7 @@ export const updateFiringList : FActionHandler = async (
     );
 
     if (hold === true) {
+      console.groupEnd();
       return saveChangeOnHold(
         db,
         'firings',
@@ -369,8 +371,10 @@ export const updateFiringList : FActionHandler = async (
       );
     }
 
-    return db.add('firingsList', data);
+    console.groupEnd();
+    return db.put('firingsList', data);
   } catch(error : unknown) {
+    console.groupEnd();
     throw error;
   }
 };
