@@ -10,7 +10,6 @@ import type {
 import type { FActionHandler, IUpdateHelperData, TUpdateHelperOptions } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../types/users.d.ts';
-import { isCDataStoreClass } from "../types/store.type-guards.ts";
 import { isID, isStrNum } from "../types/data.type-guards.ts";
 import { userCanNowLater } from '../components/users/user-data.utils.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
@@ -18,7 +17,7 @@ import { isNonEmptyStr } from '../utils/string.utils.ts';
 type Fresolver = (value: unknown) => void;
 
 export const populateSlice = (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   items : IIdObject[],
   slice : string,
 ) : Promise<(void | IDBValidKey)[]> => {
@@ -50,7 +49,7 @@ export const populateSlice = (
  * @returns
  */
 export const populateEmptySlice = async (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   items : IIdObject[],
   slice : string,
   action : '' | 'update' | 'replace' = '',
@@ -86,7 +85,7 @@ export const populateEmptySlice = async (
  * @returns
  */
 export const populateKVslice = (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   obj : IKeyValue,
   slice : string,
   put : boolean = false,
@@ -123,7 +122,7 @@ export const populateKVslice = (
  * @returns
  */
 export const populateEmptyKVslice = async(
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   obj : IKeyValue,
   slice : string,
   action : '' | 'update' | 'replace' = '',
@@ -162,7 +161,7 @@ export const populateEmptyKVslice = async(
  * @returns
  */
 export const populateEnumSlice = (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   oEnum : IOrderedEnum[],
   slice : string,
   put : boolean = false,
@@ -195,7 +194,7 @@ export const populateEnumSlice = (
  * @returns
  */
 export const populateEmptyEnumSlice = async(
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   oEnum : IOrderedEnum[],
   slice : string,
   action : '' | 'update' | 'replace' = '',
@@ -315,7 +314,7 @@ export const parseKeyValSelector = (selector : string) : IKeyStr[] => selector
   });
 
 export const getByKeyValue = async (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   storeName: string,
   selector : string,
   // deno-lint-ignore no-explicit-any
@@ -368,7 +367,7 @@ export const getByKeyValue = async (
 }
 
 export const pullStoreData = async (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   storeName : string,
   url: string,
   now: boolean = false,
@@ -449,41 +448,34 @@ export const pullStoreData = async (
   return Promise.resolve([]);
 }
 
-export const fetchLatestKilns = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+export const fetchLatestKilns = async (db : CDataStoreClass) : Promise<void|(void|IDBValidKey)[]> => {
   console.info('fetchLatestKilns()');
   await pullStoreData(db, 'kilns', '/data/kilns.json').catch(storeCatch);
 };
 
-export const fetchLatestPrograms = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+export const fetchLatestPrograms = async (db : CDataStoreClass) : Promise<void|(void|IDBValidKey)[]> => {
   console.info('fetchLatestPrograms()');
   await pullStoreData(db, 'programs', '/data/programs.json').catch(storeCatch);
 };
 
-export const fetchLatestFirings = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+export const fetchLatestFirings = async (db : CDataStoreClass) : Promise<void|(void|IDBValidKey)[]> => {
   console.info('fetchLatestFirings()');
   await pullStoreData(db, 'firings', '/data/firings.json').catch(storeCatch);
 };
 
-export const fetchLatestUsers = async (db : IDBPDatabase) : Promise<void|(void|IDBValidKey)[]> => {
+export const fetchLatestUsers = async (db : CDataStoreClass) : Promise<void|(void|IDBValidKey)[]> => {
   console.info('fetchLatestUsers()');
   await pullStoreData(db, 'users', '/data/users.json', true).catch(storeCatch);
 };
 
-export const fetchLatest : FActionHandler = async (db : IDBPDatabase | CDataStoreClass) : Promise<void> => {
-  if (isCDataStoreClass(db) === false) {
-    console.info('fetchLatest()');
-    await Promise.all([
-      // fetchLatestFirings(db),
-      fetchLatestKilns(db),
-      fetchLatestPrograms(db),
-      // fetchLatestUsers(db),
-    ]).catch(storeCatch).finally(() => { console.groupEnd(); });
-  } else {
-    throw new Error(
-      'fetchLatest() expects first param `db` to be a '
-      + 'IDBPDatabase type object',
-    );
-  }
+export const fetchLatest : FActionHandler = async (db : CDataStoreClass) : Promise<void> => {
+  console.info('fetchLatest()');
+  await Promise.all([
+    // fetchLatestFirings(db),
+    fetchLatestKilns(db),
+    fetchLatestPrograms(db),
+    // fetchLatestUsers(db),
+  ]).catch(storeCatch).finally(() => { console.groupEnd(); });
 };
 
 export const getKeyRange = (
@@ -515,8 +507,8 @@ export const getKeyRange = (
 }
 
 export const addUpdateHelper = async (
-  db: IDBPDatabase | CDataStoreClass,
-  method: string,
+  db: CDataStoreClass,
+  _method: string,
   storeName: string,
   itemType: string,
   isThing: (input: unknown) => boolean,
@@ -528,13 +520,6 @@ export const addUpdateHelper = async (
     type,
   } : TUpdateHelperOptions = {},
 ) : Promise<IUpdateHelperData> => {
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      `${method}() expects first param \`db\` to be a `
-      + 'IDBPDatabase type object',
-    );
-  }
-
   const _permissionLevel : number = (typeof permissionLevel === 'number')
     ? permissionLevel
     : 2;
@@ -575,5 +560,5 @@ export const addUpdateHelper = async (
     throw new Error(`${msg} ${_action} ${itemType} ${_type}`);
   }
 
-  return { hold, idbp: db, thing, user };
+  return { hold, thing, user };
 }

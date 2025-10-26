@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue, ISO8601 } from '../../types/data-simple.d.ts';
 import type { TFiringsListItem } from "../../types/firings.d.ts";
 import { tableStyles } from '../programs/programs.css.ts';
-import { storeCatch } from '../../store/idb-data-store.utils.ts';
+import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
 import '../shared-components/firing-logger-modal.ts';

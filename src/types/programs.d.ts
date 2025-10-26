@@ -8,6 +8,8 @@ export interface IFiringStep extends IKeyValue {
   hold: number     // minutes to hold at end temperature
 }
 
+export type TMatchProgram = { id: ID | null, kilnUrlPart: string | null, programUrlPart: string | null };
+
 export type TFiringType = 'bisque' | 'glaze' | 'single' | 'luster' | 'onglaze' | 'raku' | 'salt' | 'black';
 
 export interface IProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObject {

@@ -1,10 +1,9 @@
-import type { IDBPDatabase } from 'idb';
 import type { ID, IIdObject } from '../types/data-simple.d.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
-import type { IRedirectData, IRedirectDataNew } from "../types/store.d.ts";
+import type { CDataStoreClass } from "../types/store.d.ts";
 
 export const saveChangeOnHold = (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   store: string,
   userID : ID,
   changes : IIdObject,

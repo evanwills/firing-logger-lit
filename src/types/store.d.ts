@@ -4,6 +4,9 @@ import type { IKiln, IUser } from './data.d.ts';
 import type PidbDataStore from "../store/PidbDataStore.class.ts";
 import type { TUserNowLaterAuth } from './users';
 
+
+export type DBTypes = DBSchema | unknown;
+
 /**
  * TStoreSlice is a dot-separated string matching the following regular expression pattern
  *
@@ -44,13 +47,9 @@ export type FReadyWatcher = (isReady: boolean) => void;
  *          Error message string if there was a problem with the
  *          write action
  */
-export type FDataStoreDispatch = (
-  action : string,
-  payload: any = null,
-  PIDB: boolean = false,
-) => Promise<any>;
+export type FDataStoreDispatch = (action : string, payload: unknown = null) => Promise<unknown>;
 
-export type FActionHandler = (db : IDBPDatabase | CDataStoreClass, payload: any) => Promise<unknown>
+export type FActionHandler = (db : CDataStoreClass, payload: unknown = null) => Promise<unknown>
 
 export interface TActionList extends IKeyValue {
   [key:string] : FActionHandler
@@ -121,6 +120,280 @@ export type CDataStoreClass = {
   loading: boolean,
   db: IDBPDatabase | null,
 
+  // ------------------------------------------------------
+  // START: proxy methods
+  // (see https://github.com/jakearchibald/idb/blob/main/src/entry.ts)
+
+  /**
+   * Start a new transaction.
+   *
+   * @param storeNames The object store(s) this transaction needs.
+   * @param mode
+   * @param options
+   */
+  transaction<
+    Name extends StoreNames<DBTypes>,
+    Mode extends IDBTransactionMode = 'readonly',
+  >(
+    storeNames: Name,
+    mode?: Mode,
+    options?: IDBTransactionOptions,
+  ): IDBPTransaction<DBTypes, [Name], Mode>;
+
+  transaction<
+    Names extends ArrayLike<StoreNames<DBTypes>>,
+    Mode extends IDBTransactionMode = 'readonly',
+  >(
+    storeNames: Names,
+    mode?: Mode,
+    options?: IDBTransactionOptions,
+  ): IDBPTransaction<DBTypes, Names, Mode>;
+
+  /**
+   * Add a value to a store.
+   *
+   * Rejects if an item of a given key already exists in the store.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param value
+   * @param key
+   */
+  add<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    value: StoreValue<DBTypes, Name>,
+    key?: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name>>;
+
+  /**
+   * Deletes all records in a store.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   */
+  clear(name: StoreNames<DBTypes>): Promise<void>;
+
+  /**
+   * Retrieves the number of records matching the given query in a store.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param key
+   */
+  count<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    key?: StoreKey<DBTypes, Name> | IDBKeyRange | null,
+  ): Promise<number>;
+
+  /**
+   * Retrieves the number of records matching the given query in an index.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param key
+   */
+  countFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    key?: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange | null,
+  ): Promise<number>;
+
+  /**
+   * Deletes records in a store matching the given query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param key
+   */
+  delete<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    key: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<void>;
+
+  /**
+   * Retrieves the value of the first record in a store matching the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   */
+  get<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreValue<DBTypes, Name> | undefined>;
+
+  /**
+   * Retrieves the value of the first record in an index matching the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   */
+  getFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange,
+  ): Promise<StoreValue<DBTypes, Name> | undefined>;
+
+  /**
+   * Retrieves all values in a store that match the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   * @param count Maximum number of values to return.
+   */
+  getAll<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query?: StoreKey<DBTypes, Name> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreValue<DBTypes, Name>[]>;
+
+  /**
+   * Retrieves all values in an index that match the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   * @param count Maximum number of values to return.
+   */
+  getAllFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query?: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreValue<DBTypes, Name>[]>;
+
+  /**
+   * Retrieves the keys of records in a store matching the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   * @param count Maximum number of keys to return.
+   */
+  getAllKeys<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query?: StoreKey<DBTypes, Name> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreKey<DBTypes, Name>[]>;
+
+  /**
+   * Retrieves the keys of records in an index matching the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   * @param count Maximum number of keys to return.
+   */
+  getAllKeysFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query?: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreKey<DBTypes, Name>[]>;
+
+  /**
+   * Retrieves the key of the first record in a store that matches the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   */
+  getKey<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name> | undefined>;
+
+  /**
+   * Retrieves the key of the first record in an index that matches the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   */
+  getKeyFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name> | undefined>;
+
+  /**
+   * Put an item in the database.
+   *
+   * Replaces any item with the same key.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param value
+   * @param key
+   */
+  put<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    value: StoreValue<DBTypes, Name>,
+    key?: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name>>;
+
+  //  END:  proxy getters
+  // ------------------------------------------------------
+  // START: public methods
+
   /**
    * Read data from the store
    *
@@ -141,11 +414,11 @@ export type CDataStoreClass = {
    *
    * @throws {Error} If slice is a non-empty string and
    */
-  read: (
+  read(
     slice : TStoreSlice,
     selector : string = '',
     outputMode : string[] | boolean = false
-  ) => Promise<any>,
+  ) : Promise<unknown>,
 
   /**
    * action() runs a predefined action against the store. Normally,
@@ -178,11 +451,11 @@ export type CDataStoreClass = {
    *          `ignore()` when the client no longer needs to watch for
    *          that action
    */
-  watch: (
+  watch(
     action : string,
-    handler: (slice: any) => void,
+    handler: (slice: unknown) => void,
     slice: TStoreSlice,
-  ) => ID,
+  ) : ID,
 
   /**
    * Stop watching for a particular action
@@ -192,9 +465,12 @@ export type CDataStoreClass = {
    * @returns TRUE if watcher was removed.
    *          FALSE otherwise
    */
-  ignore: (watchID: ID) => boolean,
+  ignore(watchID: ID) : boolean,
 
-  watchReady : (callback : FReadyWatcher) => void,
+  watchReady(callback : FReadyWatcher) : void,
+
+  //  END:  public methods
+  // ------------------------------------------------------
 };
 
 export type FDataStoreSingleton = () => Promise<CDataStoreClass>;
@@ -273,7 +549,6 @@ export type FIdbPopulate = (db : IDBDatabase | IDBPDatabase) => Promise<boolean>
 
 export interface IUpdateHelperData extends TUserNowLaterAuth {
   hold: boolean,
-  idbp : IDBPDatabase,
   thing: unknown,
   user: TUser,
 }

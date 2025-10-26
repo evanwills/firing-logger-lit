@@ -1,54 +1,47 @@
-import type { IDBPDatabase } from 'idb';
 import type { IFiring, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
 import type { CDataStoreClass, FActionHandler, IUpdateHelperData } from '../../types/store.d.ts';
 import type { ID, IIdObject, TDateRange } from '../../types/data-simple.d.ts';
-import { isCDataStoreClass } from '../../types/store.type-guards.ts';
 import { isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts';
 import { isProgram } from '../../types/program.type-guards.ts';
-import { addUpdateHelper, getKeyRange } from '../../store/idb-data-store.utils.ts';
-import { isNonEmptyStr } from "../../utils/string.utils.ts";
-import { isUser } from "../../types/user.type-guards.ts";
+import { addUpdateHelper, getKeyRange } from '../../store/PidbDataStore.utils.ts';
+import { isNonEmptyStr } from '../../utils/string.utils.ts';
+import { isUser } from '../../types/user.type-guards.ts';
 import { getInitialData, saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { mergeChanges } from '../../utils/store.utils.ts';
 import { validateFiringData } from './firing-data.utils.ts';
 import { addRedirect, updateRedirect } from '../../store/redirect.utils.ts';
+import { getUID } from "../../utils/data.utils.ts";
+import { validateProgramData } from "../programs/program.utils.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
 export const getFiringsList : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   { start, end } : TDateRange,
 )  : Promise<TFiringsListItem[]> => {
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      'addNewKilnData() expects first param `db` to be a '
-      + 'IDBPDatabase type object',
-    );
-  }
-
   const range = getKeyRange(start, end);
 
-  if (range !== null) {
-    const tx = db.transaction('firingsList', 'readonly');
-    const index = tx.store.index('actualStart');
-    let cursor = await index.openCursor(range);
-    const firingList : TFiringsListItem[] = [];
-
-    while (cursor) {
-      if (isTFiringsListItem(cursor)) {
-        firingList.push(cursor as TFiringsListItem);
-      }
-
-      cursor = await cursor.continue();
-    }
-
-    return firingList;
+  if (range === null) {
+    return db.getAll('firingsList');
   }
 
-  return db.getAll('firingsList');
+  const tx = db.transaction('firingsList', 'readonly');
+  const index = tx.store.index('actualStart');
+  let cursor = await index.openCursor(range);
+  const firingList : TFiringsListItem[] = [];
+
+  while (cursor) {
+    if (isTFiringsListItem(cursor)) {
+      firingList.push(cursor as TFiringsListItem);
+    }
+
+    cursor = await cursor.continue();
+  }
+
+  return Promise.resolve(firingList);
 };
 
 const _getFiringDataByFiringID = async (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   uid : ID
 ) : Promise<TGetFirningDataPayload|null> => {
   // console.groupCollapsed('FiringStoreUtils._getFiringDataByFiringID()');
@@ -60,10 +53,6 @@ const _getFiringDataByFiringID = async (
   // console.log('validateFiringData(firing):', validateFiringData(firing));
 
   if (isIFiring(firing)) {
-    const tx = db.transaction('firingLogs', 'readonly');
-    const index = tx.store.index('firingID');
-    const log = index.getAll(uid);
-
     const user = await db.get('users', firing.ownerID);
 
     // console.groupEnd();
@@ -71,7 +60,7 @@ const _getFiringDataByFiringID = async (
     return {
       firing: Promise.resolve(firing),
       kiln: db.get('kilns', firing.kilnID),
-      log,
+      log: db.getAllFromIndex('firingLogs', 'firingID', uid),
       program: db.get('programs', firing.programID),
       firingStates: db.getAll('EfiringState'),
       firingTypes: db.getAll('EfiringType'),
@@ -81,14 +70,14 @@ const _getFiringDataByFiringID = async (
         : 'unknown',
     }
   }
-
+  // console.warn('validateFiringData(firing):', validateFiringData(firing));
   // console.groupEnd();
 
   return null;
 };
 
 const _getFiringDataByProgamID = async (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   uid : ID
 ) : Promise<TGetFirningDataPayload|null> => {
   // console.groupCollapsed('FiringStoreUtils._getFiringDataByProgamID()');
@@ -102,9 +91,29 @@ const _getFiringDataByProgamID = async (
   // console.groupEnd();
 
   if (isProgram(program)) {
-
     return {
-      firing: Promise.resolve(null),
+      firing: Promise.resolve({
+        id: getUID(),
+        kilnID: program.kilnID,
+        programID: program.id,
+        ownerID: 'unknown',
+        diaryID: null,
+        firingType: program.type,
+        scheduledStart: null,
+        scheduledEnd: null,
+        scheduledCold: null,
+        packed: null,
+        actualStart: null,
+        actualEnd: null,
+        actualCold: null,
+        unpacked: null,
+        maxTemp: program.maxTemp,
+        cone: program.cone,
+        firingState: 'created',
+        firingActiveState: 'normal',
+        temperatureState: 'n/a',
+        log: [],
+      }),
       kiln: db.get('kilns', program.kilnID),
       log: Promise.resolve([]),
       program: Promise.resolve(program),
@@ -119,20 +128,13 @@ const _getFiringDataByProgamID = async (
 };
 
 export const getFiringData : FActionHandler = (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   { uid, programID },
 )  : Promise<TGetFirningDataPayload|null> => {
   // console.groupCollapsed('FiringStoreUtils.getFiringData()');
   // console.log('uid:', uid);
   // console.log('programID:', programID);
   // console.log('db:', db);
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      'addNewKilnData() expects first param `db` to be a '
-      + 'IDBPDatabase type object',
-    );
-  }
-
   // console.groupEnd();
   return (isNonEmptyStr(uid) && uid !== 'new')
     ? _getFiringDataByFiringID(db, uid)
@@ -140,7 +142,7 @@ export const getFiringData : FActionHandler = (
 };
 
 const saveFiringChanges = (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   _userID : string,
   changes : IIdObject | null,
   firing : IFiring,
@@ -177,11 +179,11 @@ const saveFiringChanges = (
 }
 
 export const updateFiringData : FActionHandler = async(
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   changes : IIdObject,
 ) : Promise<IDBValidKey> => {
   try {
-    const { user, hold, idbp, thing } : IUpdateHelperData = await addUpdateHelper(
+    const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
       'updateFiringData',
       'firings',
@@ -202,14 +204,14 @@ export const updateFiringData : FActionHandler = async(
 
     return  (hold === true)
       ? saveChangeOnHold(
-          idbp,
+          db,
           'firings',
           user.id,
           changes,
           initial,
         )
       : saveFiringChanges(
-          idbp,
+          db,
           user.id,
           changes,
           thing as IFiring
@@ -220,11 +222,11 @@ export const updateFiringData : FActionHandler = async(
 }
 
 export const addFiringLogEntry : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   data : IIdObject,
 ) : Promise<IDBValidKey> => {
   try {
-    const { user, hold, idbp } : IUpdateHelperData = await addUpdateHelper(
+    const { hold, user } : IUpdateHelperData = await addUpdateHelper(
       db,
       'addFiringLogEntry',
       'firingLogs',
@@ -238,7 +240,7 @@ export const addFiringLogEntry : FActionHandler = async (
 
     if (hold === true) {
       return saveChangeOnHold(
-        idbp,
+        db,
         'firings',
         user.id,
         data,

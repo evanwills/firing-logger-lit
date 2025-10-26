@@ -1,4 +1,5 @@
 import { isObj } from "../utils/data.utils.ts";
+import { isNonEmptyStr } from "../utils/string.utils.ts";
 import { isID, isIdObject, isISO8601, isTCone } from "./data.type-guards.ts";
 import type {
   IBurnerState,
@@ -91,7 +92,8 @@ export const isIFiring = (item: unknown) : item is IFiring => (
   isIdObject(item)
   && isID((item as IFiring).kilnID) === true
   && isID((item as IFiring).programID) === true
-  && isID((item as IFiring).ownerID) === true
+  && (isID((item as IFiring).ownerID) === true
+  || (item as IFiring).ownerID === 'unknown')
   && (isID((item as IFiring).diaryID) === true || (item as IFiring).diaryID === null)
   && isTFiringType((item as IFiring).firingType) === true
   && (isISO8601((item as IFiring).scheduledStart) || (item as IFiring).scheduledStart === null)

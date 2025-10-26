@@ -4,7 +4,7 @@ import type { FConverter, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TUser } from '../../types/users.d.ts';
 import type { CDataStoreClass, TStoreAction } from '../../types/store.d.ts';
 import { c2f, f2c, i2m, m2i, x2x } from '../../utils/conversions.utils.ts';
-import { storeCatch } from '../../store/idb-data-store.utils.ts';
+import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { isUser } from '../../types/user.type-guards.ts';
 import { userCan, userHasAuth } from '../users/user-data.utils.ts';
 import './loading-spinner.ts';

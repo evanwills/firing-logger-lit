@@ -1,7 +1,6 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { nanoid } from 'nanoid';
 import type { IFiringStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
@@ -16,6 +15,7 @@ import { isNonEmptyStr, name2urlPart } from "../../utils/string.utils.ts";
 import { LitRouter } from "../lit-router/lit-router.ts";
 import InputValueClass from '../../utils/InputValue.class.ts';
 import '../input-fields/read-only-field.ts'
+import { getUID } from "../../utils/data.utils.ts";
 
 /**
  * An example element.
@@ -292,7 +292,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
 
       if (this.mode !== 'edit') {
         action = 'addProgram';
-        id = nanoid(10);
+        id = getUID();
         if (this.mode === 'new') {
           output.kilnID = this._kilnID;
         }

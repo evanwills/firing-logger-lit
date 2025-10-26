@@ -1,4 +1,5 @@
-import type { IKeyStr, IKeyValue, IOrderedEnum } from '../types/data-simple.d.ts';
+import { nanoid } from "nanoid";
+import type { ID, IKeyStr, IKeyValue, IOrderedEnum } from '../types/data-simple.d.ts';
 import { isNonEmptyStr } from "./string.utils.ts";
 
 /**
@@ -10,6 +11,8 @@ import { isNonEmptyStr } from "./string.utils.ts";
  * @file data.utils.js
  * @author Evan Wills <https://github.com/evanwills>
  */
+
+export const getUID = () : ID => nanoid(12);
 
 export const arrayRemoveValue = <t>(
   arr : Array<t>,

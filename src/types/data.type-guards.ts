@@ -12,7 +12,7 @@ import type {
   IOrderedEnum,
 } from "./data-simple.d.ts";
 
-export const isID = (id : unknown) : id is string => (typeof id === 'string' && id.length === 10);
+export const isID = (id : unknown) : id is string => (typeof id === 'string' && id.length === 12);
 
 export const isISO8601 = (input : unknown) : input is ISO8601 => (typeof input === 'string'
   && /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{3})?(?:Z|[-+]\d{2}:\d{2})?)?$/i.test(input));

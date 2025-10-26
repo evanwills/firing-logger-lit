@@ -11,7 +11,7 @@ import {
   populateEmptyEnumSlice,
   populateEmptyKVslice,
   populateEmptySlice,
-} from './idb-data-store.utils.ts';
+} from './PidbDataStore.utils.ts';
 import { getAuthUser, updateAuthUser } from '../components/users/user-data.utils.ts';
 import {
   addNewKilnData,

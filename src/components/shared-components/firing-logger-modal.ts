@@ -181,7 +181,7 @@ export class FiringLoggerModal extends LitElement {
       overflow-x: hidden;
     }
     h2 {
-      margin: 0 0 0.75rem;
+      margin: 0 0 1rem;
       line-height: 1.25rem;
       font-size: 1.25rem;
       text-align: left;

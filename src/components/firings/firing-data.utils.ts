@@ -6,7 +6,7 @@ import type { IFiring, IFiringLogEntry, ITempLogEntry } from "../../types/firing
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { isObj } from "../../utils/data.utils.ts";
+import { emptyOrNull, isObj } from "../../utils/data.utils.ts";
 import { orderOptionsByLabel } from "../../utils/render.utils.ts";
 
 /**
@@ -46,14 +46,20 @@ export const validateFiringData = (item: unknown) : string | null => {
     return getFiringError('programID', (item as IFiring).programID, 'ID');
   }
 
-  if (isID((item as IFiring).ownerID) === false) {
+  if (isID((item as IFiring).ownerID) === false
+    && (emptyOrNull((item as IFiring).ownerID)
+    || (item as IFiring).ownerID !== 'unknown')
+  ) {
     return getFiringError('ownerID', (item as IFiring).ownerID, 'ID');
   }
 
   if (isID((item as IFiring).diaryID) === false && (item as IFiring).diaryID !== null) {
-    return getFiringError('ownerID', (item as IFiring).ownerID, 'ID or Null');
-
+    console.log('isID((item as IFiring).diaryID):', isID((item as IFiring).diaryID));
+    console.log('(item as IFiring).diaryID !== null:', (item as IFiring).diaryID !== null);
+    console.log('typeof (item as IFiring).diaryID:', typeof (item as IFiring).diaryID);
+    return getFiringError('diaryID', (item as IFiring).diaryID, 'ID or Null');
   }
+
   if (isTFiringType((item as IFiring).firingType) === false) {
     return getFiringError('firingType', (item as IFiring).firingType, 'Firing type');
   }
@@ -196,5 +202,5 @@ export const getProgramsByTypeAndKiln = (
   tUnit : string,
 ) : TOptionValueLabel[] => orderOptionsByLabel(
   list.filter((item : TProgramListRenderItem) : boolean => (item.type === type && item.kilnID === kilnID))
-    .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.programID, label: `${item.programName} (Cone: ${item.cone} - ${tConverter(item.maxTemp)}°${tUnit}})` })),
+    .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.programID, label: `${item.programName} (Cone: ${item.cone} - ${tConverter(item.maxTemp)}°${tUnit})` })),
 );

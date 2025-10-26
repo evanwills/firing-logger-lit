@@ -1,14 +1,15 @@
-import type { IDBPDatabase } from 'idb';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TUser, TUserNowLaterAuth } from '../../types/users.d.ts';
-import type { CDataStoreClass, FActionHandler } from "../../types/store.d.ts";
-import { isCDataStoreClass } from "../../types/store.type-guards.ts";
+import type { CDataStoreClass, FActionHandler } from '../../types/store.d.ts';
 import { isUser } from '../../types/user.type-guards.ts';
 import { getCookie } from '../../utils/cookie.utils.ts';
-import { populateEmptyKVslice } from '../../store/idb-data-store.utils.ts';
+import { populateEmptyKVslice } from '../../store/PidbDataStore.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 
-const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourScheme } : TUser) => {
+const setUserPrefs = (
+  db : CDataStoreClass,
+  { id, preferredName, notMetric, colourScheme } : TUser,
+) => {
   populateEmptyKVslice(
     db,
     { id, preferredName, notMetric, colourScheme },
@@ -17,7 +18,7 @@ const setUserPrefs = (db : IDBPDatabase, { id, preferredName, notMetric, colourS
   );
 };
 
-export const getLastAuthUser = async (db : IDBPDatabase) : Promise<unknown> => {
+export const getLastAuthUser = async (db : CDataStoreClass) : Promise<unknown> => {
   const userID = await db.get('userPreferences', 'id');
 
   return (isNonEmptyStr(userID))
@@ -26,20 +27,13 @@ export const getLastAuthUser = async (db : IDBPDatabase) : Promise<unknown> => {
 };
 
 export const getAuthUser : FActionHandler = async (
-  db : IDBPDatabase | CDataStoreClass,
-  _payload : null = null,
+  db : CDataStoreClass,
+  _payload : unknown | null = null,
 ) : Promise<unknown> => {
   const userID = getCookie(import.meta.env.VITE_AUTH_COOKIE);
 
   if (userID === null) {
     return Promise.resolve(null);
-  }
-
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      'getAuthUser() expects first param `db` to be a '
-      + 'IDBPDatabase type object',
-    );
   }
 
   const localUser = await db.get('userPreferences', 'id');
@@ -106,7 +100,7 @@ export const userCan = (
 };
 
 export const userCanNowLater = async (
-  db : IDBPDatabase,
+  db : CDataStoreClass,
   key : string = 'any',
   level : number = 2,
 ) : Promise<TUserNowLaterAuth> => {
@@ -136,16 +130,9 @@ export const userCanNowLater = async (
 };
 
 export const updateAuthUser : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   data : IKeyValue,
 ) : Promise<unknown> => {
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      'updateAuthUser() expects first param `db` to be a '
-      + 'IDBPDatabase type object',
-    );
-  }
-
   const tmp : unknown = await getAuthUser(db, null);
 
   if (isUser(tmp) === false) {

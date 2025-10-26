@@ -7,7 +7,7 @@ import { tableStyles } from '../programs/programs.css.ts';
 import '../lit-router/router-link.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
-import { storeCatch } from '../../store/idb-data-store.utils.ts';
+import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 
 @customElement('kilns-list')
 export class KilnsList extends LoggerElement {

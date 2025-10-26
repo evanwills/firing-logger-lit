@@ -1,12 +1,11 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { nanoid } from 'nanoid';
 import type { TCheckboxValueLabel, TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import type { ID, IIdObject, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TStoreAction } from '../../types/store.d.ts';
 import type InputValueClass from '../../utils/InputValue.class.ts';
 import type FocusableInside from '../input-fields/FocusableInside.ts';
-import { emptyOrNull, isNumMinMax } from '../../utils/data.utils.ts';
+import { emptyOrNull, getUID, isNumMinMax } from '../../utils/data.utils.ts';
 import { getISO8601date } from '../../utils/date-time.utils.ts';
 import { renderDetails } from '../../utils/render.utils.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
@@ -234,7 +233,7 @@ export class KilnDetailsEdit extends KilnDetails {
 
         if (this.mode !== 'edit') {
           action = 'addKiln';
-          id = nanoid(10);
+          id = getUID();
 
           this._changes = this._setChangeDefaults(id);
         } else {

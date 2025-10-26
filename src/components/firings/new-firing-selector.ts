@@ -5,7 +5,7 @@ import type { ID } from '../../types/data-simple.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { isTFiringType } from '../../types/program.type-guards.ts';
 import { isID } from '../../types/data.type-guards.ts';
-import { storeCatch } from '../../store/idb-data-store.utils.ts';
+import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { getKilnsByFiringType, getProgramsByTypeAndKiln } from './firing-data.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../input-fields/accessible-select-field.ts';
@@ -249,7 +249,16 @@ export class NewFiringSelector extends LoggerElement {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css``;
+  static styles = css`
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    margin: 0;
+    padding: 0.5rem 0;
+  }`;
 
   //  END:  styles
   // ------------------------------------------------------

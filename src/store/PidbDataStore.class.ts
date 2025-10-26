@@ -1,6 +1,7 @@
-import { openDB, type IDBPDatabase } from 'idb';
+import { openDB, type IDBPDatabase, type IDBPTransaction, type IndexKey, type IndexNames, type StoreKey, type StoreNames, type StoreValue } from 'idb';
 import type {
   CDataStoreClass,
+  DBTypes,
   FActionHandler,
   // FDataStoreDispatch,
   FReadyWatcher,
@@ -13,7 +14,7 @@ import {
   getByKeyValue,
   outputAs,
   parseKeyValSelector,
-} from './idb-data-store.utils.ts';
+} from './PidbDataStore.utils.ts';
 import type { IDBPmigrate, IDBPupgrade } from '../types/pidb.d.ts';
 
 /**
@@ -27,6 +28,8 @@ const emptyOrNull = (input : unknown) : boolean => (typeof input === 'undefined'
   || input === null
   || input === 0
   || (typeof input === 'string' && input.trim() === ''));
+
+const noDB = () => Promise.reject('IndexedDB Data store is undefined');
 
 export default class PidbDataStore implements CDataStoreClass {
   // ------------------------------------------------------
@@ -127,6 +130,330 @@ export default class PidbDataStore implements CDataStoreClass {
 
   //  END:  class getters
   // ------------------------------------------------------
+  // START: proxy methods
+
+  /**
+   * Start a new transaction.
+   *
+   * @param storeNames The object store(s) this transaction needs.
+   * @param mode
+   * @param options
+   */
+  transaction<
+    Name extends StoreNames<DBTypes>,
+    Names extends ArrayLike<StoreNames<DBTypes>>,
+    Mode extends IDBTransactionMode = 'readonly',
+  >(
+    storeNames: Name | Names,
+    mode?: Mode,
+    options?: IDBTransactionOptions,
+  ): IDBPTransaction<DBTypes, Name[] | Names, Mode> {
+    if (this._db !== null) {
+      return this._db.transaction(storeNames, mode, options)
+    }
+
+    throw new TypeError('IndexedDB Data store is undefined');
+  }
+
+  /**
+   * Add a value to a store.
+   *
+   * Rejects if an item of a given key already exists in the store.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param value
+   * @param key
+   */
+  add<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    value: StoreValue<DBTypes, Name>,
+    key?: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name>> {
+    return (this._db !== null)
+      ? this._db.add(storeName, value, key)
+      : noDB();
+  }
+
+  /**
+   * Deletes all records in a store.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   */
+  clear(storeName: StoreNames<DBTypes>): Promise<void> {
+    return (this._db !== null)
+      ? this._db.clear(storeName)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the number of records matching the given query in a store.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param key
+   */
+  count<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    key?: StoreKey<DBTypes, Name> | IDBKeyRange | null,
+  ): Promise<number> {
+    return (this._db !== null)
+      ? this._db.count(storeName, key)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the number of records matching the given query in an index.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param key
+   */
+  countFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    key?: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange | null,
+  ): Promise<number> {
+    return (this._db !== null)
+      ? this._db.countFromIndex(storeName, indexName, key)
+      : noDB();
+  }
+
+  /**
+   * Deletes records in a store matching the given query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param key
+   */
+  delete<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    key: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<void> {
+    return (this._db !== null)
+      ? this._db.delete(storeName, key)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the value of the first record in a store matching the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   */
+  get<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreValue<DBTypes, Name> | undefined> {
+    return (this._db !== null)
+      ? this._db.get(storeName, query)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the value of the first record in an index matching the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   */
+  getFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange,
+  ): Promise<StoreValue<DBTypes, Name> | undefined> {
+    return (this._db !== null)
+      ? this._db.getFromIndex(storeName, indexName, query)
+      : noDB();
+  }
+
+  /**
+   * Retrieves all values in a store that match the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   * @param count Maximum number of values to return.
+   */
+  getAll<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query?: StoreKey<DBTypes, Name> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreValue<DBTypes, Name>[]> {
+    return (this._db !== null)
+      ? this._db.getAll(storeName, query, count)
+      : noDB();
+  }
+
+  /**
+   * Retrieves all values in an index that match the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   * @param count Maximum number of values to return.
+   */
+  getAllFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query?: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreValue<DBTypes, Name>[]> {
+    return (this._db !== null)
+      ? this._db.getAllFromIndex(storeName, indexName, query, count)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the keys of records in a store matching the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   * @param count Maximum number of keys to return.
+   */
+  getAllKeys<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query?: StoreKey<DBTypes, Name> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreKey<DBTypes, Name>[]> {
+    return (this._db !== null)
+      ? this._db.getAllKeys(storeName, query, count)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the keys of records in an index matching the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   * @param count Maximum number of keys to return.
+   */
+  getAllKeysFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query?: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange | null,
+    count?: number,
+  ): Promise<StoreKey<DBTypes, Name>[]> {
+    return (this._db !== null)
+      ? this._db.getAllKeysFromIndex(storeName, indexName, query, count)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the key of the first record in a store that matches the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param query
+   */
+  getKey<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    query: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name> | undefined> {
+    return (this._db !== null)
+      ? this._db.getKey(storeName, query)
+      : noDB();
+  }
+
+  /**
+   * Retrieves the key of the first record in an index that matches the query.
+   *
+   * Resolves with undefined if no match is found.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   */
+  getKeyFromIndex<
+    Name extends StoreNames<DBTypes>,
+    IndexName extends IndexNames<DBTypes, Name>,
+  >(
+    storeName: Name,
+    indexName: IndexName,
+    query: IndexKey<DBTypes, Name, IndexName> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name> | undefined> {
+    return (this._db !== null)
+      ? this._db.getKeyFromIndex(storeName, indexName, query)
+      : noDB();
+  }
+
+  /**
+   * Put an item in the database.
+   *
+   * Replaces any item with the same key.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param value
+   * @param key
+   */
+  put<Name extends StoreNames<DBTypes>>(
+    storeName: Name,
+    value: StoreValue<DBTypes, Name>,
+    key?: StoreKey<DBTypes, Name> | IDBKeyRange,
+  ): Promise<StoreKey<DBTypes, Name>> {
+    return (this._db !== null)
+      ? this._db.put(storeName, value, key)
+      : noDB();
+  }
+
+  //  END:  proxy methods
+  // ------------------------------------------------------
   // START: public methods
 
   /**
@@ -153,8 +480,7 @@ export default class PidbDataStore implements CDataStoreClass {
     storeName : string,
     selector : string = '',
     outputMode : string[] | boolean = false,
-    // deno-lint-ignore no-explicit-any
-  ) : Promise<any> {
+  ) : Promise<unknown> {
     if (this._db !== null) {
       if (emptyOrNull(selector)) {
         return outputAs(this._db.getAll(storeName), outputMode);
@@ -213,11 +539,8 @@ export default class PidbDataStore implements CDataStoreClass {
    */
   dispatch(
     action : string,
-    // deno-lint-ignore no-explicit-any
-    payload: any = null,
-    PIDB: boolean = true,
-    // deno-lint-ignore no-explicit-any
-  ) : Promise<any> {
+    payload: unknown = null
+  ) : Promise<unknown> {
     // console.group('PidbDataStore.action');
     // console.log('this._db:', this._db);
     // console.log('action:', action);
@@ -231,16 +554,11 @@ export default class PidbDataStore implements CDataStoreClass {
       // console.info('Yay!!! We found an action');
       // console.groupEnd();
       if (this._db !== null) {
-        return this._actions[action]((PIDB === true) ? this._db : this, payload);
+        return this._actions[action](this, payload);
       } else {
         // deno-lint-ignore no-explicit-any
         const laterAction = () : Promise<any> => {
-          return this._actions[action](
-            (PIDB === true && this._db !== null)
-              ? this._db
-              : this,
-            payload,
-          );
+          return this._actions[action](this, payload);
         };
 
         this.watchReady(laterAction.bind(this))

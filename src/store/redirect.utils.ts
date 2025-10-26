@@ -1,5 +1,4 @@
-import type { IDBPDatabase } from "idb";
-import type { IRedirectData, IRedirectDataNew } from "../types/store.d.ts";
+import type { CDataStoreClass, IRedirectData, IRedirectDataNew } from "../types/store.d.ts";
 import { isObj } from "../utils/data.utils.ts";
 import { isID } from "../types/data.type-guards.ts";
 import { isNonEmptyStr } from "../utils/string.utils.ts";
@@ -31,7 +30,7 @@ export const validateIRedirectData = (obj : unknown) : string | null => {
     return getRedirectError('id', 'string');
   }
 
-  if (isNonEmptyStr(obj, 'url') === false) {
+  if (isNonEmptyStr((obj as IRedirectData).url) === false) {
     return getRedirectError('url', 'string');
   }
 
@@ -57,7 +56,7 @@ export const validateIRedirectData = (obj : unknown) : string | null => {
 export const isIRedirectData = (obj : unknown) : obj is IRedirectData => (validateIRedirectData(obj) === null);
 
 export const addRedirect = (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   data : IRedirectDataNew,
 ) : Promise<IDBValidKey> => {
   const newData : IRedirectData = {
@@ -73,7 +72,7 @@ export const addRedirect = (
 }
 
 export const updateRedirect = async (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   data : IRedirectDataNew,
 ) : Promise<IDBValidKey> => {
   const old = await db.get('redirects', data.id);
@@ -88,7 +87,7 @@ export const updateRedirect = async (
 }
 
 export const supersedeProgramRedirect = async (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   data : IRedirectDataNew,
   oldID : ID,
 ) : Promise<IDBValidKey> => {

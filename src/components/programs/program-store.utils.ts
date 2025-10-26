@@ -4,9 +4,8 @@ import type {
   IIdObject,
   IKeyStr,
 } from '../../types/data-simple.d.ts';
-import { nanoid } from 'nanoid';
 import type { IKiln } from '../../types/kilns.d.ts';
-import type { IProgram, TProgramListData } from '../../types/programs.d.ts';
+import type { IProgram, TMatchProgram, TProgramListData } from '../../types/programs.d.ts';
 import type { CDataStoreClass, FActionHandler, IRedirectDataNew } from '../../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../../types/users.d.ts';
 import { isPProgramDetails, isProgram } from '../../types/program.type-guards.ts';
@@ -17,7 +16,8 @@ import { getKiln } from '../kilns/kiln-store.utils.ts';
 import { saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { userCanNowLater } from '../users/user-data.utils.ts';
 import { mergeChanges } from '../../utils/store.utils.ts';
-import { addRedirect, supersedeProgramRedirect, updateRedirect } from "../../store/redirect.utils.ts";
+import { addRedirect, supersedeProgramRedirect, updateRedirect } from '../../store/redirect.utils.ts';
+import { getUID } from '../../utils/data.utils.ts';
 
 export const getProgram = async (
   input : Promise<IProgram|IProgram[]|null|undefined>,
@@ -42,43 +42,43 @@ export const getProgram = async (
 }
 
 export const getProgramData : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
-  { id, kilnUrlPart, programUrlPart } : { id: ID | null, kilnUrlPart: string | null, programUrlPart: string | null },
+  db: CDataStoreClass,
+  { id, kilnUrlPart, programUrlPart } : TMatchProgram,
 ) : Promise<unknown> => {
   let program : Promise<IProgram | null> = Promise.resolve(null);
-  let kiln : Promise<IKiln | null> = Promise.resolve(null);
-  let EfiringTypes : Promise<IKeyStr | null> = Promise.resolve(null);
+  let kiln : Promise<unknown> = Promise.resolve(null);
 
-  if (isCDataStoreClass(db) === true) {
-    EfiringTypes = db.read('EfiringType', '', true);
+  let _program : IProgram | null = null;
 
-    let _program : IProgram | null = null;
-    let _kiln : IKiln | null = null;
+  if (isNonEmptyStr(id)) {
+    _program = await getProgram(db.get('programs', id));
 
-    if (isNonEmptyStr(id)) {
-      _program = await getProgram(db.read('programs', `#${id}`));
-
-      if (_program !== null) {
-        kiln = getKiln(db.read('kilns', `#${_program.kilnID}`));
-      }
-
-      program = Promise.resolve(_program);
-    } else if (isNonEmptyStr(kilnUrlPart) && isNonEmptyStr(programUrlPart)) {
-      _kiln = await getKiln(db.read('kilns', `urlPart=${kilnUrlPart}`));
-
-      if (_kiln !== null) {
-        program = getProgram(db.read('programs', `kilnID=${_kiln.id}&&urlPart=${programUrlPart}`));
-      }
-
-      kiln = Promise.resolve(_kiln);
+    if (_program !== null) {
+      kiln = getKiln(db.get('kilns', _program.kilnID));
     }
+
+    program = Promise.resolve(_program);
+  } else if (isNonEmptyStr(kilnUrlPart) && isNonEmptyStr(programUrlPart)) {
+    const tmp = await getKiln(db.read(
+      'kilns',
+      `urlPart=${kilnUrlPart}`,
+    ));
+
+    if (tmp !== null) {
+      program = getProgram(db.read(
+        'programs',
+        `kilnID=${tmp.id}&&urlPart=${programUrlPart}`,
+      ));
+    }
+
+    kiln = Promise.resolve(tmp);
   }
 
-  return { EfiringTypes, program, kiln };
+  return { EfiringTypes : db.read('EfiringType', '', true), program, kiln };
 };
 
 export const getProgramURL : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   uid : ID,
 ) : Promise<string> => {
   let kiln : IKiln | null = null;
@@ -105,7 +105,7 @@ export const getProgramURL : FActionHandler = async (
 }
 
 const saveProgramChanges = async (
-  db: IDBPDatabase,
+  db: CDataStoreClass,
   _userID : string,
   changes : IIdObject | null,
   program : IProgram,
@@ -161,16 +161,9 @@ const saveProgramChanges = async (
 }
 
 export const updateProgram : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   changes : IIdObject,
 ) : Promise<IDBValidKey> => {
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      'updateProgram() expects first param `db` to be a '
-      + 'IDBPDatabase type object',
-    );
-  }
-
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
 
   if (msg !== '') {
@@ -192,7 +185,7 @@ export const updateProgram : FActionHandler = async (
   const oldData : IIdObject = { id: program.id };
 
   if (_SUPERSEDE === true) {
-    newData.id = nanoid(10);
+    newData.id = getUID();
     oldData.supersededByID = newData.id;
     oldData.superseded = true;
 
@@ -260,16 +253,10 @@ export const updateProgram : FActionHandler = async (
 }
 
 export const addProgram : FActionHandler = async (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
   program : IProgram,
 ) : Promise<IDBValidKey> => {
   console.group('addProgram()');
-  if (isCDataStoreClass(db)) {
-    throw new Error(
-      'addProgram() expects first param `db` to be a IDBPDatabase '
-      + 'type object',
-    );
-  }
 
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db);
 
@@ -309,14 +296,8 @@ export const addProgram : FActionHandler = async (
 }
 
 export const getProgramsList : FActionHandler =  (
-  db: IDBPDatabase | CDataStoreClass,
+  db: CDataStoreClass,
 ) : Promise<TProgramListData> => {
-  if (isCDataStoreClass(db) === true) {
-    throw new TypeError(
-      'getProgramList() expects first argument to be and IDBPDatabase object',
-    );
-  }
-
   return Promise.resolve({
     list: db.getAll('programsList'),
     types: db.getAll('EfiringType'),

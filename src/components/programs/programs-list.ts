@@ -4,7 +4,7 @@ import type { IKeyValue } from '../../types/data-simple.d.ts';
 import type { TProgramListData, TProgramListRenderItem } from '../../types/programs.d.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import { getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
-import { storeCatch } from '../../store/idb-data-store.utils.ts';
+import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { tableStyles } from './programs.css.ts';
 import '../lit-router/router-link.ts';
