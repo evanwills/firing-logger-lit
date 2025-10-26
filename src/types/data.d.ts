@@ -41,58 +41,6 @@ export interface  EquipmentLogEntry implements IKeyValue, IIdObject {
   verifiedBy: string | null
 }
 
-export interface FiringLog implements IKeyValue, IIdObject {
-  id: ID,
-  kilnID: ID,
-  programID: ID,
-  diaryID: ID|null,
-  firingType: EfiringType,
-  firingState: EkilnReadyStatus,
-  start: number,
-  end: number|null,
-  started: boolean,
-  complete: boolean,
-  maxTemp: number,
-  cone: string,
-  currentTemp: number,
-  responsibleID: ID,
-  notes: string,
-  tempLog: [TemperatureLogEntry]
-  responsibleLog: [IResponsibleLogEntry]
-}
-
-export interface IFiringLogEntry {
-  userID: ID,
-  firingID: ID,
-  time: Date,
-  notes: string,
-}
-
-export interface TemperatureLogEntry extends IFiringLogEntry {
-  userID: ID,
-  firingID: ID,
-  time: Date,
-  timeOffset: number,
-  tempExpected: number,
-  tempActual: number,
-  state: EtemperatureState,
-  notes: string,
-}
-
-export interface IResponsibleLogEntry extends IFiringLogEntry {
-  userID: ID,
-  firingID: ID,
-  time: Date,
-  isStart: boolean
-}
-
-export interface StateChangeLogEntry extends IFiringLogEntry {
-  userID: ID,
-  firingID: ID,
-  time: Date,
-  newState: EkilnReadyStatus,
-}
-
 export interface Kilns {
   all: [IKiln],
   tmp: IKiln
@@ -171,3 +119,5 @@ enum EequipmentLogType {
 //  END:  enums
 // ========================================================
 
+export type FIsThing = (input: unknown) => boolean;
+export type FValidateThing = (input: unknown) => string | null;

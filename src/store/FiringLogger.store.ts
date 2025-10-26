@@ -31,7 +31,10 @@ import {
   addFiringLogEntry,
   getFiringData,
   getFiringsList,
+  addNewFiringData,
   updateFiringData,
+  addToFiringList,
+  updateFiringList,
 } from "../components/firings/firings-store.utils.ts";
 
 let store : CDataStoreClass | null = null;
@@ -438,12 +441,13 @@ const actions : TActionList = {
 
   getFiringsList,
   getFiringData,
+  addNewFiringData,
   updateFiringData,
   // updateFiringState,
   addFiringLogEntry,
   // updateFiringLogEntry,
-  // addToFiringList,
-  // updateFiringList,
+  addToFiringList,
+  updateFiringList,
   // deleteFromFiringList,
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -

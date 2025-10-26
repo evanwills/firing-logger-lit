@@ -122,7 +122,7 @@ export const userCanNowLater = async (
     msg = ('You must be logged in to');
   } else if (!userHasAuth(user as TUser, level)) {
     msg = `You (${(user as TUser).preferredName}) do not have a high enough admin level to`;
-  } else if (key !== 'any' && userCan((user as TUser), key, level)) {
+  } else if (key !== 'any' && !userCan((user as TUser), key, level)) {
     msg = `You (${(user as TUser).preferredName}) do not have permission to`;
   }
 

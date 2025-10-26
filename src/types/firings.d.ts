@@ -54,7 +54,7 @@ export interface ReportRow {
   expectedRate: number,
 };
 
-export type TFiringLogEntryType = 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible';
+export type TFiringLogEntryType = 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible' | 'schedule';
 export type TFiringState = 'created' | 'scheduled' | 'packing' | 'ready' | 'cancelled' | 'active' | 'complete' | 'aborted' | 'cold' | 'unpacking' | 'empty';
 export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
 export type TFiringActiveState = 'normal' | 'cancelled' | 'aborted';
@@ -66,7 +66,7 @@ export interface IFiringLogEntry {
   timeOffset: number | null,
   userID: ID,
   type: TFiringLogEntryType,
-  notes: string|null,
+  notes: string | null,
 };
 
 export interface ITempLogEntry extends IFiringLogEntry {
@@ -154,6 +154,11 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
   notes: string|null,
 };
 
+export type TNewLogEntryOptions = {
+  timeOffset?: number | null,
+  type?: TFiringLogEntryType,
+  notes?: string | null,
+};
 export interface IFiring {
   id: ID,
   kilnID: ID,

@@ -105,7 +105,7 @@ export class ProgramsList extends LoggerElement {
         label="${data.programName}"></router-link>
         ${(this._userCan('fire') === true)
           ? html`<router-link
-                class="btn btn-sm warning"
+                class="btn btn-sm success normal"
                 data-uid="${data.programID}"
                 label="New firing"
                 sr-label="for ${data.programName}"

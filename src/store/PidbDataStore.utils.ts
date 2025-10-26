@@ -10,9 +10,10 @@ import type {
 import type { FActionHandler, IUpdateHelperData, TUpdateHelperOptions } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../types/users.d.ts';
-import { isID, isStrNum } from "../types/data.type-guards.ts";
+import { isID, isIdObject, isStrNum } from "../types/data.type-guards.ts";
 import { userCanNowLater } from '../components/users/user-data.utils.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
+import type { FIsThing, FValidateThing } from "../types/data.d.ts";
 
 type Fresolver = (value: unknown) => void;
 
@@ -511,13 +512,15 @@ export const addUpdateHelper = async (
   _method: string,
   storeName: string,
   itemType: string,
-  isThing: (input: unknown) => boolean,
+  isThing: FIsThing,
   {
     action,
     allowed,
+    newData,
     id,
     permissionLevel,
     type,
+    validateThing,
   } : TUpdateHelperOptions = {},
 ) : Promise<IUpdateHelperData> => {
   const _permissionLevel : number = (typeof permissionLevel === 'number')
@@ -539,6 +542,14 @@ export const addUpdateHelper = async (
     ? id
     : null;
 
+  const _newData : unknown | null = (typeof newData !== 'undefined')
+    ? newData
+    : null;
+
+  const _validateThing : FValidateThing | null = (typeof validateThing === 'function')
+    ? validateThing
+    : null;
+
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
   let thing = null;
 
@@ -554,6 +565,8 @@ export const addUpdateHelper = async (
         if (!isThing(thing)) {
           throw new Error(`Could not find ${itemType} matching "${_id}"`);
         }
+      } else if (_newData !== null && _validateThing !== null && !isThing(_newData)) {
+        throw new Error (`New data is invalid! ${_validateThing(_newData)}`);
       }
     }
   } else {

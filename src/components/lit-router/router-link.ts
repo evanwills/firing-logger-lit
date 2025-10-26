@@ -149,6 +149,9 @@ export class RouterLink extends LitElement {
     :host(.secondary) {
       --rl-background-colour: var(--rl-btn-bg-secondary);
     }
+    :host(.normal) {
+      --rl-font-weight: normal;
+    }
     ${linkStyle}
     ${srOnly}
   `;

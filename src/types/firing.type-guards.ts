@@ -14,12 +14,13 @@ import type {
   TFiringState,
   TFiringsListItem,
   TFiringActiveState,
+  TGetFirningDataPayload,
 } from "./firings.d.ts";
 import { isTFiringType } from './program.type-guards.ts';
 
 export const isTFiringLogEntryType = (value : unknown) : value is TFiringLogEntryType => (
   typeof value === 'string'
-  && new Set(['temp', 'firingState', 'damper', 'burner', 'gas', 'wood', 'responsible']).has(value)
+  && new Set(['temp', 'firingState', 'damper', 'burner', 'gas', 'wood', 'responsible', 'schedule']).has(value)
 );
 
 export const isTFiringState = (value : unknown) : value is TFiringState => (
@@ -66,7 +67,7 @@ export const isRespLog = (item : unknown) : item is IResponsibleLogEntry => (
 export const isStateChangeLog = (item : unknown) : item is IStateLogEntry => (
   isFiringLogEntry(item) === true
   && (item as IStateLogEntry).type === 'firingState'
-  && typeof (item as IStateLogEntry).newState === 'boolean'
+  && typeof (item as IStateLogEntry).newState === 'string'
   && typeof (item as IStateLogEntry).oldState === 'string'
 );
 
@@ -125,3 +126,13 @@ export const isTFiringsListItem = (item : unknown) : item is TFiringsListItem =>
   && (isISO8601((item as TFiringsListItem).start) || (item as TFiringsListItem).start === null)
   && (isISO8601((item as TFiringsListItem).end) || (item as TFiringsListItem).end === null)
 );
+
+export const isTGetFirningDataPayload = (item : unknown) : item is TGetFirningDataPayload => (
+  (item as TGetFirningDataPayload).firing instanceof Promise
+  && (item as TGetFirningDataPayload).kiln instanceof Promise
+  && (item as TGetFirningDataPayload).program instanceof Promise
+  && (item as TGetFirningDataPayload).firingStates instanceof Promise
+  && (item as TGetFirningDataPayload).firingTypes instanceof Promise
+  && (item as TGetFirningDataPayload).firingTypes instanceof Promise
+  && (item as TGetFirningDataPayload).temperatureStates instanceof Promise
+  && typeof (item as TGetFirningDataPayload).ownerName === 'string');

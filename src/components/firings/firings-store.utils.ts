@@ -1,7 +1,7 @@
-import type { IFiring, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
+import type { IFiring, IFiringLogEntry, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
 import type { CDataStoreClass, FActionHandler, IUpdateHelperData } from '../../types/store.d.ts';
-import type { ID, IIdObject, TDateRange } from '../../types/data-simple.d.ts';
-import { isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts';
+import type { ID, IIdObject, IKeyScalar, IKeyStr, TDateRange } from '../../types/data-simple.d.ts';
+import { isFiringLogEntry, isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts';
 import { isProgram } from '../../types/program.type-guards.ts';
 import { addUpdateHelper, getKeyRange } from '../../store/PidbDataStore.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
@@ -12,6 +12,7 @@ import { validateFiringData } from './firing-data.utils.ts';
 import { addRedirect, updateRedirect } from '../../store/redirect.utils.ts';
 import { getUID } from "../../utils/data.utils.ts";
 import { validateProgramData } from "../programs/program.utils.ts";
+import { isID, isIdObject } from "../../types/data.type-guards.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
 export const getFiringsList : FActionHandler = async (
@@ -129,13 +130,23 @@ const _getFiringDataByProgamID = async (
 
 export const getFiringData : FActionHandler = (
   db: CDataStoreClass,
-  { uid, programID },
+  props : unknown,
 )  : Promise<TGetFirningDataPayload|null> => {
   // console.groupCollapsed('FiringStoreUtils.getFiringData()');
+  // console.log('props:', props);
+
+  const uid : ID | null = (isID((props as IKeyStr)?.uid) === true)
+    ? (props as IKeyScalar).uid as ID
+    : null;
+  const programID : ID | null = (isID((props as IKeyStr)?.programID) === true)
+    ? (props as IKeyScalar).programID as ID
+    : '';
+
   // console.log('uid:', uid);
   // console.log('programID:', programID);
   // console.log('db:', db);
   // console.groupEnd();
+
   return (isNonEmptyStr(uid) && uid !== 'new')
     ? _getFiringDataByFiringID(db, uid)
     : _getFiringDataByProgamID(db, programID);
@@ -178,10 +189,50 @@ const saveFiringChanges = (
   }
 }
 
+export const addNewFiringData : FActionHandler = async(
+  db: CDataStoreClass,
+  data : unknown,
+) : Promise<IDBValidKey> => {
+  console.group('addNewFiringData()');
+  console.log('data:', data);
+  try {
+    const { hold, user } : IUpdateHelperData = await addUpdateHelper(
+      db,
+      'updateFiringData',
+      'firings',
+      'firing',
+      isIFiring,
+      {
+        permissionLevel: 1,
+        allowed: 'fire',
+        newData: data,
+        validateThing: validateFiringData
+      }
+    );
+    console.log('hold:', hold);
+    console.log('user:', user);
+
+    return  (hold === true)
+      ? saveChangeOnHold(
+          db,
+          'firings',
+          user.id,
+          data as IIdObject,
+          null,
+        )
+      : db.put('firings', data);
+  } catch(error) {
+    console.error('Caught error:', error);
+    throw error;
+  }
+}
+
 export const updateFiringData : FActionHandler = async(
   db: CDataStoreClass,
-  changes : IIdObject,
+  data : unknown,
 ) : Promise<IDBValidKey> => {
+  console.group('updateFiringData()');
+  console.log('data:', data);
   try {
     const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
@@ -192,28 +243,31 @@ export const updateFiringData : FActionHandler = async(
       {
         permissionLevel: 1,
         allowed: 'fire',
-        id: changes.id,
+        id: (data as IIdObject).id,
       }
     );
 
-    const initial : IIdObject | string = getInitialData(changes, thing as IFiring);
+    const initial : IIdObject | string = getInitialData(data as IIdObject, thing as IFiring);
 
     if (typeof initial === 'string') {
+      console.error(initial);
+      console.groupEnd();
       return Promise.reject(initial);
     }
 
+    console.groupEnd();
     return  (hold === true)
       ? saveChangeOnHold(
           db,
           'firings',
           user.id,
-          changes,
+          data as IIdObject,
           initial,
         )
       : saveFiringChanges(
           db,
           user.id,
-          changes,
+          data as IIdObject,
           thing as IFiring
         );
   } catch(error) {
@@ -223,7 +277,7 @@ export const updateFiringData : FActionHandler = async(
 
 export const addFiringLogEntry : FActionHandler = async (
   db: CDataStoreClass,
-  data : IIdObject,
+  data : unknown,
 ) : Promise<IDBValidKey> => {
   try {
     const { hold, user } : IUpdateHelperData = await addUpdateHelper(
@@ -231,7 +285,7 @@ export const addFiringLogEntry : FActionHandler = async (
       'addFiringLogEntry',
       'firingLogs',
       'firing log enty',
-      isIFiring,
+      isFiringLogEntry,
       {
         permissionLevel: 1,
         allowed: 'log'
@@ -243,12 +297,79 @@ export const addFiringLogEntry : FActionHandler = async (
         db,
         'firings',
         user.id,
-        data,
+        data as IFiringLogEntry,
         null,
       );
     }
 
-    return idbp.add('firingLogs', data);
+    return db.add('firingLogs', data);
+  } catch(error : unknown) {
+    throw error;
+  }
+}
+
+export const addToFiringList : FActionHandler = async (
+  db: CDataStoreClass,
+  data : unknown,
+) : Promise<IDBValidKey> => {
+  try {
+    const { hold, user } : IUpdateHelperData = await addUpdateHelper(
+      db,
+      'addFiringLogEntry',
+      'firingLogs',
+      'firing log enty',
+      isTFiringsListItem,
+      {
+        permissionLevel: 1,
+        allowed: 'log'
+      }
+    );
+
+    if (hold === true) {
+      return saveChangeOnHold(
+        db,
+        'firings',
+        user.id,
+        data as TFiringsListItem,
+        null,
+      );
+    }
+
+    return db.put('firingsList', data);
+  } catch(error : unknown) {
+    throw error;
+  }
+}
+
+export const updateFiringList : FActionHandler = async (
+  db: CDataStoreClass,
+  data : unknown,
+) : Promise<IDBValidKey> => {
+  try {
+    const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
+      db,
+      'addFiringLogEntry',
+      'firingLogs',
+      'firing log enty',
+      isFiringLogEntry,
+      {
+        permissionLevel: 1,
+        allowed: 'log',
+        id: (data as IIdObject).id,
+      }
+    );
+
+    if (hold === true) {
+      return saveChangeOnHold(
+        db,
+        'firings',
+        user.id,
+        data as IIdObject,
+        thing as TFiringsListItem,
+      );
+    }
+
+    return db.add('firingsList', data);
   } catch(error : unknown) {
     throw error;
   }

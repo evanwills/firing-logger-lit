@@ -267,13 +267,11 @@ export class ProgramDetails extends LoggerElement {
             kilnUrlPart: this.kilnPath,
             programUrlPart: this.programPath
           },
-          false,
         ).then(this._setProgramData.bind(this));
       } else {
         this.store.dispatch(
           'getKilnDataForProgram',
           { uid: '', urlPart: this.kilnPath },
-          false,
         ).then(this._setNewProgramData.bind(this));
       }
     } else {
@@ -390,7 +388,7 @@ export class ProgramDetails extends LoggerElement {
 
   renderNewFiringBtn() : TemplateResult | string {
     return html`<p class="new-firing"><router-link
-      class="btn btn-lg warning"
+      class="btn btn-lg success"
       data-uid="${this._id}"
       label="New firing"
       sr-label="for ${this._name}"

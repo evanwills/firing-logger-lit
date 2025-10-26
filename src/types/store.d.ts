@@ -1,6 +1,6 @@
 import type { IDBPDatabase } from 'idb';
-import type { ID, IKeyValPair, IKeyValue } from './data-simple.d.ts';
-import type { IKiln, IUser } from './data.d.ts';
+import type { ID, IIdObject, IKeyValPair, IKeyValue } from './data-simple.d.ts';
+import type { FValidateThing, IKiln, IUser } from './data.d.ts';
 import type PidbDataStore from "../store/PidbDataStore.class.ts";
 import type { TUserNowLaterAuth } from './users';
 
@@ -24,7 +24,8 @@ export type TStoreSlice = string;
 export type TStoreAction = 'setLoggedInUser' | 'fetchLatest' | 'replace' | 'append'
   | 'fetchLatestKilns' | 'getKilnEditData' | 'getKilnViewData' | 'updateKiln' | 'addKiln'
   | 'fetchLatestPrograms' | 'getProgramData' | 'addProgram' | 'superseedProgram' | 'updateProgram'
-  | 'fetchLatestFirings' | 'addFiring' | 'updateFiring' | 'deleteFiring'
+  | 'addToProgramList' | 'getProgramList' | 'updateProgramList'
+  | 'fetchLatestFirings' | 'addNewFiringData' | 'updateFiringData' | 'deleteFiringDelete' | 'addToFiringList' | 'updateFiringList' | 'addFiringLogEntry'
   | 'fetchLatestusers' | 'addUser' | 'updateUser' | 'setUserPreferences' | 'clearNoAuthChanges' | 'saveChangeOnHold' | 'reapplyChangesOnHold';
 
 /**
@@ -556,7 +557,9 @@ export interface IUpdateHelperData extends TUserNowLaterAuth {
 export type TUpdateHelperOptions = {
   action? : string,
   allowed? : string,
+  newData? : unknown,
   id? : ID
   permissionLevel? : number,
   type? : string,
+  validateThing? : FValidateThing,
 }

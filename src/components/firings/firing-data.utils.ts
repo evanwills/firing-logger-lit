@@ -2,12 +2,14 @@ import type { FConverter, ID } from "../../types/data-simple.d.ts";
 import type { TSvgPathItem } from "../../types/data.d.ts";
 import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
 import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
-import type { IFiring, IFiringLogEntry, ITempLogEntry } from "../../types/firings.d.ts";
+import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, TFiringLogEntryType, TNewLogEntryOptions } from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { emptyOrNull, isObj } from "../../utils/data.utils.ts";
+import { emptyOrNull, getUID, isObj } from "../../utils/data.utils.ts";
+import { getLocalISO8601 } from "../../utils/date-time.utils.ts";
 import { orderOptionsByLabel } from "../../utils/render.utils.ts";
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
 /**
  * Generates a standard error message for invalid program (or program
@@ -168,6 +170,25 @@ export const validateTempLogEntry = (item: unknown) : string | null => {
   return null;
 }
 
+export const validateStateLogEntry = (item: unknown) : string | null => {
+  const tmp = validateFiringLogEntry(item);
+
+  if (tmp !== null) {
+    return tmp;
+  }
+  if ((item as IStateLogEntry).type !== 'firingState') {
+    return getFiringError('type', (item as IStateLogEntry).type, 'string', 'IStateLogEntry');
+  }
+  if (isTFiringState((item as IStateLogEntry).newState) === false) {
+    return getFiringError('timeOffset', (item as IStateLogEntry).newState, 'string', 'IStateLogEntry');
+  }
+  if (isTFiringState((item as IStateLogEntry).oldState) === false) {
+    return getFiringError('tempExpected', (item as IStateLogEntry).oldState, 'string', 'IStateLogEntry');
+  }
+
+  return null;
+}
+
 export const tempLog2SvgPathItem = (item : ITempLogEntry) : TSvgPathItem => ({
   timeOffset: item.timeOffset,
   actualTime: item.time,
@@ -204,3 +225,23 @@ export const getProgramsByTypeAndKiln = (
   list.filter((item : TProgramListRenderItem) : boolean => (item.type === type && item.kilnID === kilnID))
     .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.programID, label: `${item.programName} (Cone: ${item.cone} - ${tConverter(item.maxTemp)}°${tUnit})` })),
 );
+
+export const getNewLogEntry = (
+  firingID: ID,
+  userID: ID,
+  { type, timeOffset, notes } : TNewLogEntryOptions,
+) : IFiringLogEntry => ({
+  id: getUID(),
+  firingID,
+  time: getLocalISO8601(new Date()),
+  timeOffset: (typeof timeOffset === 'number')
+    ? timeOffset
+    : null,
+  userID,
+  type : (isTFiringType(type))
+    ? type
+    : 'temp',
+  notes : isNonEmptyStr(notes)
+    ? notes
+    : null,
+});
