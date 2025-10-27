@@ -54,7 +54,7 @@ export interface ReportRow {
   expectedRate: number,
 };
 
-export type TFiringLogEntryType = 'temp' | 'firingState' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible' | 'schedule';
+export type TFiringLogEntryType = 'temp' | 'firingState' | 'issue' | 'observation' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible' | 'schedule';
 export type TFiringState = 'created' | 'scheduled' | 'packing' | 'ready' | 'cancelled' | 'active' | 'complete' | 'aborted' | 'cold' | 'unpacking' | 'empty';
 export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
 export type TFiringActiveState = 'normal' | 'cancelled' | 'aborted';

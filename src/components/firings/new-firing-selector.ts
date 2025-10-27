@@ -237,7 +237,7 @@ export class NewFiringSelector extends LoggerElement {
     ${(this._programID !== null)
       ? html`<p>
           <router-link
-            class="btn"
+            class="btn success"
             label="Set up new firing"
             url="firing/new?programUID=${this._programID}"></router-link>
         </p>`

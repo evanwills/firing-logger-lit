@@ -52,6 +52,7 @@ import '../lit-router/router-link.ts';
 import type { TStoreAction } from "../../types/store.d.ts";
 import { renderExpectedStart, renderFiringLogEntry, renderFiringPlot, renderLogButton, renderStatusLogEntry, renderTempLogEntry, renderTopTemp } from "./firing-render.utils.ts";
 import firingDetailCss from "./firing-detail.css.ts";
+import { FiringLoggerModal } from "../shared-components/firing-logger-modal.ts";
 
 @customElement('firing-details')
 export class FiringDetails extends LoggerElement {
@@ -126,6 +127,10 @@ export class FiringDetails extends LoggerElement {
   _firingTypeOptions : TOptionValueLabel[] = [];
   _temperatureStates : IKeyStr = {};
   _actualStartTime : number = 0;
+
+  _confirmModal : FiringLoggerModal | null = null;
+  @state()
+  _confirmHeading : string = '';
 
   @state()
   _canEnd : string = '';
@@ -785,26 +790,38 @@ export class FiringDetails extends LoggerElement {
     console.groupEnd();
   }
 
-  _handleFiringStatUpdate(event : CustomEvent) : void {
-    console.group('<firing-details>._handleFiringStatUpdate()');
+  _handleFiringStatusUpdate(event : CustomEvent) : void {
+    console.group('<firing-details>._handleFiringStatusUpdate()');
     console.log('event:', event);
     console.log('event.detail:', event.detail);
     console.log('event.detail.value:', event.detail.value);
     console.log('event.detail.validity:', event.detail.validity);
     console.log('event.detail.validity.valid:', event.detail.validity.valid);
     console.log('event.detail.validity.valid === true:', event.detail.validity.valid === true);
-    console.group('<firing-details>._handleFiringStatUpdate() - BEFORE');
+    console.group('<firing-details>._handleFiringStatusUpdate() - BEFORE');
     console.log('this._firingState:', this._firingState);
     console.log('this._currentState):', this._currentState);
     console.log('this._firing:', this._firing);
     console.log('this._firing.firingState:', this._firing?.firingState);
     console.log('this._firing.firingActiveState:', this._firing?.firingActiveState);
     console.groupEnd();
-    if (this._firing !== null
-      && event.detail.validity.valid === true
-      && isTFiringState(event.detail.value)
-    ) {
-      this._firingState = event.detail.value;
+    const { value, validity } = event.detail;
+    if (this._firing !== null && validity.valid === true && isTFiringState(value)) {
+      if (value === 'cancelled' || value === 'aborted') {
+        // open confirm modal
+        if (this._confirmModal === null) {
+          const tmp : FiringLoggerModal | undefined | null = this.shadowRoot?.querySelector('firing-logger-modal.confirm');
+          console.log('tmp:', tmp);
+
+          if (tmp instanceof FiringLoggerModal) {
+            this._confirmHeading = `Confirm ${value.replace(/l?ed$/, '')}`;
+            this._confirmModal = tmp;
+            this._confirmModal.showModal();
+          }
+        }
+        return;
+      }
+      this._firingState = value;
       this._currentState = getLabelFromOrderedEnum(
         this._firingStates,
         this._firingState,
@@ -834,7 +851,7 @@ export class FiringDetails extends LoggerElement {
 
       this._setFiringStateOptions(true);
     }
-    console.group('<firing-details>._handleFiringStatUpdate() - AFTER');
+    console.group('<firing-details>._handleFiringStatusUpdate() - AFTER');
     console.log('this._firing.firingActiveState:', this._firing?.firingActiveState);
     console.log('this._firing.firingState:', this._firing?.firingState);
     console.log('this._firing:', this._firing);
@@ -937,7 +954,9 @@ export class FiringDetails extends LoggerElement {
                 label="Change firing state"
                 .options=${this._firingStateOptions}
                 show-empty
-                @change=${this._handleFiringStatUpdate.bind(this)}></accessible-select-field></li>`
+                @change=${this._handleFiringStatusUpdate.bind(this)}></accessible-select-field>
+                <firing-logger-modal class="confirm" heading="${this._confirmHeading}" no-open></firing-logger-modal>
+              </li>`
             : ''
           }
           ${(this._showDuration === true)
