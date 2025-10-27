@@ -34,12 +34,17 @@ export const inputFieldCSS = css`
   width: 100%;
   justify-self: stretch;
 }
-.inner:not(.no-label) {
+.inner:not(.no-label, .as-block) {
   column-gap: var(--label-gap, 0.5rem);
   row-gap: 0.5rem;
   display: grid;
   grid-template-areas: 'label input';
   grid-template-columns: var(--label-width, 5.75rem) 1fr;
+}
+inner.as-block {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
 }
 .inner.inner-help {
   grid-template-areas: 'label input' 'label help';
@@ -64,6 +69,11 @@ export const inputFieldCSS = css`
   text-align: var(--label-align, left);
   transform: translateY(var(--label-y-translate, 0));
   width: var(--label-width, 5.75rem);
+}
+.as-block {
+  .label, label {
+    width: 100%;
+  }
 }
 .error {
   color: var(--error-colour, #f00);

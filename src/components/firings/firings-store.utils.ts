@@ -349,9 +349,9 @@ export const updateFiringList : FActionHandler = async (
   try {
     const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
-      'addFiringLogEntry',
-      'firingLogs',
-      'firing log enty',
+      'updateFiringList',
+      'firingsList',
+      'firing list',
       isFiringLogEntry,
       {
         permissionLevel: 1,

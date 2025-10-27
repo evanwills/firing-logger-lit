@@ -22,47 +22,22 @@ export const isTFiringLogEntryType = (value : unknown) : value is TFiringLogEntr
   && new Set(['temp', 'firingState', 'issue', 'observation', 'damper', 'burner', 'gas', 'wood', 'responsible', 'schedule']).has(value)
 );
 
-// export const isTFiringState = (value : unknown) : value is TFiringState => (
-//   typeof value === 'string'
-//   && new Set([
-//     'created',
-//     'scheduled',
-//     'packing',
-//     'ready',
-//     'cancelled',
-//     'active',
-//     'complete',
-//     'aborted',
-//     'cold',
-//     'unpacking',
-//     'empty',
-//   ]).has(value)
-// );
-export const isTFiringState = (value : unknown) : value is TFiringState => {
-  console.group('isTFiringState()');
-  console.log('value:', value);
-  console.log('typeof value === "string":', typeof value === 'string');
-  const typeStrs = new Set([
-      'created',
-      'scheduled',
-      'packing',
-      'ready',
-      'cancelled',
-      'active',
-      'complete',
-      'aborted',
-      'cold',
-      'unpacking',
-      'empty',
-    ]);
-  console.log('typeStrs:', typeStrs);
-  console.log('typeStrs.has(value):', typeStrs.has(value as string));
-  console.groupEnd();
-  return (
-    typeof value === 'string'
-    && typeStrs.has(value)
-  );
-};
+export const isTFiringState = (value : unknown) : value is TFiringState => (
+  typeof value === 'string'
+  && new Set([
+    'created',
+    'scheduled',
+    'packing',
+    'ready',
+    'cancelled',
+    'active',
+    'complete',
+    'aborted',
+    'cold',
+    'unpacking',
+    'empty',
+  ]).has(value)
+);
 
 export const isTFiringActiveState = (value : unknown) : value is TFiringActiveState => (
   typeof value === 'string' && new Set(['normal', 'cancelled', 'aborted']).has(value)

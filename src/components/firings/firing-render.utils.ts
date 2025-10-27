@@ -132,15 +132,15 @@ export const renderStatusLogEntry = (
   user: TUser,
   canViewUser: boolean = false,
 ) : TemplateResult => {
-  console.group('renderStatusLogEntry()');
-  console.log('item:', item);
-  console.log('item.id:', item.id);
-  console.log('item.oldState:', item.oldState);
-  console.log('item.newState:', item.newState);
-  console.log('firingStates:', firingStates);
-  console.log('user:', user);
-  console.log('canViewUser:', canViewUser);
-  console.groupEnd();
+  // console.group('renderStatusLogEntry()');
+  // console.log('item:', item);
+  // console.log('item.id:', item.id);
+  // console.log('item.oldState:', item.oldState);
+  // console.log('item.newState:', item.newState);
+  // console.log('firingStates:', firingStates);
+  // console.log('user:', user);
+  // console.log('canViewUser:', canViewUser);
+  // console.groupEnd();
 
   return html`<li class="log log-status">
     ${renderTime(item)}

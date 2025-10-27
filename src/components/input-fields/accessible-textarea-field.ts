@@ -79,7 +79,7 @@ export class AccessibleTextareaField extends AccessibleWholeField {
       .minlength=${ifDefined(this.minlength)}
       .list=${ifDefined(this._listID)}
       .pattern=${ifDefined(this.pattern)}
-      .placeholder=${this.placeholder}
+      .placeholder=${ifDefined(this.placeholder)}
       ?spellcheck=${this.spellCheck}
       .style=${ifDefined(this.textStyle)}
       ?readonly=${this.readonly}

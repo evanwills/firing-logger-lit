@@ -306,6 +306,7 @@ export class FiringDetails extends LoggerElement {
               allowed.add('complete').add('aborted');
               this._canEnd = 'abort';
               break;
+            case 'aborted':
             case 'complete':
               allowed.add('cold').add('unpacking').add('empty');
               this._canEnd = '';
@@ -633,6 +634,54 @@ export class FiringDetails extends LoggerElement {
     }
   }
 
+  _handleStateChangeInner(
+    newState : TFiringState,
+    activeState : TFiringActiveState | null = null,
+  ) : boolean {
+    if (this._firing !== null && this.store !== null && this._firingState !== newState) {
+      const oldState = this._firingState;
+
+      const change : IIdObject = {
+        id: this._firing.id,
+        firingState: newState,
+      };
+      if (activeState !== null
+        && this._firingActiveState !== activeState
+      ) {
+        change.firingActiveState = activeState;
+        this._firingActiveState = activeState;
+      }
+
+      const log = getStatusLogEntry(
+        this._firing.id,
+        this._user?.id,
+        { newState, oldState, notes: this._logNotes },
+      );
+
+      this._logNotes = null;
+      this._rawLog = [...this._rawLog, log];
+      this._firing.firingState = newState;
+      this._firingState = newState;
+      this._currentState = getLabelFromOrderedEnum(
+        this._firingStates,
+        newState,
+        this._currentState,
+      );
+      console.log('change:', change);
+      console.log('log:', log);
+
+      this.store.dispatch('updateFiringData', change);
+      this.store.dispatch('updateFiringList', change);
+      this.store.dispatch('addFiringLogEntry', log)
+
+      this._setFiringStateOptions(true);
+
+      return true;
+    }
+
+    return false;
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -762,7 +811,8 @@ export class FiringDetails extends LoggerElement {
   _handleEnd(_event : CustomEvent) : void {
     console.group('<firing-details>._handleEnd()');
     console.log('this._firingState (before):', this._firingState);
-    console.log('this._firingState (before):', this._firingState);
+    console.log('this._logNotes (before):', this._firingState);
+    console.log('this._canEnd (before):', this._firingState);
     if (this._firingState === 'created') {
       // The firing hasn't been saved yet so there's not much to do
       // We'll just send them back to the program page for the
@@ -788,100 +838,66 @@ export class FiringDetails extends LoggerElement {
       return;
     }
 
-    const oldState : TFiringState = this._firingState;
+    let newState : TFiringState = this._firingState;
+    let activeState : TFiringActiveState = this._firingActiveState;
 
     if (this._canEnd === 'cancel') {
-      this._firingState = 'cancelled';
-      this._firingActiveState = 'cancelled';
+      newState = 'cancelled';
+      activeState = 'cancelled';
     } else if (this._firingState === 'active') {
-      this._firingState = 'aborted';
-      this._firingActiveState = 'aborted';
+      newState = 'aborted';
+      activeState = 'aborted';
     }
 
-    if (this._firing !== null
-      && this.store !== null
-      && this._canEnd !== ''
-      && this._firingState !== oldState
+    if (this._canEnd !== ''
       && isNonEmptyStr(this._logNotes)
+      && this._handleStateChangeInner(newState, activeState)
     ) {
-      const logEntry : IStateLogEntry = getStatusLogEntry(
-        this._firing.id,
-        this._user?.id,
-        {
-          newState: this._firingState,
-          oldState,
-          notes: this._logNotes,
-        },
-      );
-      this._logNotes = null;
-      this.store.dispatch('addFiringLogEntry', logEntry);
-      this._rawLog.push(logEntry);
       this._toggleConfirmShowModal(false);
     }
+    console.log('this._logNotes (after):', this._firingState);
+    console.log('this._canEnd (after):', this._firingState);
+    console.log('this._firingState (after):', this._firingState);
     console.groupEnd();
   }
 
   _handleFiringStatusUpdate(event : CustomEvent) : void {
-    console.group('<firing-details>._handleFiringStatusUpdate()');
-    console.log('event:', event);
-    console.log('event.detail:', event.detail);
-    console.log('event.detail.value:', event.detail.value);
-    console.log('event.detail.validity:', event.detail.validity);
-    console.log('event.detail.validity.valid:', event.detail.validity.valid);
-    console.log('event.detail.validity.valid === true:', event.detail.validity.valid === true);
-    console.group('<firing-details>._handleFiringStatusUpdate() - BEFORE');
-    console.log('this._firingState:', this._firingState);
-    console.log('this._currentState):', this._currentState);
-    console.log('this._firing:', this._firing);
-    console.log('this._firing.firingState:', this._firing?.firingState);
-    console.log('this._firing.firingActiveState:', this._firing?.firingActiveState);
-    console.groupEnd();
+    // console.group('<firing-details>._handleFiringStatusUpdate()');
+    // console.log('event:', event);
+    // console.log('event.detail:', event.detail);
+    // console.log('event.detail.value:', event.detail.value);
+    // console.log('event.detail.validity:', event.detail.validity);
+    // console.log('event.detail.validity.valid:', event.detail.validity.valid);
+    // console.log('event.detail.validity.valid === true:', event.detail.validity.valid === true);
+    // console.group('<firing-details>._handleFiringStatusUpdate() - BEFORE');
+    // console.log('this._firingState:', this._firingState);
+    // console.log('this._currentState):', this._currentState);
+    // console.log('this._firing:', this._firing);
+    // console.log('this._firing.firingState:', this._firing?.firingState);
+    // console.log('this._firing.firingActiveState:', this._firing?.firingActiveState);
+    // console.groupEnd();
     const { value, validity } = event.detail;
-    if (this._firing !== null && validity.valid === true && isTFiringState(value)) {
+    if (validity.valid === true && isTFiringState(value)) {
       if (value === 'cancelled' || value === 'aborted') {
         this._confirmHeading = `Confirm ${value.replace(/l?ed$/, '')}`;
         this._toggleConfirmShowModal(true);
         return;
       }
-      this._firingState = value;
-      this._currentState = getLabelFromOrderedEnum(
-        this._firingStates,
-        this._firingState,
-        this._currentState,
+      this._handleStateChangeInner(
+        value,
+        (value === 'complete')
+          ? 'completed'
+          : null,
       );
-
-      const change : IIdObject = {
-        id: this._firing.id,
-        firingState: this._firingState,
-      };
-
-      const log = getStatusLogEntry(
-        this._firing.id,
-        this._user?.id,
-        {
-          newState: this._firingState,
-          oldState: this._firing.firingState,
-        },
-      );
-      this._rawLog = [...this._rawLog, log];
-      console.log('change:', change);
-      console.log('log:', log);
-
-
-      this.store?.dispatch('updateFiringData', change);
-      this.store?.dispatch('updateFiringList', change);
-      this.store?.dispatch('addFiringLogEntry', log).then(this._redirectAfterCreate.bind(this));
-
-      this._setFiringStateOptions(true);
     }
-    console.group('<firing-details>._handleFiringStatusUpdate() - AFTER');
-    console.log('this._firing.firingActiveState:', this._firing?.firingActiveState);
-    console.log('this._firing.firingState:', this._firing?.firingState);
-    console.log('this._firing:', this._firing);
-    console.log('this._currentState:', this._currentState);
-    console.log('this._firingState:', this._firingState);
-    console.groupEnd();
-    console.groupEnd();
+    // console.group('<firing-details>._handleFiringStatusUpdate() - AFTER');
+    // console.log('this._firing.firingActiveState:', this._firing?.firingActiveState);
+    // console.log('this._firing.firingState:', this._firing?.firingState);
+    // console.log('this._firing:', this._firing);
+    // console.log('this._currentState:', this._currentState);
+    // console.log('this._firingState:', this._firingState);
+    // console.groupEnd();
+    // console.groupEnd();
   }
 
   _handleNotes(event: CustomEvent) : void {
@@ -889,10 +905,12 @@ export class FiringDetails extends LoggerElement {
     console.log('event.detail:', event.detail);
     console.log('event.detail.validity:', event.detail.validity);
     console.log('event.detail.value:', event.detail.value);
-    console.groupEnd();
+    console.log('this._logNotes (before):', this._logNotes);
     if (event.detail.validity.valid && isNonEmptyStr(event.detail.value)) {
       this._logNotes = event.detail.value;
     }
+    console.log('this._logNotes (after):', this._logNotes);
+    console.groupEnd();
   }
 
   //  END:  event handlers
@@ -914,11 +932,11 @@ export class FiringDetails extends LoggerElement {
   // START: helper render methods
 
   _renderLogEntry(item : IFiringLogEntry) : TemplateResult | string {
-    console.group('<firing-details>._renderLogEntry()');
-    console.log('item:', item);
-    console.log('item.id:', item.id);
-    console.log('item.type:', item.type);
-    console.log('isStateChangeLog(item):', isStateChangeLog(item));
+    // console.group('<firing-details>._renderLogEntry()');
+    // console.log('item:', item);
+    // console.log('item.id:', item.id);
+    // console.log('item.type:', item.type);
+    // console.log('isStateChangeLog(item):', isStateChangeLog(item));
     if (this._user !== null) {
       const canViewUser : boolean = this._userHasAuth(1);
 
@@ -955,7 +973,7 @@ export class FiringDetails extends LoggerElement {
         );
     }
 
-    console.groupEnd();
+    // console.groupEnd();
     return '';
   }
 
@@ -963,11 +981,14 @@ export class FiringDetails extends LoggerElement {
     label : string = 'Notes',
     required : boolean = false
   ) : TemplateResult {
-    return html`<li><accessible-textarea-field
-                field-id="log-notes"
-                label="${label}"
-                ?required=${required}
-                @change=${this._handleNotes}></accessible-textarea-field></li>`;
+    return html`<li>
+      <accessible-textarea-field
+        as-block
+        field-id="log-notes"
+        label="${label}"
+        ?required=${required}
+        @change=${this._handleNotes}></accessible-textarea-field>
+    </li>`;
   }
 
   _renderFiringStateDetail() : TemplateResult {
@@ -1022,7 +1043,7 @@ export class FiringDetails extends LoggerElement {
 
           ${renderExpectedStart(
             this._scheduledStart,
-            this._can('schedule'),
+            (this._can('schedule') && this._firingActiveState === 'normal'),
             this._userHasAuth(2),
             this._handleScheduledChange.bind(this),
           )}

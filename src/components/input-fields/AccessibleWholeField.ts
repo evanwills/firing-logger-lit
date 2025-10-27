@@ -16,6 +16,9 @@ export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  @property({ type: Boolean, attribute: 'as-block' })
+  asBlock : boolean = false;
+
   @property({ type: Number, attribute: 'container-width' })
   containerWidth : number = 0;
 
@@ -338,6 +341,9 @@ export class AccessibleWholeField extends FocusableInside {
     let cls = 'inner';
     if (this._hadFocus === true) {
       cls += ' had-focus';
+    }
+    if (this.asBlock === true) {
+      cls += ' as-block';
     }
     if (this.noLabel === true) {
       cls += ' no-label';
