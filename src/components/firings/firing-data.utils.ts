@@ -2,7 +2,7 @@ import type { FConverter, ID } from "../../types/data-simple.d.ts";
 import type { TSvgPathItem } from "../../types/data.d.ts";
 import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
 import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
-import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, TFiringLogEntryType, TNewLogEntryOptions } from "../../types/firings.d.ts";
+import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, TFiringLogEntryType, INewLogEntryOptions, INewFiringStateLogEntryOptions } from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
@@ -229,7 +229,7 @@ export const getProgramsByTypeAndKiln = (
 export const getNewLogEntry = (
   firingID: ID,
   userID: ID,
-  { type, timeOffset, notes } : TNewLogEntryOptions,
+  { type, timeOffset, notes } : INewLogEntryOptions,
 ) : IFiringLogEntry => ({
   id: getUID(),
   firingID,
@@ -245,3 +245,22 @@ export const getNewLogEntry = (
     ? notes
     : null,
 });
+
+export const getStatusLogEntry = (
+  firingID: ID,
+  userID: ID,
+  options : INewFiringStateLogEntryOptions,
+) : IStateLogEntry => {
+  return {
+    ...getNewLogEntry(
+      firingID,
+      userID,
+      {
+        ...options,
+        type: 'firingState',
+      },
+    ),
+    oldState: options.oldState,
+    newState: options.newState,
+  } as IStateLogEntry;
+};

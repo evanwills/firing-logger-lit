@@ -89,9 +89,9 @@ export interface IStateLogEntry extends IFiringLogEntry {
   timeOffset: number | null,
   userID: ID,
   type: 'firingState',
-  newState: string,
-  oldState: string,
   notes: string|null,
+  newState: TFiringState,
+  oldState: TFiringState,
 };
 
 export interface IDamperLogEntry extends IFiringLogEntry {
@@ -154,10 +154,17 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
   notes: string|null,
 };
 
-export type TNewLogEntryOptions = {
+export interface INewLogEntryOptions {
   timeOffset?: number | null,
   type?: TFiringLogEntryType,
   notes?: string | null,
+};
+
+export interface INewFiringStateLogEntryOptions {
+  timeOffset?: number | null,
+  notes?: string | null,
+  newState: TFiringState,
+  oldState: TFiringState,
 };
 export interface IFiring {
   id: ID,

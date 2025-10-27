@@ -1,6 +1,6 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
+// import { ifDefined } from 'lit/directives/if-defined.js';
 import type { TSvgPathItem } from '../../types/data.d.ts';
 import type { ID, IIdObject, IKeyStr, IOrderedEnum, ISO8601 } from '../../types/data-simple.d.ts';
 import type {
@@ -19,6 +19,7 @@ import type {
 import type { IKiln } from '../../types/kilns.d.ts';
 import type { IFiringStep, IProgram } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import type { TStoreAction } from "../../types/store.d.ts";
 import {
   // isFiringLogEntry,
   isIFiring,
@@ -31,9 +32,14 @@ import {
 import { isISO8601 } from '../../types/data.type-guards.ts';
 // import { isStateChangeLog, isRespLog, isTempLog } from '../../types/firing.type-guards.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
-import { getLabelFromOrderedEnum, getUID, getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
+import {
+  getLabelFromOrderedEnum,
+  getUID,
+  // getValFromKey,
+  orderedEnum2enum,
+} from '../../utils/data.utils.ts';
 import { getLocalISO8601 } from '../../utils/date-time.utils.ts';
-import { getNewLogEntry, tempLog2SvgPathItem } from './firing-data.utils.ts';
+import { getNewLogEntry, getStatusLogEntry, tempLog2SvgPathItem } from './firing-data.utils.ts';
 import { enumToOptions, sortOrderedEnum } from '../../utils/lit.utils.ts';
 import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
@@ -41,18 +47,18 @@ import { LoggerElement } from '../shared-components/LoggerElement.ts';
 // import { renderFiringSteps } from '../programs/program.utils.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
 import { LitRouter } from "../lit-router/lit-router.ts";
+import { renderExpectedStart, renderFiringLogEntry, renderFiringPlot, renderLogButton, renderStatusLogEntry, renderTempLogEntry, renderTopTemp } from "./firing-render.utils.ts";
+import firingDetailCss from "./firing-detail.css.ts";
+import { FiringLoggerModal } from "../shared-components/firing-logger-modal.ts";
 import '../input-fields/read-only-field.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
+import '../input-fields/accessible-textarea-field.ts';
 import '../programs/program-steps-table.ts';
 import '../shared-components/firing-plot.ts';
 import '../shared-components/firing-logger-modal.ts';
 import '../shared-components/loading-spinner.ts';
 import '../lit-router/router-link.ts';
-import type { TStoreAction } from "../../types/store.d.ts";
-import { renderExpectedStart, renderFiringLogEntry, renderFiringPlot, renderLogButton, renderStatusLogEntry, renderTempLogEntry, renderTopTemp } from "./firing-render.utils.ts";
-import firingDetailCss from "./firing-detail.css.ts";
-import { FiringLoggerModal } from "../shared-components/firing-logger-modal.ts";
 
 @customElement('firing-details')
 export class FiringDetails extends LoggerElement {
@@ -168,6 +174,8 @@ export class FiringDetails extends LoggerElement {
   _firingActiveState : TFiringActiveState = 'normal';
   @state()
   _temperatureState : TTemperatureState = 'n/a';
+  @state()
+  _logNotes : string | null = null;
 
   @state()
   _step0 : IFiringStep = {
@@ -590,29 +598,38 @@ export class FiringDetails extends LoggerElement {
     // console.groupEnd();
   }
 
-  _getBasicLogEntry(type : TFiringLogEntryType) : IFiringLogEntry {
-    const now = Date.now();
-
-    return {
-      id: getUID(),
-      firingID: (typeof this._firing?.id === 'string')
-        ? this._firing.id
-        : this.firingID,
-      time: getLocalISO8601(now),
-      timeOffset: (this._actualStartTime > 0 && ['active', 'complete', 'cold'].includes(this._firingState))
-        ? ((now - this._actualStartTime) / 1000)
-        : null,
-      userID: (typeof this._user?.id === 'string')
-        ? this._user.id
-        : 'unknown',
-      type,
-      notes: null,
-    };
-  }
-
   _redirectAfterCreate() : void {
     if (this._firing !== null && this._firing.firingState === 'created') {
       LitRouter.dispatchRouterEvent(this, `/firing/${this._firing.id}`);
+    }
+  }
+
+  _getConfirmModal() : FiringLoggerModal | null {
+    if (this._confirmModal === null) {
+      const tmp : FiringLoggerModal | undefined | null = this.shadowRoot?.querySelector('firing-logger-modal.confirm');
+      console.log('tmp:', tmp);
+
+      if (tmp instanceof FiringLoggerModal) {
+        this._confirmModal = tmp;
+      } else {
+        throw new Error('Confirm modal could not be found in the DOM');
+      }
+    }
+
+    return this._confirmModal;
+  }
+
+  _toggleConfirmShowModal(open : boolean = true) : void {
+    const modal = this._getConfirmModal();
+
+    if (modal === null) {
+      throw new Error('Confirm modal could not be found in the DOM');
+    }
+
+    if (open === true) {
+      modal.showModal();
+    } else {
+      modal.close();
     }
   }
 
@@ -663,6 +680,7 @@ export class FiringDetails extends LoggerElement {
 
         if (this._firing.firingState === 'created') {
           this._firingState = 'scheduled';
+          this._canEnd = 'cancel';
 
           // console.group('<firing-details>._handleScheduledChange() - setCurrentState');
           // console.log('this._firingStates:', this._firingStates);
@@ -744,7 +762,11 @@ export class FiringDetails extends LoggerElement {
   _handleEnd(_event : CustomEvent) : void {
     console.group('<firing-details>._handleEnd()');
     console.log('this._firingState (before):', this._firingState);
+    console.log('this._firingState (before):', this._firingState);
     if (this._firingState === 'created') {
+      // The firing hasn't been saved yet so there's not much to do
+      // We'll just send them back to the program page for the
+      // program used for this firing.
       if (this.mode !== 'new') {
         // this.store?.delete('firings', this.firingID);
       }
@@ -776,16 +798,25 @@ export class FiringDetails extends LoggerElement {
       this._firingActiveState = 'aborted';
     }
 
-    if (this._canEnd !== '' && this.store !== null) {
-      const logEntry : IStateLogEntry = {
-        ...this._getBasicLogEntry('firingState') as IStateLogEntry,
-        newState: this._firingState,
-        oldState: (typeof this._firing?.firingState === 'string')
-          ? this._firing.firingState
-          : oldState,
-      }
+    if (this._firing !== null
+      && this.store !== null
+      && this._canEnd !== ''
+      && this._firingState !== oldState
+      && isNonEmptyStr(this._logNotes)
+    ) {
+      const logEntry : IStateLogEntry = getStatusLogEntry(
+        this._firing.id,
+        this._user?.id,
+        {
+          newState: this._firingState,
+          oldState,
+          notes: this._logNotes,
+        },
+      );
+      this._logNotes = null;
       this.store.dispatch('addFiringLogEntry', logEntry);
       this._rawLog.push(logEntry);
+      this._toggleConfirmShowModal(false);
     }
     console.groupEnd();
   }
@@ -808,17 +839,8 @@ export class FiringDetails extends LoggerElement {
     const { value, validity } = event.detail;
     if (this._firing !== null && validity.valid === true && isTFiringState(value)) {
       if (value === 'cancelled' || value === 'aborted') {
-        // open confirm modal
-        if (this._confirmModal === null) {
-          const tmp : FiringLoggerModal | undefined | null = this.shadowRoot?.querySelector('firing-logger-modal.confirm');
-          console.log('tmp:', tmp);
-
-          if (tmp instanceof FiringLoggerModal) {
-            this._confirmHeading = `Confirm ${value.replace(/l?ed$/, '')}`;
-            this._confirmModal = tmp;
-            this._confirmModal.showModal();
-          }
-        }
+        this._confirmHeading = `Confirm ${value.replace(/l?ed$/, '')}`;
+        this._toggleConfirmShowModal(true);
         return;
       }
       this._firingState = value;
@@ -833,13 +855,14 @@ export class FiringDetails extends LoggerElement {
         firingState: this._firingState,
       };
 
-      const log = getNewLogEntry(
+      const log = getStatusLogEntry(
         this._firing.id,
         this._user?.id,
-        { type: 'firingState' },
+        {
+          newState: this._firingState,
+          oldState: this._firing.firingState,
+        },
       );
-      (log as IStateLogEntry).newState = this._firingState;
-      (log as IStateLogEntry).oldState = this._firing.firingState;
       this._rawLog = [...this._rawLog, log];
       console.log('change:', change);
       console.log('log:', log);
@@ -859,6 +882,17 @@ export class FiringDetails extends LoggerElement {
     console.log('this._firingState:', this._firingState);
     console.groupEnd();
     console.groupEnd();
+  }
+
+  _handleNotes(event: CustomEvent) : void {
+    console.group('<firing-details>._handleNotes()');
+    console.log('event.detail:', event.detail);
+    console.log('event.detail.validity:', event.detail.validity);
+    console.log('event.detail.value:', event.detail.value);
+    console.groupEnd();
+    if (event.detail.validity.valid && isNonEmptyStr(event.detail.value)) {
+      this._logNotes = event.detail.value;
+    }
   }
 
   //  END:  event handlers
@@ -925,6 +959,36 @@ export class FiringDetails extends LoggerElement {
     return '';
   }
 
+  _renderLogNotes(
+    label : string = 'Notes',
+    required : boolean = false
+  ) : TemplateResult {
+    return html`<li><accessible-textarea-field
+                field-id="log-notes"
+                label="${label}"
+                ?required=${required}
+                @change=${this._handleNotes}></accessible-textarea-field></li>`;
+  }
+
+  _renderFiringStateDetail() : TemplateResult {
+    return html`
+      <li><read-only-field label="Firing state" .value=${this._currentState}></read-only-field></li>
+      ${(this._can('log') === true && this._firingStateOptions.length > 0)
+        ? html`<li><accessible-select-field
+            field-id="firing-state"
+            label="Change firing state"
+            .options=${this._firingStateOptions}
+            show-empty
+            @change=${this._handleFiringStatusUpdate.bind(this)}></accessible-select-field>
+            <firing-logger-modal class="confirm" heading="${this._confirmHeading}" no-open>
+              <ul>${this._renderLogNotes(`Please say why you wish to ${this._canEnd} the firing`, true)}</ul>
+              <button type="button" @click=${this._handleEnd}>Confirm</button>
+            </firing-logger-modal>
+          </li>`
+        : ''
+      }`;
+  }
+
   _renderFiringDetails(open : boolean) : TemplateResult {
     // console.group('<firing-details>._renderFiringDetails()');
     // console.log('this._currentState:', this._currentState);
@@ -947,18 +1011,7 @@ export class FiringDetails extends LoggerElement {
           <li><read-only-field label="Owner" value="${this._ownerName}"></read-only-field></li>
           <li><read-only-field label="Program" value="${this._program?.name}${superseded}"></read-only-field></li>
           <li><read-only-field label="Firing type" value="${this._firingType}"></read-only-field></li>
-          <li><read-only-field label="Firing state" .value=${this._currentState}></read-only-field></li>
-          ${(this._can('log') === true && this._firingStateOptions.length > 0)
-            ? html`<li><accessible-select-field
-                field-id="firing-state"
-                label="Change firing state"
-                .options=${this._firingStateOptions}
-                show-empty
-                @change=${this._handleFiringStatusUpdate.bind(this)}></accessible-select-field>
-                <firing-logger-modal class="confirm" heading="${this._confirmHeading}" no-open></firing-logger-modal>
-              </li>`
-            : ''
-          }
+          ${this._renderFiringStateDetail()}
           ${(this._showDuration === true)
             ? html`<li><read-only-field
                 label="Duration"><span slot="value">${this._duration}</slot></read-only-field></li>`
