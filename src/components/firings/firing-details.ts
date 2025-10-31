@@ -1030,6 +1030,7 @@ export class FiringDetails extends LoggerElement {
             .converter=${this._tConverter}
             .programSteps=${this._programSteps}
             .stateOptions=${this._firingStateOptions}
+            .status=${this._firingState}
             .tempLog=${this._tempLog}
             unit="${this._tUnit}"></new-log-entry>`
         : ''

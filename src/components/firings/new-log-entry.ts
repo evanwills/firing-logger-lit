@@ -57,8 +57,11 @@ export class NewLogEntry extends LitElement {
     { value: 'firingState', label: 'Update firing state' },
     { value: 'issue', label: 'Report an issue or problem' },
     { value: 'observation', label: 'Record an observation' },
-    { value: 'responsbile', label: 'Update who is responsible' },
+    { value: 'responsible', label: 'Update who is responsible' },
   ];
+
+  @state()
+  _open : boolean = false;
 
   @state()
   _requireNotes : boolean = false;
@@ -69,12 +72,15 @@ export class NewLogEntry extends LitElement {
   @state()
   _time : number = 0;
 
-
   @state()
   _humanNow : string = '';
 
+  @state()
+  _requireHelpTxt : string = '';
+
   _updateNow : number = -1;
 
+  _emptyOption : TOptionValueLabel = { value: '', label: '-- Please choose --' }
 
 
   //  END:  state
@@ -98,6 +104,17 @@ export class NewLogEntry extends LitElement {
     return (now > 0)
       ? getISO8601time(now, true)
       : '';
+  }
+
+  _getOptions() {
+    const isActive = new Set(['active', 'complete', 'aborted']).has(this.status);
+    const none = new Set((isActive === false)
+      ? ['temp', 'responsible']
+      : []
+    );
+    const options = this._logTypes.filter((option) => !none.has(option.value));
+
+    return [this._emptyOption, ...options];
   }
 
   _resetNow() : void {
@@ -129,13 +146,23 @@ export class NewLogEntry extends LitElement {
     console.log('validity:', validity);
 
     let tmpRequire = false;
+    let tmpHelp = '';
 
     if (validity.valid === true && isTFiringLogEntryType(value)) {
       this._type = value;
       tmpRequire = (this._type === 'issue' || this._type === 'observation');
+
+      if (tmpRequire === true) {
+        if (this._type === 'issue') {
+          tmpHelp = 'Please describe the problem or issue you are reporting';
+        } else if (this._type === 'observation') {
+          tmpHelp = 'Please enter a description of your observation';
+        }
+      }
     }
 
     this._requireNotes = tmpRequire;
+    this._requireHelpTxt = tmpHelp;
 
     console.log('this._type (after):', this._type);
     console.groupEnd();
@@ -146,12 +173,15 @@ export class NewLogEntry extends LitElement {
     console.log('detail:', detail);
     console.log('this._time:', this._time);
     console.log('this._updateNow:', this._updateNow);
+    this._open = detail;
+
     if (detail === true) {
       if (this._time === 0) {
         this._resetNow();
       }
     } else if (this._updateNow >= 0) {
       clearTimeout(this._updateNow);
+      this._type = '';
     }
     console.groupEnd();
   }
@@ -182,7 +212,12 @@ export class NewLogEntry extends LitElement {
         break;
 
       case 'firingState':
-        output = html``;
+        output = html`<li><accessible-select-field
+            field-id="log-state"
+            label="Firing"
+            .options=${[this._emptyOption, ...this.stateOptions]}
+            value="${this.type}"
+            @change=${this.updateType.bind(this)}></accessible-select-field></li>`;
         break;
 
       case 'responsible':
@@ -199,6 +234,7 @@ export class NewLogEntry extends LitElement {
       ${output}
       <li><accessible-text-field
         field-id="log-notes"
+        help-msg="${this._requireHelpTxt}"
         multi-line
         label="Notes"
         ?required=${this._requireNotes}></accessible-text-field></li>`;
@@ -211,14 +247,10 @@ export class NewLogEntry extends LitElement {
   render() : TemplateResult {
     console.group('<new-log-entry>.render()');
     console.log('this._type (before):', this._type);
+    console.log('this._type (before):', this._type);
     this._setType();
 
-    const options = (this._type === '')
-      ? [
-        { value: '', label: '-- Please choose --' },
-        ...this._logTypes,
-      ]
-      : this._logTypes;
+    const options = this._getOptions();
 
     console.log('this._type (after):', this._type);
     console.log('this._logTypes:', this._logTypes);
@@ -229,15 +261,19 @@ export class NewLogEntry extends LitElement {
         btn-text="New log entry"
         heading="New firing log entry"
         @open=${this.handleOpen.bind(this)}>
-        <ul >
-          <li><accessible-select-field
-            field-id="log-type"
-            label="Log type"
-            .options=${options}
-            value="${this.type}"
-            @change=${this.updateType.bind(this)}></accessible-select-field></li>
-          ${this._renderCustomFields()}
-        </ul>
+        ${(this._open === true)
+          ? html`<ul>
+              <li><accessible-select-field
+                field-id="log-type"
+                label="Log type"
+                .options=${options}
+                value="${this.type}"
+                @change=${this.updateType.bind(this)}></accessible-select-field></li>
+              ${this._renderCustomFields()}
+            </ul>`
+          : ''
+        }
+
       </firing-logger-modal>
     `;
   }
