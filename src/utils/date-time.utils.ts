@@ -17,7 +17,7 @@ export const getISO8601date = (when : number | Date | null) : string => {
     + `${twoDigit(_when.getDate())}`;
 }
 
-export const getISO8601time = (when : number | Date | null) : string => {
+export const getISO8601time = (when : number | Date | null, noSeconds : boolean = false) : string => {
   if (when === null) {
     return '';
   }
@@ -25,9 +25,12 @@ export const getISO8601time = (when : number | Date | null) : string => {
     ? new Date(when)
     : when;
 
+  const seconds = (noSeconds === true)
+    ? ''
+    : `:${twoDigit(_when.getSeconds())}`;
+
   return `${twoDigit(_when.getHours())}:`
-    + `${twoDigit(_when.getMinutes())}:`
-    + `${twoDigit(_when.getSeconds())}`;
+    + `${twoDigit(_when.getMinutes())}${seconds}`;
 }
 
 export const getLocalISO8601 = (when : number | Date | null) : string => {

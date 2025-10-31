@@ -1,8 +1,10 @@
 import { html, type TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
 import { getCustomErrorMsg } from '../../utils/text-field.utils.ts';
+import { round } from "../../utils/numeric.utils.ts";
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
 /**
  * An example element.
@@ -18,6 +20,9 @@ export class AccessibleTextField extends AccessibleWholeField {
   @property({ type: Number, attribute: 'minlength' })
   minlength : number | null = null;
 
+  @property({ type: Boolean, attribute: 'multi-line'})
+  multiLine : boolean = false;
+
   @property({ type: String, attribute: 'pattern' })
   pattern : string | null = null;
 
@@ -31,6 +36,12 @@ export class AccessibleTextField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: state
 
+  @state()
+  textStyle : string | null = '--textarea-height: 3.5rem;';
+
+  @state()
+  textHeight : number = 0;
+
   _regexes : {[key:string]:RegExp} = {
     name: /\w[\w\- .,\(\):\&\/]{2,49}/,
     title: /[\w\d][\d\w\- .,\(\):\&\/\+]{2,49}/,
@@ -43,20 +54,43 @@ export class AccessibleTextField extends AccessibleWholeField {
   // START: helper methods
 
   getPattern() {
-    if (this.pattern !== '' && this.pattern !== null) {
+    if (isNonEmptyStr(this.pattern)) {
       return this.pattern;
     }
 
-    if (typeof this._regexes[this.validationType] !== 'undefined') {
+    if (isNonEmptyStr(this.validationType)
+      && typeof this._regexes[this.validationType] !== 'undefined'
+    ) {
       return this._regexes[this.validationType].source;
     }
 
     return null;
   }
 
+  _setFieldHeight({ clientHeight, scrollHeight} : HTMLTextAreaElement) {
+    if (scrollHeight > clientHeight) {
+      const oldHeight = this.textHeight;
+      const tmp = round((scrollHeight / 16), 2);
+
+      if (tmp > oldHeight) {
+        this.textHeight = tmp;
+
+        this.textStyle = `--textarea-height: ${this.textHeight}rem;`;
+      }
+    }
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
+
+  handleKeyup(event: KeyboardEvent | InputEvent): void {
+    super.handleKeyup(event);
+
+    if (this.multiLine === true) {
+      this._setFieldHeight(event.target as HTMLTextAreaElement);
+    }
+  }
 
   //  END:  event handlers
   // ------------------------------------------------------
@@ -81,7 +115,7 @@ export class AccessibleTextField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: helper render methods
 
-  renderField() : TemplateResult {
+  _renderInput() : TemplateResult {
     return html`<input
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${this.disabled}
@@ -99,6 +133,32 @@ export class AccessibleTextField extends AccessibleWholeField {
       @change=${this.handleChange}
       @keyup=${this.handleKeyup}
       @blur=${this._validate} />`;
+  }
+
+  _renderTextarea() : TemplateResult {
+    return html`<textarea
+      ?disabled=${this.disabled}
+      .autocomplete=${ifDefined(this.autocomplete)}
+      .id="${this.fieldID}"
+      .maxlength=${ifDefined(this.maxlength)}
+      .minlength=${ifDefined(this.minlength)}
+      .list=${ifDefined(this._listID)}
+      .pattern=${ifDefined(this.pattern)}
+      .placeholder=${ifDefined(this.placeholder)}
+      ?spellcheck=${this.spellCheck}
+      .style=${ifDefined(this.textStyle)}
+      ?readonly=${this.readonly}
+      ?required=${this.required}
+      .value=${ifDefined(this.value)}
+      @change=${this.handleChange}
+      @keyup=${this.handleKeyup}></textarea>`;
+
+  }
+
+  renderField() : TemplateResult {
+    return (this.multiLine === true)
+      ? this._renderTextarea()
+      : this._renderInput();
   }
 
   //  END:  helper render methods

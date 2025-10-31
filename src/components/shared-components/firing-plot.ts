@@ -1,7 +1,7 @@
 import { LitElement, css, html, svg, type SVGTemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { TSvgPathItem, TSvgUnit } from '../../types/data.d.ts';
-import type { IFiringStep } from '../../types/programs.d.ts';
+import type { IProgramStep } from '../../types/programs.d.ts';
 import { getMax, plotPointsFromSteps } from '../../utils/conversions.utils.ts';
 import { detailsStyle } from "../../assets/css/details.css.ts";
 
@@ -21,13 +21,13 @@ export class FiringPlot extends LitElement {
    *           (or program data if no actual)
    */
   @property({ type: Object, attribute: 'primary' })
-  primary : Array<TSvgPathItem|IFiringStep> = [];
+  primary : Array<TSvgPathItem|IProgramStep> = [];
 
   /**
    * @property Secondary data to plot (usually program data)
    */
   @property({ type: Object, attribute: 'secondary' })
-  secondary : IFiringStep[] = [];
+  secondary : IProgramStep[] = [];
 
   /**
    * @property Secondary data to plot (usually program data)
@@ -180,7 +180,7 @@ export class FiringPlot extends LitElement {
 
   renderSVG() : SVGTemplateResult {
     const primary : TSvgPathItem[] = (this.primaryIsProgram)
-      ? plotPointsFromSteps(this.primary as IFiringStep[])
+      ? plotPointsFromSteps(this.primary as IProgramStep[])
       : this.primary as TSvgPathItem[];
     const secondary : TSvgPathItem[] = (this.secondary.length > 0)
       ? plotPointsFromSteps(this.secondary)

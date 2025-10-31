@@ -25,7 +25,6 @@ import '../lit-router/router-link.ts';
 import '../input-fields/accessible-number-field.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-text-field.ts';
-import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 
 /**
@@ -101,7 +100,7 @@ export class KilnDetails extends LoggerElement {
   _type : string = '';
 
   @state()
-  _openingType : string = '';
+  _loadingType : string = '';
 
   @state()
   _maxTemp : number = 0;
@@ -152,7 +151,7 @@ export class KilnDetails extends LoggerElement {
   _kilnTypes : IKeyStr = {};
 
   @state()
-  _kilnOpeningTypes : IKeyStr = {};
+  _kilnloadingTypes : IKeyStr = {};
 
   @state()
   _fuelSources : IKeyStr = {};
@@ -199,7 +198,7 @@ export class KilnDetails extends LoggerElement {
         : null;
       this._fuel = data.fuel;
       this._type = data.type;
-      this._openingType = data.openingType;
+      this._loadingType = data.loadingType;
       this._maxTemp = data.maxTemp;
       this._maxProgramCount = data.maxProgramCount;
       this._width = data.width;
@@ -242,7 +241,7 @@ export class KilnDetails extends LoggerElement {
       if (isTKilnDetails(tmp)) {
 
         this._kilnTypes = await tmp.EkilnTypes;
-        this._kilnOpeningTypes = await tmp.EkilnOpeningTypes;
+        this._kilnloadingTypes = await tmp.EkilnLoadingTypes;
         this._fuelSources = await tmp.EfuelSources;
         this._programs = await tmp.programs;
         this._uniqueNames = tmp.uniqueNames;
@@ -272,7 +271,7 @@ export class KilnDetails extends LoggerElement {
 
   //  END:  lifecycle methods
   // ------------------------------------------------------
-  // START: helper render methodsEkilnOpeningType
+  // START: helper render methodsEkilnLoadingType
 
   renderSingleProgram(program : IProgram) : TemplateResult {
     return html`
@@ -337,7 +336,7 @@ export class KilnDetails extends LoggerElement {
         <li><read-only-field label="Model" value="${this._model}"></read-only-field></li>
         <li><read-only-field label="Fuel" value="${getValFromKey(this._fuelSources, this._fuel)}"></read-only-field></li>
         <li><read-only-field label="Type" value="${getValFromKey(this._kilnTypes, this._type)}"></read-only-field></li>
-        <li><read-only-field label="Loading" value="${getValFromKey(this._kilnOpeningTypes, this._openingType)}"></read-only-field></li>
+        <li><read-only-field label="Loading" value="${getValFromKey(this._kilnloadingTypes, this._loadingType)}"></read-only-field></li>
         <li><read-only-field label="Max temp" value="${this._tConverter(this._maxTemp)}&deg;${this._tUnit}"></read-only-field></li>
       </ul>
     </div>`;

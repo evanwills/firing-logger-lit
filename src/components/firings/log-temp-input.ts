@@ -5,7 +5,7 @@ import type { FReportValidity, TTrueValidity } from '../../types/fauxDom.d.ts';
 import { forceNum } from '../../utils/data.utils.ts';
 import { dispatchCustomEvent, getIncrement } from '../../utils/event.utils.ts';
 import { logEntryInputStyle, logEntryInputVars } from '../../assets/css/log-entry-styles.ts';
-import { srOnly } from '../../assets/css/sr-only.ts';
+import { srOnly } from '../../assets/css/sr-only.css.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 // import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 

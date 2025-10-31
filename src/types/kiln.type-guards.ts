@@ -13,8 +13,8 @@ export const isPKilnDetails = (obj: unknown) : obj is PKilnDetails => (isObj(obj
   && (obj as PKilnDetails).EfuelSources instanceof Promise
   && typeof (obj as PKilnDetails).EkilnTypes !== 'undefined'
   && (obj as PKilnDetails).EkilnTypes instanceof Promise
-  && typeof (obj as PKilnDetails).EkilnOpeningTypes !== 'undefined'
-  && (obj as PKilnDetails).EkilnOpeningTypes instanceof Promise
+  && typeof (obj as PKilnDetails).EkilnLoadingTypes !== 'undefined'
+  && (obj as PKilnDetails).EkilnLoadingTypes instanceof Promise
   && typeof (obj as PKilnDetails).kiln !== 'undefined'
   && (obj as PKilnDetails).kiln instanceof Promise);
 
@@ -25,8 +25,8 @@ export const isTKilnDetails = (obj: unknown) : obj is TKilnDetails => (isObj(obj
   && (obj as TKilnDetails).EfuelSources instanceof Promise
   && typeof (obj as TKilnDetails).EkilnTypes !== 'undefined'
   && (obj as TKilnDetails).EkilnTypes instanceof Promise
-  && typeof (obj as TKilnDetails).EkilnOpeningTypes !== 'undefined'
-  && (obj as TKilnDetails).EkilnOpeningTypes instanceof Promise
+  && typeof (obj as TKilnDetails).EkilnLoadingTypes !== 'undefined'
+  && (obj as TKilnDetails).EkilnLoadingTypes instanceof Promise
   && typeof (obj as TKilnDetails).kiln !== 'undefined'
   && ((obj as TKilnDetails).kiln === null || isKiln((obj as TKilnDetails).kiln))
   && typeof (obj as TKilnDetails).programs !== 'undefined'

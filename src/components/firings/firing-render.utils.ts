@@ -6,7 +6,7 @@ import { hoursFromSeconds } from "../../utils/conversions.utils.ts";
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
 import { getLabelFromOrderedEnum, getValFromKey } from "../../utils/data.utils.ts";
 import '../lit-router/router-link.ts';
-import type { IFiringStep, IProgram } from "../../types/programs.d.ts";
+import type { IProgramStep, IProgram } from "../../types/programs.d.ts";
 import { isISO8601 } from "../../types/data.type-guards.ts";
 import { ifDefined } from "lit/directives/if-defined.js";
 import type { TSvgPathItem } from "../../types/data.d.ts";
@@ -166,13 +166,13 @@ export const renderFiringLogEntry = (
   </li>`;
 
 export const renderFiringPlot = (
-  programSteps : IFiringStep[],
+  programSteps : IProgramStep[],
   svgSteps : TSvgPathItem[],
   notMetric : boolean,
   isNew: boolean,
 ) : TemplateResult => {
-  let primary : Array<TSvgPathItem|IFiringStep> = [];
-  let secondary : Array<IFiringStep> = [];
+  let primary : Array<TSvgPathItem|IProgramStep> = [];
+  let secondary : Array<IProgramStep> = [];
   let primaryIsProgram : boolean = true;
 
   if (svgSteps.length > 0) {

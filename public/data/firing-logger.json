@@ -1234,7 +1234,7 @@
       "model": "Tetlow",
       "name": "Tetlow (kiln 1)",
       "onglaze": true,
-      "openingType": "front",
+      "loadingType": "front",
       "raku": false,
       "readyState": "unavailable",
       "saggar": true,
@@ -1263,7 +1263,7 @@
       "model": "My Big Kiln 310L",
       "name": "Large Woodrow (kiln 1)",
       "onglaze": true,
-      "openingType": "front",
+      "loadingType": "front",
       "raku": false,
       "readyState": "available",
       "saggar": false,
@@ -1292,7 +1292,7 @@
       "model": "My Studio Kiln 115L",
       "name": "Small Woodrow (kiln 2)",
       "onglaze": true,
-      "openingType": "front",
+      "loadingType": "front",
       "raku": false,
       "readyState": "available",
       "saggar": false,
@@ -1711,7 +1711,7 @@
       "label": "Other"
     }
   ],
-  "EkilnOpeningType": [
+  "EkilnLoadingType": [
     {
       "order": 0,
       "value": "front",
@@ -1725,12 +1725,34 @@
     {
       "order": 2,
       "value": "tophat",
-      "label": "Top hat"
+      "label": "Tophat - kiln can be loaded from two or more sides"
     },
     {
       "order": 3,
       "value": "trolley",
-      "label": "Trolley"
+      "label": "Trolley - kiln can be loaded from three or more sides"
+    }
+  ],
+  "EkilnShape": [
+    {
+      "order": 0,
+      "value": "box",
+      "label": "Box"
+    },
+    {
+      "order": 1,
+      "value": "barrel",
+      "label": "Barrel"
+    },
+    {
+      "order": 2,
+      "value": "arch",
+      "label": "Simple arch (circumferential)"
+    },
+    {
+      "order": 3,
+      "value": "catenary",
+      "label": "Catenary arch"
     }
   ],
   "EkilnReadyStatus": [

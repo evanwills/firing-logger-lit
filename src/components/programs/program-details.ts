@@ -7,7 +7,7 @@ import type {
   IKiln,
   TKilnDetailsForProgram,
 } from '../../types/kilns.d.ts';
-import type { IFiringStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
+import type { IProgramStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
@@ -122,7 +122,7 @@ export class ProgramDetails extends LoggerElement {
   _duration : number = 0;
 
   @state()
-  _steps : IFiringStep[] = [];
+  _steps : IProgramStep[] = [];
 
   @state()
   _programData : IProgram | null = null;
@@ -131,7 +131,7 @@ export class ProgramDetails extends LoggerElement {
   _kilnData : IKiln | null = null;
 
   @state()
-  _tmpSteps : IFiringStep[] = [];
+  _tmpSteps : IProgramStep[] = [];
 
   @state()
   _stepCount : number = 0;

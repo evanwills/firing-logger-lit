@@ -50,6 +50,19 @@ export class FiringLoggerModal extends LitElement {
     return null;
   }
 
+  _dispatchOpen() : void {
+    this.dispatchEvent(
+      new CustomEvent(
+        'open',
+        {
+          bubbles: true,
+          composed: true,
+          detail: this.open,
+        },
+      ),
+    );
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: public methods
@@ -65,6 +78,7 @@ export class FiringLoggerModal extends LitElement {
         tmp.showModal();
       }
       this.open = tmp.open;
+      this._dispatchOpen();
     }
     // console.log('this._open (after):', this.open);
     // console.log('this._modal (after):', this._modal);
@@ -80,6 +94,7 @@ export class FiringLoggerModal extends LitElement {
       }
 
       this.open = tmp.open;
+      this._dispatchOpen();
     }
   }
 

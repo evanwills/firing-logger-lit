@@ -55,9 +55,19 @@ export interface ReportRow {
 };
 
 export type TFiringLogEntryType = 'temp' | 'firingState' | 'issue' | 'observation' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible' | 'schedule';
-export type TFiringState = 'created' | 'scheduled' | 'packing' | 'ready' | 'cancelled' | 'active' | 'complete' | 'aborted' | 'cold' | 'unpacking' | 'empty';
-export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
 export type TFiringActiveState = 'normal' | 'cancelled' | 'aborted' | 'completed';
+export type TFiringState = 'created' |
+  'scheduled' |
+  'packing' |
+  'ready' |
+  'cancelled' |
+  'active' |
+  'complete' |
+  'aborted' |
+  'cold' |
+  'unpacking' |
+  'empty';
+export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
 
 export interface IFiringLogEntry {
   id: ID,
@@ -183,6 +193,7 @@ export interface IFiring {
   unpacked: ISO8601|null,
   maxTemp: number,
   cone: TCone,
+  active: boolean,
   firingState: TFiringState,
   firingActiveState: TFiringActiveState,
   temperatureState: TTemperatureState,
@@ -214,6 +225,7 @@ export type TFiringsListItem = {
   firingType: TFiringType,
   maxTemp: number,
   cone: TCone,
+  active: boolean,
   firingState: TFiringState,
   start: ISO8601|null,
   end: ISO8601|null,

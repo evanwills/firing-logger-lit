@@ -2,6 +2,8 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { AccessibleWholeField } from './AccessibleWholeField.ts';
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
+import { emptyOrNull } from "../../utils/data.utils.ts";
 
 /**
  * An example element.
@@ -43,9 +45,31 @@ export class AccessibleTemporalField extends AccessibleWholeField {
   // ------------------------------------------------------
   // START: helper methods
 
+  _setTvalue() : void {
+    if (isNonEmptyStr(this.value) && emptyOrNull(this._value)) {
+      switch (this.type) {
+        case 'datetime-local':
+          this._tValue = this.value.replace(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}).*$/, '$1');
+          break;
+
+        case 'time':
+          this._tValue = this.value;
+      }
+    }
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
+
+  handleFocus(event: FocusEvent): void {
+    super.handleFocus(event);
+
+    if (this.type === 'time' && emptyOrNull(this._value)) {
+      this._value = (event.target as HTMLInputElement).value;
+      this._validate(event);
+    }
+  }
 
   //  END:  event handlers
   // ------------------------------------------------------
@@ -61,12 +85,6 @@ export class AccessibleTemporalField extends AccessibleWholeField {
           + `${this.type}" is not a valid type`,
         );
       }
-
-      if (typeof this.value === 'string' && this.value.trim() !== '') {
-        this._tValue = (this.type === 'datetime-local')
-          ? this.value.replace(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}).*$/, '$1')
-          : this.value
-      }
     }
 
   //  END:  lifecycle ethods
@@ -74,10 +92,8 @@ export class AccessibleTemporalField extends AccessibleWholeField {
   // START: helper render methods
 
   renderField() : TemplateResult {
-    // console.group('<accessible-temporal-field>.renderField()');
-    // console.log('this.fieldID:', this.fieldID);
-    // console.log('this.value:', this.value);
-    // console.groupEnd();
+    this._setTvalue();
+
     return html`<input
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
