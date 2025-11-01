@@ -2,21 +2,21 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 // import { ifDefined } from 'lit/directives/if-defined.js';
 import type { ITempLogEntry, TFiringLogEntryType, TFiringState } from '../../types/firings.d.ts';
-import type { FConverter, IKeyScalar } from '../../types/data-simple.d.ts';
+import type { FConverter } from '../../types/data-simple.d.ts';
 import type { IProgramStep } from '../../types/programs.d.ts';
-import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
+import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { x2x } from '../../utils/conversions.utils.ts';
-import { isTFiringLogEntryType } from "../../types/firing.type-guards.ts";
+import { isTFiringLogEntryType } from '../../types/firing.type-guards.ts';
 import '../shared-components/firing-logger-modal.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
-import { getISO8601time } from "../../utils/date-time.utils.ts";
-import { emptyOrNull } from "../../utils/data.utils.ts";
-import { detailsStyle } from "../../assets/css/details.css.ts";
-import { buttonStyles } from "../../assets/css/buttons.css.ts";
-import { fieldListStyles } from "../../assets/css/input-field.css.ts";
-import { FiringLoggerModal } from "../shared-components/firing-logger-modal.ts";
+import { getISO8601time } from '../../utils/date-time.utils.ts';
+import { emptyOrNull } from '../../utils/data.utils.ts';
+import { detailsStyle } from '../../assets/css/details.css.ts';
+import { buttonStyles } from '../../assets/css/buttons.css.ts';
+import { fieldListStyles } from '../../assets/css/input-field.css.ts';
+import { FiringLoggerModal } from '../shared-components/firing-logger-modal.ts';
 
 @customElement('new-log-entry')
 export class NewLogEntry extends LitElement {

@@ -60,7 +60,7 @@ export class ProgramsList extends LoggerElement {
 
   _setData(_ok : boolean) : void {
     if (this.store !== null) {
-      this.store.dispatch('getProgramsList', '', true)
+      this.store.dispatch('getProgramsList', '')
         .then(this._setProgramList.bind(this))
         .catch(storeCatch);
     }

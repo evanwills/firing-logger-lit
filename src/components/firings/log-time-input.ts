@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { FReportValidity, TTrueValidity } from '../../types/fauxDom.d.ts';
 import { logEntryInputStyle, logEntryInputVars } from '../../assets/css/log-entry-styles.ts';
 import { getISO8601time } from '../../utils/date-time.utils.ts';
-import { srOnly } from '../../assets/css/sr-only.ts';
+import { srOnly } from '../../assets/css/sr-only.css.ts';
 import { dispatchCustomEvent, getTrueValidity } from '../../utils/event.utils.ts';
 
 /**
@@ -86,40 +86,40 @@ export class TimeInput extends LitElement {
       : '';
   }
 
-    _getReportValidity() {
-      const min = this._min;
-      const max = this._max;
+  _getReportValidity() {
+    const min = this._min;
+    const max = this._max;
 
-      const reportRange = (
-        val : string,
-        rel: string,
-      ) => html`Please enter a time of day that is ${rel} ${val}.`;
+    const reportRange = (
+      val : string,
+      rel: string,
+    ) => html`Please enter a time of day that is ${rel} ${val}.`;
 
-      return (validity : TTrueValidity) : string | TemplateResult => {
-        if (validity.badInput
-          || validity.customError
-          || validity.patternMismatch
-          || validity.stepMismatch
-          || validity.typeMismatch
-        ) {
-          return 'Please enter a valid kiln temperature';
-        }
-
-        if (validity.valueMissing) {
-          return 'Please enter the current kiln temperature';
-        }
-
-        if (validity.rangeOverflow || validity.tooLong) {
-          return reportRange(max, 'before');
-        }
-
-        if (validity.rangeUnderflow || validity.tooShort) {
-          return reportRange(min, 'after');
-        }
-
-        return '';
+    return (validity : TTrueValidity) : string | TemplateResult => {
+      if (validity.badInput
+        || validity.customError
+        || validity.patternMismatch
+        || validity.stepMismatch
+        || validity.typeMismatch
+      ) {
+        return 'Please enter a valid kiln temperature';
       }
+
+      if (validity.valueMissing) {
+        return 'Please enter the current kiln temperature';
+      }
+
+      if (validity.rangeOverflow || validity.tooLong) {
+        return reportRange(max, 'before');
+      }
+
+      if (validity.rangeUnderflow || validity.tooShort) {
+        return reportRange(min, 'after');
+      }
+
+      return '';
     }
+  }
 
   //  END:  helper methods
   // ------------------------------------------------------
