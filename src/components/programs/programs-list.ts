@@ -1,13 +1,16 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { TProgramListData, TProgramListRenderItem } from '../../types/programs.d.ts';
-import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import type { TProgramListRenderItem } from '../../types/programs.d.ts';
+import { isTProgramListRenderItem } from "../../types/program.type-guards.ts";
+import { isIkeyValue } from "../../types/data.type-guards.ts";
 import { getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
-import '../lit-router/router-link.ts';
 import { tableStyles } from '../../assets/css/tables.css.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import '../lit-router/router-link.ts';
+import { validateTProgramListRenderItem } from "./program.utils.ts";
 
 @customElement('programs-list')
 export class ProgramsList extends LoggerElement {
@@ -52,10 +55,32 @@ export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  async _setProgramList(data : TProgramListData) : Promise<void> {
-    this._programList = await data.list;
-    this._firingTypes = orderedEnum2enum(await data.types);
-    this._ready = true;
+  async _setProgramList(data : unknown) : Promise<void> {
+    console.group('<program-list>._setProgramList()');
+    console.log('data:', data);
+    console.log('this._programList (before):', this._programList);
+    console.log('this._firingTypes (before):', this._firingTypes);
+    console.log('this._ready (before):', this._ready);
+
+    if (isIkeyValue(data)) {
+      console.log('data.list:', data.list);
+      const tmp : unknown = await data.list;
+      console.log('tmp:', tmp);
+      if (Array.isArray(tmp)
+        && tmp.every((item : unknown) => isTProgramListRenderItem(item))
+      ) {
+        this._programList = tmp;
+      } else {
+        tmp.map((item : unknown) => console.log(validateTProgramListRenderItem(item)));
+      }
+
+      this._firingTypes = orderedEnum2enum(await data.types);
+      this._ready = true;
+    }
+    console.log('this._ready (after):', this._ready);
+    console.log('this._firingTypes (after):', this._firingTypes);
+    console.log('this._programList (after):', this._programList);
+    console.groupEnd();
   }
 
   _setData(_ok : boolean) : void {

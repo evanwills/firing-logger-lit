@@ -1,7 +1,9 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import type { IKeyValue } from '../../types/data-simple.d.ts';
+import type { IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
+import { isKiln } from "../../types/kiln.type-guards.ts";
+import { isIKeyStr } from "../../types/data.type-guards.ts";
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
@@ -46,26 +48,32 @@ export class KilnsList extends LoggerElement {
     _kilnList : IKiln[] = [];
 
     @state()
-    _kilnTypes : IKeyValue = {};
+    _kilnTypes : IKeyStr = {};
 
     @state()
-    _fuelSources : IKeyValue = {};
+    _fuelSources : IKeyStr = {};
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnTypes(data : IKeyValue) : void {
-    this._kilnTypes = data;
+  _setKilnTypes(data : unknown) : void {
+    if (isIKeyStr(data)) {
+      this._kilnTypes = data;
+    }
   }
 
-  _setFuelSources(data : IKeyValue) : void {
-    this._fuelSources = data;
+  _setFuelSources(data : unknown) : void {
+    if (isIKeyStr(data)) {
+      this._fuelSources = data;
+    }
   }
 
-  _setKilnList(data : IKiln[]) : void {
-    this._kilnList = data;
-    this._ready = true;
+  _setKilnList(data : unknown) : void {
+    if (Array.isArray(data) && data.every((kiln : unknown) => isKiln(kiln))) {
+      this._kilnList = data;
+      this._ready = true;
+    }
   }
 
   _setData(_ok : boolean) : void {

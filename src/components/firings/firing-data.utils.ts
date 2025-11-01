@@ -2,7 +2,7 @@ import type { FConverter, ID } from "../../types/data-simple.d.ts";
 import type { TSvgPathItem } from "../../types/data.d.ts";
 import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
 import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
-import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, TFiringLogEntryType, INewLogEntryOptions, INewFiringStateLogEntryOptions } from "../../types/firings.d.ts";
+import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, INewLogEntryOptions, INewFiringStateLogEntryOptions } from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";

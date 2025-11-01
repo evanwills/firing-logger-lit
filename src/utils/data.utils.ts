@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import type { ID, IKeyStr, IKeyValue, IOrderedEnum } from '../types/data-simple.d.ts';
 import { isNonEmptyStr } from "./string.utils.ts";
+import { isIkeyValue } from "../types/data.type-guards.ts";
 
 /**
  * This file contains a collection of "pure" function that help with
@@ -144,7 +145,7 @@ export const forceNum = (
  *                    and not an array).
  *                    FALSE otherwise
  */
-export const isObj = (input : unknown) : boolean => (Object.prototype.toString.call(input) === '[object Object]');
+export const isObj = (input : unknown) : input is object => (Object.prototype.toString.call(input) === '[object Object]');
 
 export const isStrNum = (input : unknown) : boolean => {
   const t = typeof input;
@@ -239,7 +240,7 @@ export const isNumMinMax = (
  * @throws {Error} If either argument are not objects
  * @throws {Error} If a property from obj1 is missing in obj2
  */
-export const objectsAreSame = (obj1 : Object, obj2 : Object) : boolean => {
+export const objectsAreSame = (obj1 : object, obj2 : object) : boolean => {
   // --------------------------------------------
   // START: handle scalar values
 
@@ -329,7 +330,8 @@ export const isValidEnumValue = (
   input : unknown,
   key: string,
   options: string[],
-) : boolean => (isNonEmptyStr(input, key) === true
+) : boolean => (isIkeyValue(input)  === true
+  && isNonEmptyStr(input, key) === true
   && options.includes((input as IKeyStr)[key]) === true);
 
 

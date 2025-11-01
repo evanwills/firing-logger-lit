@@ -21,6 +21,7 @@ table {
   border-collapse: collapse;
   margin: 1rem auto;
 }
+table.centre { margin: 0 auto; }
 td, th {
   border-left: var(--border);
   border-top: var(--border);
