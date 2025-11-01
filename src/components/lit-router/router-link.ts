@@ -4,7 +4,7 @@ import { LitRouter } from './lit-router.ts';
 import { srOnly } from '../../assets/css/sr-only.css.ts';
 import { linkStyle } from '../../assets/css/links.css.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
-import { buttonStyle } from "../../assets/css/buttons.css.ts";
+import { buttonTokens } from "../../assets/css/buttons.css.ts";
 
 @customElement('router-link')
 export class RouterLink extends LitElement {
@@ -105,7 +105,7 @@ export class RouterLink extends LitElement {
   // START: styles
 
   static styles = css`
-    ${buttonStyle}
+    ${buttonTokens}
     ${linkStyle}
     ${srOnly}
   `;

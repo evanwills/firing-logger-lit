@@ -9,6 +9,8 @@ import type {
 } from '../../types/kilns.d.ts';
 import type { IProgramStep, IProgram, PProgramDetails } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import { isIKeyStr } from '../../types/data.type-guards.ts';
+import { isKiln } from '../../types/kiln.type-guards.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import {
   // durationFromStep,
@@ -16,23 +18,18 @@ import {
   // durationFromSteps,
   // maxTempFromSteps,
 } from '../../utils/conversions.utils.ts';
-import {
-  keyValueStyle,
-  programViewVars,
-  tableStyles,
-} from './programs.css.ts';
-import { isIKeyStr } from '../../types/data.type-guards.ts';
-import { isKiln } from '../../types/kiln.type-guards.ts';
+import { getValFromKey } from '../../utils/data.utils.ts';
 import { enumToOptions } from '../../utils/lit.utils.ts';
+// import { validateKilnData } from '../kilns/kiln-data.utils.ts';
+import { keyValueStyle, programViewVars } from './programs.css.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
 import { LoggerElement } from '..//shared-components/LoggerElement.ts';
 import '../shared-components/firing-plot.ts';
 import './program-view-meta.ts';
 import '../shared-components/item-details.ts';
 import '../shared-components/loading-spinner.ts';
 import './program-steps-table.ts';
-import { getValFromKey } from "../../utils/data.utils.ts";
-// import { validateKilnData } from '../kilns/kiln-data.utils.ts';
 
 /**
  * An example element.

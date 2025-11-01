@@ -2,7 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 // import { ifDefined } from 'lit/directives/if-defined.js';
 import type { ITempLogEntry, TFiringLogEntryType, TFiringState } from '../../types/firings.d.ts';
-import type { FConverter } from '../../types/data-simple.d.ts';
+import type { FConverter, IKeyScalar } from '../../types/data-simple.d.ts';
 import type { IProgramStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
 import { x2x } from '../../utils/conversions.utils.ts';
@@ -12,26 +12,16 @@ import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
 import { getISO8601time } from "../../utils/date-time.utils.ts";
+import { emptyOrNull } from "../../utils/data.utils.ts";
+import { detailsStyle } from "../../assets/css/details.css.ts";
+import { buttonStyles } from "../../assets/css/buttons.css.ts";
+import { fieldListStyles } from "../../assets/css/input-field.css.ts";
+import { FiringLoggerModal } from "../shared-components/firing-logger-modal.ts";
 
 @customElement('new-log-entry')
 export class NewLogEntry extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
-
-  @property({ type: String, attribute: 'type' })
-  type : TFiringLogEntryType | '' = '';
-
-  @property({ type: String, attribute: 'status' })
-  status : TFiringState | '' = '';
-
-  @property({ type: Array })
-  programSteps : IProgramStep[] = [];
-
-  @property({ type: Array })
-  tempLog : ITempLogEntry[] = [];
-
-  @property({ type: Array })
-  stateOptions : TOptionValueLabel[] = [];
 
   /**
    * @property Convert temperature (if needed) from Celcius to Fahrenheit
@@ -40,10 +30,40 @@ export class NewLogEntry extends LitElement {
   converter : FConverter = x2x;
 
   /**
+   * @property Convert temperature (if needed) from Celcius to Fahrenheit
+   */
+  @property({ type: Function, attribute: 'convert-rev' })
+  convertRev : FConverter = x2x;
+
+  @property({ type: Array })
+  programSteps : IProgramStep[] = [];
+
+  @property({ type: Array })
+  stateOptions : TOptionValueLabel[] = [];
+
+  @property({ type: String, attribute: 'status' })
+  status : TFiringState | '' = '';
+
+  @property({ type: Array })
+  tempLog : ITempLogEntry[] = [];
+
+  @property({ type: String })
+  startTime : number = 0;
+
+  @property({ type: String, attribute: 'type' })
+  type : TFiringLogEntryType | '' = '';
+
+  /**
    * @property Temperature unit indicator to match user's preference
    */
   @property({ type: String, attribute: 'unit' })
   unit : string = 'C';
+
+  /**
+   * @property Temperature unit indicator to match user's preference
+   */
+  @property({ type: String, attribute: 'user-id' })
+  userID : string = '';
 
   //  END:  properties/attributes
   // ------------------------------------------------------
@@ -82,6 +102,10 @@ export class NewLogEntry extends LitElement {
 
   _emptyOption : TOptionValueLabel = { value: '', label: '-- Please choose --' }
 
+  _logEntry : Map<string, string|number|boolean> = new Map();
+
+  _requiredFields : Set<string> = new Set();
+
 
   //  END:  state
   // ------------------------------------------------------
@@ -112,9 +136,8 @@ export class NewLogEntry extends LitElement {
       ? ['temp', 'responsible']
       : []
     );
-    const options = this._logTypes.filter((option) => !none.has(option.value));
 
-    return [this._emptyOption, ...options];
+    return this._logTypes.filter((option) => !none.has(option.value));
   }
 
   _resetNow() : void {
@@ -130,6 +153,26 @@ export class NewLogEntry extends LitElement {
     console.groupEnd();
   }
 
+  _setRequireNotes(message: string = '') : void {
+    if (message === '') {
+      this._requiredFields.delete('notes');
+      this._requireHelpTxt = '';
+      this._requireNotes = false;
+    } else {
+      this._requiredFields.add('notes');
+      this._requireHelpTxt = message;
+      this._requireNotes = true;
+    }
+  }
+
+  _closeModal() : void {
+    const modal = this.shadowRoot?.querySelector('firing-logger-modal');
+
+    if (modal instanceof FiringLoggerModal && modal.open === true) {
+      modal.close();
+    }
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -141,30 +184,78 @@ export class NewLogEntry extends LitElement {
     console.log('event.detail.value:', event.detail.value);
     console.log('event.detail.validity:', event.detail.validity);
     console.log('this._type (before):', this._type);
+    console.log('this._requiredFields (before):', this._requiredFields);
     const { value, validity } = event.detail;
     console.log('value:', value);
     console.log('validity:', validity);
 
-    let tmpRequire = false;
-    let tmpHelp = '';
+    this._requiredFields.clear();
 
     if (validity.valid === true && isTFiringLogEntryType(value)) {
       this._type = value;
-      tmpRequire = (this._type === 'issue' || this._type === 'observation');
+      const tmpRequire = (this._type === 'issue' || this._type === 'observation');
 
       if (tmpRequire === true) {
         if (this._type === 'issue') {
-          tmpHelp = 'Please describe the problem or issue you are reporting';
+          this._setRequireNotes('Please describe the problem or issue.');
         } else if (this._type === 'observation') {
-          tmpHelp = 'Please enter a description of your observation';
+          this._setRequireNotes('Please enter a description of your observation.');
+        } else {
+          this._setRequireNotes();
         }
+      } else if (this._type === 'firingState') {
+        this._requiredFields.add('firingState');
+      } else if (this._type === 'temp') {
+        this._requiredFields.add('tempActual');
+      } else if (this._type === 'responsible') {
+        this._requiredFields.add('isStart');
+        this._requiredFields.add('responsibilityType');
       }
+    } else {
+      this._setRequireNotes();
+      this._type = '';
     }
 
-    this._requireNotes = tmpRequire;
-    this._requireHelpTxt = tmpHelp;
-
     console.log('this._type (after):', this._type);
+    console.log('this._requiredFields (after):', this._requiredFields);
+    console.groupEnd();
+  }
+
+  setSpecific({ detail } : CustomEvent) : void {
+    console.group('<new-log-entry>.setSpecific()');
+    console.log('detail:', detail);
+    console.log('this._time:', this._time);
+    console.log('this._updateNow:', this._updateNow);
+    const key : string = detail._id.substring(4);
+    console.log('key:', key);
+
+    if (detail._validity.valid === true) {
+      const value = detail._value;
+
+      this._logEntry.set(key, detail._value as string);
+      console.log('this._logEntry:', this._logEntry);
+      console.log('this._requireNotes (before):', this._requireNotes);
+      console.log('this._requireHelpTxt (before):', this._requireHelpTxt);
+      console.log('this._requiredFields (before):', this._requiredFields);
+
+      if (key === 'firingState') {
+        const prefix = 'Please say why ';
+        if (value === 'cancelled') {
+          this._setRequireNotes(`${prefix}you are cancelling this firing`);
+        } else if (value === 'aborted') {
+          this._setRequireNotes(`${prefix}this firing was aborted`);
+        } else {
+          this._setRequireNotes();
+        }
+      }
+      console.log('this._requireNotes (after):', this._requireNotes);
+      console.log('this._requireHelpTxt (after):', this._requireHelpTxt);
+      console.log('this._requiredFields (after):', this._requiredFields);
+    } else {
+      console.warn('current value is invalid');
+      this._logEntry.delete(key);
+    }
+
     console.groupEnd();
   }
 
@@ -186,6 +277,15 @@ export class NewLogEntry extends LitElement {
     console.groupEnd();
   }
 
+  handleSubmit() : void {
+
+    this._closeModal();
+  }
+
+  handleCancel() : void {
+    this._closeModal();
+  }
+
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
@@ -194,30 +294,44 @@ export class NewLogEntry extends LitElement {
   // ------------------------------------------------------
   // START: helper render methods
 
-  _renderCustomFields() : TemplateResult | string {
+  _renderCustomFields() : TemplateResult  {
     console.group('<new-log-entry>._renderCustomFields()');
     console.log('this._type:', this._type);
     console.log('this._now:', this._now);
     console.log('this._time:', this._time);
     console.log('this._humanNow:', this._humanNow);
+    const cancel = html`<button
+      class="secondary"
+      type="button"
+      @click=${this.handleCancel.bind(this)}>Cancel</button>`;
+
     if (this._type === '') {
-      return '';
+      return html`<li class="btn-wrap">${cancel}</li>`;
     }
 
     let output : TemplateResult | string = '';
 
     switch (this._type) {
       case 'temp':
-        output = html``;
+        output = html`<li><accessible-number-field
+            block-before="22"
+            field-id="log-actualTemp"
+            label="Temperature"
+            unit="${this.unit}"
+            step="1"
+            @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
         break;
 
       case 'firingState':
         output = html`<li><accessible-select-field
-            field-id="log-state"
+            block-before="22"
+            field-id="log-firingState"
             label="Firing"
-            .options=${[this._emptyOption, ...this.stateOptions]}
+            .options=${this.stateOptions}
             value="${this.type}"
-            @change=${this.updateType.bind(this)}></accessible-select-field></li>`;
+            required
+            show-empty
+            @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
         break;
 
       case 'responsible':
@@ -227,17 +341,25 @@ export class NewLogEntry extends LitElement {
 
     console.groupEnd();
     return html`<li><accessible-temporal-field
+        block-before="22"
         field-id="log-time"
         label="Time"
         type="time"
-        .value=${this._humanNow}></accessible-temporal-field></li>
+        .value=${this._humanNow}
+        @change=${this.setSpecific.bind(this)}></accessible-temporal-field></li>
       ${output}
       <li><accessible-text-field
+        block-before="22"
         field-id="log-notes"
         help-msg="${this._requireHelpTxt}"
         multi-line
         label="Notes"
-        ?required=${this._requireNotes}></accessible-text-field></li>`;
+        ?required=${this._requireNotes}
+        @change=${this.setSpecific.bind(this)}></accessible-text-field></li>
+      <li class="btn-wrap"><button
+        class="primary"
+        type="button"
+        @click=${this.handleSubmit.bind(this)}>Save</button> ${cancel}</li>`;
   }
 
   //  END:  helper render methods
@@ -262,11 +384,13 @@ export class NewLogEntry extends LitElement {
         heading="New firing log entry"
         @open=${this.handleOpen.bind(this)}>
         ${(this._open === true)
-          ? html`<ul>
+          ? html`<ul class="details w-30 btn-container">
               <li><accessible-select-field
+                block-before="22"
                 field-id="log-type"
                 label="Log type"
                 .options=${options}
+                ?show-empty=${emptyOrNull(this.type)}
                 value="${this.type}"
                 @change=${this.updateType.bind(this)}></accessible-select-field></li>
               ${this._renderCustomFields()}
@@ -283,14 +407,9 @@ export class NewLogEntry extends LitElement {
   // START: styles
 
   static styles = css`
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-    li {
-      padding-block: 0.5rem;
-    }
+    ${detailsStyle}
+    ${buttonStyles}
+    ${fieldListStyles}
   `;
 
   //  END:  styles

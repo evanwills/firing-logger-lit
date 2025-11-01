@@ -38,7 +38,7 @@ import {
   // getValFromKey,
   orderedEnum2enum,
 } from '../../utils/data.utils.ts';
-import { getLocalISO8601 } from '../../utils/date-time.utils.ts';
+import { getLocalISO8601, humanDateTime } from '../../utils/date-time.utils.ts';
 import { getNewLogEntry, getStatusLogEntry, tempLog2SvgPathItem } from './firing-data.utils.ts';
 import { enumToOptions, sortOrderedEnum } from '../../utils/lit.utils.ts';
 import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
@@ -849,40 +849,6 @@ export class FiringDetails extends LoggerElement {
     return '';
   }
 
-  _renderLogNotes(
-    label : string = 'Notes',
-    required : boolean = false
-  ) : TemplateResult {
-    return html`<li>
-      <accessible-text-field
-        as-block
-        field-id="log-notes"
-        label="${label}"
-        multi-line
-        ?required=${required}
-        @change=${this._handleNotes}></accessible-text-field>
-    </li>`;
-  }
-
-  _renderFiringStateDetail() : TemplateResult {
-    return html`
-      <li><read-only-field label="Firing state" .value=${this._currentState}></read-only-field></li>
-      ${(this._can('log') === true && this._firingStateOptions.length > 0)
-        ? html`<li><accessible-select-field
-            field-id="firing-state"
-            label="Change firing state"
-            .options=${this._firingStateOptions}
-            show-empty
-            @change=${this._handleFiringStatusUpdate.bind(this)}></accessible-select-field>
-            <firing-logger-modal class="confirm" heading="${this._confirmHeading}" no-open>
-              <ul>${this._renderLogNotes(`Please say why you wish to ${this._canEnd} the firing`, true)}</ul>
-              <button type="button" @click=${this._handleEnd}>Confirm</button>
-            </firing-logger-modal>
-          </li>`
-        : ''
-      }`;
-  }
-
   _renderFiringDetails(open : boolean) : TemplateResult {
     const ulClass : string = (this._canEnd !== '')
       ? ' cancel'
@@ -901,7 +867,8 @@ export class FiringDetails extends LoggerElement {
           <li><read-only-field label="Owner" value="${this._ownerName}"></read-only-field></li>
           <li><read-only-field label="Program" value="${this._program?.name}${superseded}"></read-only-field></li>
           <li><read-only-field label="Firing type" value="${this._firingType}"></read-only-field></li>
-          ${this._renderFiringStateDetail()}
+          <li><read-only-field label="Firing state" .value=${this._currentState}></read-only-field></li>
+
           ${(this._showDuration === true)
             ? html`<li><read-only-field
                 label="Duration"><span slot="value">${this._duration}</slot></read-only-field></li>`
@@ -920,31 +887,31 @@ export class FiringDetails extends LoggerElement {
           ${(isISO8601(this._actualStart))
             ? html`<li><read-only-field
                 label="Actual start"
-                value="${new Date(this._actualStart).toLocaleString()}"></read-only-field></li>`
+                value="${humanDateTime(this._actualStart)}"></read-only-field></li>`
             : ''
           }
           ${(isISO8601(this._scheduledEnd))
             ? html`<li><read-only-field
                 label="Expected end"
-                value="${new Date(this._scheduledEnd).toLocaleString()}"></read-only-field></li>`
+                value="${humanDateTime(this._scheduledEnd)}"></read-only-field></li>`
             : ''
           }
           ${(isISO8601(this._actualEnd))
             ? html`<li><read-only-field
                 label="Actual end"
-                value="${new Date(this._actualEnd).toLocaleString()}"></read-only-field></li>`
+                value="${humanDateTime(this._actualEnd)}"></read-only-field></li>`
             : ''
           }
           ${(isISO8601(this._scheduledCold))
             ? html`<li><read-only-field
                 label="Expected cold"
-                value="${new Date(this._scheduledCold).toLocaleString()}"></read-only-field></li>`
+                value="${humanDateTime(this._scheduledCold)}"></read-only-field></li>`
             : ''
           }
           ${(isISO8601(this._actualCold))
             ? html`<li><read-only-field
                 label="Actual cold"
-                value="${new Date(this._actualCold).toLocaleString()}"></read-only-field></li>`
+                value="${humanDateTime(this._actualCold)}"></read-only-field></li>`
             : ''
           }
 
@@ -1028,11 +995,15 @@ export class FiringDetails extends LoggerElement {
       ${this._isActive === true && this._can('log')
         ? html`<new-log-entry
             .converter=${this._tConverter}
+            .convert-rev=${this._tConverterRev}
+            firing-id="${this._firing?.id}"
             .programSteps=${this._programSteps}
+            .startTime=${this._actualStartTime}
             .stateOptions=${this._firingStateOptions}
             .status=${this._firingState}
             .tempLog=${this._tempLog}
-            unit="${this._tUnit}"></new-log-entry>`
+            unit="${this._tUnit}"
+            user-id="${this._user?.id}"></new-log-entry>`
         : ''
       }
     `;

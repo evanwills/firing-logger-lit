@@ -207,9 +207,10 @@ export class FiringLoggerModal extends LitElement {
     }
     .open-btn:hover:not(.disabled),
     .open-btn:focus:not(.disabled) {
-      background-color: var(--rl-btn-hover-background-colour);
+      background-color: var(--rl-btn-bg-hover-success);
       color: var(--rl-btn-hover-colour);
       text-decoration: var(--rl-btn-hover-text-decoration);
+      cursor: pointer;
     }
     .open-btn--open {
       opacity: 0;

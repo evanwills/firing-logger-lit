@@ -19,6 +19,9 @@ export class AccessibleWholeField extends FocusableInside {
   @property({ type: Boolean, attribute: 'as-block' })
   asBlock : boolean = false;
 
+  @property({ type: Number, attribute: 'block-before' })
+  blockBefore : number = 0;
+
   @property({ type: Number, attribute: 'container-width' })
   containerWidth : number = 0;
 
@@ -133,6 +136,16 @@ export class AccessibleWholeField extends FocusableInside {
 
   //  END:  state
   // ------------------------------------------------------
+  // START: public methods
+
+  externalInvalid(message : string) : void {
+    this._invalid = true;
+    this._errorMsg = message;
+    this._innerClass.error = 'error';
+  }
+
+  //  END:  public methods
+  // ------------------------------------------------------
   // START: helper methods
 
   getDescByIDs() : string | undefined {
@@ -235,6 +248,10 @@ export class AccessibleWholeField extends FocusableInside {
     this._hadFocus = true;
   }
 
+  handleBlur(event: InputEvent) : void {
+    this._validate(event);
+  }
+
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
@@ -329,8 +346,7 @@ export class AccessibleWholeField extends FocusableInside {
   // START: main render method
 
   render() : TemplateResult {
-
-    // these are rendered first because they also set IDs that need
+    // these are rendered first because they also set IDs that
     // are rendered in the input field;
     const help = this.renderHelp();
     const list = this.renderDataList();
@@ -352,6 +368,12 @@ export class AccessibleWholeField extends FocusableInside {
       if (this._innerClass[key] !== '') {
         cls += ` inner-${this._innerClass[key]}`;
       }
+    }
+
+    const blockBefore = Math.round(this.blockBefore);
+
+    if (blockBefore >= 15 && blockBefore <= 35) {
+      cls += ` block-before block-before-${blockBefore}`
     }
 
     const requiredTxt = (this.required === true)

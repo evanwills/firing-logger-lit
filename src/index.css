@@ -23,6 +23,7 @@
   --grid-stroke: #fff;
   --grid-stroke-width: 0.2;
   --grid-dash:  5 10;
+  --input-display-grid: grid;
   --input-padding: 0.25rem 0.5rem;
   --input-white-space: auto;
   --label-align: left;
@@ -68,8 +69,11 @@
   --rl-word-spacing: normal;
   --rl-btn-bg: #009;
   --rl-btn-bg-danger: #900;
+  --rl-btn-bg-hover-danger: #800;
   --rl-btn-bg-warning: #844600;
+  --rl-btn-bg-hover-warning: #733500;
   --rl-btn-bg-success: #040;
+  --rl-btn-bg-hover-success: #030;
   --rl-btn-bg-secondary: transparent;
   --rl-btn-border: 0.1rem solid var(--table-border-colour);
   --rl-btn-border-radius: 0.25rem;

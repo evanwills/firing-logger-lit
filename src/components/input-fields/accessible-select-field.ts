@@ -66,6 +66,7 @@ export class AccessibleSelectField extends AccessibleWholeField {
       ?readonly=${this.readonly}
       ?required=${this.required}
       .value=${ifDefined(this.value)}
+      @blur=${this.handleChange}
       @change=${this.handleChange}
       @keyup=${this.handleKeyup}>
       ${(this.showEmpty === true && isNonEmptyStr(this.emptyLabel))

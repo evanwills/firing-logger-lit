@@ -54,7 +54,16 @@ export interface ReportRow {
   expectedRate: number,
 };
 
-export type TFiringLogEntryType = 'temp' | 'firingState' | 'issue' | 'observation' | 'damper' | 'burner' | 'gas' | 'wood' | 'responsible' | 'schedule';
+export type TFiringLogEntryType = 'temp' |
+  'firingState' |
+  'issue' |
+  'observation' |
+  'damper' |
+  'burner' |
+  'gas' |
+  'wood' |
+  'responsible' |
+  'schedule';
 export type TFiringActiveState = 'normal' | 'cancelled' | 'aborted' | 'completed';
 export type TFiringState = 'created' |
   'scheduled' |

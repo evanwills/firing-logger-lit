@@ -6,7 +6,7 @@ import type { TCheckboxValueLabel } from '../../types/renderTypes.d.ts';
 import type { TUniqueNameItem } from '../../types/data.d.ts';
 import type { IProgram } from '../../types/programs.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
-import { isKiln, isTKilnDetails } from "../../types/kiln.type-guards.ts";
+import { isKiln, isTKilnDetails } from '../../types/kiln.type-guards.ts';
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { getHumanDate } from '../../utils/date-time.utils.ts';
@@ -15,9 +15,9 @@ import { getAllowedFiringTypes } from './kiln-data.utils.ts';
 import { getCheckableOptions } from '../../utils/lit.utils.ts';
 import { renderDetails, renderReadonlyCheckable } from '../../utils/render.utils.ts';
 import { getKilnEditData, getKilnViewData } from './kiln-store.utils.ts';
-import { tableStyles } from '../programs/programs.css.ts';
 import { srOnly } from '../../assets/css/sr-only.css.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
 import { labelWidths } from '../../assets/css/input-field.css.ts';
 import { multiColListStyles, threeColListStyles, twoColListStyles } from '../../assets/css/lists.css.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
@@ -293,7 +293,10 @@ export class KilnDetails extends LoggerElement {
             }
         </th>
         <td>${program.controllerProgramID}</td>
-        <td>${program.maxTemp}&deg;${this._tUnit}</td>
+        <td>
+          ${program.maxTemp}&deg;${this._tUnit}
+          <span class="sm-only">(Cone: ${program.cone})</span>
+        </td>
         <td>${program.cone}</td>
         <td>${hoursFromSeconds(program.duration)}</td>
         <!-- <td>
@@ -310,11 +313,11 @@ export class KilnDetails extends LoggerElement {
     if (this._programs.length === 0) {
       return '';
     }
-    return html`<table>
+    return html`<div class="table-wrap"><table class="centre">
       <thead>
         <tr>
           <th>Name</th>
-          <th>Program #</th>
+          <th><span class="prog">Program</span> #</th>
           <th>Max Temp</th>
           <th>Cone</th>
           <th>Duration</th>
@@ -324,7 +327,7 @@ export class KilnDetails extends LoggerElement {
       <tbody>
         ${this._programs.map(this.renderSingleProgram.bind(this))}
       </tbody>
-    </table>`;
+    </table></div>`;
   }
 
   _renderDetails() : TemplateResult {
@@ -503,7 +506,20 @@ export class KilnDetails extends LoggerElement {
 
   tbody th { text-align: start; }
   tbody td { text-align: center; }
-  table { margin: 0 auto; }
+
+  .prog { display: none; }
+
+  @container contained-table (inline-size >= 20rem) {
+    .prog { display: inline; }
+  }
+
+  tr > :nth-child(4) { display: none; }
+
+  @container contained-table (inline-size >= 24rem) {
+    tr > :nth-child(4) { display: table-cell; }
+    tr > :nth-child(3) .sm-only { display: none; }
+  }
+
   p.error { margin: 0; padding: 0}
   ul.error {
     margin: 0 0 0 1rem;

@@ -15,6 +15,7 @@ export const inputFieldCSS = css`
   --error-border-colour: inherit;
   --error-colour: inherit;
   --textarea-height: inherit;
+  --input-display-grid: inherit;
 }
 
 * { box-sizing: border-box; }
@@ -37,7 +38,7 @@ export const inputFieldCSS = css`
 .inner:not(.no-label, .as-block) {
   column-gap: var(--label-gap, 0.5rem);
   row-gap: 0.5rem;
-  display: grid;
+  display: var(--input-display-grid, grid);
   grid-template-areas: 'label input';
   grid-template-columns: var(--label-width, 5.75rem) 1fr;
 }
@@ -46,6 +47,93 @@ inner.as-block {
   flex-direction: column;
   row-gap: 0.5rem;
 }
+
+.inner.block-before { --input-display-grid: flex; }
+
+@container whole-field (inline-size >= 15rem) {
+  .inner.block-before-15 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 16rem) {
+  .inner.block-before-16 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 17rem) {
+  .inner.block-before-17 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 18rem) {
+  .inner.block-before-18 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 19rem) {
+  .inner.block-before-19 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 20rem) {
+  .inner.block-before-20 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 21rem) {
+  .inner.block-before-21 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 22rem) {
+  .inner.block-before-22 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 23rem) {
+  .inner.block-before-23 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 24rem) {
+  .inner.block-before-24 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 25rem) {
+  .inner.block-before-25 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 26rem) {
+  .inner.block-before-26 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 27rem) {
+  .inner.block-before-27 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 28rem) {
+  .inner.block-before-28 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 29rem) {
+  .inner.block-before-29 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 30rem) {
+  .inner.block-before-30 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 31rem) {
+  .inner.block-before-31 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 32rem) {
+  .inner.block-before-32 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 33rem) {
+  .inner.block-before-34 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 34rem) {
+  .inner.block-before-34 { --input-display-grid: grid; }
+}
+
+@container whole-field (inline-size >= 35rem) {
+  .inner.block-before-35 { --input-display-grid: grid; }
+}
+
 .inner.inner-help {
   grid-template-areas: 'label input' 'label help';
 }
@@ -258,6 +346,30 @@ export const fieldListStyles = css`
   ul.border li + li {
     border-top: 0.05rem solid var(--border-colour, #aaa);
   }
+  ul.w-20 { --label-width: 5rem; }
+  ul.w-21 { --label-width: 5.25rem; }
+  ul.w-22 { --label-width: 5.5rem; }
+  ul.w-23 { --label-width: 5.75rem; }
+  ul.w-24 { --label-width: 6rem; }
+  ul.w-25 { --label-width: 6.25rem; }
+  ul.w-26 { --label-width: 6.5rem; }
+  ul.w-27 { --label-width: 6.75rem; }
+  ul.w-28 { --label-width: 7rem; }
+  ul.w-29 { --label-width: 7.25rem; }
+  ul.w-30 { --label-width: 7.5rem; }
+  ul.w-31 { --label-width: 7.75rem; }
+  ul.w-32 { --label-width: 8rem; }
+  ul.w-33 { --label-width: 8.25rem; }
+  ul.w-34 { --label-width: 8.5rem; }
+  ul.w-35 { --label-width: 8.75rem; }
+  ul.w-36 { --label-width: 9rem; }
+  ul.w-37 { --label-width: 9.25rem; }
+  ul.w-38 { --label-width: 9.5rem; }
+  ul.w-39 { --label-width: 9.75rem; }
+  ul.w-40 { --label-width: 10rem; }
+  ul.w-41 { --label-width: 10.25rem; }
+  ul.w-42 { --label-width: 10.5rem; }
+  ul.w-43 { --label-width: 10.75rem; }
 `;
 
 export const checkboxListStyles = css`

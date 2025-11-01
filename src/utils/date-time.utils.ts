@@ -1,3 +1,5 @@
+import type { ISO8601 } from "../types/data-simple.d.ts";
+
 const twoDigit = (input: number) : string => {
   return (input < 10)
     ? `0${input.toString()}`
@@ -75,3 +77,7 @@ export const dateOrNull = (input : unknown) : Date | null => {
 
   return null;
 };
+
+export const humanDateTime = (input : ISO8601) : string => new Date(input)
+  .toLocaleString()
+  .replace(':00 ', ' ');

@@ -1,10 +1,11 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue, ISO8601 } from '../../types/data-simple.d.ts';
-import type { TFiringsListItem } from "../../types/firings.d.ts";
-import { tableStyles } from '../programs/programs.css.ts';
+import type { TFiringsListItem } from '../../types/firings.d.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
+import { ucFirst } from '../../utils/string.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
 import '../lit-router/router-link.ts';
 import '../shared-components/firing-logger-modal.ts';
 import './new-firing-selector.ts';
@@ -81,7 +82,9 @@ export class FiringsList extends LoggerElement {
 
   _setData() : void {
     if (this.store !== null) {
-      this.store.dispatch('getFiringsList', {}).then(this._setDataThen.bind(this)).catch(storeCatch);
+      this.store.dispatch('getFiringsList', {})
+        .then(this._setDataThen.bind(this))
+        .catch(storeCatch);
     }
   }
 
@@ -126,12 +129,17 @@ export class FiringsList extends LoggerElement {
   }
 
   _renderTableRow(data : TFiringsListItem) : TemplateResult {
+    const temp = html`${this._tConverter(data.maxTemp)}&deg;${this._tUnit}`;
+    const cone = html`<span class="sm-only">(Cone: ${data.cone})</span>`;
+
     return html`<tr>
       <th><router-link
         data-firing-id="${data.id}"
         data-kiln-id="${data.kilnID}"
         data-program-id="${data.programID}"
-        url="/firing/${data.id}">${this._renderDate(data.start)}</router-link></th>
+        url="/firing/${data.id}">${this._renderDate(data.start)}</router-link>
+        <span class="sm-only">(${ucFirst(data.firingState)})</span>
+      </th>
       <!-- <td>${this._renderDate(data.end)}</td> -->
       <td><router-link
         data-uid="${data.programID}"
@@ -141,8 +149,15 @@ export class FiringsList extends LoggerElement {
         data-uid="${data.kilnID}"
         url="/kilns/${data.kilnURL}"
         label="${data.kilnName}"></router-link></td>
-      <td>${data.firingType}</td>
-      <td>${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</td>
+      <td>
+        ${ucFirst(data.firingType)}
+        <span class="sm-only">${temp}</span>
+        ${cone}
+      </td>
+      <td>
+        ${temp}
+        ${cone}
+      </td>
       <td>${data.cone}</td>
       <td>${data.firingState}</td>
     </tr>`;
@@ -156,7 +171,7 @@ export class FiringsList extends LoggerElement {
     return html`<h2>Firings list</h2>
 
     ${(this._ready === true && this._firingList !== null)
-      ? html`<table>
+      ? html`<div class="table-wrap"><table>
         <thead>
           <tr>
             <th>Start</th>
@@ -173,7 +188,7 @@ export class FiringsList extends LoggerElement {
         <tbody>
           ${this._firingList.map(this._renderTableRow.bind(this))}
         </tbody>
-      </table>
+      </table></div>
       ${this._userCan('fire')
         ? html`<firing-logger-modal btn-text="New firing" heading="New firing"><new-firing-selector .store=${this.store}></new-firing-selector></firing-modal>`
         : ''
@@ -187,7 +202,32 @@ export class FiringsList extends LoggerElement {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css`${tableStyles}`;
+  static styles = css`
+    ${tableStyles}
+
+    tr > :nth-child(n+4) {
+      display: none;
+    }
+
+    @container contained-table (inline-size >= 24rem) {
+      tr > :nth-child(4) { display: table-cell; }
+    }
+
+    @container contained-table (inline-size >= 27rem) {
+      tr > :nth-child(5) { display: table-cell; }
+      tr > :nth-child(4) .sm-only { display: none; }
+    }
+
+    @container contained-table (inline-size >= 30rem) {
+      tr > :nth-child(6) { display: table-cell; }
+      tr > :nth-child(5) .sm-only { display: none; }
+    }
+
+    @container contained-table (inline-size >= 34rem) {
+      tr > :nth-child(7) { display: table-cell; }
+      tr > :nth-child(1) .sm-only { display: none; }
+    }
+  `;
 
 //  END:  styles
 // ------------------------------------------------------

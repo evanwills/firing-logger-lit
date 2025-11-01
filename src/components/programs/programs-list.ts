@@ -6,8 +6,8 @@ import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import { getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
-import { tableStyles } from './programs.css.ts';
 import '../lit-router/router-link.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
 
 @customElement('programs-list')
 export class ProgramsList extends LoggerElement {
@@ -113,12 +113,19 @@ export class ProgramsList extends LoggerElement {
           : ''
         }
       </th>
-      <td>${getValFromKey(this._firingTypes, data.type)}</td>
+      <td>
+        ${getValFromKey(this._firingTypes, data.type)}
+        <span class="sm-only">${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</span>
+        <span class="sm-only">(Cone: ${data.cone})</span>
+      </td>
       <td><router-link
         data-uid="${data.kilnID}"
         url="/kilns/${data.kilnURL}"
         label="${data.kilnName}"></router-link></td>
-      <td>${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</td>
+      <td>
+        ${this._tConverter(data.maxTemp)}&deg;${this._tUnit}
+        <span class="sm-only">(Cone: ${data.cone})</span>
+      </td>
       <td>${data.cone}</td>
       <td>${hoursFromSeconds(data.duration)}</td>
     </tr>`;
@@ -132,7 +139,7 @@ export class ProgramsList extends LoggerElement {
     return html`<h2>Programs list</h2>
 
     ${(this._ready === true && this._programList !== null)
-      ? html`<table>
+      ? html`<div class="table-wrap"><table>
         <thead>
           <tr>
             <th>Name</th>
@@ -146,7 +153,7 @@ export class ProgramsList extends LoggerElement {
         <tbody>
           ${this._programList.map(this._renderTableRow.bind(this))}
         </tbody>
-      </table>`
+      </table></div>`
       : html`<p>Loading...</p>`
     }`;
   }
@@ -155,7 +162,22 @@ export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css`${tableStyles}`;
+  static styles = css`
+    ${tableStyles}
+
+    tr > :nth-child(4), tr > :nth-child(5) {
+      display: none;
+    }
+
+    @container contained-table (inline-size >= 24rem) {
+      tr > :nth-child(4) { display: table-cell; }
+      tr > :nth-child(2) .sm-only { display: none; }
+    }
+
+    @container contained-table (inline-size >= 28rem) {
+      tr > :nth-child(5) { display: table-cell; }
+      tr > :nth-child(4) .sm-only { display: none; }
+    }`;
 
 //  END:  styles
 // ------------------------------------------------------
