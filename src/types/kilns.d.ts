@@ -35,13 +35,6 @@ export enum EfiringType {
   onglaze,
 }
 
-export enum EfiringLogType {
-  temperature,
-  packing,
-  programSet,
-  unpacking,
-}
-
 export enum EkilnReadyStatus {
   available,
   packing,
@@ -218,6 +211,11 @@ export interface IKiln implements IKeyValue, IIdObject, IIdNameObject, ILinkObje
    *            active)
    */
   useCount: number,
+  /**
+   * @property The number to multiply a program duration to estimate
+   *           the expected "cold" time for a firing
+   */
+  coolingMultiplier: number,
   /**
    * @property The current state of the kiln's availability for use
    */

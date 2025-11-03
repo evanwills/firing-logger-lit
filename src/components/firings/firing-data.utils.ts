@@ -1,13 +1,29 @@
-import type { FConverter, ID, IIdObject } from "../../types/data-simple.d.ts";
+import type { FConverter, ID, IIdObject, ISO8601 } from "../../types/data-simple.d.ts";
 import type { TSvgPathItem } from "../../types/data.d.ts";
-import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
-import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
-import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, INewLogEntryOptions, INewFiringStateLogEntryOptions, TFiringsListItem } from "../../types/firings.d.ts";
+import {
+  isID,
+  isIdObject,
+  isISO8601,
+  isTCone,
+} from "../../types/data.type-guards.ts";
+import {
+  isFiringLogEntry,
+  isTFiringLogEntryType,
+  isTFiringState,
+  isTTemperatureState,
+} from "../../types/firing.type-guards.ts";
+import type {
+  IFiringLogEntry,
+  IStateLogEntry,
+  ITempLogEntry,
+  INewLogEntryOptions,
+  INewFiringStateLogEntryOptions,
+} from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { emptyOrNull, getUID, isNumMinMax, isObj } from "../../utils/data.utils.ts";
-import { getLocalISO8601 } from "../../utils/date-time.utils.ts";
+import { emptyOrNull, getUID, isNumMinMax } from "../../utils/data.utils.ts";
+import { getISO8601date, getLocalISO8601 } from "../../utils/date-time.utils.ts";
 import { orderOptionsByLabel } from "../../utils/render.utils.ts";
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
@@ -125,29 +141,29 @@ export const validateFiringData = (item: unknown) : string | null => {
 };
 
 export const validateFiringLogEntry = (item: unknown) : string | null => {
-  if (isObj(item) === false) {
+  if (isIdObject(item) === false) {
     console.log('item:', item);
     console.log('isFiringLogEntry(item):', isFiringLogEntry(item));
     return 'firing temp log data is not a firing log entry object';
   }
 
-  if (isID((item as IFiringLogEntry).id) === false) {
-    return getFiringError('id', (item as IFiringLogEntry).id, 'string', 'IFiringLogEntry');
+  if (isID(item.id) === false) {
+    return getFiringError('id', item.id, 'string', 'IFiringLogEntry');
   }
-  if (isID((item as IFiringLogEntry).firingID) === false) {
-    return getFiringError('firingID', (item as IFiringLogEntry).firingID, 'string', 'IFiringLogEntry');
+  if (isID(item.firingID) === false) {
+    return getFiringError('firingID', item.firingID, 'string', 'IFiringLogEntry');
   }
-  if (isID((item as IFiringLogEntry).userID) === false) {
-    return getFiringError('userID', (item as IFiringLogEntry).userID, 'string', 'IFiringLogEntry');
+  if (isID(item.userID) === false) {
+    return getFiringError('userID', item.userID, 'string', 'IFiringLogEntry');
   }
-  if (isISO8601((item as IFiringLogEntry).time) === false) {
-    return getFiringError('time', (item as IFiringLogEntry).time, 'string', 'IFiringLogEntry');
+  if (isISO8601(item.time) === false) {
+    return getFiringError('time', item.time, 'string', 'IFiringLogEntry');
   }
-  if (isTFiringLogEntryType((item as IFiringLogEntry).type) === false) {
-    return getFiringError('type', (item as IFiringLogEntry).type, 'string', 'IFiringLogEntry');
+  if (isTFiringLogEntryType(item.type) === false) {
+    return getFiringError('type', item.type, 'string', 'IFiringLogEntry');
   }
-  if (typeof (item as IFiringLogEntry).notes !== 'string' &&  (item as IFiringLogEntry).notes !== null) {
-    return getFiringError('notes', (item as IFiringLogEntry).notes, 'string or null', 'IFiringLogEntry');
+  if (typeof item.notes !== 'string' &&  item.notes !== null) {
+    return getFiringError('notes', item.notes, 'string or null', 'IFiringLogEntry');
   }
 
   return null;
@@ -352,3 +368,17 @@ export const getStatusLogEntry = (
     newState: options.newState,
   } as IStateLogEntry;
 };
+
+export const isBeforeToday = (when : ISO8601) => {
+  console.group('isBeforeToday()');
+  console.log('when:', when);
+  const now = getISO8601date(new Date());
+  const _when = when.substring(0, 10)
+
+  console.log('now:', now);
+  console.log('_when:', _when);
+  console.log('now > _when', now > _when);
+  console.groupEnd();
+
+  return (now > when);
+}

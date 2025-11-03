@@ -39,7 +39,7 @@ import {
   orderedEnum2enum,
 } from '../../utils/data.utils.ts';
 import { getLocalISO8601, humanDateTime } from '../../utils/date-time.utils.ts';
-import { getNewLogEntry, getStatusLogEntry, tempLog2SvgPathItem, validateStateLogEntry } from './firing-data.utils.ts';
+import { getNewLogEntry, getStatusLogEntry, isBeforeToday, tempLog2SvgPathItem, validateStateLogEntry } from './firing-data.utils.ts';
 import { enumToOptions, sortOrderedEnum } from '../../utils/lit.utils.ts';
 import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
@@ -134,8 +134,6 @@ export class FiringDetails extends LoggerElement {
   _programSteps : IProgramStep[] = [];
   @state()
   _currentState : string = '';
-  @state()
-  _isRetro : boolean = false;
   @state()
   _active : boolean = false;
   @state()
@@ -434,6 +432,8 @@ export class FiringDetails extends LoggerElement {
       this._actualEnd = firing.actualEnd;
       this._actualCold = firing.actualCold;
       this._unpacked = firing.unpacked;
+      this._isRetro = firing.isRetro;
+      this._active = firing.active;
       this._firingState = firing.firingState;
       this._firingActiveState = firing.firingActiveState;
       this._temperatureState = firing.temperatureState;
@@ -618,10 +618,14 @@ export class FiringDetails extends LoggerElement {
         let firingData : IIdObject = { id: this._firing.id };
 
         if (this._program !== null) {
-          const end = tmp.getTime() + this._program.duration * 1000;
-          this._scheduledEnd = getLocalISO8601(end);
-          this._scheduledCold = getLocalISO8601(tmp.getTime() + this._program.duration * 3000);
-          this._isRetro = (end < Date.now());
+          const multiplier = (this._kiln !== null)
+            ? this._kiln.coolingMultiplier + 1
+            : 3;
+
+          this._scheduledEnd = getLocalISO8601(tmp.getTime() + this._program.duration * 1000);
+          this._scheduledCold = getLocalISO8601(tmp.getTime() + this._program.duration * multiplier * 1000);
+          this._isRetro = isBeforeToday(this._scheduledEnd);
+
           if (this._isRetro === true) {
             firingData.isRetro = true;
           }

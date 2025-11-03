@@ -20,31 +20,15 @@ export enum EProgramLogState {
   aborted,
 };
 
-export enum EfiringLogType {
-  temperature,
-  packing,
-  programSet,
-  unpacking,
-};
-
-enum EtemperatureState {
-  nominal,
-  over,
-  overError,
-  under,
-  underError,
-};
-
-export enum EResponsibilityType {
-  'Primary packer',
-  'Primary unpacker',
-  'Assistant packer',
-  'Assistant unpacker',
-  'Program setter',
-  'Watcher',
-  'Primary pricer',
-  'Assistant pricer',
-};
+export type EResponsibilityType =
+  'Primary packer' |
+  'Primary unpacker' |
+  'Assistant packer' |
+  'Assistant unpacker' |
+  'Program setter' |
+  'Watcher' |
+  'Primary pricer' |
+  'Assistant pricer';
 
 export interface ReportRow {
   time: Date,
@@ -79,25 +63,117 @@ export type TFiringState = 'created' |
 export type TTemperatureState = 'underError' | 'under' | 'expected' | 'over' | 'overError' | 'n/a';
 
 export interface IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
   firingID: ID,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
   time: ISO8601,
+
+  /**
+   * @property Once the firing program hass tarted this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: number | null,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
+
+  /**
+   * @property The type of log entry
+   */
   type: TFiringLogEntryType,
+
+  /**
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
+   */
   notes: string | null,
 };
 
 export interface ITempLogEntry extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
   firingID: ID,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
   time: ISO8601,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
+
+  /**
+   * @property The type of log entry
+   *           (for TTempLogEntry it's always "temp")
+   */
   type: 'temp',
+
+  /**
+   * @property Once the firing program hass tarted this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: number,
+
+  /**
+   * @property The expected temperature of the kiln
+   *
+   * __Note:__ This is a computed value derived from the program and
+   *           not editable by the user.
+   */
   tempExpected: number,
+
+  /**
+   * @property The current temperature of the kiln (at the time the
+   *           log was entered)
+   */
   tempActual: number,
+
+  /**
+   * @property Describes the relation of the current temperature to
+   *           the expected temperature of the firing
+   *
+   * __Note:__ This is a computed value and not editable by the user.
+   */
   state: TTemperatureState,
+
+  /**
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
+   */
   notes: string|null,
 };
 
@@ -162,14 +238,57 @@ export interface IGasLogEntry extends IFiringLogEntry {
 };
 
 export interface IResponsibleLogEntry extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
   firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
   time: ISO8601,
+
+  /**
+   * @property Once the firing program hass tarted this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: number | null,
+
+  /**
+   * @property The type of log entry
+   *           (for IResponsibleLogEntry it's always "responsible")
+   */
   type: 'responsible',
+
+  /**
+   * @property Whether or not this is the start of a responsiblity
+   *           block
+   */
   isStart: boolean,
+
+  /**
+   * @property Type of responsibility being chnaged
+   */
   responsibilityType: EResponsibilityType,
+
+  /**
+   * @property Any additional info that's worth adding.
+   */
   notes: string|null,
 };
 
@@ -185,30 +304,148 @@ export interface INewFiringStateLogEntryOptions {
   newState: TFiringState,
   oldState: TFiringState,
 };
+
+/**
+ * All the details for a single firing
+ */
 export interface IFiring {
+  /**
+   * @property ID of the firing
+   */
   id: ID,
+
+  /**
+   * @property The ID of the kiln in which the firing is to occur
+   */
   kilnID: ID,
+
+  /**
+   * @property The ID of the program to be run for this firing
+   */
   programID: ID,
+
+  /**
+   * @property The ID of the person who scheduled the firing
+   */
   ownerID: ID,
+
+  /**
+   * @property The ID of the diary entry for this firing
+   *
+   * __NOTE:__ There is no functionality implemented for this and I
+   *           think it's probably the wrong approach.
+   *           My guess is that at a later date, I'll implement an
+   *           approval flow for scheduled firings.
+   */
   diaryID: ID|null,
+
+  /**
+   * @property The type of firing this is
+   *
+   * __NOTE:__ This comes directly from Program and cannot be
+   *           changed by the user.
+   */
   firingType: TFiringType,
+
+  /**
+   * @property When the firing is expected to start
+   */
   scheduledStart: ISO8601|null,
+
+  /**
+   * @property When the firing is expected to start
+   *
+   * __NOTE:__ This is based on the program's calculated duration
+   *           and cannot be changed by the user.
+   */
   scheduledEnd: ISO8601|null,
+
+  /**
+   * @property The expected to end of the firing program
+   *
+   */
   scheduledCold: ISO8601|null,
+
+  /**
+   * @peroperty The time when packing was complete for the firing
+   */
   packed: ISO8601|null,
+
+  /**
+   * @property When the firing actually started.
+   */
   actualStart: ISO8601|null,
+
+  /**
+   * @property When the firing program actually completed.
+   */
   actualEnd: ISO8601|null,
+
+  /**
+   * @property When the kiln was actually cool enough to unpack
+   */
   actualCold: ISO8601|null,
+
+  /**
+   * @property When unpacking of the kiln was completed
+   */
   unpacked: ISO8601|null,
+
+  /**
+   * @property Before the firing program starts: The expected maximum
+   *           temperature of the firing.
+   *           After the firing has started: The highest recorded
+   *           temperature for the firing.
+   * firing
+   */
   maxTemp: number,
+
+  /**
+   * @property The cone the program is targeting for the firing
+   */
   cone: TCone,
+
+  /**
+   * @property Whether or not the firing is active.
+   *
+   * __NOTE:__ A firing becomes activng when packing is started and
+   *           remains active until the kiln is emptied.
+   */
   active: boolean,
+
+  /**
+   * @property Whether or not the firing log is entered retrospectively
+   *           (i.e. entered using documentation from a past firing.)
+   */
   isRetro: false,
+
+  /**
+   * @property The current state of the whole firing process
+   */
   firingState: TFiringState,
+
+  /**
+   * @property The status of the actual firing
+   *           i.e whether
+   *           * the program is running,
+   *           * was cancelled before start,
+   *           * was aborted during the firing
+   *           * completed successfully
+   */
   firingActiveState: TFiringActiveState,
+
+  /**
+   * @property The current state of the temperature (expected/under/over)
+   */
   temperatureState: TTemperatureState,
-  log: FiringLogEntry[],
 };
+
+export interface IArchivedFiring extends IFiring {
+  /**
+   * @property Full log of the
+   */
+  log: FiringLogEntry[],
+}
 
 export interface IFiringReport {
   kilnName: string,
@@ -219,7 +456,7 @@ export interface IFiringReport {
   startTime: Date,
   endTime: Date,
   programState: EprogramState,
-  tempState: EtemperatureState,
+  tempState: TTemperatureState,
   log: [reportRow]
   currentRate: number
 };
