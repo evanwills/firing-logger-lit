@@ -7,6 +7,7 @@ export type ISO8601 = string;
 export type TTimeStamp = number;
 export type ID = string;
 export type TCone = string;
+export type TScalar = string | number | boolean | null;
 
 //  END:  Basic scalar types
 // ------------------------------------------------------------------
@@ -47,7 +48,7 @@ export interface IKeyBool extends IKeyValue {
 };
 
 export interface IKeyScalar  extends IKeyValue {
-  [key:string] : string | number | boolean | null
+  [key:string] : TScalar
 };
 
 //  END:  Basic object types

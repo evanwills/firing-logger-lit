@@ -10,7 +10,6 @@ import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import { tableStyles } from '../../assets/css/tables.css.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
-import { validateTProgramListRenderItem } from "./program.utils.ts";
 
 @customElement('programs-list')
 export class ProgramsList extends LoggerElement {
@@ -70,8 +69,6 @@ export class ProgramsList extends LoggerElement {
         && tmp.every((item : unknown) => isTProgramListRenderItem(item))
       ) {
         this._programList = tmp;
-      } else {
-        tmp.map((item : unknown) => console.log(validateTProgramListRenderItem(item)));
       }
 
       this._firingTypes = orderedEnum2enum(await data.types);

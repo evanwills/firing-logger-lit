@@ -2,7 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 // import { ifDefined } from 'lit/directives/if-defined.js';
 import type { ITempLogEntry, TFiringLogEntryType, TFiringState } from '../../types/firings.d.ts';
-import type { FConverter } from '../../types/data-simple.d.ts';
+import type { FConverter, IKeyScalar } from '../../types/data-simple.d.ts';
 import type { IProgramStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { x2x } from '../../utils/conversions.utils.ts';
@@ -11,8 +11,8 @@ import '../shared-components/firing-logger-modal.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
-import { getISO8601time } from '../../utils/date-time.utils.ts';
-import { emptyOrNull } from '../../utils/data.utils.ts';
+import { getISO8601time, getLocalISO8601 } from '../../utils/date-time.utils.ts';
+import { emptyOrNull, map2Obj } from '../../utils/data.utils.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
 import { buttonStyles } from '../../assets/css/buttons.css.ts';
 import { fieldListStyles } from '../../assets/css/input-field.css.ts';
@@ -119,10 +119,10 @@ export class NewLogEntry extends LitElement {
 
   _getNow() {
     let now = 0;
-    if (this._now > 0) {
-      now = this._now;
-    } else if (this._time > 0) {
+    if (this._time > 0) {
       now = this._time;
+    } else if (this._now > 0) {
+      now = this._now;
     }
 
     return (now > 0)
@@ -141,16 +141,16 @@ export class NewLogEntry extends LitElement {
   }
 
   _resetNow() : void {
-    console.group('<new-log-entry>._resetNow()');
-    console.log('this._now (before):', this._now);
+    // console.group('<new-log-entry>._resetNow()');
+    // console.log('this._now (before):', this._now);
     const now = new Date();
     this._now = now.getTime();
     this._humanNow = this._getNow();
 
     this._updateNow = setTimeout(this._resetNow.bind(this), ((60 - now.getSeconds()) * 1000));
-    console.log('this._now (after):', this._now);
-    console.log('this._humanNow (after):', this._humanNow);
-    console.groupEnd();
+    // console.log('this._now (after):', this._now);
+    // console.log('this._humanNow (after):', this._humanNow);
+    // console.groupEnd();
   }
 
   _setRequireNotes(message: string = '') : void {
@@ -173,21 +173,27 @@ export class NewLogEntry extends LitElement {
     }
   }
 
+  _findAndFocusError(field: string) : void {
+    // console.group('<new-log-entry>._findAndFocusError()');
+    // console.log('field:', field);
+    // console.groupEnd();
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
 
   updateType( event : CustomEvent) : void {
-    console.group('<new-log-entry>.updateType()');
-    console.log('event:', event);
-    console.log('event.detail:', event.detail);
-    console.log('event.detail.value:', event.detail.value);
-    console.log('event.detail.validity:', event.detail.validity);
-    console.log('this._type (before):', this._type);
-    console.log('this._requiredFields (before):', this._requiredFields);
+    // console.group('<new-log-entry>.updateType()');
+    // console.log('event:', event);
+    // console.log('event.detail:', event.detail);
+    // console.log('event.detail.value:', event.detail.value);
+    // console.log('event.detail.validity:', event.detail.validity);
+    // console.log('this._type (before):', this._type);
+    // console.log('this._requiredFields (before):', this._requiredFields);
     const { value, validity } = event.detail;
-    console.log('value:', value);
-    console.log('validity:', validity);
+    // console.log('value:', value);
+    // console.log('validity:', validity);
 
     this._requiredFields.clear();
 
@@ -216,27 +222,27 @@ export class NewLogEntry extends LitElement {
       this._type = '';
     }
 
-    console.log('this._type (after):', this._type);
-    console.log('this._requiredFields (after):', this._requiredFields);
-    console.groupEnd();
+    // console.log('this._type (after):', this._type);
+    // console.log('this._requiredFields (after):', this._requiredFields);
+    // console.groupEnd();
   }
 
   setSpecific({ detail } : CustomEvent) : void {
-    console.group('<new-log-entry>.setSpecific()');
-    console.log('detail:', detail);
-    console.log('this._time:', this._time);
-    console.log('this._updateNow:', this._updateNow);
+    // console.group('<new-log-entry>.setSpecific()');
+    // console.log('detail:', detail);
+    // console.log('this._time:', this._time);
+    // console.log('this._updateNow:', this._updateNow);
     const key : string = detail._id.substring(4);
-    console.log('key:', key);
+    // console.log('key:', key);
 
     if (detail._validity.valid === true) {
       const value = detail._value;
 
       this._logEntry.set(key, detail._value as string);
-      console.log('this._logEntry:', this._logEntry);
-      console.log('this._requireNotes (before):', this._requireNotes);
-      console.log('this._requireHelpTxt (before):', this._requireHelpTxt);
-      console.log('this._requiredFields (before):', this._requiredFields);
+      // console.log('this._logEntry:', this._logEntry);
+      // console.log('this._requireNotes (before):', this._requireNotes);
+      // console.log('this._requireHelpTxt (before):', this._requireHelpTxt);
+      // console.log('this._requiredFields (before):', this._requiredFields);
 
       if (key === 'firingState') {
         const prefix = 'Please say why ';
@@ -248,22 +254,22 @@ export class NewLogEntry extends LitElement {
           this._setRequireNotes();
         }
       }
-      console.log('this._requireNotes (after):', this._requireNotes);
-      console.log('this._requireHelpTxt (after):', this._requireHelpTxt);
-      console.log('this._requiredFields (after):', this._requiredFields);
+      // console.log('this._requireNotes (after):', this._requireNotes);
+      // console.log('this._requireHelpTxt (after):', this._requireHelpTxt);
+      // console.log('this._requiredFields (after):', this._requiredFields);
     } else {
       console.warn('current value is invalid');
       this._logEntry.delete(key);
     }
 
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   handleOpen({ detail }: CustomEvent) : void {
-    console.group('<new-log-entry>.handleOpen()');
-    console.log('detail:', detail);
-    console.log('this._time:', this._time);
-    console.log('this._updateNow:', this._updateNow);
+    // console.group('<new-log-entry>.handleOpen()');
+    // console.log('detail:', detail);
+    // console.log('this._time:', this._time);
+    // console.log('this._updateNow:', this._updateNow);
     this._open = detail;
 
     if (detail === true) {
@@ -274,10 +280,45 @@ export class NewLogEntry extends LitElement {
       clearTimeout(this._updateNow);
       this._type = '';
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   handleSubmit() : void {
+    // console.group('<new-log-entry>.handleSubmit()');
+    // console.log('this._type:', this._type);
+    // console.log('this._logEntry:', this._logEntry);
+    // console.log('this._requiredFields:', this._requiredFields);
+    if (!isTFiringLogEntryType(this._type)) {
+      return;
+    }
+
+    for (const required of this._requiredFields) {
+      if (!this._logEntry.has(required)) {
+        this._findAndFocusError(required);
+        return;
+      }
+    }
+
+    const detail : IKeyScalar = map2Obj(this._logEntry);
+    // console.log('detail (before):', detail);
+    detail.type = this._type
+    detail.time = getLocalISO8601((this._time > 0)
+      ? this._time
+      : this._now
+    );
+    // console.log('detail (after):', detail);
+    // console.groupEnd();
+
+    this.dispatchEvent(
+      new CustomEvent(
+        'submit',
+        {
+          bubbles: true,
+          composed: true,
+          detail,
+        },
+      ),
+    );
 
     this._closeModal();
   }
@@ -295,11 +336,11 @@ export class NewLogEntry extends LitElement {
   // START: helper render methods
 
   _renderCustomFields() : TemplateResult  {
-    console.group('<new-log-entry>._renderCustomFields()');
-    console.log('this._type:', this._type);
-    console.log('this._now:', this._now);
-    console.log('this._time:', this._time);
-    console.log('this._humanNow:', this._humanNow);
+    // console.group('<new-log-entry>._renderCustomFields()');
+    // console.log('this._type:', this._type);
+    // console.log('this._now:', this._now);
+    // console.log('this._time:', this._time);
+    // console.log('this._humanNow:', this._humanNow);
     const cancel = html`<button
       class="secondary"
       type="button"
@@ -317,8 +358,9 @@ export class NewLogEntry extends LitElement {
             block-before="22"
             field-id="log-actualTemp"
             label="Temperature"
-            unit="${this.unit}"
+            unit="°${this.unit}"
             step="1"
+            required
             @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
         break;
 
@@ -339,7 +381,7 @@ export class NewLogEntry extends LitElement {
         break;
     }
 
-    console.groupEnd();
+    // console.groupEnd();
     return html`<li><accessible-temporal-field
         block-before="22"
         field-id="log-time"
@@ -367,17 +409,17 @@ export class NewLogEntry extends LitElement {
   // START: main render method
 
   render() : TemplateResult {
-    console.group('<new-log-entry>.render()');
-    console.log('this._type (before):', this._type);
-    console.log('this._type (before):', this._type);
+    // console.group('<new-log-entry>.render()');
+    // console.log('this._type (before):', this._type);
+    // console.log('this._type (before):', this._type);
     this._setType();
 
     const options = this._getOptions();
 
-    console.log('this._type (after):', this._type);
-    console.log('this._logTypes:', this._logTypes);
-    console.log('options:', options);
-    console.groupEnd();
+    // console.log('this._type (after):', this._type);
+    // console.log('this._logTypes:', this._logTypes);
+    // console.log('options:', options);
+    // console.groupEnd();
     return html`
       <firing-logger-modal
         btn-text="New log entry"

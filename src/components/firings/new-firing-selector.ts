@@ -68,17 +68,17 @@ export class NewFiringSelector extends LoggerElement {
     }
 
     _setData(_ok : boolean) : void {
-      console.group('<new-firing-selector>._setData()');
+      // console.group('<new-firing-selector>._setData()');
       if (this.store !== null) {
         this.store.dispatch('getProgramsList', '', true)
           .then(this._setDataThen.bind(this))
           .catch(storeCatch);
       }
-      console.groupEnd();
+      // console.groupEnd();
     }
 
     async _getFromStore() : Promise<void> {
-      console.group('<new-firing-selector>._getFromStore()');
+      // console.group('<new-firing-selector>._getFromStore()');
       await super._getFromStore();
 
       if (this.store !== null) {
@@ -88,7 +88,7 @@ export class NewFiringSelector extends LoggerElement {
           this._setData(true)
         }
       }
-      console.groupEnd();
+      // console.groupEnd();
     }
 
     _setAvailablePrograms() : void {
@@ -127,26 +127,26 @@ export class NewFiringSelector extends LoggerElement {
     // START: event handlers
 
     _handleKilnChange(event : CustomEvent) : void {
-      console.group('<new-firing-selector>._handleKilnChange()');
-      console.log('event:', event);
-      console.log('event.detail:', event.detail);
-      console.log('event.detail.value:', event.detail.value);
-      console.log('event.detail.validity:', event.detail.value.validity);
+      // console.group('<new-firing-selector>._handleKilnChange()');
+      // console.log('event:', event);
+      // console.log('event.detail:', event.detail);
+      // console.log('event.detail.value:', event.detail.value);
+      // console.log('event.detail.validity:', event.detail.value.validity);
       this._kilnID = (isID(event.detail.value))
         ? event.detail.value
         : null;
 
       this._setAvailablePrograms();
 
-      console.groupEnd();
+      // console.groupEnd();
     }
 
     _handleTypeChange(event : CustomEvent) : void {
-      console.group('<new-firing-selector>._handleTypeChange()');
-      console.log('event:', event);
-      console.log('event.detail:', event.detail);
-      console.log('event.detail.value:', event.detail.value);
-      console.log('event.detail.validity:', event.detail.value.validity);
+      // console.group('<new-firing-selector>._handleTypeChange()');
+      // console.log('event:', event);
+      // console.log('event.detail:', event.detail);
+      // console.log('event.detail.value:', event.detail.value);
+      // console.log('event.detail.validity:', event.detail.value.validity);
 
       this._firingType = (isTFiringType(event.detail.value) === true)
         ? event.detail.value
@@ -166,16 +166,16 @@ export class NewFiringSelector extends LoggerElement {
     }
 
     _handleProgramChange(event : CustomEvent) : void {
-      console.group('<new-firing-selector>._handleProgramChange()');
-      console.log('event:', event);
-      console.log('event.detail:', event.detail);
-      console.log('event.detail.value:', event.detail.value);
-      console.log('event.detail.validity:', event.detail.value.validity);
+      // console.group('<new-firing-selector>._handleProgramChange()');
+      // console.log('event:', event);
+      // console.log('event.detail:', event.detail);
+      // console.log('event.detail.value:', event.detail.value);
+      // console.log('event.detail.validity:', event.detail.value.validity);
 
       this._programID = (isID(event.detail.value))
         ? event.detail.value
         : null;
-      console.groupEnd();
+      // console.groupEnd();
     }
 
     //  END:  event handlers
@@ -193,15 +193,15 @@ export class NewFiringSelector extends LoggerElement {
   // START: main render method
 
   render() : TemplateResult | string {
-    console.group('<new-firing-selector>.render()');
-    console.log('this._firingType:', this._firingType);
-    console.log('this._kilnID:', this._kilnID);
-    console.log('this._programID:', this._programID);
-    console.log('this._programID !== null:', this._programID !== null);
-    console.log('this._firingTypes:', this._firingTypes);
-    console.log('this._programList:', this._programList);
-    console.log('this._ready:', this._ready);
-    console.groupEnd();
+    // console.group('<new-firing-selector>.render()');
+    // console.log('this._firingType:', this._firingType);
+    // console.log('this._kilnID:', this._kilnID);
+    // console.log('this._programID:', this._programID);
+    // console.log('this._programID !== null:', this._programID !== null);
+    // console.log('this._firingTypes:', this._firingTypes);
+    // console.log('this._programList:', this._programList);
+    // console.log('this._ready:', this._ready);
+    // console.groupEnd();
 
     return html`<ul>
       <li><accessible-select-field

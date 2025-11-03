@@ -8,17 +8,17 @@ import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { isUser } from '../../types/user.type-guards.ts';
 import { getInitialData, saveChangeOnHold } from '../../store/save-data.utils.ts';
 import { mergeChanges } from '../../utils/store.utils.ts';
-import { validateFiringData } from './firing-data.utils.ts';
+import { firingListItemPropIsSameType, validateFiringData } from './firing-data.utils.ts';
 import { addRedirect, updateRedirect } from '../../store/redirect.utils.ts';
 import { getUID } from "../../utils/data.utils.ts";
-import { validateProgramData } from "../programs/program.utils.ts";
-import { isID, isIdObject } from "../../types/data.type-guards.ts";
+import { isID } from "../../types/data.type-guards.ts";
 // import { validateFiringData } from './firing-data.utils.ts';
 
 export const getFiringsList : FActionHandler = async (
   db: CDataStoreClass,
-  { start, end } : TDateRange,
-)  : Promise<TFiringsListItem[]> => {
+  payload : unknown,
+)  : Promise<unknown> => {
+  const { start, end } = payload as TDateRange;
   const range = getKeyRange(start, end);
 
   if (range === null) {
@@ -110,6 +110,8 @@ const _getFiringDataByProgamID = async (
         unpacked: null,
         maxTemp: program.maxTemp,
         cone: program.cone,
+        active: false,
+        isRetro: false,
         firingState: 'created',
         firingActiveState: 'normal',
         temperatureState: 'n/a',
@@ -346,21 +348,26 @@ export const updateFiringList : FActionHandler = async (
   data : unknown,
 ) : Promise<IDBValidKey> => {
   console.group('updateFiringList()');
+  console.log('data:', data)
   try {
     const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
       'updateFiringList',
       'firingsList',
-      'firing list',
-      isFiringLogEntry,
+      'firing list item',
+      isTFiringsListItem,
       {
         permissionLevel: 1,
         allowed: 'log',
         id: (data as IIdObject).id,
       }
     );
+    console.log('hold:', hold)
+    console.log('user:', user)
+    console.log('thing:', thing)
 
     if (hold === true) {
+      console.info('storing data for later');
       console.groupEnd();
       return saveChangeOnHold(
         db,
@@ -371,8 +378,27 @@ export const updateFiringList : FActionHandler = async (
       );
     }
 
+    let newData : TFiringsListItem | null = (isTFiringsListItem(data))
+      ? { ...data }
+      : null;
+
+    console.log('newData (before):', newData);
+    if (newData === null) {
+      newData = { ...(thing as TFiringsListItem) };
+
+      for (const key of Object.keys(newData)) {
+        console.log(`newData.${key}:`, (newData as IIdObject)[key]);
+        console.log(`data.${key}:`, (data as IIdObject)[key]);
+        if (firingListItemPropIsSameType(newData, data as IIdObject, key)) {
+          (newData as IIdObject)[key] = (data as IIdObject).key
+        }
+      }
+    }
+    console.log('newData (after):', newData);
+
+    console.info('saving data now');
     console.groupEnd();
-    return db.put('firingsList', data);
+    return db.put('firingsList', newData);
   } catch(error : unknown) {
     console.groupEnd();
     throw error;

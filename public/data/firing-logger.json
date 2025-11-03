@@ -17,6 +17,8 @@
       "unpacked": null,
       "maxTemp": 1000,
       "cone": "06",
+      "isRetro": false,
+      "active": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -38,6 +40,8 @@
       "unpacked": null,
       "maxTemp": 1200,
       "cone": "6",
+      "active": false,
+      "isRetro": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -59,6 +63,8 @@
       "unpacked": null,
       "maxTemp": 1000,
       "cone": "06",
+      "active": false,
+      "isRetro": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -80,6 +86,8 @@
       "unpacked": null,
       "maxTemp": 1000,
       "cone": "06",
+      "active": false,
+      "isRetro": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"

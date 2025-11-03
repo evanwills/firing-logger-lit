@@ -523,6 +523,16 @@ export const addUpdateHelper = async (
     validateThing,
   } : TUpdateHelperOptions = {},
 ) : Promise<IUpdateHelperData> => {
+  console.group('addUpdateHelper()');
+  console.log('_method:', _method);
+  console.log('storeName:', storeName);
+  console.log('itemType:', itemType);
+  console.log('action:', action);
+  console.log('allowed:', allowed);
+  console.log('newData:', newData);
+  console.log('id:', id);
+  console.log('permissionLevel:', permissionLevel);
+  console.log('type:', type);
   const _permissionLevel : number = (typeof permissionLevel === 'number')
     ? permissionLevel
     : 2;
@@ -552,26 +562,51 @@ export const addUpdateHelper = async (
 
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
   let thing = null;
+  console.log('_permissionLevel:', _permissionLevel);
+  console.log('_allowed:', _allowed);
+  console.log('_action:', _action);
+  console.log('_type:', _type);
+  console.log('_id:', _id);
+  console.log('_newData:', _newData);
+  console.log('user:', user);
+  console.log('hold:', hold);
+  console.log('msg:', msg);
 
   if (msg === '') {
     if (user === null) {
+      console.groupEnd();
       // This should never happen because `msg` will contain an error
       // message if user is null
       throw new Error('Cannot proceed because user is null');
     } else {
       if (isNonEmptyStr(_id)) {
         thing = await db.get(storeName, _id);
+        console.log('thing:', thing);
+        console.log('isThing(thing):', isThing(thing));
+        console.log('!isThing(thing):', !isThing(thing));
+        console.log('isThing(thing) === false:', (isThing(thing) === false));
 
-        if (!isThing(thing)) {
-          throw new Error(`Could not find ${itemType} matching "${_id}"`);
+        if (isThing(thing) === false) {
+          throw new Error(
+            `Could not find ${itemType} matching "${_id}" in \`${storeName}\`.`,
+          );
         }
+
+        // if (isThing(thing) === false) {
+        //   console.log('isThing(thing) (should be false):', isThing(thing));
+        //   console.groupEnd();
+        //   throw new Error(`Could not find ${itemType} matching "${_id}" in \`${storeName}\`.`);
+        // }
       } else if (_newData !== null && _validateThing !== null && !isThing(_newData)) {
+        console.groupEnd();
         throw new Error (`New data is invalid! ${_validateThing(_newData)}`);
       }
     }
   } else {
+    console.groupEnd();
     throw new Error(`${msg} ${_action} ${itemType} ${_type}`);
   }
 
+  console.groupEnd();
   return { hold, thing, user };
 }

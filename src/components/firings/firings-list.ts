@@ -90,7 +90,7 @@ export class FiringsList extends LoggerElement {
 
   async _getFromStore() : Promise<void> {
     await super._getFromStore();
-    console.group('<firings-list>._getFromStore()');
+    // console.group('<firings-list>._getFromStore()');
 
     if (this.store !== null) {
       if (this.store.ready === false) {
@@ -99,7 +99,7 @@ export class FiringsList extends LoggerElement {
         this._setData()
       }
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   //  END:  helper methods
@@ -131,6 +131,10 @@ export class FiringsList extends LoggerElement {
   _renderTableRow(data : TFiringsListItem) : TemplateResult {
     const temp = html`${this._tConverter(data.maxTemp)}&deg;${this._tUnit}`;
     const cone = html`<span class="sm-only">(Cone: ${data.cone})</span>`;
+    console.group('<firings-list>._renderTableRow()');
+    console.log('data:', data);
+    console.log('data.firingType:', data.firingType);
+    console.groupEnd();
 
     return html`<tr>
       <th><router-link

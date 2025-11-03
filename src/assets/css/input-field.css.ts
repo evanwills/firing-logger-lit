@@ -148,6 +148,7 @@ inner.as-block {
 
 .input-flex {
   display: flex;
+  column-gap: 0.25rem;
 }
 
 .label, label {

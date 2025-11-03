@@ -129,17 +129,17 @@ export class FiringLoggerModal extends LitElement {
   // START: main render method
 
   render() : TemplateResult | string {
-    console.group('<firing-modal>.render()');
+    // console.group('<firing-modal>.render()');
     if (emptyOrNull(this.btnText) && this.noOpen === false) {
       throw new Error(
         '<firing-modal> Expects btn-text attribute to be a non-empty string',
       );
     }
 
-    console.log('this.heading:', this.heading);
-    console.log('this.open:', this.open);
-    console.log('this.btnText:', this.btnText);
-    console.groupEnd();
+    // console.log('this.heading:', this.heading);
+    // console.log('this.open:', this.open);
+    // console.log('this.btnText:', this.btnText);
+    // console.groupEnd();
 
     let cls = 'open-btn';
 

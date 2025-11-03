@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import type { ID, IKeyStr, IKeyValue, IOrderedEnum } from '../types/data-simple.d.ts';
+import type { ID, IKeyScalar, IKeyStr, IKeyValue, IOrderedEnum, TScalar } from '../types/data-simple.d.ts';
 import { isNonEmptyStr } from "./string.utils.ts";
 import { isIkeyValue } from "../types/data.type-guards.ts";
 
@@ -343,3 +343,18 @@ export const orderedEnum2enum = (input : IOrderedEnum[]) : IKeyStr => {
 
   return output;
 };
+
+export const map2Obj = (input : Map<string,TScalar>) : IKeyScalar => {
+  console.group('map2Obj()');
+  console.log('input:', input);
+  const output : IKeyScalar = {}
+  input.forEach((value: TScalar, key: string) => {
+    console.log('key:', key);
+    console.log('value:', value);
+    output[key] = value;
+  });
+
+  console.log('output', output);
+  console.groupEnd();
+  return output;
+}

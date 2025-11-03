@@ -118,6 +118,8 @@ export const isIFiring = (item: unknown) : item is IFiring => (
   && (isISO8601((item as IFiring).unpacked) || (item as IFiring).unpacked === null)
   && typeof (item as IFiring).maxTemp === 'number'
   && isTCone((item as IFiring).cone) === true
+  && typeof (item as IFiring).active === 'boolean'
+  && typeof (item as IFiring).isRetro === 'boolean'
   && isTFiringState((item as IFiring).firingState) === true
   && isTFiringActiveState((item as IFiring).firingActiveState) === true
   && isTTemperatureState((item as IFiring).temperatureState) === true

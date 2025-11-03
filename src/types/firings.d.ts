@@ -203,6 +203,7 @@ export interface IFiring {
   maxTemp: number,
   cone: TCone,
   active: boolean,
+  isRetro: false,
   firingState: TFiringState,
   firingActiveState: TFiringActiveState,
   temperatureState: TTemperatureState,
