@@ -1614,13 +1614,13 @@
     },
     {
       "order": 4,
-      "value": "cancelled",
-      "label": "Cancelled"
+      "value": "active",
+      "label": "Active"
     },
     {
       "order": 5,
-      "value": "active",
-      "label": "Active"
+      "value": "cancelled",
+      "label": "Cancelled"
     },
     {
       "order": 6,
