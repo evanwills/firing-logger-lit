@@ -268,28 +268,17 @@ export const firingListItemPropIsSameType = (
   newData : IIdObject,
   key: string,
 ) : boolean => {
-  console.group('firingListItemPropIsSameType()');
-  console.log('oldData:', oldData);
-  console.log('newData:', newData);
-  console.log('key:', key);
-  console.log(`typeof oldData[${key}]:`, typeof oldData[key]);
-  console.log(`typeof newData[${key}]:`, typeof newData[key]);
   if (typeof oldData[key] === typeof newData[key]) {
-    console.info('matched by type');
-    console.groupEnd();
     return true;
   }
 
-  if (key === 'start' || key === 'end') {
-    if (oldData[key] === null && typeof newData[key] === 'string') {
-      console.info(`${key} is OK`);
-      console.groupEnd();
-      return true;
-    }
+  if ((key === 'start' || key === 'end')
+    && oldData[key] === null
+    && typeof newData[key] === 'string'
+  ) {
+    return true;
   }
 
-  console.info(`No good`);
-  console.groupEnd();
   return false;
 }
 
