@@ -131,10 +131,7 @@ export class FiringsList extends LoggerElement {
   _renderTableRow(data : TFiringsListItem) : TemplateResult {
     const temp = html`${this._tConverter(data.maxTemp)}&deg;${this._tUnit}`;
     const cone = html`<span class="sm-only">(Cone: ${data.cone})</span>`;
-    console.group('<firings-list>._renderTableRow()');
-    console.log('data:', data);
-    console.log('data.firingType:', data.firingType);
-    console.groupEnd();
+    const state = ucFirst(data.firingState);
 
     return html`<tr>
       <th><router-link
@@ -142,7 +139,7 @@ export class FiringsList extends LoggerElement {
         data-kiln-id="${data.kilnID}"
         data-program-id="${data.programID}"
         url="/firing/${data.id}">${this._renderDate(data.start)}</router-link>
-        <span class="sm-only">(${ucFirst(data.firingState)})</span>
+        <span class="sm-only">(${state})</span>
       </th>
       <!-- <td>${this._renderDate(data.end)}</td> -->
       <td><router-link
@@ -163,7 +160,7 @@ export class FiringsList extends LoggerElement {
         ${cone}
       </td>
       <td>${data.cone}</td>
-      <td>${data.firingState}</td>
+      <td>${state}</td>
     </tr>`;
   }
 
