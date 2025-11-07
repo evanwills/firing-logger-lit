@@ -121,3 +121,5 @@ enum EequipmentLogType {
 
 export type FIsThing = (input: unknown) => boolean;
 export type FValidateThing = (input: unknown) => string | null;
+
+export type FGetISO8601 = (input : number | Date | null, noSeconds : boolean) => ISO8601;

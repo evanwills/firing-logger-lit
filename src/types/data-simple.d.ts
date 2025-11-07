@@ -4,6 +4,7 @@
 import type { TemplateResult } from 'lit';
 
 export type ISO8601 = string;
+export type ISO8601Time = string;
 export type TTimeStamp = number;
 export type ID = string;
 export type TCone = string;
