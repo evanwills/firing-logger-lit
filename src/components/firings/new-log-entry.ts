@@ -2,7 +2,7 @@ import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 // import { ifDefined } from 'lit/directives/if-defined.js';
 import type { ITempLogEntry, TFiringLogEntryType, TFiringState } from '../../types/firings.d.ts';
-import type { FConverter, IKeyScalar } from '../../types/data-simple.d.ts';
+import type { FConverter, IKeyScalar, ISO8601 } from '../../types/data-simple.d.ts';
 import type { IProgramStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import { x2x } from '../../utils/conversions.utils.ts';
@@ -11,12 +11,16 @@ import '../shared-components/firing-logger-modal.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
-import { getISO8601time, getLocalISO8601 } from '../../utils/date-time.utils.ts';
+import { getISO8601time, getIsoDateTimeSimple, getLocalISO8601, makeISO8601simple } from '../../utils/date-time.utils.ts';
 import { emptyOrNull, map2Obj } from '../../utils/data.utils.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
 import { buttonStyles } from '../../assets/css/buttons.css.ts';
 import { fieldListStyles } from '../../assets/css/input-field.css.ts';
 import { FiringLoggerModal } from '../shared-components/firing-logger-modal.ts';
+import { isISO8601 } from '../../types/data.type-guards.ts';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import type { FGetISO8601 } from "../../types/data.d.ts";
+import { AccessibleWholeField } from "../input-fields/AccessibleWholeField.ts";
 
 @customElement('new-log-entry')
 export class NewLogEntry extends LitElement {
@@ -35,21 +39,52 @@ export class NewLogEntry extends LitElement {
   @property({ type: Function, attribute: 'convert-rev' })
   convertRev : FConverter = x2x;
 
+  /**
+   * @property Whether or not this log entry is for a past firing
+   */
+  @property({ type: Boolean, attribute: 'is-retro'})
+  isRetro : boolean = false;
+
+  /**
+   * @property List of program steps for the current firing
+   */
   @property({ type: Array })
   programSteps : IProgramStep[] = [];
 
+  /**
+   * @property List of state options currently available for status
+   *           update logs
+   */
   @property({ type: Array })
   stateOptions : TOptionValueLabel[] = [];
 
+  /**
+   * @property Current state of the firing
+   */
   @property({ type: String, attribute: 'status' })
   status : TFiringState | '' = '';
 
+  /**
+   * @property List of previou temperature log entries
+   */
   @property({ type: Array })
   tempLog : ITempLogEntry[] = [];
 
-  @property({ type: String })
+  /**
+   * @property The actual (or expected) start time
+   */
+  @property({ type: Number })
   startTime : number = 0;
 
+  /**
+   * @property The time of the last log entry
+   */
+  @property({ type: String, attribute: 'min-time' })
+  minTime : ISO8601 | '' = '';
+
+  /**
+   * @property Pre defined type of firing log
+   */
   @property({ type: String, attribute: 'type' })
   type : TFiringLogEntryType | '' = '';
 
@@ -74,10 +109,10 @@ export class NewLogEntry extends LitElement {
 
   _logTypes : TOptionValueLabel[] = [
     { value: 'temp', label: 'Record temperature' },
-    { value: 'firingState', label: 'Update firing state' },
-    { value: 'issue', label: 'Report an issue or problem' },
+    { value: 'firingState', label: 'Update status' },
+    { value: 'issue', label: 'Report an issue' },
     { value: 'observation', label: 'Record an observation' },
-    { value: 'responsible', label: 'Update who is responsible' },
+    { value: 'responsible', label: 'Update responsibility' },
   ];
 
   @state()
@@ -85,6 +120,9 @@ export class NewLogEntry extends LitElement {
 
   @state()
   _requireNotes : boolean = false;
+
+  @state()
+  _max : string = '';
 
   @state()
   _now : number = 0;
@@ -98,13 +136,16 @@ export class NewLogEntry extends LitElement {
   @state()
   _requireHelpTxt : string = '';
 
+  _updateMax : number = -1;
   _updateNow : number = -1;
-
-  _emptyOption : TOptionValueLabel = { value: '', label: '-- Please choose --' }
 
   _logEntry : Map<string, string|number|boolean> = new Map();
 
   _requiredFields : Set<string> = new Set();
+
+  _temporalType : 'time' | 'datetime-local' = 'time';
+
+  _ISOgetter : FGetISO8601 = getISO8601time;
 
 
   //  END:  state
@@ -126,7 +167,7 @@ export class NewLogEntry extends LitElement {
     }
 
     return (now > 0)
-      ? getISO8601time(now, true)
+      ? this._ISOgetter(now, true)
       : '';
   }
 
@@ -153,6 +194,17 @@ export class NewLogEntry extends LitElement {
     // console.groupEnd();
   }
 
+  _resetMax() : void {
+    if (this._open === true) {
+      this._max = getIsoDateTimeSimple(this._now + (2 * 60 * 1000), true);
+
+      this._updateMax = setTimeout(this._resetMax.bind(this), 60 * 1000);
+    } else {
+      this._max = '';
+      this._updateMax = -1;
+    }
+  }
+
   _setRequireNotes(message: string = '') : void {
     if (message === '') {
       this._requiredFields.delete('notes');
@@ -174,9 +226,18 @@ export class NewLogEntry extends LitElement {
   }
 
   _findAndFocusError(field: string) : void {
-    // console.group('<new-log-entry>._findAndFocusError()');
-    // console.log('field:', field);
-    // console.groupEnd();
+    console.group('<new-log-entry>._findAndFocusError()');
+    console.log('field:', field);
+    console.log('#log-${field}:', `#log-${field}`);
+    console.log(`"#log-firingState" === "#log-${field}":`, '[field-id=log-firingState]' === `#log-${field}`);
+    console.log('this:', this);
+    console.log('this.shadowRoot:', this.shadowRoot);
+    const target = this.shadowRoot?.querySelector(`[field-id=log-${field}]`);
+    console.log('target:', target);
+    if (target instanceof AccessibleWholeField) {
+      target.focus();
+    }
+    console.groupEnd();
   }
 
   //  END:  helper methods
@@ -274,10 +335,25 @@ export class NewLogEntry extends LitElement {
 
     if (detail === true) {
       if (this._time === 0) {
+        const then = new Date(this.minTime);
+        const now = new Date();
+
+        this._temporalType = (now.getDate() > then.getDate())
+          ? 'datetime-local'
+          : 'time';
+        this._ISOgetter = (this._temporalType === 'time')
+          ? getISO8601time
+          : getIsoDateTimeSimple;
+
         this._resetNow();
+        this._resetMax();
       }
     } else if (this._updateNow >= 0) {
       clearTimeout(this._updateNow);
+      clearTimeout(this._updateMax);
+      this._updateNow = -1;
+      this._updateMax = -1;
+      this._time = 0;
       this._type = '';
     }
     // console.groupEnd();
@@ -352,6 +428,10 @@ export class NewLogEntry extends LitElement {
 
     let output : TemplateResult | string = '';
 
+    const min = (isISO8601(this.minTime) === true)
+      ? makeISO8601simple(this.minTime)
+      : null;
+
     switch (this._type) {
       case 'temp':
         output = html`<li><accessible-number-field
@@ -386,7 +466,9 @@ export class NewLogEntry extends LitElement {
         block-before="22"
         field-id="log-time"
         label="Time"
-        type="time"
+        min="${ifDefined(min)}"
+        max="${this._max}"
+        type="${this._temporalType}"
         .value=${this._humanNow}
         @change=${this.setSpecific.bind(this)}></accessible-temporal-field></li>
       ${output}

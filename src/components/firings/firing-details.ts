@@ -38,8 +38,8 @@ import {
   // getValFromKey,
   orderedEnum2enum,
 } from '../../utils/data.utils.ts';
-import { getLocalISO8601, humanDateTime } from '../../utils/date-time.utils.ts';
-import { getNewLogEntry, getStatusLogEntry, isBeforeToday, tempLog2SvgPathItem, validateStateLogEntry } from './firing-data.utils.ts';
+import { getLocalISO8601, humanDateTime, makeISO8601simple } from '../../utils/date-time.utils.ts';
+import { getLastLogEntry, getNewLogEntry, getStatusLogEntry, isBeforeToday, sortLogByTime, tempLog2SvgPathItem, validateStateLogEntry } from './firing-data.utils.ts';
 import { enumToOptions, sortOrderedEnum } from '../../utils/lit.utils.ts';
 import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
@@ -112,6 +112,8 @@ export class FiringDetails extends LoggerElement {
 
   @state()
   _ready : boolean = false;
+  @state()
+  _reverse : boolean = false;
 
   @state()
   _edit : boolean = false;
@@ -197,6 +199,9 @@ export class FiringDetails extends LoggerElement {
   _logNotes : string | null = null;
 
   @state()
+  _logTimeMin : ISO8601 | '' = '';
+
+  @state()
   _step0 : IProgramStep = {
     order: 0,
     endTemp: 0,
@@ -267,6 +272,18 @@ export class FiringDetails extends LoggerElement {
     // console.log('this._ownerID (after):', this._ownerID);
     // console.log('this._firing.ownerID (after):', this._firing?.ownerID);
     // console.groupEnd();
+  }
+
+  _setLogTimeMin(value : ISO8601 | null, force : boolean = false) : void {
+    console.group('<firing-details>._setLogTimeMin()');
+    console.log('value:', value);
+    console.log('this._logTimeMin (before):', this._logTimeMin);
+    if (isISO8601(value) && (this._logTimeMin === '' || force === true)) {
+      this._logTimeMin = value;
+    }
+    console.log('this._logTimeMin (after):', this._logTimeMin);
+    console.log('isISO8601(this._logTimeMin):', isISO8601(this._logTimeMin));
+    console.groupEnd();
   }
 
   _setFiringStateOptions(force : boolean = false) : void {
@@ -397,18 +414,18 @@ export class FiringDetails extends LoggerElement {
 
   _setLogs(logs : IFiringLogEntry[] | null) : void {
     if (logs !== null) {
-      this._rawLog = logs;
-      this._rawLog.sort((a : IFiringLogEntry, b : IFiringLogEntry) : number => {
-        if (a.time < b.time) { return -1; }
-        if (a.time > b.time) { return 1; }
-        return 0;
-      });
+      this._rawLog = sortLogByTime(logs, this._reverse);
 
       this._tempLog = [ ...this._tempLog, ...this._rawLog.filter(isTempLog)];
       this._responsibleLog = this._rawLog.filter(isRespLog);
       this._changeLog = this._rawLog.filter(isStateChangeLog);
       this._svgSteps = this._tempLog.map(tempLog2SvgPathItem);
       this._setReady();
+
+      const last = getLastLogEntry(this._rawLog);
+      if (last !== null) {
+        this._setLogTimeMin(last.time);
+      }
 
       this._setDuration();
 
@@ -625,6 +642,7 @@ export class FiringDetails extends LoggerElement {
           this._scheduledEnd = getLocalISO8601(tmp.getTime() + this._program.duration * 1000);
           this._scheduledCold = getLocalISO8601(tmp.getTime() + this._program.duration * multiplier * 1000);
           this._isRetro = isBeforeToday(this._scheduledEnd);
+          this._setLogTimeMin(this._scheduledStart, true);
 
           if (this._isRetro === true) {
             firingData.isRetro = true;
@@ -676,7 +694,9 @@ export class FiringDetails extends LoggerElement {
 
         const log : IFiringLogEntry = getNewLogEntry(
           this._firing.id,
-          this._user?.id,
+          (this._user !== null)
+            ? this._user.id
+            : '',
           { type: 'schedule' },
         );
 
@@ -781,8 +801,23 @@ export class FiringDetails extends LoggerElement {
       console.log('detail (before):', detail);
 
       console.log('detail (after):', detail);
+      let resort = false;
 
       const newEntry = getNewLogEntry(this._firing.id, this._user.id, detail);
+
+      if (isISO8601(detail.time)) {
+        const last = getLastLogEntry(this._rawLog);
+
+        if (last !== null) {
+          if (last.time < detail.time) {
+            this._setLogTimeMin(detail.time, true);
+          } else {
+            resort = true;
+          }
+        } else {
+          this._setLogTimeMin(detail.time, true);
+        }
+      }
 
       if (isTFiringState(firingState)) {
         (newEntry as IStateLogEntry).newState = firingState;
@@ -796,12 +831,16 @@ export class FiringDetails extends LoggerElement {
       console.log('validateStateLogEntry(newEntry):', validateStateLogEntry(newEntry));
 
       this._rawLog.push(newEntry);
+
+      if (resort === true) {
+        this._rawLog = sortLogByTime(this._rawLog, this._reverse);
+      }
       if (isStateChangeLog(newEntry)) {
         this._firingState = newEntry.newState;
         this._setFiringStateOptions(true);
 
-
         const change : IIdObject = { id: this._firing.id, firingState };
+
         console.log('change (before):', change);
         switch (firingState) {
           case 'active':
@@ -826,6 +865,10 @@ export class FiringDetails extends LoggerElement {
         this.store?.dispatch('updateFiringData', change);
       } else if (isTempLog(newEntry)) {
         this._tempLog.push(newEntry);
+
+        if (resort === true) {
+          this._tempLog = sortLogByTime(this._tempLog, this._reverse);
+        }
       }
       this.store?.dispatch('addFiringLogEntry', newEntry);
     }
@@ -1035,6 +1078,7 @@ export class FiringDetails extends LoggerElement {
             .converter=${this._tConverter}
             .convert-rev=${this._tConverterRev}
             firing-id="${this._firing?.id}"
+            min-time="${this._logTimeMin}"
             .programSteps=${this._programSteps}
             .startTime=${this._actualStartTime}
             .stateOptions=${this._firingStateOptions}
