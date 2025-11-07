@@ -12,20 +12,13 @@ export enum EEnergySource {
   other,
 }
 
-export enum EkilnType {
-  'general',
-  'raku',
-  'platter',
-  'black firing',
-  'annagamma'
-}
+export type TkilnType = 'general' |
+  'raku' |
+  'platter' |
+  'black firing' |
+  'annagamma';
 
-export enum EkilnLoadingType {
-  front,  // Front loading kiln
-  top,    // Top loading kiln
-  tophat, // Top hat kiln
-  trolley, // Trolley kiln
-}
+export type TkilnLoadingType = 'front' | 'top' | 'tophat' | 'trolley';
 
 export enum EfiringType {
   bisque,
@@ -35,30 +28,26 @@ export enum EfiringType {
   onglaze,
 }
 
-export enum EkilnReadyStatus {
-  available,
-  packing,
-  packed,
-  heating,
-  holding,
-  cooling,
-  cold,
-  unpacking,
-  emptied,
-};
+export type TkilnReadyStatus = 'available' |
+  'packing' |
+  'packed' |
+  'heating' |
+  'holding' |
+  'cooling' |
+  'cold' |
+  'unpacking' |
+  'emptied';
 
-enum EkilnServiceState {
-  purchased,
-  delivered,
-  installed,
-  working,
-  maintenance,
-  brokenAwaitingRepair,
-  brokenBeingRepaired,
-  retired,
-  decomissioned,
-  removed,
-};
+export type TkilnServiceState = 'purchased' |
+  'delivered' |
+  'installed' |
+  'working' |
+  'maintenance' |
+  'brokenAwaitingRepair' |
+  'brokenBeingRepaired' |
+  'retired' |
+  'decomissioned' |
+  'removed';
 
 //  END:  Enums
 // --------------------------------------------------------
