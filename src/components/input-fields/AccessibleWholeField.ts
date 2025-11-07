@@ -134,6 +134,8 @@ export class AccessibleWholeField extends FocusableInside {
   @state()
   _value : string | number = '';
 
+  _focusTarget : HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null | undefined = null;
+
   //  END:  state
   // ------------------------------------------------------
   // START: public methods
@@ -142,6 +144,16 @@ export class AccessibleWholeField extends FocusableInside {
     this._invalid = true;
     this._errorMsg = message;
     this._innerClass.error = 'error';
+  }
+
+  focus(): void {
+    if (this._focusTarget === null) {
+      this._focusTarget = this.shadowRoot?.querySelector('input, select, textarea');
+    }
+
+    if (this._focusTarget instanceof HTMLElement) {
+      this._focusTarget.focus();
+    }
   }
 
   //  END:  public methods
