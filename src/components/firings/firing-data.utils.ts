@@ -370,4 +370,38 @@ export const isBeforeToday = (when : ISO8601) => {
   console.groupEnd();
 
   return (now > when);
+};
+
+export const getLastLogEntry = (log : IFiringLogEntry[]) : IFiringLogEntry | null => {
+  const output = log.slice(-1);
+
+  return (output[0] !== undefined)
+    ? output[0]
+    : null;
+};
+
+export const sortLogByTime = <T extends IFiringLogEntry>(log : T[], reverse : boolean = false) : T[] => {
+  const output = [...log];
+
+  let less = -1;
+  let more = 1;
+
+  if (reverse === true) {
+    less = 1;
+    more = -1;
+  }
+
+  output.sort((a : IFiringLogEntry, b : IFiringLogEntry) : number => {
+    if (a.time < b.time) {
+      return less;
+    }
+
+    if (a.time > b.time) {
+      return more;
+    }
+
+    return 0;
+  });
+
+  return output;
 }
