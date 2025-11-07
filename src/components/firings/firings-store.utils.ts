@@ -386,11 +386,9 @@ export const updateFiringList : FActionHandler = async (
     if (newData === null) {
       newData = { ...(thing as TFiringsListItem) };
 
-      for (const key of Object.keys(newData)) {
-        console.log(`newData.${key}:`, (newData as IIdObject)[key]);
-        console.log(`data.${key}:`, (data as IIdObject)[key]);
+      for (const key of Object.keys(data as IIdObject)) {
         if (firingListItemPropIsSameType(newData, data as IIdObject, key)) {
-          (newData as IIdObject)[key] = (data as IIdObject).key
+          (newData as IIdObject)[key] = (data as IIdObject)[key]
         }
       }
     }
