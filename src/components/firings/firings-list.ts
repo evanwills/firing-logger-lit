@@ -9,6 +9,7 @@ import { tableStyles } from '../../assets/css/tables.css.ts';
 import '../lit-router/router-link.ts';
 import '../shared-components/firing-logger-modal.ts';
 import './new-firing-selector.ts';
+import { isTFiringsListItem } from "../../types/firing.type-guards.ts";
 
 @customElement('firings-list')
 export class FiringsList extends LoggerElement {
@@ -56,7 +57,11 @@ export class FiringsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  _setDataThen(data : TFiringsListItem[]) : void {
+  _setDataThen(data : unknown) : void {
+    if (!Array.isArray(data) || !data.every(isTFiringsListItem)) {
+      throw new TypeError('Data returned from store for firings list is not valid');
+    }
+
     data.sort((a : TFiringsListItem, b : TFiringsListItem) : number => {
       if (a.start !== null && b.start !== null) {
         if (a.start < b.start) {
