@@ -34,7 +34,12 @@ export class AccessibleTextField extends AccessibleWholeField {
   _regexes : {[key:string]:RegExp} = {
     name: /\w[\w\- .,\(\):\&\/]{2,49}/,
     title: /[\w\d][\d\w\- .,\(\):\&\/\+]{2,49}/,
-  }
+    anyPhone: /^0[234578]\d{8}$/,
+    fixedphone: /^0[2378]\d{8}$/,
+    mobilephone: /^0[45]\d{8}$/,
+    intphone: /^\+\d{8-14}$/,
+    email: /^[a-zA-Z\d]+[\-a-zA-Z\d_.']*@[\-a-zA-Z\d]+(?:\.[\-a-zA-Z\d]+)*(?:\.[a-zA-Z]+){1,2}$/,
+  };
 
   _knownTypes = new Set(['name', 'title']);
 
