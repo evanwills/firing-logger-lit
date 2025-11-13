@@ -1,3 +1,5 @@
+import type { ISO8601 } from "../types/data-simple.d.ts";
+
 const twoDigit = (input: number) : string => {
   return (input < 10)
     ? `0${input.toString()}`
@@ -17,7 +19,7 @@ export const getISO8601date = (when : number | Date | null) : string => {
     + `${twoDigit(_when.getDate())}`;
 }
 
-export const getISO8601time = (when : number | Date | null) : string => {
+export const getISO8601time = (when : number | Date | null, noSeconds : boolean = false) : string => {
   if (when === null) {
     return '';
   }
@@ -25,12 +27,15 @@ export const getISO8601time = (when : number | Date | null) : string => {
     ? new Date(when)
     : when;
 
+  const seconds = (noSeconds === true)
+    ? ''
+    : `:${twoDigit(_when.getSeconds())}`;
+
   return `${twoDigit(_when.getHours())}:`
-    + `${twoDigit(_when.getMinutes())}:`
-    + `${twoDigit(_when.getSeconds())}`;
+    + `${twoDigit(_when.getMinutes())}${seconds}`;
 }
 
-export const getLocalISO8601 = (when : number | Date | null) : string => {
+export const getLocalISO8601 = (when : number | Date | null, noSeconds : boolean = false) : string => {
   if (when === null) {
     return '';
   }
@@ -56,7 +61,18 @@ export const getLocalISO8601 = (when : number | Date | null) : string => {
     sign += `${twoDigit(hours)}:${twoDigit(minutes)}`;
   }
 
-  return `${getISO8601date(_when)}T${getISO8601time(_when)}${sign}`;
+  return `${getISO8601date(_when)}T${getISO8601time(_when, noSeconds)}${sign}`;
+}
+
+export const getIsoDateTimeSimple = (when : number | Date | null) : string => {
+  if (when === null) {
+    return '';
+  }
+  const _when = (typeof when === 'number')
+    ? new Date(when)
+    : when;
+
+  return `${getISO8601date(_when)}T${getISO8601time(_when, true)}`;
 }
 
 export const getHumanDate = (date: Date) : string => date.toLocaleDateString();
@@ -72,3 +88,9 @@ export const dateOrNull = (input : unknown) : Date | null => {
 
   return null;
 };
+
+export const humanDateTime = (input : ISO8601) : string => new Date(input)
+  .toLocaleString()
+  .replace(':00 ', ' ');
+
+export const makeISO8601simple = (input : ISO8601) : ISO8601 => input.replace(/(?::\d{2})?(?:\.\d+)?(?:[+-]\d{2}:\d{2}|GMT[+-]\d{2}:\d{2}|GMT)$/, '');

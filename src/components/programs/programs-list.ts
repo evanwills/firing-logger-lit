@@ -1,12 +1,14 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import type { IKeyValue } from '../../types/data-simple.d.ts';
-import type { TProgramListData, TProgramListRenderItem } from '../../types/programs.d.ts';
-import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import type { TProgramListRenderItem } from '../../types/programs.d.ts';
+import { isTProgramListRenderItem } from "../../types/program.type-guards.ts";
+import { isIkeyValue } from "../../types/data.type-guards.ts";
 import { getValFromKey, orderedEnum2enum } from '../../utils/data.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
-import { tableStyles } from './programs.css.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import '../lit-router/router-link.ts';
 
 @customElement('programs-list')
@@ -52,15 +54,35 @@ export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: helper methods
 
-  async _setProgramList(data : TProgramListData) : Promise<void> {
-    this._programList = await data.list;
-    this._firingTypes = orderedEnum2enum(await data.types);
-    this._ready = true;
+  async _setProgramList(data : unknown) : Promise<void> {
+    console.group('<program-list>._setProgramList()');
+    console.log('data:', data);
+    console.log('this._programList (before):', this._programList);
+    console.log('this._firingTypes (before):', this._firingTypes);
+    console.log('this._ready (before):', this._ready);
+
+    if (isIkeyValue(data)) {
+      console.log('data.list:', data.list);
+      const tmp : unknown = await data.list;
+      console.log('tmp:', tmp);
+      if (Array.isArray(tmp)
+        && tmp.every((item : unknown) => isTProgramListRenderItem(item))
+      ) {
+        this._programList = tmp;
+      }
+
+      this._firingTypes = orderedEnum2enum(await data.types);
+      this._ready = true;
+    }
+    console.log('this._ready (after):', this._ready);
+    console.log('this._firingTypes (after):', this._firingTypes);
+    console.log('this._programList (after):', this._programList);
+    console.groupEnd();
   }
 
   _setData(_ok : boolean) : void {
     if (this.store !== null) {
-      this.store.dispatch('getProgramsList', '', true)
+      this.store.dispatch('getProgramsList', '')
         .then(this._setProgramList.bind(this))
         .catch(storeCatch);
     }
@@ -113,12 +135,19 @@ export class ProgramsList extends LoggerElement {
           : ''
         }
       </th>
-      <td>${getValFromKey(this._firingTypes, data.type)}</td>
+      <td>
+        ${getValFromKey(this._firingTypes, data.type)}
+        <span class="sm-only">${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</span>
+        <span class="sm-only">(Cone: ${data.cone})</span>
+      </td>
       <td><router-link
         data-uid="${data.kilnID}"
         url="/kilns/${data.kilnURL}"
         label="${data.kilnName}"></router-link></td>
-      <td>${this._tConverter(data.maxTemp)}&deg;${this._tUnit}</td>
+      <td>
+        ${this._tConverter(data.maxTemp)}&deg;${this._tUnit}
+        <span class="sm-only">(Cone: ${data.cone})</span>
+      </td>
       <td>${data.cone}</td>
       <td>${hoursFromSeconds(data.duration)}</td>
     </tr>`;
@@ -132,7 +161,7 @@ export class ProgramsList extends LoggerElement {
     return html`<h2>Programs list</h2>
 
     ${(this._ready === true && this._programList !== null)
-      ? html`<table>
+      ? html`<div class="table-wrap"><table>
         <thead>
           <tr>
             <th>Name</th>
@@ -146,7 +175,7 @@ export class ProgramsList extends LoggerElement {
         <tbody>
           ${this._programList.map(this._renderTableRow.bind(this))}
         </tbody>
-      </table>`
+      </table></div>`
       : html`<p>Loading...</p>`
     }`;
   }
@@ -155,7 +184,22 @@ export class ProgramsList extends LoggerElement {
   // ------------------------------------------------------
   // START: styles
 
-  static styles = css`${tableStyles}`;
+  static styles = css`
+    ${tableStyles}
+
+    tr > :nth-child(4), tr > :nth-child(5) {
+      display: none;
+    }
+
+    @container contained-table (inline-size >= 24rem) {
+      tr > :nth-child(4) { display: table-cell; }
+      tr > :nth-child(2) .sm-only { display: none; }
+    }
+
+    @container contained-table (inline-size >= 28rem) {
+      tr > :nth-child(5) { display: table-cell; }
+      tr > :nth-child(4) .sm-only { display: none; }
+    }`;
 
 //  END:  styles
 // ------------------------------------------------------

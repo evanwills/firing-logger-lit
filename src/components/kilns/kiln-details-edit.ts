@@ -22,7 +22,6 @@ import '../input-fields/accessible-radio-field.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
-import '../input-fields/accessible-textarea-field.ts';
 import '../input-fields/read-only-field.ts';
 import '../shared-components/not-allowed.ts'
 import '../shared-components/alert-block.ts'
@@ -139,8 +138,8 @@ export class KilnDetailsEdit extends KilnDetails {
     if (emptyOrNull(output.type) && this._kilnOptions.length > 0 ) {
       output.type = this._kilnOptions[0].value;
     }
-    if (emptyOrNull(output.openingType) && this._kilnOpeningOptions.length > 0 ) {
-      output.openingType = this._kilnOpeningOptions[0].value;
+    if (emptyOrNull(output.loadingType) && this._kilnOpeningOptions.length > 0 ) {
+      output.loadingType = this._kilnOpeningOptions[0].value;
     }
     output.serviceState = 'working';
     output.readyState = 'available';
@@ -295,11 +294,11 @@ export class KilnDetailsEdit extends KilnDetails {
         </li>
         <li>
           <accessible-select-field
-            field-id="openingType"
+            field-id="loadingType"
             label="Loading method"
             .options=${this._kilnOpeningOptions}
             required
-            value="${this._openingType}"
+            value="${this._loadingType}"
             @change=${this.handleGenericChange}></accessible-select-field>
         </li>
         <li>
@@ -575,7 +574,7 @@ export class KilnDetailsEdit extends KilnDetails {
       this._kilnOptions = enumToOptions(this._kilnTypes);
     }
     if (this._kilnOpeningOptions.length === 0) {
-      this._kilnOpeningOptions = enumToOptions(this._kilnOpeningTypes);
+      this._kilnOpeningOptions = enumToOptions(this._kilnloadingTypes);
     }
 
     const detailName : string | null = (this.mode === 'edit')

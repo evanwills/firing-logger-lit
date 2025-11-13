@@ -1,13 +1,29 @@
-import type { FConverter, ID } from "../../types/data-simple.d.ts";
+import type { FConverter, ID, IIdObject, ISO8601 } from "../../types/data-simple.d.ts";
 import type { TSvgPathItem } from "../../types/data.d.ts";
-import { isID, isIdObject, isISO8601, isTCone } from "../../types/data.type-guards.ts";
-import { isFiringLogEntry, isTFiringLogEntryType, isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
-import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, TFiringLogEntryType, TNewLogEntryOptions } from "../../types/firings.d.ts";
+import {
+  isID,
+  isIdObject,
+  isISO8601,
+  isTCone,
+} from "../../types/data.type-guards.ts";
+import {
+  isFiringLogEntry,
+  isTFiringLogEntryType,
+  isTFiringState,
+  isTTemperatureState,
+} from "../../types/firing.type-guards.ts";
+import type {
+  IFiringLogEntry,
+  IStateLogEntry,
+  ITempLogEntry,
+  INewLogEntryOptions,
+  INewFiringStateLogEntryOptions,
+} from "../../types/firings.d.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { emptyOrNull, getUID, isObj } from "../../utils/data.utils.ts";
-import { getLocalISO8601 } from "../../utils/date-time.utils.ts";
+import { emptyOrNull, getUID, isNumMinMax } from "../../utils/data.utils.ts";
+import { getISO8601date, getLocalISO8601 } from "../../utils/date-time.utils.ts";
 import { orderOptionsByLabel } from "../../utils/render.utils.ts";
 import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
@@ -27,7 +43,7 @@ const getFiringError = (
   type: string = 'value',
   objType: string = 'firing',
 ) : string | null => {
-  console.log(`firing.${prop}:`, value);
+  console.log(`${objType}.${prop}:`, value);
 
   return `${objType} data is invalid! It does not have a valid `
   + `\`${prop}\` ${type}.`;
@@ -40,106 +56,114 @@ export const validateFiringData = (item: unknown) : string | null => {
     return 'firing data is not an ID object';
   }
 
-  if (isID((item as IFiring).kilnID) === false) {
-    return getFiringError('kilnID', (item as IFiring).kilnID, 'ID');
+  if (isID(item.kilnID) === false) {
+    return getFiringError('kilnID', item.kilnID, 'ID');
   }
 
-  if (isID((item as IFiring).programID) === false) {
-    return getFiringError('programID', (item as IFiring).programID, 'ID');
+  if (isID(item.programID) === false) {
+    return getFiringError('programID', item.programID, 'ID');
   }
 
-  if (isID((item as IFiring).ownerID) === false
-    && (emptyOrNull((item as IFiring).ownerID)
-    || (item as IFiring).ownerID !== 'unknown')
+  if (isID(item.ownerID) === false
+    && (emptyOrNull(item.ownerID)
+    || item.ownerID !== 'unknown')
   ) {
-    return getFiringError('ownerID', (item as IFiring).ownerID, 'ID');
+    return getFiringError('ownerID', item.ownerID, 'ID');
   }
 
-  if (isID((item as IFiring).diaryID) === false && (item as IFiring).diaryID !== null) {
-    console.log('isID((item as IFiring).diaryID):', isID((item as IFiring).diaryID));
-    console.log('(item as IFiring).diaryID !== null:', (item as IFiring).diaryID !== null);
-    console.log('typeof (item as IFiring).diaryID:', typeof (item as IFiring).diaryID);
-    return getFiringError('diaryID', (item as IFiring).diaryID, 'ID or Null');
+  if (isID(item.diaryID) === false && item.diaryID !== null) {
+    console.log('isID(item.diaryID):', isID(item.diaryID));
+    console.log('item.diaryID !== null:', item.diaryID !== null);
+    console.log('typeof item.diaryID:', typeof item.diaryID);
+    return getFiringError('diaryID', item.diaryID, 'ID or Null');
   }
 
-  if (isTFiringType((item as IFiring).firingType) === false) {
-    return getFiringError('firingType', (item as IFiring).firingType, 'Firing type');
+  if (isTFiringType(item.firingType) === false) {
+    return getFiringError('firingType', item.firingType, 'Firing type');
   }
 
-  if (isISO8601((item as IFiring).scheduledStart) === false && (item as IFiring).scheduledStart !== null) {
-    return getFiringError('scheduledStart', (item as IFiring).scheduledStart, 'ISO8601 or null');
+  if (isISO8601(item.scheduledStart) === false && item.scheduledStart !== null) {
+    return getFiringError('scheduledStart', item.scheduledStart, 'ISO8601 or null');
   }
 
-  if (isISO8601((item as IFiring).scheduledEnd) === false && (item as IFiring).scheduledEnd !== null) {
-    return getFiringError('scheduledEnd', (item as IFiring).scheduledEnd, 'ISO8601 or null');
+  if (isISO8601(item.scheduledEnd) === false && item.scheduledEnd !== null) {
+    return getFiringError('scheduledEnd', item.scheduledEnd, 'ISO8601 or null');
   }
-  if (isISO8601((item as IFiring).scheduledCold) === false && (item as IFiring).scheduledCold !== null) {
-    return getFiringError('scheduledCold', (item as IFiring).scheduledCold, 'ISO8601 or null');
-  }
-
-  if (isISO8601((item as IFiring).packed) === false && (item as IFiring).packed !== null) {
-    return getFiringError('packed', (item as IFiring).packed, 'ISO8601 or null');
+  if (isISO8601(item.scheduledCold) === false && item.scheduledCold !== null) {
+    return getFiringError('scheduledCold', item.scheduledCold, 'ISO8601 or null');
   }
 
-  if (isISO8601((item as IFiring).actualStart) === false && (item as IFiring).actualStart !== null) {
-    return getFiringError('actualStart', (item as IFiring).actualStart, 'ISO8601 or null');
+  if (isISO8601(item.packed) === false && item.packed !== null) {
+    return getFiringError('packed', item.packed, 'ISO8601 or null');
   }
 
-  if (isISO8601((item as IFiring).actualEnd) === false && (item as IFiring).actualEnd !== null) {
-    return getFiringError('actualEnd', (item as IFiring).actualEnd, 'ISO8601 or null');
+  if (isISO8601(item.actualStart) === false && item.actualStart !== null) {
+    return getFiringError('actualStart', item.actualStart, 'ISO8601 or null');
   }
 
-  if (isISO8601((item as IFiring).actualCold) === false && (item as IFiring).actualCold !== null) {
-    return getFiringError('actualCold', (item as IFiring).actualCold, 'ISO8601 or null');
+  if (isISO8601(item.actualEnd) === false && item.actualEnd !== null) {
+    return getFiringError('actualEnd', item.actualEnd, 'ISO8601 or null');
   }
 
-  if (isISO8601((item as IFiring).unpacked) === false && (item as IFiring).unpacked !== null) {
-    return getFiringError('unpacked', (item as IFiring).unpacked, 'ISO8601 or null');
+  if (isISO8601(item.actualCold) === false && item.actualCold !== null) {
+    return getFiringError('actualCold', item.actualCold, 'ISO8601 or null');
   }
 
-  if (typeof (item as IFiring).maxTemp !== 'number') {
-    return getFiringError('maxTemp', (item as IFiring).maxTemp, 'number');
+  if (isISO8601(item.unpacked) === false && item.unpacked !== null) {
+    return getFiringError('unpacked', item.unpacked, 'ISO8601 or null');
   }
 
-  if (isTCone((item as IFiring).cone) === false) {
-    return getFiringError('cone', (item as IFiring).cone, 'TCone');
+  if (typeof item.maxTemp !== 'number') {
+    return getFiringError('maxTemp', item.maxTemp, 'number');
   }
 
-  if (isTFiringState((item as IFiring).firingState) === false) {
-    return getFiringError('firingState', (item as IFiring).firingState, 'string');
+  if (isTCone(item.cone) === false) {
+    return getFiringError('cone', item.cone, 'TCone');
   }
 
-  if (isTTemperatureState((item as IFiring).temperatureState) === false) {
-    return getFiringError('temperatureState', (item as IFiring).temperatureState, 'string');
+  if (typeof item.active === 'boolean') {
+    return getFiringError('active', item.active, 'boolean');
+  }
+
+  if (typeof item.isRetro === 'boolean') {
+    return getFiringError('isRetro', item.isRetro, 'boolean');
+  }
+
+  if (isTFiringState(item.firingState) === false) {
+    return getFiringError('firingState', item.firingState, 'string');
+  }
+
+  if (isTTemperatureState(item.temperatureState) === false) {
+    return getFiringError('temperatureState', item.temperatureState, 'string');
   }
 
   return null;
 };
 
 export const validateFiringLogEntry = (item: unknown) : string | null => {
-  if (isObj(item) === false) {
+  if (isIdObject(item) === false) {
     console.log('item:', item);
     console.log('isFiringLogEntry(item):', isFiringLogEntry(item));
     return 'firing temp log data is not a firing log entry object';
   }
 
-  if (isID((item as IFiringLogEntry).id) === false) {
-    return getFiringError('id', (item as IFiringLogEntry).id, 'string', 'IFiringLogEntry');
+  if (isID(item.id) === false) {
+    return getFiringError('id', item.id, 'string', 'IFiringLogEntry');
   }
-  if (isID((item as IFiringLogEntry).firingID) === false) {
-    return getFiringError('firingID', (item as IFiringLogEntry).firingID, 'string', 'IFiringLogEntry');
+  if (isID(item.firingID) === false) {
+    return getFiringError('firingID', item.firingID, 'string', 'IFiringLogEntry');
   }
-  if (isID((item as IFiringLogEntry).userID) === false) {
-    return getFiringError('userID', (item as IFiringLogEntry).userID, 'string', 'IFiringLogEntry');
+  if (isID(item.userID) === false) {
+    return getFiringError('userID', item.userID, 'string', 'IFiringLogEntry');
   }
-  if (isISO8601((item as IFiringLogEntry).time) === false) {
-    return getFiringError('time', (item as IFiringLogEntry).time, 'string', 'IFiringLogEntry');
+  if (isISO8601(item.time) === false) {
+    return getFiringError('time', item.time, 'string', 'IFiringLogEntry');
   }
-  if (isTFiringLogEntryType((item as IFiringLogEntry).type) === false) {
-    return getFiringError('type', (item as IFiringLogEntry).type, 'string', 'IFiringLogEntry');
+  if (isTFiringLogEntryType(item.type) === false) {
+    return getFiringError('type', item.type, 'string', 'IFiringLogEntry');
   }
-  if (typeof (item as IFiringLogEntry).notes !== 'string' &&  (item as IFiringLogEntry).notes !== null) {
-    return getFiringError('notes', (item as IFiringLogEntry).notes, 'string or null', 'IFiringLogEntry');
+  if (typeof item.notes !== 'string' &&  item.notes !== null) {
+    return getFiringError('notes', item.notes, 'string or null', 'IFiringLogEntry');
   }
 
   return null;
@@ -180,13 +204,82 @@ export const validateStateLogEntry = (item: unknown) : string | null => {
     return getFiringError('type', (item as IStateLogEntry).type, 'string', 'IStateLogEntry');
   }
   if (isTFiringState((item as IStateLogEntry).newState) === false) {
-    return getFiringError('timeOffset', (item as IStateLogEntry).newState, 'string', 'IStateLogEntry');
+    return getFiringError('newState', (item as IStateLogEntry).newState, 'string', 'IStateLogEntry');
   }
   if (isTFiringState((item as IStateLogEntry).oldState) === false) {
     return getFiringError('tempExpected', (item as IStateLogEntry).oldState, 'string', 'IStateLogEntry');
   }
 
   return null;
+}
+
+export const validateTFiringsListItem = (item: unknown) : string | null => {
+  if (isIdObject(item) === false) {
+    console.log('item:', item);
+    console.log('isIdObject(item):', isIdObject(item));
+    return 'firing list item is not an ID object';
+  }
+
+  if (!isID(item.programID)) {
+    return getFiringError('programID', item.programID, 'string', 'TFiringsListItem');
+  }
+  if (!isNonEmptyStr(item.programName)) {
+    return getFiringError('programName', item.programName, 'string', 'TFiringsListItem');
+  }
+  if (!isNonEmptyStr(item.programURL)) {
+    return getFiringError('programURL', item.programURL, 'string', 'TFiringsListItem');
+  }
+  if (!isID(item.kilnID)) {
+    return getFiringError('kilnID', item.kilnID, 'string', 'TFiringsListItem');
+  }
+  if (!isNonEmptyStr(item.kilnName)) {
+    return getFiringError('kilnName', item.kilnName, 'string', 'TFiringsListItem');
+  }
+  if (!isNonEmptyStr(item.kilnURL)) {
+    return getFiringError('programURL', item.kilnURL, 'string', 'TFiringsListItem');
+  }
+  if (!isTFiringType(item.firingType)) {
+    return getFiringError('firingType', item.firingType, 'string', 'TFiringsListItem');
+  }
+  if (!isNumMinMax(item.maxTemp, 0, 1500)) {
+    return getFiringError('maxTemp', item.maxTemp, 'number', 'TFiringsListItem');
+  }
+  if (!isTCone(item.cone)) {
+    return getFiringError('cone', item.cone, 'string', 'TFiringsListItem');
+  }
+  if (typeof (item.active) !== 'boolean') {
+    return getFiringError('active', item.active, 'boolean', 'TFiringsListItem');
+  }
+  if (!isTFiringState(item.firingState)) {
+    return getFiringError('firingState', item.firingState, 'string', 'TFiringsListItem');
+  }
+  if (!isISO8601(item.start) && item.start !== null) {
+    return getFiringError('start', item.start, 'string or null', 'TFiringsListItem');
+  }
+  if (!isISO8601(item.end) && item.end !== null) {
+    return getFiringError('end', item.end, 'string or null', 'TFiringsListItem');
+  }
+
+  return null;
+};
+
+export const firingListItemPropIsSameType = (
+  oldData : IIdObject,
+  newData : IIdObject,
+  key: string,
+) : boolean => {
+  if (typeof oldData[key] === typeof newData[key]) {
+    return true;
+  }
+
+  if ((key === 'start' || key === 'end')
+    && oldData[key] === null
+    && typeof newData[key] === 'string'
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 export const tempLog2SvgPathItem = (item : ITempLogEntry) : TSvgPathItem => ({
@@ -229,7 +322,7 @@ export const getProgramsByTypeAndKiln = (
 export const getNewLogEntry = (
   firingID: ID,
   userID: ID,
-  { type, timeOffset, notes } : TNewLogEntryOptions,
+  { type, timeOffset, notes } : INewLogEntryOptions,
 ) : IFiringLogEntry => ({
   id: getUID(),
   firingID,
@@ -245,3 +338,70 @@ export const getNewLogEntry = (
     ? notes
     : null,
 });
+
+export const getStatusLogEntry = (
+  firingID: ID,
+  userID: ID,
+  options : INewFiringStateLogEntryOptions,
+) : IStateLogEntry => {
+  return {
+    ...getNewLogEntry(
+      firingID,
+      userID,
+      {
+        ...options,
+        type: 'firingState',
+      },
+    ),
+    oldState: options.oldState,
+    newState: options.newState,
+  } as IStateLogEntry;
+};
+
+export const isBeforeToday = (when : ISO8601) => {
+  console.group('isBeforeToday()');
+  console.log('when:', when);
+  const now = getISO8601date(new Date());
+  const _when = when.substring(0, 10)
+
+  console.log('now:', now);
+  console.log('_when:', _when);
+  console.log('now > _when', now > _when);
+  console.groupEnd();
+
+  return (now > when);
+};
+
+export const getLastLogEntry = (log : IFiringLogEntry[]) : IFiringLogEntry | null => {
+  const output = log.slice(-1);
+
+  return (output[0] !== undefined)
+    ? output[0]
+    : null;
+};
+
+export const sortLogByTime = <T extends IFiringLogEntry>(log : T[], reverse : boolean = false) : T[] => {
+  const output = [...log];
+
+  let less = -1;
+  let more = 1;
+
+  if (reverse === true) {
+    less = 1;
+    more = -1;
+  }
+
+  output.sort((a : IFiringLogEntry, b : IFiringLogEntry) : number => {
+    if (a.time < b.time) {
+      return less;
+    }
+
+    if (a.time > b.time) {
+      return more;
+    }
+
+    return 0;
+  });
+
+  return output;
+}

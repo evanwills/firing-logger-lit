@@ -1,8 +1,8 @@
 import { html, type TemplateResult } from 'lit';
-import type { IFiringStep, IProgram } from '../../types/programs.d.ts';
+import type { IProgramStep } from '../../types/programs.d.ts';
 import type { CDataStoreClass } from '../../types/store.d.ts';
 import type { FConverter, ID } from '../../types/data-simple.d.ts';
-import { isID, isISO8601, isTCone } from '../../types/data.type-guards.ts';
+import { isID, isIkeyValue, isISO8601, isTCone } from '../../types/data.type-guards.ts';
 import { isNumMinMax, isObj } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
@@ -45,10 +45,10 @@ const getProgramError = (
 }
 
 /**
- * Validates that the provided data conforms to the IFiringStep
+ * Validates that the provided data conforms to the IProgramStep
  * interface.
  *
- * @param step Data that should conform to IFiringStep interface
+ * @param step Data that should conform to IProgramStep interface
  *
  * @returns Error string if data is invalid, otherwise null.
  */
@@ -57,19 +57,19 @@ export const validateProgramStep = (step: unknown) : string | null => {
     return 'step is not an object';
   }
 
-  if (isNumMinMax((step as IFiringStep).order, 1, 100) === false) {
-    return getProgramError('order', (step as IFiringStep).order, 'number', 'step');
+  if (isNumMinMax((step as IProgramStep).order, 1, 100) === false) {
+    return getProgramError('order', (step as IProgramStep).order, 'number', 'step');
   }
-  const obj = `step[${(step as IFiringStep).order}]`;
+  const obj = `step[${(step as IProgramStep).order}]`;
 
-  if (isNumMinMax((step as IFiringStep).endTemp, 0, 1500) === false) {
-    return getProgramError('endTemp', (step as IFiringStep).endTemp, 'number', obj);
+  if (isNumMinMax((step as IProgramStep).endTemp, 0, 1500) === false) {
+    return getProgramError('endTemp', (step as IProgramStep).endTemp, 'number', obj);
   }
-  if (isNumMinMax((step as IFiringStep).rate, 0, 500) === false) {
-    return getProgramError('rate', (step as IFiringStep).rate, 'number', obj);
+  if (isNumMinMax((step as IProgramStep).rate, 0, 500) === false) {
+    return getProgramError('rate', (step as IProgramStep).rate, 'number', obj);
   }
-  if (isNumMinMax((step as IFiringStep).hold, 0, 1440) === false) {
-    return getProgramError('hold', (step as IFiringStep).hold, 'number', obj);
+  if (isNumMinMax((step as IProgramStep).hold, 0, 1440) === false) {
+    return getProgramError('hold', (step as IProgramStep).hold, 'number', obj);
   }
 
   return null;
@@ -83,61 +83,61 @@ export const validateProgramStep = (step: unknown) : string | null => {
  * @returns Error string if data is invalid, otherwise null.
  */
 export const validateProgramData = (program: unknown) : string | null => {
-  if (Object.prototype.toString.call(program) !== '[object Object]') {
+  if (!isIkeyValue(program)) {
     return 'program is not an object';
   }
 
-  if (isID((program as IProgram).id) === false) {
-    return getProgramError('id', (program as IProgram).id, 'string');
+  if (isID(program.id) === false) {
+    return getProgramError('id', program.id, 'string');
   }
 
-  if (isID((program as IProgram).kilnID) === false) {
-    return getProgramError('kilnID', (program as IProgram).kilnID, 'string');
+  if (isID(program.kilnID) === false) {
+    return getProgramError('kilnID', program.kilnID, 'string');
   }
 
-  if (isNumMinMax((program as IProgram).controllerProgramID, 1, 100) === false) {
-    return getProgramError('controllerProgramID', (program as IProgram).controllerProgramID, 'number');
+  if (isNumMinMax(program.controllerProgramID, 1, 100) === false) {
+    return getProgramError('controllerProgramID', program.controllerProgramID, 'number');
   }
 
-  if (isTFiringType((program as IProgram).type) === false) {
-    return getProgramError('type', (program as IProgram).type, 'string');
+  if (isTFiringType(program.type) === false) {
+    return getProgramError('type', program.type, 'string');
   }
 
   if (isNonEmptyStr(program, 'name') === false) {
-    return getProgramError('name', (program as IProgram).name, 'string');
+    return getProgramError('name', program.name, 'string');
   }
 
   if (isNonEmptyStr(program, 'urlPart') === false) {
-    return getProgramError('urlPart', (program as IProgram).urlPart, 'string');
+    return getProgramError('urlPart', program.urlPart, 'string');
   }
 
-  if (typeof (program as IProgram).description !== 'string') {
-    return getProgramError('description', (program as IProgram).description, 'string');
+  if (typeof program.description !== 'string') {
+    return getProgramError('description', program.description, 'string');
   }
 
-  if (isNumMinMax((program as IProgram).maxTemp, 0, 1500) === false) {
-    return getProgramError('maxTemp', (program as IProgram).maxTemp, 'number');
+  if (isNumMinMax(program.maxTemp, 0, 1500) === false) {
+    return getProgramError('maxTemp', program.maxTemp, 'number');
   }
 
-  if (isTCone((program as IProgram).cone) === false) {
-    return getProgramError('cone', (program as IProgram).cone, 'string');
+  if (isTCone(program.cone) === false) {
+    return getProgramError('cone', program.cone, 'string');
   }
 
-  if (isNumMinMax((program as IProgram).duration, 1, 864000) === false) {
-    return getProgramError('duration', (program as IProgram).duration, 'number');
+  if (isNumMinMax(program.duration, 1, 864000) === false) {
+    return getProgramError('duration', program.duration, 'number');
   }
 
-  if (isNumMinMax((program as IProgram).averageRate, 0, 500) === false) {
-    return getProgramError('averageRate', (program as IProgram).averageRate, 'number');
+  if (isNumMinMax(program.averageRate, 0, 500) === false) {
+    return getProgramError('averageRate', program.averageRate, 'number');
   }
 
-  if (Array.isArray((program as IProgram).steps) === false
-    || (program as IProgram).steps.length === 0
+  if (Array.isArray(program.steps) === false
+    || program.steps.length === 0
   ) {
-    return getProgramError('steps', (program as IProgram).steps, 'Array of objects');
+    return getProgramError('steps', program.steps, 'Array of objects');
   }
 
-  for (const step of (program as IProgram).steps) {
+  for (const step of program.steps) {
     const tmp = validateProgramStep(step);
 
     if (tmp !== null) {
@@ -146,48 +146,92 @@ export const validateProgramData = (program: unknown) : string | null => {
     }
   }
 
-  if (isISO8601((program as IProgram).created) === false) {
-    return getProgramError('created', (program as IProgram).created, 'string');
+  if (isISO8601(program.created) === false) {
+    return getProgramError('created', program.created, 'string');
   }
 
-  if (isID((program as IProgram).createdBy) === false) {
-    return getProgramError('createdBy', (program as IProgram).createdBy, 'string');
+  if (isID(program.createdBy) === false) {
+    return getProgramError('createdBy', program.createdBy, 'string');
   }
 
-  if (isNumMinMax((program as IProgram).version, 0, 1000) === false) {
-    return getProgramError('version', (program as IProgram).version, 'number');
+  if (isNumMinMax(program.version, 0, 1000) === false) {
+    return getProgramError('version', program.version, 'number');
   }
 
-  if (typeof (program as IProgram).superseded !== 'boolean') {
-    return getProgramError('superseded', (program as IProgram).superseded, 'boolean');
+  if (typeof program.superseded !== 'boolean') {
+    return getProgramError('superseded', program.superseded, 'boolean');
   }
 
-  if ((program as IProgram).supersedesID !== null && isID((program as IProgram).supersedesID) === false) {
-    return getProgramError('supersedesID', (program as IProgram).supersedesID, 'string and is not NULL');
+  if (program.supersedesID !== null && isID(program.supersedesID) === false) {
+    return getProgramError('supersedesID', program.supersedesID, 'string and is not NULL');
   }
 
-  if ((program as IProgram).supersededByID !== null && isID((program as IProgram).supersededByID) === false) {
-    return getProgramError('supersededByID', (program as IProgram).supersededByID, 'string and is not NULL');
+  if (program.supersededByID !== null && isID(program.supersededByID) === false) {
+    return getProgramError('supersededByID', program.supersededByID, 'string and is not NULL');
   }
 
-  if (isNumMinMax((program as IProgram).useCount, 0, 10000) === false) {
-    return getProgramError('useCount', (program as IProgram).useCount,'number');
+  if (isNumMinMax(program.useCount, 0, 10000) === false) {
+    return getProgramError('useCount', program.useCount,'number');
   }
 
-  if (typeof (program as IProgram).deleted !== 'boolean') {
-    return getProgramError('deleted', (program as IProgram).deleted, 'boolean');
+  if (typeof program.deleted !== 'boolean') {
+    return getProgramError('deleted', program.deleted, 'boolean');
   }
 
-  if (typeof (program as IProgram).locked !== 'boolean') {
-    return getProgramError('locked', (program as IProgram).locked, 'boolean');
+  if (typeof program.locked !== 'boolean') {
+    return getProgramError('locked', program.locked, 'boolean');
+  }
+
+  return null;
+};
+
+export const validateTProgramListRenderItem = (obj : unknown) : string | null => {
+  if (!isIkeyValue(obj)) {
+    return 'Input is not an object'
+  }
+  if (!isID(obj.programID)) {
+    return getProgramError('programID', obj.programID, 'string', 'ProgramListRenderItem');
+  }
+  if (!isNonEmptyStr(obj.programName)) {
+    return getProgramError('programName', obj.programName, 'string', 'ProgramListRenderItem');
+  }
+  if (!isNonEmptyStr(obj.programURL)) {
+    return getProgramError('programURL', obj.programURL, 'string', 'ProgramListRenderItem');
+  }
+  if (!isID(obj.kilnID)) {
+    return getProgramError('kilnID', obj.kilnID, 'string', 'ProgramListRenderItem');
+  }
+  if (!isNonEmptyStr(obj.kilnName)) {
+    return getProgramError('kilnName', obj.kilnName, 'string', 'ProgramListRenderItem');
+  }
+  if (!isNonEmptyStr(obj.kilnURL)) {
+    return getProgramError('kilnURL', obj.kilnURL, 'string', 'ProgramListRenderItem');
+  }
+  if (!isNonEmptyStr(obj.type)) {
+    return getProgramError('kilnURL', obj.type, 'string', 'ProgramListRenderItem');
+  }
+  if (isNumMinMax(obj.maxTemp, 0, 1500) === false) {
+    return getProgramError('maxTemp', obj.maxTemp, 'number', 'ProgramListRenderItem');
+  }
+  if (!isNonEmptyStr(obj.cone) && /^0?[1-3]?\d$/.test(obj.cone)) {
+    return getProgramError('cone', obj.cone, 'string', 'ProgramListRenderItem');
+  }
+  if (isNumMinMax(obj.duration, 0, 8640000) === false) {
+    return getProgramError('duration', obj.duration, 'number', 'ProgramListRenderItem');
+  }
+  if (typeof obj.superseded !== 'boolean') {
+    return getProgramError('superseded', obj.superseded, 'boolean', 'ProgramListRenderItem');
+  }
+  if (typeof obj.redirect !== 'boolean') {
+    return getProgramError('redirect', obj.redirect, 'boolean', 'ProgramListRenderItem');
   }
 
   return null;
 };
 
 export const stepsAreDifferent = (
-  newStep : IFiringStep,
-  oldStep : IFiringStep,
+  newStep : IProgramStep,
+  oldStep : IProgramStep,
 ) : boolean => {
   const keys = ['order', 'endTemp', 'rate', 'hold'];
 
@@ -231,7 +275,7 @@ export const redirectProgram = (
 };
 
 export const renderFiringSteps = (
-  steps : IFiringStep[],
+  steps : IProgramStep[],
   converter : FConverter,
   unit : string,
 ) : TemplateResult => {

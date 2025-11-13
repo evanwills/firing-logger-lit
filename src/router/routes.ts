@@ -15,8 +15,8 @@ import '../components/firings/firing-details.ts';
 import '../components/users/user-details.ts';
 import '../components/users/user-details-edit.ts';
 
-const home = ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<kilns-list
-  filters=${_SEARCH} .store=${_STORE}></kilns-list>`
+const home = ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<firings-list
+  filters=${_SEARCH} .store=${_STORE}></firings-list>`
 
 const authChange = ({ _DATA } : IRouteArgs) : TemplateResult => {
   const msg = (typeof _DATA.userName === 'string')

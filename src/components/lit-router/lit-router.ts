@@ -1,3 +1,4 @@
+// deno-lint-ignore-file ban-unused-ignore
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { IKeyScalar, IKeyValue } from '../../types/data-simple.d.ts';
@@ -199,17 +200,17 @@ export class LitRouter extends LitElement {
 
     // console.group('<lit-router>.connectedCallback()');
 
-    this.addEventListener(
+    this.addEventListener( // deno-lint-ignore no-explicit-any
       'litrouternav',
-      this.handleRouteLink.bind(this)
+      (e: Event) => this.handleRouteLink(e as CustomEvent)
     );
-    this.addEventListener(
+    this.addEventListener( // deno-lint-ignore no-explicit-any
       'litrouterrewrite',
-      this.handleRouteRewrite.bind(this)
+      (e: Event) => this.handleRouteRewrite(e as CustomEvent)
     );
-    this.addEventListener(
+    this.addEventListener( // deno-lint-ignore no-explicit-any
       'litrouterrefresh',
-      this.handleRefresh.bind(this)
+      (e: Event) => this.handleRefresh(e as CustomEvent)
     );
 
     globalThis.addEventListener('popstate', this.handlePopState);

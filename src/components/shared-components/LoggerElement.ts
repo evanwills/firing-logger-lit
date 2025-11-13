@@ -172,7 +172,7 @@ export class LoggerElement extends LitElement {
   }
 
 
-  _setUser(user: TUser | null) : void {
+  _setUser(user: unknown) : void {
     // console.group('LoggerElement._setUser()');
     // console.log('user:', user);
 

@@ -1,13 +1,15 @@
 import { css, html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { LoggerElement } from '..//shared-components/LoggerElement.ts';
-import type { IKeyValue } from '../../types/data-simple.d.ts';
+import type { IKeyStr, IKeyValue } from '../../types/data-simple.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
-import { tableStyles } from '../programs/programs.css.ts';
-import '../lit-router/router-link.ts';
+import { isKiln } from "../../types/kiln.type-guards.ts";
+import { isIKeyStr } from "../../types/data.type-guards.ts";
 import { getValFromKey } from '../../utils/data.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
+import { LoggerElement } from '../shared-components/LoggerElement.ts';
+import '../lit-router/router-link.ts';
 
 @customElement('kilns-list')
 export class KilnsList extends LoggerElement {
@@ -46,26 +48,32 @@ export class KilnsList extends LoggerElement {
     _kilnList : IKiln[] = [];
 
     @state()
-    _kilnTypes : IKeyValue = {};
+    _kilnTypes : IKeyStr = {};
 
     @state()
-    _fuelSources : IKeyValue = {};
+    _fuelSources : IKeyStr = {};
 
   //  END:  state
   // ------------------------------------------------------
   // START: helper methods
 
-  _setKilnTypes(data : IKeyValue) : void {
-    this._kilnTypes = data;
+  _setKilnTypes(data : unknown) : void {
+    if (isIKeyStr(data)) {
+      this._kilnTypes = data;
+    }
   }
 
-  _setFuelSources(data : IKeyValue) : void {
-    this._fuelSources = data;
+  _setFuelSources(data : unknown) : void {
+    if (isIKeyStr(data)) {
+      this._fuelSources = data;
+    }
   }
 
-  _setKilnList(data : IKiln[]) : void {
-    this._kilnList = data;
-    this._ready = true;
+  _setKilnList(data : unknown) : void {
+    if (Array.isArray(data) && data.every((kiln : unknown) => isKiln(kiln))) {
+      this._kilnList = data;
+      this._ready = true;
+    }
   }
 
   _setData(_ok : boolean) : void {
@@ -144,7 +152,7 @@ export class KilnsList extends LoggerElement {
     return html`<h2>Kiln${studio}</h2>
 
     ${(this._ready === true && this._kilnList !== null)
-      ? html`<table>
+      ? html`<div class="table-wrap"><table>
         <thead>
           <tr>
             <th>Name</th>
@@ -158,7 +166,7 @@ export class KilnsList extends LoggerElement {
         <tbody>
           ${this._kilnList.map(this._renderTableRow.bind(this))}
         </tbody>
-      </table>
+      </table></div>
 
       ${(this._userHasAuth(2) === true)
         ? html`<p><router-link
@@ -176,10 +184,17 @@ export class KilnsList extends LoggerElement {
   // START: styles
 
   static styles = css`${tableStyles}
-  .studio {
-    font-family: var(--subtitle-feature-font);
-    font-size: var(--subtitle-feature-font-size, 2rem);
-  }`;
+    .studio {
+      font-family: var(--subtitle-feature-font);
+      font-size: var(--subtitle-feature-font-size, 2rem);
+    }
+    tr > :nth-child(n+4) {
+      display: none;
+    }
+
+    @container contained-table (inline-size >= 25rem) {
+      tr > :nth-child(n+4) { display: table-cell; }
+    }`;
 
 //  END:  styles
 // ------------------------------------------------------

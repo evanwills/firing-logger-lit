@@ -1,6 +1,6 @@
 import type { FConverter } from "../types/data-simple.d.ts";
 import type { TSvgPathItem } from '../types/data.d.ts';
-import type { IFiringStep } from '../types/programs.d.ts';
+import type { IProgramStep } from '../types/programs.d.ts';
 import { round } from './numeric.utils.ts';
 
 /**
@@ -73,7 +73,7 @@ export const hoursFromSeconds = (input : number) : string => {
     : `${hrs}h ${mins}m`;
 };
 
-export const durationFromSteps = (steps: IFiringStep[]) : number => {
+export const durationFromSteps = (steps: IProgramStep[]) : number => {
   let output : number = 0;
   let lastEndTemp : number = 0;
 
@@ -96,7 +96,7 @@ export const durationFromSteps = (steps: IFiringStep[]) : number => {
   return Math.round(output);
 };
 
-export const durationFromStep = (steps: IFiringStep[], i : number) : string => {
+export const durationFromStep = (steps: IProgramStep[], i : number) : string => {
   let diff : number = 0;
 
   if (steps.length > 0) {
@@ -110,7 +110,7 @@ export const durationFromStep = (steps: IFiringStep[], i : number) : string => {
   return hoursFromSeconds((diff / steps[i].rate) * 3600 + (steps[i].hold * 60));
 }
 
-export const maxTempFromSteps = (steps: IFiringStep[]) : number => {
+export const maxTempFromSteps = (steps: IProgramStep[]) : number => {
   if (steps.length === 0) {
     return 0;
   }
@@ -124,7 +124,7 @@ export const maxTempFromSteps = (steps: IFiringStep[]) : number => {
 };
 
 export const plotPointsFromSteps = (
-  steps: IFiringStep[],
+  steps: IProgramStep[],
 ) : TSvgPathItem[] => {
   const output : TSvgPathItem[] = [];
   let lastEndTemp : number = 0;

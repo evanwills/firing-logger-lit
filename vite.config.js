@@ -35,7 +35,10 @@ export default {
           );
           next();
         });
-      }
-    }
-  ]
-}
+      },
+    },
+  ],
+  server: {
+    port: 5181,
+  },
+};

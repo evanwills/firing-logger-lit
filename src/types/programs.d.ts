@@ -1,7 +1,7 @@
 import type { SVGTemplateResult, TemplateResult } from 'lit';
 import type { ID, IKeyValue, ILinkObject, IIdObject, ISO8601, TCone, IOrderedEnum } from './data-simple.d.ts';
 
-export interface IFiringStep extends IKeyValue {
+export interface IProgramStep extends IKeyValue {
   order: number,   // step order in program, starting at 1
   endTemp: number, // positive degrees
   rate: number,    // degrees per hour
@@ -24,7 +24,7 @@ export interface IProgram extends IKeyValue, IIdObject, IIdNameObject, ILinkObje
   cone: TCone,
   duration: number,
   averageRate: number,
-  steps: IFiringStep[],
+  steps: IProgramStep[],
   created: ISO8601,
   createdBy: ID,
   version: number,

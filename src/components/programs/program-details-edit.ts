@@ -1,7 +1,7 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import type { IFiringStep } from '../../types/programs.d.ts';
+import type { IProgramStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
 import type { ID, IKeyValue } from '../../types/data-simple.d.ts';
 import type { TStoreAction } from '../../types/store.d.ts';
@@ -200,7 +200,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
   addStep() : void {
     // console.group('<program-details-edit>.addStep()');
     // console.log('this._tmpSteps (before):', this._tmpSteps);
-    const newStep : IFiringStep = {
+    const newStep : IProgramStep = {
       order: this._tmpSteps.length + 1,
       endTemp: 0,
       rate: 0,
@@ -231,7 +231,7 @@ export class ProgramDetailsEdit extends ProgramDetails {
     // console.log('this._maxTemp (before):', this._maxTemp);
     const target = event.target as HTMLInputElement;
     const i = parseInt(target.dataset.stepOrder as string, 10);
-    const field = target.dataset.field as keyof IFiringStep;
+    const field = target.dataset.field as keyof IProgramStep;
 
     // console.log('i:', i);
     // console.log('field:', field);
@@ -349,15 +349,16 @@ export class ProgramDetailsEdit extends ProgramDetails {
             @keyup=${this.handleChange}></accessible-text-field>
         </li>
         <li>
-          <accessible-textarea-field
+          <accessible-text-field
             field-id="description"
             label="Description"
             maxlength="255"
+            multi-line
             .placeholder=${ifDefined(this._getPlace(this._description))}
             validate-on-keyup
             .value=${ifDefined(this._getVal(this._description, ''))}
             @change=${this.handleChange}
-            @keyup=${this.handleChange}></accessible-textarea-field>
+            @keyup=${this.handleChange}></accessible-text-field>
         </li>
         <li>
           <accessible-select-field

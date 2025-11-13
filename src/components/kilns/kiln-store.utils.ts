@@ -206,7 +206,7 @@ const getBasicKilnData = (
   return {
     EfiringTypes: db.read('EfiringType', '', true),
     EfuelSources: db.read('EfuelSource', '', true),
-    EkilnOpeningTypes: db.read('EkilnOpeningType', '', true),
+    EkilnLoadingTypes: db.read('EkilnLoadingType', '', true),
     EkilnTypes: db.read('EkilnType', '', true),
     kiln: (selector !== '')
       ? db.read('kilns', selector)

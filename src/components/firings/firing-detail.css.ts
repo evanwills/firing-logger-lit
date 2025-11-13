@@ -2,7 +2,7 @@ import { css } from 'lit';
 
 export default css`
 table td, tbody th { text-align: center; }
-.firing-details { --label-width: 9.5rem; }
+.firing-details { --label-width: 8rem; }
 .log-list {
   container-name: log-list;
   container-type: inline-size;

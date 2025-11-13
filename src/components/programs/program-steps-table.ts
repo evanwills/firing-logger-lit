@@ -1,9 +1,9 @@
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { IFiringStep } from "../../types/programs.d.ts";
-import type { FConverter } from "../../types/data-simple.d.ts";
-import { durationFromStep, x2x } from "../../utils/conversions.utils.ts";
-import { tableStyles } from "./programs.css.ts";
+import type { IProgramStep } from '../../types/programs.d.ts';
+import type { FConverter } from '../../types/data-simple.d.ts';
+import { durationFromStep, x2x } from '../../utils/conversions.utils.ts';
+import { tableStyles } from '../../assets/css/tables.css.ts';
 
 @customElement('program-steps-table')
 export class ProgramStepsTable extends LitElement {
@@ -11,7 +11,7 @@ export class ProgramStepsTable extends LitElement {
   // START: properties/attributes
 
   @property({ type: Array, attribute: 'steps' })
-  steps : IFiringStep[] = [];
+  steps : IProgramStep[] = [];
 
   @property({ type: Function, attribute: 'converter' })
   converter : FConverter | null = null;

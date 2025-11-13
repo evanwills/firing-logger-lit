@@ -82,7 +82,7 @@ export const getKilnPropOptions = (prop : string) : string[] => {
       return ['electric', 'gas', 'wood', 'oil', 'other'];
     case 'type':
       return ['general', 'raku', 'platter', 'black', 'annagamma'];
-    case 'openingType':
+    case 'loadingType':
       return ['front', 'top', 'tophat', 'trolley'];
     case 'readyState':
       return ['unavailable', 'available', 'packing', 'packed', 'heating', 'holding', 'cooling', 'cold', 'unpacking', 'pricing', 'emptied'];
@@ -159,7 +159,7 @@ export const validateKilnData = (kiln: unknown) : string | null => {
     return getKilnError('type', 'string');
   }
 
-  if (isValidKilnEnumValue(kiln, 'openingType') === false) {
+  if (isValidKilnEnumValue(kiln, 'loadingType') === false) {
     return getKilnError('type', 'string');
   }
 
@@ -279,12 +279,12 @@ export const validateTKilnDetails = (obj: unknown) : string | null => {
     return 'TKilnDetails.EfuelSources is not a Promise';
   }
 
-  if (typeof (obj as TKilnDetails).EkilnOpeningTypes === 'undefined') {
-    return 'TKilnDetails.EkilnOpeningType is UNDEFINED';
+  if (typeof (obj as TKilnDetails).EkilnLoadingTypes === 'undefined') {
+    return 'TKilnDetails.EkilnLoadingType is UNDEFINED';
   }
 
-  if ((obj as TKilnDetails).EkilnOpeningTypes instanceof Promise === false) {
-    return 'TKilnDetails.EkilnOpeningType is not a Promise';
+  if ((obj as TKilnDetails).EkilnLoadingTypes instanceof Promise === false) {
+    return 'TKilnDetails.EkilnLoadingType is not a Promise';
   }
 
   if (typeof (obj as TKilnDetails).EkilnTypes === 'undefined') {

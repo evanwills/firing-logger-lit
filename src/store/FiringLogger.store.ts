@@ -114,7 +114,7 @@ const upgradeSchema : IDBPupgrade = (
       kilns.createIndex('model', 'model', { unique: false });
       kilns.createIndex('name', 'name', { unique: true });
       kilns.createIndex('onglaze', 'onglaze', { unique: false });
-      kilns.createIndex('openingType', 'openingType', { unique: false });
+      kilns.createIndex('loadingType', 'loadingType', { unique: false });
       kilns.createIndex('raku', 'raku', { unique: false });
       kilns.createIndex('readyState', 'readyState', { unique: false });
       kilns.createIndex('saggar', 'saggar', { unique: false });
@@ -306,7 +306,7 @@ const upgradeSchema : IDBPupgrade = (
     initEnum(db, 'EfiringType');
     initEnum(db, 'EfiringState');
     initEnum(db, 'EfuelSource');
-    initEnum(db, 'EkilnOpeningType');
+    initEnum(db, 'EkilnLoadingType');
     initEnum(db, 'EkilnReadyStatus');
     initEnum(db, 'EkilnServiceStatus');
     initEnum(db, 'EkilnStatusLogEntryType');
@@ -367,7 +367,7 @@ const migrateData : IDBPmigrate = async (
       populateEmptyEnumSlice(db, data.EfiringState, 'EfiringState');
       populateEmptyEnumSlice(db, data.EfiringType, 'EfiringType');
       populateEmptyEnumSlice(db, data.EfuelSource, 'EfuelSource');
-      populateEmptyEnumSlice(db, data.EkilnOpeningType, 'EkilnOpeningType');
+      populateEmptyEnumSlice(db, data.EkilnLoadingType, 'EkilnLoadingType');
       populateEmptyEnumSlice(db, data.EkilnReadyStatus, 'EkilnReadyStatus');
       populateEmptyEnumSlice(db, data.EkilnServiceStatus, 'EkilnServiceStatus');
       populateEmptyEnumSlice(db, data.EkilnStatusLogEntryType, 'EkilnStatusLogEntryType');

@@ -8,18 +8,58 @@ import type {
   IKeyValue,
   ILinkObject,
   ISO8601,
+  ISO8601Time,
   TCone,
   IOrderedEnum,
 } from "./data-simple.d.ts";
 
+/**
+ * Checks if the input is a valid ID string (12 character string).
+ *
+ * @param id some value that may be an ID
+ *
+ * @returns TRUE if valid. FALSE otherwise
+ */
 export const isID = (id : unknown) : id is string => (typeof id === 'string' && id.length === 12);
 
+/**
+ * Checks if the input is a valid ISO8601 date-time string.
+ *
+ * @param input
+ *
+ * @returns TRUE if valid. FALSE otherwise
+ */
 export const isISO8601 = (input : unknown) : input is ISO8601 => (typeof input === 'string'
-  && /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{3})?(?:Z|[-+]\d{2}:\d{2})?)?$/i.test(input));
+  && /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{3})?)?(?:Z|[-+]\d{2}:\d{2})?)?$/i.test(input));
 
+/**
+ * Checks if the input is a valid ISO8601 time string.
+ *
+ * @param input
+ *
+ * @returns TRUE if valid. FALSE otherwise
+ */
+export const isTime = (input : unknown) : input is ISO8601Time => (typeof input === 'string'
+  && /^\d{2}:\d{2}(?::\d{2}(?:\.\d{3})?)?$/.test(input));
+
+/**
+ * Checks if the input is a valid pyrometric cone name.
+ *
+ * @param input
+ *
+ * @returns TRUE if valid. FALSE otherwise
+ */
 export const isTCone = (input: unknown) : input is TCone => (typeof input === 'string'
   && /^0?[12]?\d$/.test(input));
 
+/**
+ * Checks if the input is a valid IKeyValue object.
+ * (An object where every key is a string).
+ *
+ * @param item
+ *
+ * @returns TRUE if valid. FALSE otherwise
+ */
 export const isIkeyValue = (item : unknown) : item is IKeyValue => {
   if ((Object.prototype.toString.call(item) !== '[object Object]')) {
     return false;

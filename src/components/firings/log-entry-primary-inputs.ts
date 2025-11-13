@@ -11,9 +11,6 @@ import './log-temp-input.ts';
 import './log-time-input.ts';
 import { dialogStyles } from '../../assets/css/dialog.css.ts';
 
-/**
- * An example element.
- */
 @customElement('log-entry-input')
 export class LogEntryInput extends LitElement {
   // ------------------------------------------------------

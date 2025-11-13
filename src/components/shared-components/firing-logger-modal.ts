@@ -15,6 +15,9 @@ export class FiringLoggerModal extends LitElement {
   @property({ type: String, attribute: 'heading'})
   heading : string = '';
 
+  @property({ type: Boolean, attribute: 'no-open'})
+  noOpen : boolean = false;
+
   //  END:  properties/attributes
   // -----------------------------
   // START: state
@@ -47,6 +50,19 @@ export class FiringLoggerModal extends LitElement {
     return null;
   }
 
+  _dispatchOpen() : void {
+    this.dispatchEvent(
+      new CustomEvent(
+        'open',
+        {
+          bubbles: true,
+          composed: true,
+          detail: this.open,
+        },
+      ),
+    );
+  }
+
   //  END:  helper methods
   // ------------------------------------------------------
   // START: public methods
@@ -62,6 +78,7 @@ export class FiringLoggerModal extends LitElement {
         tmp.showModal();
       }
       this.open = tmp.open;
+      this._dispatchOpen();
     }
     // console.log('this._open (after):', this.open);
     // console.log('this._modal (after):', this._modal);
@@ -77,6 +94,7 @@ export class FiringLoggerModal extends LitElement {
       }
 
       this.open = tmp.open;
+      this._dispatchOpen();
     }
   }
 
@@ -111,17 +129,17 @@ export class FiringLoggerModal extends LitElement {
   // START: main render method
 
   render() : TemplateResult | string {
-    console.group('<firing-modal>.render()');
-    if (emptyOrNull(this.btnText)) {
+    // console.group('<firing-modal>.render()');
+    if (emptyOrNull(this.btnText) && this.noOpen === false) {
       throw new Error(
         '<firing-modal> Expects btn-text attribute to be a non-empty string',
       );
     }
 
-    console.log('this.heading:', this.heading);
-    console.log('this.open:', this.open);
-    console.log('this.btnText:', this.btnText);
-    console.groupEnd();
+    // console.log('this.heading:', this.heading);
+    // console.log('this.open:', this.open);
+    // console.log('this.btnText:', this.btnText);
+    // console.groupEnd();
 
     let cls = 'open-btn';
 
@@ -130,7 +148,10 @@ export class FiringLoggerModal extends LitElement {
     }
 
     return html`
-      <button class="${cls}" type="button" @click=${this.showModal}>${this.btnText}</button>
+      ${(this.noOpen !== true)
+        ? html`<button class="${cls}" type="button" @click=${this.showModal}>${this.btnText}</button>`
+        : ''
+      }
 
       <dialog class="wrap">
         <button aria-hidden class="bg-close" type="button" @click=${this.close}>
@@ -166,8 +187,30 @@ export class FiringLoggerModal extends LitElement {
     dialog::backdrop {
       background-color: var(--backdrop, rgba(0, 0, 0, 0.7));
     }
-
     .open-btn {
+      background-color: var(--rl-btn-bg-success);
+      border: var(--rl-btn-border);
+      border-radius: var(--rl-btn-border-radius);
+      color: var(--rl-btn-colour);
+      display: var(--rl-btn-display);
+      font-family: var(--rl-btn-font-family);
+      font-size: var(--rl-btn-font-size);
+      font-weight: var(--rl-btn-font-weight);
+      letter-spacing: var(--rl-btn-letter-spacing, inherit);
+      line-height: var(--rl-btn-line-height);
+      padding: var(--rl-btn-padding);
+      text-decoration: var(--rl-btn-text-decoration);
+      text-transform: var(--rl-btn-text-transform);
+      text-underline-offset: var(--rl-btn-text-underline-offset, 0.1rem);
+      white-space: var(--rl-btn-white-space, normal);
+      word-spacing: var(--rl-btn-word-spacing, normal);
+    }
+    .open-btn:hover:not(.disabled),
+    .open-btn:focus:not(.disabled) {
+      background-color: var(--rl-btn-bg-hover-success);
+      color: var(--rl-btn-hover-colour);
+      text-decoration: var(--rl-btn-hover-text-decoration);
+      cursor: pointer;
     }
     .open-btn--open {
       opacity: 0;
@@ -199,6 +242,7 @@ export class FiringLoggerModal extends LitElement {
 
     .bg-close:hover {
       background-color: transparent;
+      border: none;
       opacity: 1;
     }
 

@@ -17,6 +17,8 @@
       "unpacked": null,
       "maxTemp": 1000,
       "cone": "06",
+      "isRetro": false,
+      "active": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -38,6 +40,8 @@
       "unpacked": null,
       "maxTemp": 1200,
       "cone": "6",
+      "active": false,
+      "isRetro": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -59,6 +63,8 @@
       "unpacked": null,
       "maxTemp": 1000,
       "cone": "06",
+      "active": false,
+      "isRetro": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -80,6 +86,8 @@
       "unpacked": null,
       "maxTemp": 1000,
       "cone": "06",
+      "active": false,
+      "isRetro": false,
       "firingState": "empty",
       "firingActiveState": "normal",
       "temperatureState": "n/a"
@@ -1223,6 +1231,7 @@
       "bisque": true,
       "black": false,
       "brand": "Tetlow",
+      "coolingMultiplier": 2,
       "depth": 600,
       "fuel": "electric",
       "glaze": true,
@@ -1234,7 +1243,7 @@
       "model": "Tetlow",
       "name": "Tetlow (kiln 1)",
       "onglaze": true,
-      "openingType": "front",
+      "loadingType": "front",
       "raku": false,
       "readyState": "unavailable",
       "saggar": true,
@@ -1252,6 +1261,7 @@
       "bisque": true,
       "black": false,
       "brand": "Woodrow",
+      "coolingMultiplier": 2,
       "depth": 600,
       "fuel": "electric",
       "glaze": true,
@@ -1263,7 +1273,7 @@
       "model": "My Big Kiln 310L",
       "name": "Large Woodrow (kiln 1)",
       "onglaze": true,
-      "openingType": "front",
+      "loadingType": "front",
       "raku": false,
       "readyState": "available",
       "saggar": false,
@@ -1281,6 +1291,7 @@
       "bisque": true,
       "black": false,
       "brand": "Woodrow",
+      "coolingMultiplier": 2,
       "depth": 440,
       "fuel": "electric",
       "glaze": true,
@@ -1292,7 +1303,7 @@
       "model": "My Studio Kiln 115L",
       "name": "Small Woodrow (kiln 2)",
       "onglaze": true,
-      "openingType": "front",
+      "loadingType": "front",
       "raku": false,
       "readyState": "available",
       "saggar": false,
@@ -1603,13 +1614,13 @@
     },
     {
       "order": 4,
-      "value": "cancelled",
-      "label": "Cancelled"
+      "value": "active",
+      "label": "Active"
     },
     {
       "order": 5,
-      "value": "active",
-      "label": "Active"
+      "value": "cancelled",
+      "label": "Cancelled"
     },
     {
       "order": 6,
@@ -1711,7 +1722,7 @@
       "label": "Other"
     }
   ],
-  "EkilnOpeningType": [
+  "EkilnLoadingType": [
     {
       "order": 0,
       "value": "front",
@@ -1725,12 +1736,34 @@
     {
       "order": 2,
       "value": "tophat",
-      "label": "Top hat"
+      "label": "Tophat - kiln can be loaded from two or more sides"
     },
     {
       "order": 3,
       "value": "trolley",
-      "label": "Trolley"
+      "label": "Trolley - kiln can be loaded from three or more sides"
+    }
+  ],
+  "EkilnShape": [
+    {
+      "order": 0,
+      "value": "box",
+      "label": "Box"
+    },
+    {
+      "order": 1,
+      "value": "barrel",
+      "label": "Barrel"
+    },
+    {
+      "order": 2,
+      "value": "arch",
+      "label": "Simple arch (circumferential)"
+    },
+    {
+      "order": 3,
+      "value": "catenary",
+      "label": "Catenary arch"
     }
   ],
   "EkilnReadyStatus": [

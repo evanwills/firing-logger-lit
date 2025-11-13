@@ -1,5 +1,5 @@
 import OrtonConeChart from '../../public/data/orton-cones.json' with { type: 'json' };
-import type { IFiringStep } from '../types/programs.d.ts';
+import type { IProgramStep } from '../types/programs.d.ts';
 
 type TConeData = {
   cone: string,
@@ -41,7 +41,7 @@ export const getCone = (temp : number, rate : number) : string => {
   return '[UNKNOWN]';
 };
 
-export const getTopCone = (steps: IFiringStep[], maxTemp : number) : string => {
+export const getTopCone = (steps: IProgramStep[], maxTemp : number) : string => {
   let startTemp = 0;
 
   for (const step of steps) {
