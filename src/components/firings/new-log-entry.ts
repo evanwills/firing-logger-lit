@@ -147,6 +147,9 @@ export class NewLogEntry extends LitElement {
 
   _ISOgetter : FGetISO8601 = getISO8601time;
 
+  @state()
+  _timeField : TemplateResult | string = '';
+
 
   //  END:  state
   // ------------------------------------------------------
@@ -226,18 +229,29 @@ export class NewLogEntry extends LitElement {
   }
 
   _findAndFocusError(field: string) : void {
-    console.group('<new-log-entry>._findAndFocusError()');
-    console.log('field:', field);
-    console.log('#log-${field}:', `#log-${field}`);
-    console.log(`"#log-firingState" === "#log-${field}":`, '[field-id=log-firingState]' === `#log-${field}`);
-    console.log('this:', this);
-    console.log('this.shadowRoot:', this.shadowRoot);
+    // console.group('<new-log-entry>._findAndFocusError()');
+    // console.log('field:', field);
+    // console.log('#log-${field}:', `#log-${field}`);
+    // console.log(`"#log-firingState" === "#log-${field}":`, '[field-id=log-firingState]' === `#log-${field}`);
+    // console.log('this:', this);
+    // console.log('this.shadowRoot:', this.shadowRoot);
     const target = this.shadowRoot?.querySelector(`[field-id=log-${field}]`);
-    console.log('target:', target);
+    // console.log('target:', target);
     if (target instanceof AccessibleWholeField) {
       target.focus();
     }
-    console.groupEnd();
+    // console.groupEnd();
+  }
+
+  _getTemporalField() : TemplateResult {
+    return html`<li><accessible-number-field
+      block-before="22"
+      field-id="log-actualTemp"
+      label="Temperature"
+      unit="°${this.unit}"
+      step="1"
+      required
+      @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
   }
 
   //  END:  helper methods
@@ -311,6 +325,8 @@ export class NewLogEntry extends LitElement {
           this._setRequireNotes(`${prefix}you are cancelling this firing`);
         } else if (value === 'aborted') {
           this._setRequireNotes(`${prefix}this firing was aborted`);
+        } else if (value === 'active') {
+          this._timeField = this._getTemporalField();
         } else {
           this._setRequireNotes();
         }
@@ -434,18 +450,12 @@ export class NewLogEntry extends LitElement {
 
     switch (this._type) {
       case 'temp':
-        output = html`<li><accessible-number-field
-            block-before="22"
-            field-id="log-actualTemp"
-            label="Temperature"
-            unit="°${this.unit}"
-            step="1"
-            required
-            @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
+        output = this._getTemporalField();
         break;
 
       case 'firingState':
-        output = html`<li><accessible-select-field
+        output = html`
+          <li><accessible-select-field
             block-before="22"
             field-id="log-firingState"
             label="Firing"
@@ -453,7 +463,8 @@ export class NewLogEntry extends LitElement {
             value="${this.type}"
             required
             show-empty
-            @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
+            @change=${this.setSpecific.bind(this)}></accessible-select-field></li>
+          ${this._timeField}`;
         break;
 
       case 'responsible':

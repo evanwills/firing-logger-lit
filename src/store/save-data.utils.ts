@@ -35,19 +35,28 @@ export const saveChangeOnHold = (
  */
 export const getInitialData = (changes : IIdObject, original : IIdObject) : IIdObject | string => {
   const initial : IIdObject = { id: original.id };
+  const nullableProps = new Set(['actualStart', 'actualEnd', 'actualCold', 'installDate', 'packed', 'unpaced']);
 
   for (const key of Object.keys(changes)) {
     const iType = typeof original[key];
     if (iType === 'undefined') {
-      return `Kiln update contains unknown property: "${key}"`;
+      console.warn(`Update contains unknown property: "${key}"`);
+      continue
     }
 
     if (typeof changes[key] !== iType
-      && (key !== 'installDate'
+      && (nullableProps.has(key) === false
       || (changes[key] !== null
       && isNonEmptyStr(changes[key]) === false))
     ) {
-      return `Kiln update contains unknown property: "${key}"`;
+      console.group(`Type mismatch for property: "${key}"`);
+      console.error(`Update contains property: "${key}" with invalid type`);
+      console.log('expected type:', iType);
+      console.log('received type:', typeof changes[key]);
+      console.log('original value:', original[key]);
+      console.log('changed value:', changes[key]);
+      console.groupEnd();
+      return `Update contains property: "${key}" with invalid type`;
     }
 
     initial[key] = original[key];

@@ -148,3 +148,4 @@ export const isIOrderedEnumList = (item : unknown) : item is IOrderedEnum[] => (
   Array.isArray(item)
   && item.every(isIOrderedEnum)
 );
+

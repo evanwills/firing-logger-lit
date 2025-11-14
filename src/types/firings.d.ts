@@ -294,6 +294,7 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
 
 export interface INewLogEntryOptions {
   timeOffset?: number | null,
+  time?: ISO8601,
   type?: TFiringLogEntryType,
   notes?: string | null,
 };

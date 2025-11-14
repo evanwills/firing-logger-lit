@@ -1,4 +1,3 @@
-import { type IDBPDatabase } from 'idb';
 import type {
   ID,
   IIdObject,
@@ -10,7 +9,7 @@ import type {
 import type { FActionHandler, IUpdateHelperData, TUpdateHelperOptions } from '../types/store.d.ts';
 import type { CDataStoreClass } from '../types/store.d.ts';
 import type { TUserNowLaterAuth } from '../types/users.d.ts';
-import { isID, isIdObject, isStrNum } from "../types/data.type-guards.ts";
+import { isID, isStrNum } from "../types/data.type-guards.ts";
 import { userCanNowLater } from '../components/users/user-data.utils.ts';
 import { isNonEmptyStr } from '../utils/string.utils.ts';
 import type { FIsThing, FValidateThing } from "../types/data.d.ts";
@@ -523,16 +522,16 @@ export const addUpdateHelper = async (
     validateThing,
   } : TUpdateHelperOptions = {},
 ) : Promise<IUpdateHelperData> => {
-  console.group('addUpdateHelper()');
-  console.log('_method:', _method);
-  console.log('storeName:', storeName);
-  console.log('itemType:', itemType);
-  console.log('action:', action);
-  console.log('allowed:', allowed);
-  console.log('newData:', newData);
-  console.log('id:', id);
-  console.log('permissionLevel:', permissionLevel);
-  console.log('type:', type);
+  // console.group('addUpdateHelper()');
+  // console.log('_method:', _method);
+  // console.log('storeName:', storeName);
+  // console.log('itemType:', itemType);
+  // console.log('action:', action);
+  // console.log('allowed:', allowed);
+  // console.log('newData:', newData);
+  // console.log('id:', id);
+  // console.log('permissionLevel:', permissionLevel);
+  // console.log('type:', type);
   const _permissionLevel : number = (typeof permissionLevel === 'number')
     ? permissionLevel
     : 2;
@@ -562,15 +561,15 @@ export const addUpdateHelper = async (
 
   const { user, hold, msg } : TUserNowLaterAuth = await userCanNowLater(db, _allowed, _permissionLevel);
   let thing = null;
-  console.log('_permissionLevel:', _permissionLevel);
-  console.log('_allowed:', _allowed);
-  console.log('_action:', _action);
-  console.log('_type:', _type);
-  console.log('_id:', _id);
-  console.log('_newData:', _newData);
-  console.log('user:', user);
-  console.log('hold:', hold);
-  console.log('msg:', msg);
+  // console.log('_permissionLevel:', _permissionLevel);
+  // console.log('_allowed:', _allowed);
+  // console.log('_action:', _action);
+  // console.log('_type:', _type);
+  // console.log('_id:', _id);
+  // console.log('_newData:', _newData);
+  // console.log('user:', user);
+  // console.log('hold:', hold);
+  // console.log('msg:', msg);
 
   if (msg === '') {
     if (user === null) {
@@ -581,32 +580,27 @@ export const addUpdateHelper = async (
     } else {
       if (isNonEmptyStr(_id)) {
         thing = await db.get(storeName, _id);
-        console.log('thing:', thing);
-        console.log('isThing(thing):', isThing(thing));
-        console.log('!isThing(thing):', !isThing(thing));
-        console.log('isThing(thing) === false:', (isThing(thing) === false));
+        // console.log('thing:', thing);
+        // console.log('isThing(thing):', isThing(thing));
+        // console.log('!isThing(thing):', !isThing(thing));
+        // console.log('isThing(thing) === false:', (isThing(thing) === false));
 
         if (isThing(thing) === false) {
+          // console.groupEnd();
           throw new Error(
             `Could not find ${itemType} matching "${_id}" in \`${storeName}\`.`,
           );
         }
-
-        // if (isThing(thing) === false) {
-        //   console.log('isThing(thing) (should be false):', isThing(thing));
-        //   console.groupEnd();
-        //   throw new Error(`Could not find ${itemType} matching "${_id}" in \`${storeName}\`.`);
-        // }
       } else if (_newData !== null && _validateThing !== null && !isThing(_newData)) {
-        console.groupEnd();
+        // console.groupEnd();
         throw new Error (`New data is invalid! ${_validateThing(_newData)}`);
       }
     }
   } else {
-    console.groupEnd();
+    // console.groupEnd();
     throw new Error(`${msg} ${_action} ${itemType} ${_type}`);
   }
 
-  console.groupEnd();
-  return { hold, thing, user };
+  // console.groupEnd();
+  return { hold, thing, user, msg };
 }

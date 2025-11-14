@@ -33,13 +33,14 @@ import { isISO8601 } from '../../types/data.type-guards.ts';
 // import { isStateChangeLog, isRespLog, isTempLog } from '../../types/firing.type-guards.ts';
 import { hoursFromSeconds } from '../../utils/conversions.utils.ts';
 import {
+forceNum,
   getLabelFromOrderedEnum,
   // getUID,
   // getValFromKey,
   orderedEnum2enum,
 } from '../../utils/data.utils.ts';
-import { getLocalISO8601, humanDateTime, makeISO8601simple } from '../../utils/date-time.utils.ts';
-import { getLastLogEntry, getNewLogEntry, getStatusLogEntry, isBeforeToday, sortLogByTime, tempLog2SvgPathItem, validateStateLogEntry } from './firing-data.utils.ts';
+import { getLocalISO8601, humanDateTime } from '../../utils/date-time.utils.ts';
+import { getLastLogEntry, getNewLogEntry, getStatusLogEntry, isBeforeToday, sortLogByTime, tempLog2SvgPathItem } from './firing-data.utils.ts';
 import { enumToOptions, sortOrderedEnum } from '../../utils/lit.utils.ts';
 import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
@@ -275,15 +276,15 @@ export class FiringDetails extends LoggerElement {
   }
 
   _setLogTimeMin(value : ISO8601 | null, force : boolean = false) : void {
-    console.group('<firing-details>._setLogTimeMin()');
-    console.log('value:', value);
-    console.log('this._logTimeMin (before):', this._logTimeMin);
+    // console.group('<firing-details>._setLogTimeMin()');
+    // console.log('value:', value);
+    // console.log('this._logTimeMin (before):', this._logTimeMin);
     if (isISO8601(value) && (this._logTimeMin === '' || force === true)) {
       this._logTimeMin = value;
     }
-    console.log('this._logTimeMin (after):', this._logTimeMin);
-    console.log('isISO8601(this._logTimeMin):', isISO8601(this._logTimeMin));
-    console.groupEnd();
+    // console.log('this._logTimeMin (after):', this._logTimeMin);
+    // console.log('isISO8601(this._logTimeMin):', isISO8601(this._logTimeMin));
+    // console.groupEnd();
   }
 
   _setFiringStateOptions(force : boolean = false) : void {
@@ -571,8 +572,16 @@ export class FiringDetails extends LoggerElement {
     newState : TFiringState,
     activeState : TFiringActiveState | null = null,
   ) : boolean {
-    if (this._firing !== null && this.store !== null && this._firingState !== newState) {
+    // console.group('<firing-details>._handleStateChangeInner()');
+    // console.log('newState:', newState);
+    // console.log('activeState:', activeState);
+    if (this._firing !== null
+      && this._user !== null
+      && this.store !== null
+      && this._firingState !== newState
+    ) {
       const oldState = this._firingState;
+      // console.log('oldState:', oldState);
 
       const change : IIdObject = {
         id: this._firing.id,
@@ -587,7 +596,7 @@ export class FiringDetails extends LoggerElement {
 
       const log = getStatusLogEntry(
         this._firing.id,
-        this._user?.id,
+        this._user.id,
         { newState, oldState, notes: this._logNotes },
       );
 
@@ -715,10 +724,10 @@ export class FiringDetails extends LoggerElement {
   }
 
   _handleEnd(_event : CustomEvent) : void {
-    console.group('<firing-details>._handleEnd()');
-    console.log('this._firingState (before):', this._firingState);
-    console.log('this._logNotes (before):', this._firingState);
-    console.log('this._canEnd (before):', this._firingState);
+    // console.group('<firing-details>._handleEnd()');
+    // console.log('this._firingState (before):', this._firingState);
+    // console.log('this._logNotes (before):', this._firingState);
+    // console.log('this._canEnd (before):', this._firingState);
     if (this._firingState === 'created') {
       // The firing hasn't been saved yet so there's not much to do
       // We'll just send them back to the program page for the
@@ -740,7 +749,7 @@ export class FiringDetails extends LoggerElement {
         `/kilns/${kilnURL}/programs/${programURL}`,
       );
 
-      console.log('this._firingState (after):', this._firingState);
+      // console.log('this._firingState (after):', this._firingState);
       return;
     }
 
@@ -761,14 +770,18 @@ export class FiringDetails extends LoggerElement {
     ) {
       this._toggleConfirmShowModal(false);
     }
-    console.log('this._logNotes (after):', this._firingState);
-    console.log('this._canEnd (after):', this._firingState);
-    console.log('this._firingState (after):', this._firingState);
-    console.groupEnd();
+    // console.log('this._logNotes (after):', this._firingState);
+    // console.log('this._canEnd (after):', this._firingState);
+    // console.log('this._firingState (after):', this._firingState);
+    // console.groupEnd();
   }
 
   _handleFiringStatusUpdate(event : CustomEvent) : void {
+    // console.group('<firing-details>._handleFiringStatusUpdate()');
     const { value, validity } = event.detail;
+    // console.log('event:', event);
+    // console.log('value:', value);
+    // console.log('validity:', validity);
     if (validity.valid === true && isTFiringState(value)) {
       if (value === 'cancelled' || value === 'aborted') {
         this._confirmHeading = `Confirm ${value.replace(/l?ed$/, '')}`;
@@ -782,6 +795,7 @@ export class FiringDetails extends LoggerElement {
           : null,
       );
     }
+    // console.groupEnd();
   }
 
   _handleNotes(event: CustomEvent) : void {
@@ -791,33 +805,40 @@ export class FiringDetails extends LoggerElement {
   }
 
   _handleNewLogEntry(event: CustomEvent) : void {
-    console.group('<firing-details>._handleNewLogEntry()');
-    console.log('event:', event);
-    console.log('event.detail:', event.detail);
-    if (this._firing !== null && this._user !== null) {
+    // console.group('<firing-details>._handleNewLogEntry()');
+    // console.log('event:', event);
+    // console.log('event.detail:', event.detail);
+    // console.log('this._firing !== null:', this._firing !== null);
+    // console.log('this._user !== null:', this._user !== null);
+    if (this.store !== null
+      && this._firing !== null
+      && this._user !== null
+    ) {
       const { firingState, ...detail } = event.detail;
-      console.log('firingState:', firingState);
-      console.log('isNonEmptyStr(firingState):', isNonEmptyStr(firingState));
-      console.log('detail (before):', detail);
-
-      console.log('detail (after):', detail);
-      let resort = false;
+      // console.log('firingState:', firingState);
+      // console.log('isNonEmptyStr(firingState):', isNonEmptyStr(firingState));
+      // console.log('detail:', detail);
+      let reSort = false;
+      let stateTempLog : ITempLogEntry | null = null;
 
       const newEntry = getNewLogEntry(this._firing.id, this._user.id, detail);
+      // console.log('newEntry (before):', newEntry);
 
       if (isISO8601(detail.time)) {
         const last = getLastLogEntry(this._rawLog);
 
         if (last !== null) {
+          // console.log('last.time:', last.time);
           if (last.time < detail.time) {
             this._setLogTimeMin(detail.time, true);
           } else {
-            resort = true;
+            reSort = true;
           }
         } else {
           this._setLogTimeMin(detail.time, true);
         }
       }
+      // console.log('reSort:', reSort);
 
       if (isTFiringState(firingState)) {
         (newEntry as IStateLogEntry).newState = firingState;
@@ -826,27 +847,64 @@ export class FiringDetails extends LoggerElement {
           ? 0
           : null;
       }
-      console.log('newEntry:', newEntry);
-      console.log('isStateChangeLog(newEntry):', isStateChangeLog(newEntry));
-      console.log('validateStateLogEntry(newEntry):', validateStateLogEntry(newEntry));
+      // console.log('newEntry (after):', newEntry);
+      // console.log('isStateChangeLog(newEntry):', isStateChangeLog(newEntry));
+      // console.log('validateStateLogEntry(newEntry):', validateStateLogEntry(newEntry));
 
       this._rawLog.push(newEntry);
 
-      if (resort === true) {
+      if (isTempLog(stateTempLog)) {
+        this._tempLog.push(stateTempLog);
+      }
+
+      if (reSort === true) {
         this._rawLog = sortLogByTime(this._rawLog, this._reverse);
       }
       if (isStateChangeLog(newEntry)) {
+        // console.info('Processing state change log entry');
+        const oldState = this._firingState;
+        // console.log('oldState:', oldState);
+        // console.log('newEntry.newState:', newEntry.newState);
         this._firingState = newEntry.newState;
         this._setFiringStateOptions(true);
 
         const change : IIdObject = { id: this._firing.id, firingState };
+        let temp : number = -1;
 
-        console.log('change (before):', change);
+        // console.log('change (before):', change);
         switch (firingState) {
+          case 'packing':
+            change.active = true;
+            break;
+          case 'ready':
+            if (oldState === 'packing') {
+              this._packed = detail.time;
+              change.packed = detail.time;
+            }
+            change.active = true;
+            break;
           case 'active':
+            change.active = true;
             this._actualStart = detail.time;
             change.start = detail.time;
             change.actualStart = detail.time;
+
+            temp = forceNum(detail.actualTemp, 0);
+            stateTempLog = {
+              ...getNewLogEntry(
+                this._firing.id,
+                this._user.id,
+                { ...detail, timeOffset: 0, type: 'temp' },
+              ),
+              state: 'expected',
+              tempActual: temp,
+              tempExpected: temp,
+              timeOffset: 0,
+            } as ITempLogEntry;
+            // console.log('temp:', temp);
+            // console.log('stateTempLog:', stateTempLog);
+            // console.log('isTempLog(stateTempLog):', isTempLog(stateTempLog));
+            // console.log('validateTempLogEntry(stateTempLog):', validateTempLogEntry(stateTempLog));
             break;
 
           case 'complete':
@@ -859,20 +917,37 @@ export class FiringDetails extends LoggerElement {
             this._actualCold = detail.time;
             change.actualCold = detail.time;
             break;
+          case 'unpacking':
+            this._unpacked = detail.time;
+            change.unpacked = detail.time;
+            break;
+          case 'empty':
+            change.active = false;
+            if (oldState === 'unpacking') {
+              this._unpacked = detail.time;
+              change.unpacked = detail.time;
+            }
+            break;
         }
-        console.log('change (after):', change);
-        this.store?.dispatch('updateFiringList', change);
-        this.store?.dispatch('updateFiringData', change);
+        // console.log('change (after):', change);
+        this.store.dispatch('updateFiringData', change);
+        this.store.dispatch('updateFiringList', change);
       } else if (isTempLog(newEntry)) {
         this._tempLog.push(newEntry);
 
-        if (resort === true) {
+        if (reSort === true) {
           this._tempLog = sortLogByTime(this._tempLog, this._reverse);
         }
       }
-      this.store?.dispatch('addFiringLogEntry', newEntry);
+
+      this.store.dispatch('addFiringLogEntry', newEntry);
+
+      if (isTempLog(stateTempLog)) {
+        // console.info('Dispatching stateTempLog:', stateTempLog);
+        this.store.dispatch('addFiringLogEntry', stateTempLog);
+      }
     }
-    console.groupEnd();
+    // console.groupEnd();
   }
 
   //  END:  event handlers
@@ -898,7 +973,7 @@ export class FiringDetails extends LoggerElement {
       const canViewUser : boolean = this._userHasAuth(1);
 
       if (isTempLog(item) === true) {
-        console.groupEnd();
+        // console.groupEnd();
 
         return renderTempLogEntry(
           item as ITempLogEntry,

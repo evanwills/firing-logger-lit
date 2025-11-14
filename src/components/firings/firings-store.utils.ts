@@ -160,10 +160,17 @@ const saveFiringChanges = (
   changes : IIdObject | null,
   firing : IFiring,
 ) : Promise<IDBValidKey> => {
+  // console.group('saveFiringChanges()');
   const _firing : IIdObject = mergeChanges(changes, firing);
-  const firingError = validateFiringData(_firing);
+  // console.log('_firing:', _firing);
+  // console.log('isIFiring(_firing):', isIFiring(_firing));
+  // console.log('validateFiringData(_firing):', validateFiringData(_firing));
 
-  if (firingError !== null) {
+  if (isIFiring(_firing) === false) {
+    const firingError = validateFiringData(_firing);
+
+    console.error('Firing data is invalid:', firingError);
+    // console.groupEnd();
     return Promise.reject(firingError);
   }
 
@@ -177,6 +184,7 @@ const saveFiringChanges = (
       updateRedirect(db, { id: _firing.id, url });
     }
 
+    // console.groupEnd();
     return db[method]('firings', _firing);
   } catch (error) {
     console.group('saveFiringChanges()');
@@ -195,8 +203,8 @@ export const addNewFiringData : FActionHandler = async(
   db: CDataStoreClass,
   data : unknown,
 ) : Promise<IDBValidKey> => {
-  console.group('addNewFiringData()');
-  console.log('data:', data);
+  // console.group('addNewFiringData()');
+  // console.log('data:', data);
   try {
     const { hold, user } : IUpdateHelperData = await addUpdateHelper(
       db,
@@ -211,8 +219,8 @@ export const addNewFiringData : FActionHandler = async(
         validateThing: validateFiringData
       }
     );
-    console.log('hold:', hold);
-    console.log('user:', user);
+    // console.log('hold:', hold);
+    // console.log('user:', user);
 
     return  (hold === true)
       ? saveChangeOnHold(
@@ -233,8 +241,8 @@ export const updateFiringData : FActionHandler = async(
   db: CDataStoreClass,
   data : unknown,
 ) : Promise<IDBValidKey> => {
-  console.group('updateFiringData()');
-  console.log('data:', data);
+  // console.group('updateFiringData()');
+  // console.log('data:', data);
   try {
     const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
@@ -249,15 +257,18 @@ export const updateFiringData : FActionHandler = async(
       }
     );
 
+    // console.log('thing:', thing);
     const initial : IIdObject | string = getInitialData(data as IIdObject, thing as IFiring);
+
+    // console.log('initial:', initial);
 
     if (typeof initial === 'string') {
       console.error(initial);
-      console.groupEnd();
+      // console.groupEnd();
       return Promise.reject(initial);
     }
 
-    console.groupEnd();
+    // console.groupEnd();
     return  (hold === true)
       ? saveChangeOnHold(
           db,
@@ -273,6 +284,7 @@ export const updateFiringData : FActionHandler = async(
           thing as IFiring
         );
   } catch(error) {
+    console.error('Caught error:', error);
     throw error;
   }
 }
@@ -347,8 +359,8 @@ export const updateFiringList : FActionHandler = async (
   db: CDataStoreClass,
   data : unknown,
 ) : Promise<IDBValidKey> => {
-  console.group('updateFiringList()');
-  console.log('data:', data)
+  // console.group('updateFiringList()');
+  // console.log('data:', data)
   try {
     const { hold, user, thing } : IUpdateHelperData = await addUpdateHelper(
       db,
@@ -362,13 +374,13 @@ export const updateFiringList : FActionHandler = async (
         id: (data as IIdObject).id,
       }
     );
-    console.log('hold:', hold)
-    console.log('user:', user)
-    console.log('thing:', thing)
+    // console.log('hold:', hold)
+    // console.log('user:', user)
+    // console.log('thing:', thing)
 
     if (hold === true) {
-      console.info('storing data for later');
-      console.groupEnd();
+      // console.info('storing data for later');
+      // console.groupEnd();
       return saveChangeOnHold(
         db,
         'firings',
@@ -382,7 +394,7 @@ export const updateFiringList : FActionHandler = async (
       ? { ...data }
       : null;
 
-    console.log('newData (before):', newData);
+    // console.log('newData (before):', newData);
     if (newData === null) {
       newData = { ...(thing as TFiringsListItem) };
 
@@ -392,13 +404,14 @@ export const updateFiringList : FActionHandler = async (
         }
       }
     }
-    console.log('newData (after):', newData);
+    // console.log('newData (after):', newData);
 
-    console.info('saving data now');
-    console.groupEnd();
+    // console.info('saving data now');
+    // console.groupEnd();
     return db.put('firingsList', newData);
   } catch(error : unknown) {
-    console.groupEnd();
+    console.error('Caught error:', error);
+    // console.groupEnd();
     throw error;
   }
 };

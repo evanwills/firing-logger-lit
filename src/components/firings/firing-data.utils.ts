@@ -25,7 +25,7 @@ import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
 import { emptyOrNull, getUID, isNumMinMax } from "../../utils/data.utils.ts";
 import { getISO8601date, getLocalISO8601 } from "../../utils/date-time.utils.ts";
 import { orderOptionsByLabel } from "../../utils/render.utils.ts";
-import { isNonEmptyStr } from "../../utils/string.utils.ts";
+import { isNonEmptyStr, ucFirst } from "../../utils/string.utils.ts";
 
 /**
  * Generates a standard error message for invalid program (or program
@@ -43,16 +43,26 @@ const getFiringError = (
   type: string = 'value',
   objType: string = 'firing',
 ) : string | null => {
-  console.log(`${objType}.${prop}:`, value);
+  console.group(`validate${ucFirst(objType)}Data() error`);
+  console.error(`${objType}.${prop}:`, value);
+  console.groupEnd();
 
   return `${objType} data is invalid! It does not have a valid `
   + `\`${prop}\` ${type}.`;
 }
 
+/**
+ * Validates firing data object
+ *
+ * @param item firing data object to be validated
+ *
+ * @returns Error message string if there was an issue.
+ *          NULL if data is valid.
+ */
 export const validateFiringData = (item: unknown) : string | null => {
   if (isIdObject(item) === false) {
-    console.log('item:', item);
-    console.log('isIdObject(item):', isIdObject(item));
+    // console.log('item:', item);
+    // console.log('isIdObject(item):', isIdObject(item));
     return 'firing data is not an ID object';
   }
 
@@ -72,9 +82,9 @@ export const validateFiringData = (item: unknown) : string | null => {
   }
 
   if (isID(item.diaryID) === false && item.diaryID !== null) {
-    console.log('isID(item.diaryID):', isID(item.diaryID));
-    console.log('item.diaryID !== null:', item.diaryID !== null);
-    console.log('typeof item.diaryID:', typeof item.diaryID);
+    // console.log('isID(item.diaryID):', isID(item.diaryID));
+    // console.log('item.diaryID !== null:', item.diaryID !== null);
+    // console.log('typeof item.diaryID:', typeof item.diaryID);
     return getFiringError('diaryID', item.diaryID, 'ID or Null');
   }
 
@@ -319,14 +329,25 @@ export const getProgramsByTypeAndKiln = (
     .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.programID, label: `${item.programName} (Cone: ${item.cone} - ${tConverter(item.maxTemp)}°${tUnit})` })),
 );
 
+/**
+ * Creates a new firing log entry object
+ *
+ * @param firingID
+ * @param userID
+ * @param param2
+ *
+ * @returns New firing log entry object
+ */
 export const getNewLogEntry = (
   firingID: ID,
   userID: ID,
-  { type, timeOffset, notes } : INewLogEntryOptions,
+  { type, timeOffset, notes, time } : INewLogEntryOptions,
 ) : IFiringLogEntry => ({
   id: getUID(),
   firingID,
-  time: getLocalISO8601(new Date()),
+  time: (isISO8601(time) === true)
+    ? time
+    : getLocalISO8601(new Date()),
   timeOffset: (typeof timeOffset === 'number')
     ? timeOffset
     : null,
@@ -359,17 +380,17 @@ export const getStatusLogEntry = (
 };
 
 export const isBeforeToday = (when : ISO8601) => {
-  console.group('isBeforeToday()');
-  console.log('when:', when);
+  // console.group('isBeforeToday()');
+  // console.log('when:', when);
   const now = getISO8601date(new Date());
   const _when = when.substring(0, 10)
 
-  console.log('now:', now);
-  console.log('_when:', _when);
-  console.log('now > _when', now > _when);
-  console.groupEnd();
+  // console.log('now:', now);
+  // console.log('_when:', _when);
+  // console.log('now > _when', now > _when);
+  // console.groupEnd();
 
-  return (now > when);
+  return (now > _when);
 };
 
 export const getLastLogEntry = (log : IFiringLogEntry[]) : IFiringLogEntry | null => {
