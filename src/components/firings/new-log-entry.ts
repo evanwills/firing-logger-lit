@@ -196,7 +196,7 @@ export class NewLogEntry extends LitElement {
 
   _resetMax() : void {
     if (this._open === true) {
-      this._max = getIsoDateTimeSimple(this._now + (2 * 60 * 1000), true);
+      this._max = getIsoDateTimeSimple(this._now + (2 * 60 * 1000));
 
       this._updateMax = setTimeout(this._resetMax.bind(this), 60 * 1000);
     } else {
