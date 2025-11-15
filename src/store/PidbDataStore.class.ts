@@ -617,6 +617,21 @@ export default class PidbDataStore implements CDataStoreClass {
     }
   }
 
+  async resetDataStore() : Promise<void> {
+    if (this._db !== null) {
+      return new Promise<void>((resolve, reject) => {
+        const req = indexedDB.deleteDatabase(this._dbName);
+
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+        req.onblocked = () => {
+          // Occurs if other open connections prevent deletion
+          console.warn('IndexedDB delete blocked: close other connections/tabs.');
+        };
+      });
+    }
+  }
+
   //  END:  public methods
   // ------------------------------------------------------
 }

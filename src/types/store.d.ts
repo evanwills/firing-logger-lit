@@ -437,6 +437,13 @@ export type CDataStoreClass = {
   dispatch : FDataStoreDispatch,
 
   /**
+   * Reset the entire data store
+   *
+   * @returns Promise that resolves when the store has been reset
+   */
+  resetDataStore() : Promise<void>,
+
+  /**
    * Add watcher to do something after a successful write action
    *
    * @param action  Name of action to watch for
