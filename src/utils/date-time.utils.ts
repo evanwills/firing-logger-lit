@@ -1,4 +1,5 @@
 import type { ISO8601 } from "../types/data-simple.d.ts";
+import { isISO8601 } from "../types/data.type-guards.ts";
 
 const twoDigit = (input: number) : string => {
   return (input < 10)
@@ -19,11 +20,14 @@ export const getISO8601date = (when : number | Date | null) : string => {
     + `${twoDigit(_when.getDate())}`;
 }
 
-export const getISO8601time = (when : number | Date | null, noSeconds : boolean = false) : string => {
+export const getISO8601time = (
+  when : Date | number | string | null,
+  noSeconds : boolean = false
+) : string => {
   if (when === null) {
     return '';
   }
-  const _when = (typeof when === 'number')
+  const _when = (typeof when === 'number' || typeof when === 'string')
     ? new Date(when)
     : when;
 
@@ -63,6 +67,13 @@ export const getLocalISO8601 = (when : number | Date | null, noSeconds : boolean
 
   return `${getISO8601date(_when)}T${getISO8601time(_when, noSeconds)}${sign}`;
 }
+
+export const updateISO8601time = (
+  oldTime : unknown,
+  newTime : string
+) : ISO8601 => (isISO8601(oldTime) === false)
+    ? newTime as ISO8601
+    : `${oldTime.substring(0, 11)}${newTime}:00${oldTime.substring(19)}` as ISO8601;
 
 export const getIsoDateTimeSimple = (when : number | Date | null) : string => {
   if (when === null) {
