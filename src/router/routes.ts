@@ -14,6 +14,8 @@ import '../components/firings/firing-details.ts';
 // import '../components/users/user-list.ts';
 import '../components/users/user-details.ts';
 import '../components/users/user-details-edit.ts';
+import PidbDataStore from "../store/PidbDataStore.class.ts";
+import type { CDataStoreClass } from "../types/store.d.ts";
 
 const home = ({ _SEARCH, _STORE } : IRouteArgs) : TemplateResult => html`<firings-list
   filters=${_SEARCH} .store=${_STORE}></firings-list>`
@@ -73,7 +75,7 @@ export default [
   {
     route: '/program/:programID',
     render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
-      redirectProgram(node, _STORE, programID);
+      redirectProgram(node, _STORE as CDataStoreClass, programID);
 
       return html`<program-details
         program-uid="${programID}"
@@ -83,7 +85,7 @@ export default [
   {
     route: '/program/:programID/edit',
     render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
-      redirectProgram(node, _STORE, programID, 'edit');
+      redirectProgram(node, _STORE as CDataStoreClass, programID, 'edit');
 
       return html`<program-details-edit
         program-uid="${programID}"
@@ -93,7 +95,7 @@ export default [
   {
     route: '/program/:programID/clone',
     render: ({ programID, _STORE } : IRouteArgs, node: LitRouter) : TemplateResult => {
-      redirectProgram(node, _STORE, programID, 'clone');
+      redirectProgram(node, _STORE as CDataStoreClass, programID, 'clone');
 
       return html`<program-details-edit
         mode="clone"
@@ -285,6 +287,21 @@ export default [
       .store=${_STORE}></user-details-edit>`,
   },
 
+
   //  END:  user routes
+  // ----------------------------------------------------------------
+  // START: Reset DB
+
+  {
+    route: '/reset-database',
+    render: (args : IRouteArgs) : TemplateResult => {
+      if (args._STORE instanceof PidbDataStore) {
+        args._STORE.resetDataStore();
+      }
+
+      return home(args);
+    },
+  }
+  //  END:  Reset DB
   // ----------------------------------------------------------------
 ];
