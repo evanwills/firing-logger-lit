@@ -1,17 +1,21 @@
 import { LitElement, css, html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-// import { ifDefined } from 'lit/directives/if-defined.js';
-import type { ITempLogEntry, TFiringLogEntryType, TFiringState } from '../../types/firings.d.ts';
+
+import type { TFiringState } from '../../types/firings.d.ts';
+import type { ITempLogEntry, TFiringLogEntryType } from '../../types/firing-logs.d.ts';
 import type { FConverter, IKeyScalar, ISO8601 } from '../../types/data-simple.d.ts';
 import type { IProgramStep } from '../../types/programs.d.ts';
 import type { TOptionValueLabel } from '../../types/renderTypes.d.ts';
+import type { FGetISO8601 } from "../../types/data.d.ts";
 import { x2x } from '../../utils/conversions.utils.ts';
 import { isTFiringLogEntryType } from '../../types/firing.type-guards.ts';
-import '../shared-components/firing-logger-modal.ts';
-import '../input-fields/accessible-select-field.ts';
-import '../input-fields/accessible-temporal-field.ts';
-import '../input-fields/accessible-text-field.ts';
-import { getISO8601time, getIsoDateTimeSimple, getLocalISO8601, makeISO8601simple } from '../../utils/date-time.utils.ts';
+import {
+  getISO8601time,
+  getIsoDateTimeSimple,
+  getLocalISO8601,
+  makeISO8601simple,
+  updateISO8601time,
+} from '../../utils/date-time.utils.ts';
 import { emptyOrNull, map2Obj } from '../../utils/data.utils.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
 import { buttonStyles } from '../../assets/css/buttons.css.ts';
@@ -19,8 +23,11 @@ import { fieldListStyles } from '../../assets/css/input-field.css.ts';
 import { FiringLoggerModal } from '../shared-components/firing-logger-modal.ts';
 import { isISO8601 } from '../../types/data.type-guards.ts';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import type { FGetISO8601 } from "../../types/data.d.ts";
 import { AccessibleWholeField } from "../input-fields/AccessibleWholeField.ts";
+import '../shared-components/firing-logger-modal.ts';
+import '../input-fields/accessible-select-field.ts';
+import '../input-fields/accessible-temporal-field.ts';
+import '../input-fields/accessible-text-field.ts';
 
 @customElement('new-log-entry')
 export class NewLogEntry extends LitElement {
@@ -243,17 +250,6 @@ export class NewLogEntry extends LitElement {
     // console.groupEnd();
   }
 
-  _getTemporalField() : TemplateResult {
-    return html`<li><accessible-number-field
-      block-before="22"
-      field-id="log-actualTemp"
-      label="Temperature"
-      unit="°${this.unit}"
-      step="1"
-      required
-      @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
-  }
-
   //  END:  helper methods
   // ------------------------------------------------------
   // START: event handlers
@@ -306,14 +302,19 @@ export class NewLogEntry extends LitElement {
     // console.group('<new-log-entry>.setSpecific()');
     // console.log('detail:', detail);
     // console.log('this._time:', this._time);
+    // console.log('this._time:', this._time);
     // console.log('this._updateNow:', this._updateNow);
+    // console.log('this.minTime:', this.minTime);
     const key : string = detail._id.substring(4);
     // console.log('key:', key);
 
     if (detail._validity.valid === true) {
-      const value = detail._value;
+      const value = (key === 'time' && detail._value.length === 5)
+        ? updateISO8601time(this.minTime, detail._value)
+        : detail._value;
+      // console.log('value:', value);
 
-      this._logEntry.set(key, detail._value as string);
+      this._logEntry.set(key, value);
       // console.log('this._logEntry:', this._logEntry);
       // console.log('this._requireNotes (before):', this._requireNotes);
       // console.log('this._requireHelpTxt (before):', this._requireHelpTxt);
@@ -326,7 +327,7 @@ export class NewLogEntry extends LitElement {
         } else if (value === 'aborted') {
           this._setRequireNotes(`${prefix}this firing was aborted`);
         } else if (value === 'active') {
-          this._timeField = this._getTemporalField();
+          this._timeField = this._getTemperatureField();
         } else {
           this._setRequireNotes();
         }
@@ -335,7 +336,17 @@ export class NewLogEntry extends LitElement {
       // console.log('this._requireHelpTxt (after):', this._requireHelpTxt);
       // console.log('this._requiredFields (after):', this._requiredFields);
     } else {
-      console.warn('current value is invalid');
+      console.group('<new-log-entry>.setSpecific() [ERROR]');
+      for (const key of Object.keys(detail._validity)) {
+        if (key !== 'valid' && detail._validity[key] === false) {
+          console.log(`detail._validity issue: ${key} => ${detail._validity[key]}`);
+        }
+      }
+      console.log('detail:', detail);
+      console.log('key:', key);
+      console.log('value:', detail._value);
+      console.warn(`current value for ${key} is invalid`);
+      console.groupEnd();
       this._logEntry.delete(key);
     }
 
@@ -376,15 +387,21 @@ export class NewLogEntry extends LitElement {
   }
 
   handleSubmit() : void {
-    // console.group('<new-log-entry>.handleSubmit()');
-    // console.log('this._type:', this._type);
-    // console.log('this._logEntry:', this._logEntry);
-    // console.log('this._requiredFields:', this._requiredFields);
+    console.group('<new-log-entry>.handleSubmit()');
+    console.log('this._type:', this._type);
+    console.log('this._logEntry:', this._logEntry);
+    console.log('this._requiredFields:', this._requiredFields);
+    console.log('isTFiringLogEntryType(this._type):', isTFiringLogEntryType(this._type));
     if (!isTFiringLogEntryType(this._type)) {
+      console.warn('log type is invalid');
+      console.log('this._type:', this._type);
+      console.groupEnd();
       return;
     }
 
     for (const required of this._requiredFields) {
+      console.log('required:', required);
+      console.log(`this._logEntry.has(${required}):`, this._logEntry.has(required));
       if (!this._logEntry.has(required)) {
         this._findAndFocusError(required);
         return;
@@ -392,14 +409,14 @@ export class NewLogEntry extends LitElement {
     }
 
     const detail : IKeyScalar = map2Obj(this._logEntry);
-    // console.log('detail (before):', detail);
+    console.log('detail (before):', detail);
     detail.type = this._type
     detail.time = getLocalISO8601((this._time > 0)
       ? this._time
       : this._now
     );
-    // console.log('detail (after):', detail);
-    // console.groupEnd();
+    console.log('detail (after):', detail);
+    console.groupEnd();
 
     this.dispatchEvent(
       new CustomEvent(
@@ -427,12 +444,50 @@ export class NewLogEntry extends LitElement {
   // ------------------------------------------------------
   // START: helper render methods
 
+  _getTemperatureField() : TemplateResult {
+    console.group('<new-log-entry>._getTemperatureField()');
+    console.log('this.unit:', this.unit);
+    console.groupEnd();
+    return html`<li><accessible-number-field
+      block-before="22"
+      field-id="log-tempActual"
+      label="Temperature"
+      unit="°${this.unit}"
+      step="1"
+      required
+      @change=${this.setSpecific.bind(this)}></accessible-select-field></li>`;
+  }
+
+  _getTimeField() : TemplateResult {
+    console.group('<new-log-entry>._getTimeField()');
+    console.log('this._temporalType:', this._temporalType);
+    console.log('this._max:', this._max);
+    console.log('this._humanNow:', this._humanNow);
+    const min : string | null = (isISO8601(this.minTime) === true)
+      ? makeISO8601simple(this.minTime)
+      : null;
+
+    console.log('min:', min);
+    console.groupEnd();
+    return html`<li><accessible-temporal-field
+        block-before="22"
+        field-id="log-time"
+        label="Time"
+        min="${ifDefined(min)}"
+        max="${this._max}"
+        step="60"
+        type="${this._temporalType}"
+        .value=${this._humanNow}
+        @change=${this.setSpecific.bind(this)}></accessible-temporal-field></li>`
+  }
+
   _renderCustomFields() : TemplateResult  {
-    // console.group('<new-log-entry>._renderCustomFields()');
-    // console.log('this._type:', this._type);
-    // console.log('this._now:', this._now);
-    // console.log('this._time:', this._time);
-    // console.log('this._humanNow:', this._humanNow);
+    console.group('<new-log-entry>._renderCustomFields()');
+    console.log('this._type:', this._type);
+    console.log('this._max:', this._max);
+    console.log('this._now:', this._now);
+    console.log('this._time:', this._time);
+    console.log('this._humanNow:', this._humanNow);
     const cancel = html`<button
       class="secondary"
       type="button"
@@ -444,13 +499,9 @@ export class NewLogEntry extends LitElement {
 
     let output : TemplateResult | string = '';
 
-    const min = (isISO8601(this.minTime) === true)
-      ? makeISO8601simple(this.minTime)
-      : null;
-
     switch (this._type) {
       case 'temp':
-        output = this._getTemporalField();
+        output = this._getTemperatureField();
         break;
 
       case 'firingState':
@@ -472,16 +523,8 @@ export class NewLogEntry extends LitElement {
         break;
     }
 
-    // console.groupEnd();
-    return html`<li><accessible-temporal-field
-        block-before="22"
-        field-id="log-time"
-        label="Time"
-        min="${ifDefined(min)}"
-        max="${this._max}"
-        type="${this._temporalType}"
-        .value=${this._humanNow}
-        @change=${this.setSpecific.bind(this)}></accessible-temporal-field></li>
+    console.groupEnd();
+    return html`${this._getTimeField()}
       ${output}
       <li><accessible-text-field
         block-before="22"
