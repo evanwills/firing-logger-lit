@@ -88,3 +88,5 @@ export type TDateRange = {
 }
 
 export type FConverter = (number) => number;
+
+export type FVoidFUnc = () => void;
