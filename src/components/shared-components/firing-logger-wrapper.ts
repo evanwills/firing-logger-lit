@@ -15,6 +15,9 @@ export class FiringLoggerWrapper extends LoggerElement {
   @property({ type: String })
   path : string = '';
 
+  @property({ type: Boolean, attribute: 'allow-reset' })
+  allowReset : boolean = false;
+
   //  END:  properties/attributes
   // ------------------------------------------------------
   // START: state
@@ -105,6 +108,7 @@ export class FiringLoggerWrapper extends LoggerElement {
       ? 'in'
       : 'out';
 
+    console.log('this.allowReset:', this.allowReset);
     // console.log('this._user:', this._user);
     // console.log('this._userHasAuth(2):', this._userHasAuth(2));
 
@@ -117,21 +121,21 @@ export class FiringLoggerWrapper extends LoggerElement {
           <ul>
             <li><router-link
               ?active=${this.isActive('kilns', true)}
-              url="/kilns"
-              label="Kilns"></router-link></li>
+              label="Kilns"
+              url="/kilns"></router-link></li>
             <li><router-link
               ?active=${this.isActive('programs')}
-              url="/programs"
-              label="Programs"></router-link></li>
+              label="Programs"
+              url="/programs"></router-link></li>
             <li><router-link
               ?active=${this.isActive('firings')}
-              url="/firings"
-              label="Firings"></router-link></li>
+              label="Firings"
+              url="/firings"></router-link></li>
             ${this._userHasAuth(2)
               ? html`<li><router-link
                   ?active=${this.isActive('users')}
-                  url="/users"
-                  label="Users"></router-link></li>`
+                  label="Users"
+                  url="/users"></router-link></li>`
               : ''
             }
             <li><a href="/log${dir}" @click=${this.loginLogout}>Log${dir}</a></li>
@@ -147,7 +151,14 @@ export class FiringLoggerWrapper extends LoggerElement {
         @close=${this._handleLogin}
         @loggedin=${this._handleLogin}></login-ui>
 
-      <!-- <footer></footer> -->
+      ${(this.allowReset === true)
+        ? html`<footer>
+          <router-link
+            class="btn"
+            label="Reset Application Data"
+            url="/reset-database"></router-link>
+        </footer>`
+        : ''}
     </div>
     `;
   }
@@ -210,6 +221,13 @@ export class FiringLoggerWrapper extends LoggerElement {
     main {
       max-width: var(--max-width, 50rem);
       margin: 0 auto;
+    }
+
+    footer {
+      display: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
     }
 
     @container firing-logger (inline-size > 30rem) {
