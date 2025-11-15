@@ -1,31 +1,19 @@
-import type { FConverter, ID, IIdObject, ISO8601 } from "../../types/data-simple.d.ts";
-import type { TSvgPathItem } from "../../types/data.d.ts";
+import type { FConverter, FVoidFUnc, ID, IIdObject, ISO8601 } from "../../types/data-simple.d.ts";
 import {
   isID,
   isIdObject,
   isISO8601,
   isTCone,
 } from "../../types/data.type-guards.ts";
-import {
-  isFiringLogEntry,
-  isTFiringLogEntryType,
-  isTFiringState,
-  isTTemperatureState,
-} from "../../types/firing.type-guards.ts";
-import type {
-  IFiringLogEntry,
-  IStateLogEntry,
-  ITempLogEntry,
-  INewLogEntryOptions,
-  INewFiringStateLogEntryOptions,
-} from "../../types/firings.d.ts";
+import { isTFiringState, isTTemperatureState } from "../../types/firing.type-guards.ts";
 import { isTFiringType } from "../../types/program.type-guards.ts";
 import type { TFiringType, TProgramListRenderItem } from "../../types/programs.d.ts";
 import type { TOptionValueLabel } from "../../types/renderTypes.d.ts";
-import { emptyOrNull, getUID, isNumMinMax } from "../../utils/data.utils.ts";
-import { getISO8601date, getLocalISO8601 } from "../../utils/date-time.utils.ts";
+import { emptyOrNull, isNumMinMax } from "../../utils/data.utils.ts";
+import { getISO8601date } from "../../utils/date-time.utils.ts";
 import { orderOptionsByLabel } from "../../utils/render.utils.ts";
 import { isNonEmptyStr, ucFirst } from "../../utils/string.utils.ts";
+import { LitRouter } from "../lit-router/lit-router.ts";
 
 /**
  * Generates a standard error message for invalid program (or program
@@ -37,7 +25,7 @@ import { isNonEmptyStr, ucFirst } from "../../utils/string.utils.ts";
  *
  * @returns Human readable error message
  */
-const getFiringError = (
+export const getFiringError = (
   prop: string,
   value: unknown,
   type: string = 'value',
@@ -150,79 +138,6 @@ export const validateFiringData = (item: unknown) : string | null => {
   return null;
 };
 
-export const validateFiringLogEntry = (item: unknown) : string | null => {
-  if (isIdObject(item) === false) {
-    console.log('item:', item);
-    console.log('isFiringLogEntry(item):', isFiringLogEntry(item));
-    return 'firing temp log data is not a firing log entry object';
-  }
-
-  if (isID(item.id) === false) {
-    return getFiringError('id', item.id, 'string', 'IFiringLogEntry');
-  }
-  if (isID(item.firingID) === false) {
-    return getFiringError('firingID', item.firingID, 'string', 'IFiringLogEntry');
-  }
-  if (isID(item.userID) === false) {
-    return getFiringError('userID', item.userID, 'string', 'IFiringLogEntry');
-  }
-  if (isISO8601(item.time) === false) {
-    return getFiringError('time', item.time, 'string', 'IFiringLogEntry');
-  }
-  if (isTFiringLogEntryType(item.type) === false) {
-    return getFiringError('type', item.type, 'string', 'IFiringLogEntry');
-  }
-  if (typeof item.notes !== 'string' &&  item.notes !== null) {
-    return getFiringError('notes', item.notes, 'string or null', 'IFiringLogEntry');
-  }
-
-  return null;
-};
-
-export const validateTempLogEntry = (item: unknown) : string | null => {
-  const tmp = validateFiringLogEntry(item);
-
-  if (tmp !== null) {
-    return tmp;
-  }
-  if ((item as ITempLogEntry).type !== 'temp') {
-    return getFiringError('type', (item as ITempLogEntry).type, 'string', 'ITempLogEntry');
-  }
-  if (typeof (item as ITempLogEntry).timeOffset !== 'number') {
-    return getFiringError('timeOffset', (item as ITempLogEntry).timeOffset, 'number', 'ITempLogEntry');
-  }
-  if (typeof (item as ITempLogEntry).tempExpected !== 'number') {
-    return getFiringError('tempExpected', (item as ITempLogEntry).tempExpected, 'number', 'ITempLogEntry');
-  }
-  if (typeof (item as ITempLogEntry).tempActual !== 'number') {
-    return getFiringError('tempActual', (item as ITempLogEntry).tempActual, 'number', 'ITempLogEntry');
-  }
-  if (typeof (item as ITempLogEntry).state !== 'string') {
-    return getFiringError('state', (item as ITempLogEntry).state, 'string', 'ITempLogEntry');
-  }
-
-  return null;
-}
-
-export const validateStateLogEntry = (item: unknown) : string | null => {
-  const tmp = validateFiringLogEntry(item);
-
-  if (tmp !== null) {
-    return tmp;
-  }
-  if ((item as IStateLogEntry).type !== 'firingState') {
-    return getFiringError('type', (item as IStateLogEntry).type, 'string', 'IStateLogEntry');
-  }
-  if (isTFiringState((item as IStateLogEntry).newState) === false) {
-    return getFiringError('newState', (item as IStateLogEntry).newState, 'string', 'IStateLogEntry');
-  }
-  if (isTFiringState((item as IStateLogEntry).oldState) === false) {
-    return getFiringError('tempExpected', (item as IStateLogEntry).oldState, 'string', 'IStateLogEntry');
-  }
-
-  return null;
-}
-
 export const validateTFiringsListItem = (item: unknown) : string | null => {
   if (isIdObject(item) === false) {
     console.log('item:', item);
@@ -290,13 +205,7 @@ export const firingListItemPropIsSameType = (
   }
 
   return false;
-}
-
-export const tempLog2SvgPathItem = (item : ITempLogEntry) : TSvgPathItem => ({
-  timeOffset: item.timeOffset,
-  actualTime: item.time,
-  temp: item.tempActual,
-});
+};
 
 export const getKilnsByFiringType = (
   list : TProgramListRenderItem[],
@@ -329,56 +238,6 @@ export const getProgramsByTypeAndKiln = (
     .map((item : TProgramListRenderItem) : TOptionValueLabel => ({ value: item.programID, label: `${item.programName} (Cone: ${item.cone} - ${tConverter(item.maxTemp)}°${tUnit})` })),
 );
 
-/**
- * Creates a new firing log entry object
- *
- * @param firingID
- * @param userID
- * @param param2
- *
- * @returns New firing log entry object
- */
-export const getNewLogEntry = (
-  firingID: ID,
-  userID: ID,
-  { type, timeOffset, notes, time } : INewLogEntryOptions,
-) : IFiringLogEntry => ({
-  id: getUID(),
-  firingID,
-  time: (isISO8601(time) === true)
-    ? time
-    : getLocalISO8601(new Date()),
-  timeOffset: (typeof timeOffset === 'number')
-    ? timeOffset
-    : null,
-  userID,
-  type : (isTFiringLogEntryType(type))
-    ? type
-    : 'temp',
-  notes : isNonEmptyStr(notes)
-    ? notes
-    : null,
-});
-
-export const getStatusLogEntry = (
-  firingID: ID,
-  userID: ID,
-  options : INewFiringStateLogEntryOptions,
-) : IStateLogEntry => {
-  return {
-    ...getNewLogEntry(
-      firingID,
-      userID,
-      {
-        ...options,
-        type: 'firingState',
-      },
-    ),
-    oldState: options.oldState,
-    newState: options.newState,
-  } as IStateLogEntry;
-};
-
 export const isBeforeToday = (when : ISO8601) => {
   // console.group('isBeforeToday()');
   // console.log('when:', when);
@@ -393,36 +252,6 @@ export const isBeforeToday = (when : ISO8601) => {
   return (now > _when);
 };
 
-export const getLastLogEntry = (log : IFiringLogEntry[]) : IFiringLogEntry | null => {
-  const output = log.slice(-1);
-
-  return (output[0] !== undefined)
-    ? output[0]
-    : null;
+export const redirectToNewFiring = (component : HTMLElement, firingID : ID) : FVoidFUnc => () : void => {
+  LitRouter.dispatchRouterEvent(component, `/firing/${firingID}`);
 };
-
-export const sortLogByTime = <T extends IFiringLogEntry>(log : T[], reverse : boolean = false) : T[] => {
-  const output = [...log];
-
-  let less = -1;
-  let more = 1;
-
-  if (reverse === true) {
-    less = 1;
-    more = -1;
-  }
-
-  output.sort((a : IFiringLogEntry, b : IFiringLogEntry) : number => {
-    if (a.time < b.time) {
-      return less;
-    }
-
-    if (a.time > b.time) {
-      return more;
-    }
-
-    return 0;
-  });
-
-  return output;
-}
