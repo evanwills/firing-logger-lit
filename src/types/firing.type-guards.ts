@@ -1,20 +1,22 @@
 import { isObj } from '../utils/data.utils.ts';
 import { isID, isIdObject, isISO8601, isTCone } from './data.type-guards.ts';
 import type {
-  IBurnerState,
-  IDamperLogEntry,
-  IFiringLogEntry,
-  ITempLogEntry,
-  IResponsibleLogEntry,
-  IStateLogEntry,
   IFiring,
-  TFiringLogEntryType,
   TTemperatureState,
   TFiringState,
   TFiringsListItem,
   TFiringActiveState,
   TGetFirningDataPayload,
 } from './firings.d.ts';
+import type {
+  IBurnerStateLogEntry,
+  IDamperLogEntry,
+  IFiringLogEntry,
+  ITempLogEntry,
+  IResponsibleLogEntry,
+  IStateLogEntry,
+  TFiringLogEntryType,
+} from './firing-logs.d.ts';
 import { isTFiringType } from './program.type-guards.ts';
 
 export const isTFiringLogEntryType = (value : unknown) : value is TFiringLogEntryType => (
@@ -88,16 +90,16 @@ export const isDampertLog = (item : unknown) : item is IDamperLogEntry => (
   && typeof (item as IDamperLogEntry).damperAdjustment === 'number'
 );
 
-export const isBurnerStateLog = (item : unknown) : item is IBurnerState => (
-  isID((item as IBurnerState).burnerID) === true
-  && typeof (item as IBurnerState).burnerPosition === 'string'
-  && typeof (item as IBurnerState).burnerType === 'string'
-  && typeof (item as IBurnerState).valvePosition === 'number'
-  && (item as IBurnerState).valvePosition >= 0
-  && (item as IBurnerState).valvePosition <= 100
-  && typeof (item as IBurnerState).primaryAir === 'number'
-  && (item as IBurnerState).primaryAir >= 0
-  && (item as IBurnerState).primaryAir <= 100
+export const isBurnerStateLog = (item : unknown) : item is IBurnerStateLogEntry => (
+  isID((item as IBurnerStateLogEntry).burnerID) === true
+  && typeof (item as IBurnerStateLogEntry).burnerPosition === 'string'
+  && typeof (item as IBurnerStateLogEntry).burnerType === 'string'
+  && typeof (item as IBurnerStateLogEntry).valvePosition === 'number'
+  && (item as IBurnerStateLogEntry).valvePosition >= 0
+  && (item as IBurnerStateLogEntry).valvePosition <= 100
+  && typeof (item as IBurnerStateLogEntry).primaryAir === 'number'
+  && (item as IBurnerStateLogEntry).primaryAir >= 0
+  && (item as IBurnerStateLogEntry).primaryAir <= 100
 );
 
 export const isIFiring = (item: unknown) : item is IFiring => (
