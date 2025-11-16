@@ -19,6 +19,7 @@ import type {
   IStateLogEntry,
   ITempLogEntry,
   IScheduleLogEntry,
+  TFiringLogEntryType,
 } from '../../types/firing-logs.d.ts';
 import { getUID } from '../../utils/data.utils.ts';
 import { getLocalISO8601 } from '../../utils/date-time.utils.ts';
@@ -66,6 +67,9 @@ export const validateTempLogEntry = (item: unknown) : string | null => {
   }
   if (typeof (item as ITempLogEntry).timeOffset !== 'number') {
     return getFiringError('timeOffset', (item as ITempLogEntry).timeOffset, 'number', 'ITempLogEntry');
+  }
+  if (typeof (item as ITempLogEntry).stage !== 'number') {
+    return getFiringError('stage', (item as ITempLogEntry).stage, 'number', 'ITempLogEntry');
   }
   if (typeof (item as ITempLogEntry).tempExpected !== 'number') {
     return getFiringError('tempExpected', (item as ITempLogEntry).tempExpected, 'number', 'ITempLogEntry');

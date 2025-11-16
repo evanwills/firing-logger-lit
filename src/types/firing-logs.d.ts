@@ -96,6 +96,8 @@ export interface ITempLogEntry extends IFiringLogEntry {
    */
   timeOffset: number,
 
+  stage: number,
+
   /**
    * @property The expected temperature of the kiln
    *

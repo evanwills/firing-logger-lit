@@ -67,6 +67,7 @@ export const isTempLog = (item : unknown) : item is ITempLogEntry => (
   && typeof (item as ITempLogEntry).timeOffset === 'number'
   && typeof (item as ITempLogEntry).tempExpected === 'number'
   && typeof (item as ITempLogEntry).tempActual === 'number'
+  && typeof (item as ITempLogEntry).stage === 'number'
   && typeof (item as ITempLogEntry).state === 'string'
 );
 
