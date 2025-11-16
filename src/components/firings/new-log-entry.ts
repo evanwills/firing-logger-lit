@@ -28,6 +28,7 @@ import '../shared-components/firing-logger-modal.ts';
 import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
+import { getModalBtnText } from "./firing-log.utils.ts";
 
 @customElement('new-log-entry')
 export class NewLogEntry extends LitElement {
@@ -94,6 +95,12 @@ export class NewLogEntry extends LitElement {
    */
   @property({ type: String, attribute: 'type' })
   type : TFiringLogEntryType | '' = '';
+
+  /**
+   * @property Pre defined type of firing log
+   */
+  @property({ type: String, attribute: 'types' })
+  types : TFiringLogEntryType[] = [];
 
   /**
    * @property Temperature unit indicator to match user's preference
@@ -558,8 +565,8 @@ export class NewLogEntry extends LitElement {
     // console.groupEnd();
     return html`
       <firing-logger-modal
-        btn-text="New log entry"
-        heading="New firing log entry"
+        btn-text="${getModalBtnText(this.type)}"
+        heading="${getModalBtnText(this.type)}"
         @open=${this.handleOpen.bind(this)}>
         ${(this._open === true)
           ? html`<ul class="details w-30 btn-container">

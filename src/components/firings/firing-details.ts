@@ -708,9 +708,6 @@ export class FiringDetails extends LoggerElement {
     userID : ID,
     detail : IKeyScalar,
   ) : void {
-    console.group('<firing-details>._handleTempLogEntry()');
-    console.log('detail:', detail);
-
     /**
      * @todo write code to calculate offset time based on actual start time
      * @todo write code to calculate expected temp based on program and time
@@ -722,12 +719,10 @@ export class FiringDetails extends LoggerElement {
       {
         ...detail,
         tempExpected: 0,
-        tempActual: forceNum(detail.actualTemp, 0),
+        tempActual: forceNum(detail.tempActual, 0),
         state: 'expected',
        } as ITempLogEntry,
     );
-
-    console.log('output:', output);
 
     if (this.store !== null) {
       this.store.dispatch('addFiringLogEntry', output);
@@ -737,9 +732,8 @@ export class FiringDetails extends LoggerElement {
       this._setDuration();
 
       this._tempLog = sortLogByTime(this._tempLog, this._reverse);
-      this._rawLog = sortLogByTime(this._tempLog, this._reverse);
+      this._rawLog = sortLogByTime(this._rawLog, this._reverse);
     }
-    console.groupEnd();
   }
 
   _saveNewFiring() : void {
@@ -941,7 +935,7 @@ export class FiringDetails extends LoggerElement {
       && this._firing !== null
       && this._user !== null
     ) {
-      const { firingState, time, ...detail } = event.detail;
+      // const { firingState, time, ...detail } = event.detail;
       // console.log('firingState:', firingState);
       // console.log('isTFiringState(firingState):', isTFiringState(firingState));
       // console.log('detail:', detail);
@@ -961,6 +955,8 @@ export class FiringDetails extends LoggerElement {
         default:
           // No special handling
       }
+
+      const { time } = event.detail;
 
       if (isISO8601(time)) {
         const last = getLastLogEntry(this._rawLog);
@@ -1177,7 +1173,26 @@ export class FiringDetails extends LoggerElement {
         : ''
       }
       ${this._isActive === true && this._can('log')
-        ? html`<new-log-entry
+        ? html`<p class="log-btns">
+          ${(this._firingState === 'active')
+            ? html`
+            <new-log-entry
+              .converter=${this._tConverter}
+              .convert-rev=${this._tConverterRev}
+              firing-id="${this._firing?.id}"
+              min-time="${this._logTimeMin}"
+              .programSteps=${this._programSteps}
+              .startTime=${this._actualStartTime}
+              .stateOptions=${this._firingStateOptions}
+              .status=${this._firingState}
+              .tempLog=${this._tempLog}
+              type="temp"
+              unit="${this._tUnit}"
+              user-id="${this._user?.id}"
+              @submit=${this._handleNewLogEntry.bind(this)}></new-log-entry>`
+            : ''
+          }
+          <new-log-entry
             .converter=${this._tConverter}
             .convert-rev=${this._tConverterRev}
             firing-id="${this._firing?.id}"
@@ -1189,7 +1204,8 @@ export class FiringDetails extends LoggerElement {
             .tempLog=${this._tempLog}
             unit="${this._tUnit}"
             user-id="${this._user?.id}"
-            @submit=${this._handleNewLogEntry.bind(this)}></new-log-entry>`
+            @submit=${this._handleNewLogEntry.bind(this)}></new-log-entry>
+          </p>`
         : ''
       }
     `;
@@ -1202,6 +1218,12 @@ export class FiringDetails extends LoggerElement {
   static styles = css`
     ${detailsStyle}
     ${firingDetailCss}
+    .log-btns {
+      display: flex;
+      justify-content: space-around;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
   `;
 
   //  END:  styles
