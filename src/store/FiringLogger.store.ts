@@ -135,8 +135,8 @@ const upgradeSchema : IDBPupgrade = (
       kilnsStatusLog.createIndex('created', 'created', { unique: false });
       kilnsStatusLog.createIndex('userID', 'userID', { unique: false });
       kilnsStatusLog.createIndex('type', 'type', { unique: false });
-      kilnsStatusLog.createIndex('oldState', 'oldState', { unique: false });
-      kilnsStatusLog.createIndex('newState', 'newState', { unique: false });
+      kilnsStatusLog.createIndex('previous', 'previous', { unique: false });
+      kilnsStatusLog.createIndex('current', 'current', { unique: false });
     }
 
 

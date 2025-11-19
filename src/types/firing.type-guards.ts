@@ -67,11 +67,10 @@ export const isFiringLogEntry = (item: unknown) : item is IFiringLogEntry => (
   && isID((item as IFiringLogEntry).id) === true
   && isID((item as IFiringLogEntry).firingID) === true
   && isID((item as IFiringLogEntry).userID) === true
-  && isISO8601((item as IFiringLogEntry).time) === true
-  && (isISO8601((item as IFiringLogEntry).createdTime) === true
-  || (item as IFiringLogEntry).createdTime === null)
   && (isID((item as IFiringLogEntry).supersededByID) === true
   || (item as IFiringLogEntry).supersededByID === null)
+  && isISO8601((item as IFiringLogEntry).createdTime) === true
+  && isISO8601((item as IFiringLogEntry).time) === true
   && isTFiringLogEntryType((item as IFiringLogEntry).type)
   && (typeof (item as IFiringLogEntry).notes === 'string'
   || (item as IFiringLogEntry).notes === null)
@@ -96,8 +95,8 @@ export const isRespLog = (item : unknown) : item is IResponsibleLogEntry => (
 export const isStateChangeLog = (item : unknown) : item is IStateLogEntry => (
   isFiringLogEntry(item) === true
   && (item as IStateLogEntry).type === 'firingState'
-  && typeof (item as IStateLogEntry).newState === 'string'
-  && typeof (item as IStateLogEntry).oldState === 'string'
+  && typeof (item as IStateLogEntry).current === 'string'
+  && typeof (item as IStateLogEntry).previous === 'string'
 );
 
 export const isDampertLog = (item : unknown) : item is IDamperLogEntry => (
