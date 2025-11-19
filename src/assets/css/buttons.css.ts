@@ -103,7 +103,7 @@ button.danger:focus:not(.disabled) {
 }
 
 button.success {
-  background-color: var(--rl-btn-bg-danger);
+  background-color: var(--rl-btn-bg-success);
 }
 button.success:hover:not(.disabled),
 button.success:focus:not(.disabled) {
