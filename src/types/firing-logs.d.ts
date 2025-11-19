@@ -2,15 +2,16 @@
 import type { ID, ISO8601 } from './data-simple.d.ts';
 
 export type TFiringLogEntryType = 'temp' |
+  'burner' |
+  'damper' |
   'firingState' |
+  'gas' |
   'issue' |
   'observation' |
-  'damper' |
-  'burner' |
-  'gas' |
-  'wood' |
   'responsible' |
-  'schedule';
+  'schedule' |
+  'stage' |
+  'wood';
 
 export interface IFiringLogEntry {
   /**
@@ -22,6 +23,29 @@ export interface IFiringLogEntry {
    * @property The ID of the firing the log entry is for
    */
   firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   */
+  type: TFiringLogEntryType,
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
 
   /**
    * @property The time the log entry applies to
@@ -38,16 +62,6 @@ export interface IFiringLogEntry {
    *           of seconds from when the firing went active.
    */
   timeOffset: number | null,
-
-  /**
-   * @property The ID of the user who submitted the log entry
-   */
-  userID: ID,
-
-  /**
-   * @property The type of log entry
-   */
-  type: TFiringLogEntryType,
 
   /**
    * @property Any additional info that's worth adding.
@@ -70,6 +84,30 @@ export interface ITempLogEntry extends IFiringLogEntry {
   firingID: ID,
 
   /**
+   * @property The ID of the user who submitted the log entry
+   */
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   *           (for TTempLogEntry it's always "temp")
+   */
+  type: 'temp',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
+
+  /**
    * @property The time the log entry applies to
    *
    * __Note:__ For firings that are currently under way, this is
@@ -78,17 +116,6 @@ export interface ITempLogEntry extends IFiringLogEntry {
    *           time the data was recorded.
    */
   time: ISO8601,
-
-  /**
-   * @property The ID of the user who submitted the log entry
-   */
-  userID: ID,
-
-  /**
-   * @property The type of log entry
-   *           (for TTempLogEntry it's always "temp")
-   */
-  type: 'temp',
 
   /**
    * @property Once the firing program hass tarted this is the number
@@ -126,16 +153,79 @@ export interface ITempLogEntry extends IFiringLogEntry {
    * __Note:__ In some instances (like aborting a firing) this
    *           becomes a required field.
    */
+  notes: string | null,
+};
+
+export interface IStageLogEntry extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
+  id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
+  firingID: ID,
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+  type: 'stage',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
+  time: ISO8601,
+  timeOffset: number,
   notes: string|null,
+  stage: number,
+  rate: number,
+  endTemp: number,
+  hold: number,
+  expectedEnd: ISO8601,
 };
 
 export interface IStateLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
+  type: 'firingState',
   time: ISO8601,
   timeOffset: number | null,
-  userID: ID,
-  type: 'firingState',
+
+  /**
+   * @property If this log entry is updated,  another log entry,
+   *           this is the ID of that log entry.
+   */
+  supersededByID: ID,
   notes: string|null,
   newState: TFiringState,
   oldState: TFiringState,
@@ -144,10 +234,30 @@ export interface IStateLogEntry extends IFiringLogEntry {
 export interface IScheduleLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+  type: 'schedule',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
   time: ISO8601,
   timeOffset: null,
-  userID: ID,
-  type: 'schedule',
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
   notes: string|null,
   newStart: ISO8601,
   oldStart: ISO8601,
@@ -156,10 +266,23 @@ export interface IScheduleLogEntry extends IFiringLogEntry {
 export interface IDamperLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+  type: 'damper',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
   time: ISO8601,
   timeOffset: number,
-  userID: ID,
-  type: 'damper',
   damperAdjustment: number,
   notes: string|null,
 };
@@ -167,10 +290,24 @@ export interface IDamperLogEntry extends IFiringLogEntry {
 export interface IBurnerStateLogEntry  extends IFiringLogEntry {
   id: ID,
   firingID: ID,
+  userID: ID,
+
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+  type: 'burner',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
   time: ISO8601,
   timeOffset: number,
-  userID: ID,
-  type: 'burner',
   burnerID: ID,
   burnerPosition: string,
   burnerType: string,
@@ -182,10 +319,23 @@ export interface IBurnerStateLogEntry  extends IFiringLogEntry {
 export interface IGasLogEntry extends IFiringLogEntry {
   id: ID,
   firingID: ID,
+  userID: ID,
+
+  /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+  type: 'gas',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
   time: ISO8601,
   timeOffset: number,
-  userID: ID,
-  type: 'gas',
   /**
    * The pressure in kPa
    *
@@ -218,6 +368,25 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
   userID: ID,
 
   /**
+   * @property If this log entry is updated, a new log entry is
+   *           created with the updated data, this is the ID of
+   *           previous version of the log entry.
+   */
+  supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   *           (for IResponsibleLogEntry it's always "responsible")
+   */
+  type: 'responsible',
+
+  /**
+   * @property The time the log entry was created (if different to
+   *           the time it applies to)
+   */
+  createdTime: null | ISO8601,
+
+  /**
    * @property The time the log entry applies to
    *
    * __Note:__ For firings that are currently under way, this is
@@ -232,12 +401,6 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
    *           of seconds from when the firing went active.
    */
   timeOffset: number | null,
-
-  /**
-   * @property The type of log entry
-   *           (for IResponsibleLogEntry it's always "responsible")
-   */
-  type: 'responsible',
 
   /**
    * @property Whether or not this is the start of a responsiblity
@@ -259,6 +422,7 @@ export interface IResponsibleLogEntry extends IFiringLogEntry {
 export interface INewLogEntryOptions {
   timeOffset?: number | null,
   time?: ISO8601,
+  createdTime?: ISO8601 | null,
   type?: TFiringLogEntryType,
   notes?: string | null,
 };
@@ -266,6 +430,7 @@ export interface INewLogEntryOptions {
 export interface INewFiringStateLogEntryOptions {
   timeOffset?: number | null,
   notes?: string | null,
+  createdTime?: ISO8601 | null,
   time?: ISO8601,
   newState: TFiringState,
   oldState: TFiringState,
@@ -273,6 +438,7 @@ export interface INewFiringStateLogEntryOptions {
 
 export interface INewTempLogEntryOptions {
   timeOffset: number,
+  createdTime?: ISO8601 | null,
   time?: ISO8601,
   notes?: string | null,
   tempExpected: number,
@@ -282,6 +448,7 @@ export interface INewTempLogEntryOptions {
 
 export interface INewScheduleLogEntryOptions {
   notes?: string | null,
+  createdTime?: ISO8601 | null,
   time?: ISO8601,
   newStart: ISO8601,
   oldStart: ISO8601,

@@ -21,7 +21,19 @@ import { isTFiringType } from './program.type-guards.ts';
 
 export const isTFiringLogEntryType = (value : unknown) : value is TFiringLogEntryType => (
   typeof value === 'string'
-  && new Set(['temp', 'firingState', 'issue', 'observation', 'damper', 'burner', 'gas', 'wood', 'responsible', 'schedule']).has(value)
+  && new Set([
+    'burner',
+    'damper',
+    'firingState',
+    'gas',
+    'issue',
+    'observation',
+    'responsible',
+    'schedule',
+    'stage',
+    'temp',
+    'wood',
+  ]).has(value)
 );
 
 export const isTFiringState = (value : unknown) : value is TFiringState => (
@@ -56,6 +68,10 @@ export const isFiringLogEntry = (item: unknown) : item is IFiringLogEntry => (
   && isID((item as IFiringLogEntry).firingID) === true
   && isID((item as IFiringLogEntry).userID) === true
   && isISO8601((item as IFiringLogEntry).time) === true
+  && (isISO8601((item as IFiringLogEntry).createdTime) === true
+  || (item as IFiringLogEntry).createdTime === null)
+  && (isID((item as IFiringLogEntry).supersededByID) === true
+  || (item as IFiringLogEntry).supersededByID === null)
   && isTFiringLogEntryType((item as IFiringLogEntry).type)
   && (typeof (item as IFiringLogEntry).notes === 'string'
   || (item as IFiringLogEntry).notes === null)
@@ -67,7 +83,6 @@ export const isTempLog = (item : unknown) : item is ITempLogEntry => (
   && typeof (item as ITempLogEntry).timeOffset === 'number'
   && typeof (item as ITempLogEntry).tempExpected === 'number'
   && typeof (item as ITempLogEntry).tempActual === 'number'
-  && typeof (item as ITempLogEntry).stage === 'number'
   && typeof (item as ITempLogEntry).state === 'string'
 );
 
