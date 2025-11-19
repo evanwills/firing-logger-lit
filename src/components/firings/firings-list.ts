@@ -196,7 +196,12 @@ export class FiringsList extends LoggerElement {
         </tbody>
       </table></div>
       ${this._userCan('fire')
-        ? html`<firing-logger-modal btn-text="New firing" heading="New firing"><new-firing-selector .store=${this.store}></new-firing-selector></firing-modal>`
+        ? html`<firing-logger-modal
+            access-key="f"
+            btn-text="New firing"
+            heading="New firing">
+            <new-firing-selector .store=${this.store}></new-firing-selector>
+          </firing-modal>`
         : ''
       }`
       : html`<p>Loading...</p>`
