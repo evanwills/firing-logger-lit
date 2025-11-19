@@ -41,7 +41,7 @@ export class FiringLogger extends LitElement {
     // console.info('DB is now ready');
     this._ready = true;
     if (this._db !== null && this._db.ready === true) {
-      console.info('Fetching latest data on startup');
+      // console.info('Fetching latest data on startup');
       // console.log('this._db:', this._db);
       // console.group('this._db.dispatch()');
       // console.log('this._db.dispatchs:', this._db.dispatchs);
