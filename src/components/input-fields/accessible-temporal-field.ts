@@ -95,6 +95,7 @@ export class AccessibleTemporalField extends AccessibleWholeField {
     this._setTvalue();
 
     return html`<input
+      accesskey="${ifDefined(this.key())}"
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
       .id="${this.fieldID}"

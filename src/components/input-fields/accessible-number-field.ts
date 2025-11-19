@@ -63,6 +63,7 @@ export class AccessibleNumberField extends AccessibleWholeField {
       ? _unit
       : ''
     }<input
+      accesskey="${ifDefined(this.key())}"
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${ifDefined(this.disabled)}
       .id="${this.fieldID}"

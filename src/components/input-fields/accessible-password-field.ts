@@ -73,6 +73,7 @@ export class AccessiblePasswordField extends AccessibleWholeField {
     return html`
       <span class="input-flex">
         <input
+          accesskey="${ifDefined(this.key())}"
           class="password"
           ?disabled=${ifDefined(this.disabled)}
           .id="${this.fieldID}"

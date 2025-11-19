@@ -16,6 +16,9 @@ export class AccessibleWholeField extends FocusableInside {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  @property({ type: String, attribute: 'access-key' })
+  accessKey: string = '';
+
   @property({ type: Boolean, attribute: 'as-block' })
   asBlock : boolean = false;
 
@@ -225,6 +228,12 @@ export class AccessibleWholeField extends FocusableInside {
 
     this._dispatch(event);
     // console.groupEnd();
+  }
+
+  key() : string | undefined{
+    return (isNonEmptyStr(this.accessKey) === true)
+      ? this.accessKey
+      : undefined;
   }
 
   //  END:  helper methods

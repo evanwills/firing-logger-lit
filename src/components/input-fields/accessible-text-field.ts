@@ -122,6 +122,7 @@ export class AccessibleTextField extends AccessibleWholeField {
 
   _renderInput() : TemplateResult {
     return html`<input
+      accesskey="${ifDefined(this.key())}"
       .autocomplete=${ifDefined(this.autocomplete)}
       ?disabled=${this.disabled}
       id="${this.fieldID}"
@@ -142,6 +143,7 @@ export class AccessibleTextField extends AccessibleWholeField {
 
   _renderTextarea() : TemplateResult {
     return html`<textarea
+      accesskey="${ifDefined(this.key())}"
       ?disabled=${this.disabled}
       .autocomplete=${ifDefined(this.autocomplete)}
       .id="${this.fieldID}"

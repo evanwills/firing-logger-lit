@@ -5,11 +5,15 @@ import { srOnly } from '../../assets/css/sr-only.css.ts';
 import { linkStyle } from '../../assets/css/links.css.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { buttonTokens } from "../../assets/css/buttons.css.ts";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 @customElement('router-link')
 export class RouterLink extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
+
+  @property({ type: String, attribute: 'access-key' })
+  accessKey : string = '';
 
   @property({ type: Boolean, attribute: 'active' })
   active : boolean = false;
@@ -17,7 +21,7 @@ export class RouterLink extends LitElement {
   @property({ type: Boolean, attribute: 'button' })
   asBtn : boolean = false;
 
-    @property({ type: Boolean, attribute: 'disabled' })
+  @property({ type: Boolean, attribute: 'disabled' })
   disabled : boolean = false;
 
   @property({ type: String, attribute: 'url' })
@@ -60,6 +64,12 @@ export class RouterLink extends LitElement {
     }
   }
 
+  keyPress(event : KeyboardEvent) : void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      LitRouter.dispatchRouterEvent(this, this.url, this.dataset);
+    }
+  }
+
   //  END:  event handlers
   // ------------------------------------------------------
   // START: lifecycle methods
@@ -74,14 +84,17 @@ export class RouterLink extends LitElement {
       : this.label;
   }
 
-  renderLink() {
+  renderLink(key : string | null = null) {
     return html`<a
-      href="${this.url}"
+      accesskey="${ifDefined(key)}"
       class="${this.getClass()}"
-      @click=${this.navClick}><slot>${this.renderLabel()}</slot></a>`;
+      href="${this.url}"
+      @click=${this.navClick}
+      @keypress=${this.keyPress}><slot>${this.renderLabel()}</slot></a>`;
   }
-  renderBtn() {
+  renderBtn(key : string | null = null) {
     return html`<button
+      accesskey="${ifDefined(key)}"
       class="${this.getClass()}"
       @click=${this.navClick}><slot>${this.renderLabel()}</slot></a>`;
   }
@@ -95,9 +108,12 @@ export class RouterLink extends LitElement {
     // console.log('this.dataset.uid:', this.dataset.uid);
     // console.log('this.url:', this.url);
     // console.groupEnd();
+    const key : string | null= (isNonEmptyStr(this.accessKey) === true)
+      ? this.accessKey
+      : null;
     return (this.asBtn === true)
-      ? this.renderBtn()
-      : this.renderLink();
+      ? this.renderBtn(key)
+      : this.renderLink(key);
   }
 
   //  END:  main render method
