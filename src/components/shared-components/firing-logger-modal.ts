@@ -3,19 +3,23 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { emptyOrNull } from '../../utils/data.utils.ts';
 import { srOnly } from "../../assets/css/sr-only.css.ts";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 @customElement('firing-logger-modal')
 export class FiringLoggerModal extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
-  @property({ type: String, attribute: 'btn-text'})
+  @property({ type: String, attribute: 'access-key' })
+  accessKey : string = '';
+
+  @property({ type: String, attribute: 'btn-text' })
   btnText : string = '';
 
-  @property({ type: String, attribute: 'heading'})
+  @property({ type: String, attribute: 'heading' })
   heading : string = '';
 
-  @property({ type: Boolean, attribute: 'no-open'})
+  @property({ type: Boolean, attribute: 'no-open' })
   noOpen : boolean = false;
 
   //  END:  properties/attributes
@@ -128,7 +132,7 @@ export class FiringLoggerModal extends LitElement {
   // ------------------------------------------------------
   // START: main render method
 
-  render() : TemplateResult | string {
+  render(): TemplateResult | string {
     // console.group('<firing-modal>.render()');
     if (emptyOrNull(this.btnText) && this.noOpen === false) {
       throw new Error(
@@ -136,10 +140,6 @@ export class FiringLoggerModal extends LitElement {
       );
     }
 
-    // console.log('this.heading:', this.heading);
-    // console.log('this.open:', this.open);
-    // console.log('this.btnText:', this.btnText);
-    // console.groupEnd();
 
     let cls = 'open-btn';
 
@@ -147,9 +147,24 @@ export class FiringLoggerModal extends LitElement {
       cls += ' open-btn--open';
     }
 
+    const openKey = (isNonEmptyStr(this.accessKey) === true)
+      ? this.accessKey
+      : null;
+
+    // console.log('this.accessKey:', this.accessKey);
+    // console.log('openKey:', openKey);
+    // console.log('this.heading:', this.heading);
+    // console.log('this.open:', this.open);
+    // console.log('this.btnText:', this.btnText);
+    // console.groupEnd();
+
     return html`
       ${(this.noOpen !== true)
-        ? html`<button class="${cls}" type="button" @click=${this.showModal}>${this.btnText}</button>`
+        ? html`<button
+            accesskey="${ifDefined(openKey)}"
+            class="${cls}"
+            type="button"
+            @click=${this.showModal}>${this.btnText}</button>`
         : ''
       }
 
@@ -160,11 +175,14 @@ export class FiringLoggerModal extends LitElement {
 
         <div>
           ${isNonEmptyStr(this.heading)
-            ? html`<h2>${this.heading}</h2>`
-            : ''
-          }
+        ? html`<h2>${this.heading}</h2>`
+        : ''
+      }
           <slot></slot>
-          <button class="corner-close" type="button" @click=${this.close}>
+          <button
+            class="corner-close"
+            type="button"
+            @click=${this.close}>
             <span class="sr-only">Close ${this.heading}</span>
           </button>
         </div>
