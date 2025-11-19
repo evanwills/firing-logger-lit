@@ -53,17 +53,17 @@ const initEnum = (
 
 const upgradeSchema : IDBPupgrade = (
     db : IDBPDatabase<unknown>,
-    oldV : number,
-    newV : number | null,
-    transaction: IDBPTransaction<unknown, string[], 'versionchange'>,
-    event : Event,
+    _oldV : number,
+    _newV : number | null,
+    _transaction: IDBPTransaction<unknown, string[], 'versionchange'>,
+    _event : Event,
   ) : void => {
-    console.group('upgradeSchema()');
-    console.log('db:', db);
-    console.log('oldV:', oldV);
-    console.log('newV:', newV);
-    console.log('transaction:', transaction);
-    console.log('event:', event);
+    // console.group('upgradeSchema()');
+    // console.log('db:', db);
+    // console.log('oldV:', oldV);
+    // console.log('newV:', newV);
+    // console.log('transaction:', transaction);
+    // console.log('event:', event);
     // ----------------------------------------------------------
     // START: _meta
 
@@ -324,11 +324,13 @@ const migrateData : IDBPmigrate = async (
   db : IDBPDatabase,
   version : number,
 ) : Promise<void> => {
-  // console.group('migrateData()');
+  // console.group('FiringLoggerStore.migrateData()');
   // console.log('db:', db);
   // console.log('version:', version);
   // console.log('db.get("_meta", "version"):', await db.get('_meta', 'version'));
   const dbVersion = await db.get('_meta', 'version');
+  // console.log('dbVersion:', dbVersion);
+
   if (typeof dbVersion === 'undefined' || dbVersion === null || dbVersion.value < version) {
     const loggerData = await globalThis.fetch('/data/firing-logger.json');
     // console.log('loggerData:', loggerData);
@@ -355,7 +357,7 @@ const migrateData : IDBPmigrate = async (
 
       populateEmptySlice(db, data.firings, 'firings');
       populateEmptySlice(db, data.firingsList, 'firingsList');
-      console.log('data.firingLogs:', data.firingLogs);
+      // console.log('data.firingLogs:', data.firingLogs);
       populateEmptySlice(db, data.firingLogs, 'firingLogs');
       populateEmptySlice(db, data.kilns, 'kilns');
       populateEmptySlice(db, data.programs, 'programs');
@@ -458,6 +460,12 @@ const actions : TActionList = {
 export const getDataStoreClassSingleton = (
   readyWatcher : FReadyWatcher | null = null,
 ) : Promise<CDataStoreClass> => {
+  // console.group('FiringLogger.getDataStoreClassSingleton()');
+  // console.log('store:', store);
+  // console.log('upgradeSchema:', upgradeSchema);
+  // console.log('migrateData:', migrateData);
+  // console.log('readyWatcher:', readyWatcher);
+  // console.groupEnd();
   if (store !== null) {
     return Promise.resolve(store);
   }
