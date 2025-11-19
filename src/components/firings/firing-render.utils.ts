@@ -1,5 +1,6 @@
 import { html, type TemplateResult } from "lit";
-import type { IFiring, IFiringLogEntry, IStateLogEntry, ITempLogEntry, TFiringState } from "../../types/firings.d.ts";
+import type { IFiring, TFiringState } from "../../types/firings.d.ts";
+import type { IFiringLogEntry, IStateLogEntry, ITempLogEntry } from "../../types/firing-logs.d.ts";
 import type { FConverter, IKeyStr, IOrderedEnum, ISO8601 } from "../../types/data-simple.d.ts";
 import type { TUser } from "../../types/users.d.ts";
 import { hoursFromSeconds } from "../../utils/conversions.utils.ts";
@@ -10,6 +11,7 @@ import type { IProgramStep, IProgram } from "../../types/programs.d.ts";
 import { isISO8601 } from "../../types/data.type-guards.ts";
 import { ifDefined } from "lit/directives/if-defined.js";
 import type { TSvgPathItem } from "../../types/data.d.ts";
+import { isUser } from "../../types/user.type-guards.ts";
 
 export const renderTopTemp = (
   firing : IFiring | null,
@@ -59,6 +61,7 @@ export const renderExpectedStart = (
       : null
 
     return html`<li><accessible-temporal-field
+      access-key="s"
       field-id="scheduledStart"
       min=${ifDefined(min)}
       max="${max}"
@@ -109,7 +112,7 @@ export const renderTempLogEntry = (
   tConverter: FConverter,
   tUnit: string,
   tempStates: IKeyStr,
-  user: TUser,
+  user: TUser | null,
   canViewUser: boolean = false,
 ) : TemplateResult => html`<li class="log log-temp">
     ${renderTime(item)}
@@ -117,7 +120,7 @@ export const renderTempLogEntry = (
       ${tConverter(item.tempActual)}&deg;${tUnit}
     </span>
     <span class="expected">(Expected: ${Math.round(tConverter(item.tempExpected))}&deg;${tUnit})</span>
-    ${renderUser(user, canViewUser)}
+    ${(isUser(user)) ? renderUser(user, canViewUser) : ''}
     ${(item.state !== 'expected')
       ? html`<span class="state">Status: ${getValFromKey(tempStates, item.state)}</span>`
       : ''
@@ -129,7 +132,7 @@ export const renderTempLogEntry = (
 export const renderStatusLogEntry = (
   item: IStateLogEntry,
   firingStates : IOrderedEnum[],
-  user: TUser,
+  user: TUser | null,
   canViewUser: boolean = false,
 ) : TemplateResult => {
   // console.group('renderStatusLogEntry()');
@@ -149,19 +152,20 @@ export const renderStatusLogEntry = (
       ${getLabelFromOrderedEnum(firingStates, item.newState.toLowerCase())} <br />
       <em>(was ${getLabelFromOrderedEnum(firingStates, item.oldState.toLowerCase())})</em>
     </span>
-    ${renderUser(user, canViewUser)}
+    ${(isUser(user)) ? renderUser(user, canViewUser) : ''}
     ${renderNotes(item)}
   </li>`;
 };
 
 export const renderFiringLogEntry = (
   item: IFiringLogEntry,
-  user: TUser,
+  user: TUser | null,
   canViewUser: boolean = false,
 ) : TemplateResult => html`<li class="log log-general">
     ${renderTime(item)}
     ${renderUser(user, canViewUser)}
 
+    ${(isUser(user)) ? renderUser(user, canViewUser) : ''}
     ${renderNotes(item)}
   </li>`;
 
