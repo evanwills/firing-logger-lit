@@ -20,6 +20,7 @@ import type {
   IResponsibleLogEntry,
   IStateLogEntry,
   ITempLogEntry,
+  TFiringLogEntryType,
 } from '../../types/firing-logs.d.ts';
 import type { IKiln } from '../../types/kilns.d.ts';
 import type { IProgramStep, IProgram } from '../../types/programs.d.ts';
@@ -50,12 +51,14 @@ import {
   getStatusLogEntry,
   sortLogByTime,
   tempLog2SvgPathItem,
+  validateTempLogEntry,
 } from './firing-log.utils.ts';
 import { enumToOptions, sortOrderedEnum } from '../../utils/lit.utils.ts';
 import { isNonEmptyStr, ucFirst } from '../../utils/string.utils.ts';
 import { storeCatch } from '../../store/PidbDataStore.utils.ts';
 import { LoggerElement } from '../shared-components/LoggerElement.ts';
 import { detailsStyle } from '../../assets/css/details.css.ts';
+import { buttonStyles } from '../../assets/css/buttons.css.ts';
 import { LitRouter } from '../lit-router/lit-router.ts';
 import {
   renderExpectedStart,
@@ -78,6 +81,7 @@ import '../shared-components/firing-logger-modal.ts';
 import '../shared-components/loading-spinner.ts';
 import '../lit-router/router-link.ts';
 import './new-log-entry.ts';
+import { NewLogEntry } from './new-log-entry.ts';
 
 @customElement('firing-details')
 export class FiringDetails extends LoggerElement {
@@ -221,6 +225,8 @@ export class FiringDetails extends LoggerElement {
     rate: 1000,
     hold: 0,
   };
+
+  _logEntryModal : NewLogEntry | null = null;
 
 
   //  END:  state
@@ -852,6 +858,7 @@ export class FiringDetails extends LoggerElement {
               : '',
             {
               time: this._scheduledStart,
+              createdTime: getLocalISO8601(Date.now()),
               oldStart: oldScheduledStart,
               newStart: this._scheduledStart,
             },
@@ -924,24 +931,24 @@ export class FiringDetails extends LoggerElement {
   }
 
   _handleNewLogEntry(event: CustomEvent) : void {
-    // console.group('<firing-details>._handleNewLogEntry()');
-    // console.log('event:', event);
-    // console.log('event.detail:', event.detail);
-    // console.log('isTFiringState(event.detail):', isTFiringState(event.detail));
-    // console.log('isTempLog(event.detail):', isTempLog(event.detail));
-    // console.log('this._firing !== null:', this._firing !== null);
-    // console.log('this._user !== null:', this._user !== null);
+    console.group('<firing-details>._handleNewLogEntry()');
+    console.log('event:', event);
+    console.log('event.detail:', event.detail);
+    console.log('isTFiringState(event.detail):', isTFiringState(event.detail));
+    console.log('isTempLog(event.detail):', isTempLog(event.detail));
+    console.log('this._firing !== null:', this._firing !== null);
+    console.log('this._user !== null:', this._user !== null);
     if (this.store !== null
       && this._firing !== null
       && this._user !== null
     ) {
-      // const { firingState, time, ...detail } = event.detail;
-      // console.log('firingState:', firingState);
-      // console.log('isTFiringState(firingState):', isTFiringState(firingState));
-      // console.log('detail:', detail);
-      // console.log('time:', time);
-      // console.log('event.detail.type:', event.detail.type);
-      // console.log('isTFiringLogEntryType(event.detail.type):', isTFiringLogEntryType(event.detail.type));
+      const { firingState, time, ...detail } = event.detail;
+      console.log('firingState:', firingState);
+      console.log('isTFiringState(firingState):', isTFiringState(firingState));
+      console.log('detail:', detail);
+      console.log('time:', time);
+      console.log('event.detail.type:', event.detail.type);
+      console.log('isTFiringLogEntryType(event.detail.type):', isTFiringLogEntryType(event.detail.type));
 
       switch (event.detail.type) {
         case 'firingState':
@@ -955,8 +962,6 @@ export class FiringDetails extends LoggerElement {
         default:
           // No special handling
       }
-
-      const { time } = event.detail;
 
       if (isISO8601(time)) {
         const last = getLastLogEntry(this._rawLog);
@@ -972,6 +977,35 @@ export class FiringDetails extends LoggerElement {
       }
     }
     // console.groupEnd();
+  }
+
+  _openNewLogEntryModal(event: InputEvent) : void {
+    console.group('<firing-details>._openNewLogEntryModal()');
+    console.log('event:', event);
+    console.log('event.target:', event.target);
+    console.log('event.target.value:', (event.target as HTMLButtonElement).value);
+    console.log('this._logEntryModal (before):', this._logEntryModal);
+
+    const logType : TFiringLogEntryType | '' = (isTFiringLogEntryType((event.target as HTMLButtonElement).value))
+      ? ((event.target as HTMLButtonElement).value as TFiringLogEntryType)
+      : '';
+
+    if (this._logEntryModal === null) {
+      const tmp : NewLogEntry | undefined | null = this.shadowRoot?.querySelector('new-log-entry');
+
+      if (tmp instanceof NewLogEntry) {
+        this._logEntryModal = tmp;
+      } else {
+        throw new Error('New log entry modal could not be found in the DOM');
+      }
+    }
+
+    if (this._logEntryModal instanceof NewLogEntry) {
+      this._logEntryModal.showModal(logType);
+    }
+
+    console.log('this._logEntryModal (after):', this._logEntryModal);
+    console.groupEnd();
   }
 
   //  END:  event handlers
@@ -993,40 +1027,47 @@ export class FiringDetails extends LoggerElement {
   // START: helper render methods
 
   _renderLogEntry(item : IFiringLogEntry) : TemplateResult | string {
-    if (this._user !== null) {
-      const canViewUser : boolean = this._userHasAuth(1);
+    console.group('<firing-details>._renderLogEntry()');
+    console.log('item:', item);
+    console.log('isTempLog(item):', isTempLog(item));
+    console.log('validateTempLogEntry(item):', validateTempLogEntry(item));
 
-      if (isTempLog(item) === true) {
-        // console.groupEnd();
+    const canViewUser : boolean = (this._user !== null && this._userHasAuth(1));
+    if (isTempLog(item) === true) {
+      console.group('<firing-details>._renderLogEntry()');
+      console.info('Temperature log');
+      console.log('item.tempActual:', (item as ITempLogEntry).tempActual);
+      console.groupEnd();
 
-        return renderTempLogEntry(
-          item as ITempLogEntry,
-          this._tConverter,
-          this._tUnit,
-          this._temperatureStates,
-          this._user,
-          canViewUser,
-        );
-      }
-
-      if (isStateChangeLog(item) === true) {
-
-        return renderStatusLogEntry(
-          item as IStateLogEntry,
-          this._firingStates,
-          this._user,
-          canViewUser,
-        );
-      }
-
-      return renderFiringLogEntry(
-          item as ITempLogEntry,
-          this._user,
-          canViewUser,
-        );
+      return renderTempLogEntry(
+        item as ITempLogEntry,
+        this._tConverter,
+        this._tUnit,
+        this._temperatureStates,
+        this._user,
+        canViewUser,
+      );
     }
 
-    return '';
+    if (isStateChangeLog(item) === true) {
+      // console.info('Firing status log');
+      console.groupEnd();
+
+      return renderStatusLogEntry(
+        item as IStateLogEntry,
+        this._firingStates,
+        this._user,
+        canViewUser,
+      );
+    }
+
+    // console.info('Generic firing log');
+    console.groupEnd();
+    return renderFiringLogEntry(
+        item as ITempLogEntry,
+        this._user,
+        canViewUser,
+      );
   }
 
   _renderFiringDetails(open : boolean) : TemplateResult {
@@ -1176,27 +1217,35 @@ export class FiringDetails extends LoggerElement {
         ? html`<p class="log-btns">
           ${(this._firingState === 'active')
             ? html`
-            <new-log-entry
-              .converter=${this._tConverter}
-              .convert-rev=${this._tConverterRev}
-              firing-id="${this._firing?.id}"
-              min-time="${this._logTimeMin}"
-              .programSteps=${this._programSteps}
-              .startTime=${this._actualStartTime}
-              .stateOptions=${this._firingStateOptions}
-              .status=${this._firingState}
-              .tempLog=${this._tempLog}
-              type="temp"
-              unit="${this._tUnit}"
-              user-id="${this._user?.id}"
-              @submit=${this._handleNewLogEntry.bind(this)}></new-log-entry>`
-            : ''
+                <button
+                  accesskey="t"
+                  class="btn success"
+                  type="button"
+                  value="temp"
+                  @click=${this._openNewLogEntryModal.bind(this)}>
+                  Log temperature
+                </button>`
+                : ''
           }
+          <button
+            accesskey="s"
+            class="btn success"
+            type="button"
+            value="firingState"
+            @click=${this._openNewLogEntryModal.bind(this)}>Update Status</button>
+          <button
+            accesskey="l"
+            class="btn"
+            type="button"
+            value=""
+            @click=${this._openNewLogEntryModal.bind(this)}>Add log entry</button>
+          </p>
           <new-log-entry
             .converter=${this._tConverter}
             .convert-rev=${this._tConverterRev}
             firing-id="${this._firing?.id}"
             min-time="${this._logTimeMin}"
+            no-open
             .programSteps=${this._programSteps}
             .startTime=${this._actualStartTime}
             .stateOptions=${this._firingStateOptions}
@@ -1204,8 +1253,7 @@ export class FiringDetails extends LoggerElement {
             .tempLog=${this._tempLog}
             unit="${this._tUnit}"
             user-id="${this._user?.id}"
-            @submit=${this._handleNewLogEntry.bind(this)}></new-log-entry>
-          </p>`
+            @submit=${this._handleNewLogEntry.bind(this)}></new-log-entry>`
         : ''
       }
     `;
@@ -1217,6 +1265,7 @@ export class FiringDetails extends LoggerElement {
 
   static styles = css`
     ${detailsStyle}
+    ${buttonStyles}
     ${firingDetailCss}
     .log-btns {
       display: flex;

@@ -35,6 +35,9 @@ export class NewLogEntry extends LitElement {
   // ------------------------------------------------------
   // START: properties/attributes
 
+  @property({ type: String, attribute: 'access-key' })
+  accessKey: string = '';
+
   /**
    * @property Convert temperature (if needed) from Celcius to Fahrenheit
    */
@@ -162,7 +165,9 @@ export class NewLogEntry extends LitElement {
   _ISOgetter : FGetISO8601 = getISO8601time;
 
   @state()
-  _timeField : TemplateResult | string = '';
+  _temperatureField : TemplateResult | string = '';
+
+  _firingLoggerModal : FiringLoggerModal | null = null;
 
 
   //  END:  state
@@ -257,7 +262,67 @@ export class NewLogEntry extends LitElement {
     // console.groupEnd();
   }
 
+  _setTempForStatus(show: boolean = true, required: boolean = false) : void {
+    if (show === true) {
+      this._temperatureField = this._getTemperatureField();
+      if (required === true) {
+        this._requiredFields.add('tempActual');
+      } else {
+        this._requiredFields.delete('tempActual');
+      }
+    } else {
+      this._temperatureField = '';
+      this._requiredFields.delete('tempActual');
+    }
+  }
+
+  _updateTypeInner(logType : TFiringLogEntryType | '') : void {
+    this._type = logType;
+    const tmpRequire = (this._type === 'issue' || this._type === 'observation');
+
+    if (tmpRequire === true) {
+      if (this._type === 'issue') {
+        this._setRequireNotes('Please describe the problem or issue.');
+      } else if (this._type === 'observation') {
+        this._setRequireNotes('Please enter a description of your observation.');
+      } else {
+        this._setRequireNotes();
+      }
+    } else if (this._type === 'firingState') {
+      this._requiredFields.add('firingState');
+    } else if (this._type === 'temp') {
+      this._requiredFields.add('tempActual');
+    } else if (this._type === 'responsible') {
+      this._requiredFields.add('isStart');
+      this._requiredFields.add('responsibilityType');
+    }
+  }
+
   //  END:  helper methods
+  // ------------------------------------------------------
+  // START: public methods
+
+  showModal(logType : TFiringLogEntryType | '') {
+    if (this._firingLoggerModal === null) {
+      const tmp = this.shadowRoot?.querySelector('firing-logger-modal');
+
+      if (tmp instanceof FiringLoggerModal) {
+        this._firingLoggerModal = tmp;
+      }
+    }
+
+    if (this._firingLoggerModal instanceof FiringLoggerModal) {
+      if (logType === '') {
+      this._setRequireNotes();
+      this._type = '';
+      } else {
+        this._updateTypeInner(logType);
+      }
+      this._firingLoggerModal.showModal();
+    }
+  }
+
+  //  END:  public methods
   // ------------------------------------------------------
   // START: event handlers
 
@@ -276,25 +341,7 @@ export class NewLogEntry extends LitElement {
     this._requiredFields.clear();
 
     if (validity.valid === true && isTFiringLogEntryType(value)) {
-      this._type = value;
-      const tmpRequire = (this._type === 'issue' || this._type === 'observation');
-
-      if (tmpRequire === true) {
-        if (this._type === 'issue') {
-          this._setRequireNotes('Please describe the problem or issue.');
-        } else if (this._type === 'observation') {
-          this._setRequireNotes('Please enter a description of your observation.');
-        } else {
-          this._setRequireNotes();
-        }
-      } else if (this._type === 'firingState') {
-        this._requiredFields.add('firingState');
-      } else if (this._type === 'temp') {
-        this._requiredFields.add('tempActual');
-      } else if (this._type === 'responsible') {
-        this._requiredFields.add('isStart');
-        this._requiredFields.add('responsibilityType');
-      }
+      this._updateTypeInner(value);
     } else {
       this._setRequireNotes();
       this._type = '';
@@ -304,6 +351,45 @@ export class NewLogEntry extends LitElement {
     // console.log('this._requiredFields (after):', this._requiredFields);
     // console.groupEnd();
   }
+
+  setFiringState(value : TFiringState) : void {
+    const prefix = 'Please say why ';
+
+    if (value === 'cancelled') {
+      this._temperatureField = '';
+      this._setRequireNotes(`${prefix}you are cancelling this firing`);
+      this._setTempForStatus(false);
+    } else if (value === 'aborted') {
+      this._setRequireNotes(`${prefix}this firing was aborted`);
+      this._setTempForStatus(true, true);
+    } else if (value === 'active') {
+      this._setTempForStatus(true, true);
+    } else {
+      this._setTempForStatus(false);
+      this._setRequireNotes();
+    }
+  };
+
+  setTime(value: ISO8601) : void {
+    // console.group('<new-log-entry>.setSpecific()');
+    // console.log('value:', value);
+    // console.log('this._time (before):', this._time);
+    // console.log('this._updateNow (before):', this._updateNow);
+    // console.log('this._humanNow (before):', this._humanNow);
+    this._time = new Date(value).getTime();
+
+    if (this._updateNow >= 0) {
+      clearTimeout(this._updateNow);
+      this._updateNow = -1;
+    }
+
+    this._humanNow = this._getNow();
+
+    // console.log('this._humanNow (before):', this._humanNow);
+    // console.log('this._updateNow (before):', this._updateNow);
+    // console.log('this._time (before):', this._time);
+    // console.groupEnd();
+  };
 
   setSpecific({ detail } : CustomEvent) : void {
     // console.group('<new-log-entry>.setSpecific()');
@@ -319,7 +405,7 @@ export class NewLogEntry extends LitElement {
       const value = (key === 'time' && detail._value.length === 5)
         ? updateISO8601time(this.minTime, detail._value)
         : detail._value;
-      // console.log('value:', value);
+      console.log('value:', value);
 
       this._logEntry.set(key, value);
       // console.log('this._logEntry:', this._logEntry);
@@ -327,17 +413,13 @@ export class NewLogEntry extends LitElement {
       // console.log('this._requireHelpTxt (before):', this._requireHelpTxt);
       // console.log('this._requiredFields (before):', this._requiredFields);
 
-      if (key === 'firingState') {
-        const prefix = 'Please say why ';
-        if (value === 'cancelled') {
-          this._setRequireNotes(`${prefix}you are cancelling this firing`);
-        } else if (value === 'aborted') {
-          this._setRequireNotes(`${prefix}this firing was aborted`);
-        } else if (value === 'active') {
-          this._timeField = this._getTemperatureField();
-        } else {
-          this._setRequireNotes();
-        }
+      switch (key) {
+        case 'firingState':
+          this.setFiringState(value as TFiringState);
+          break;
+        case 'time':
+          this.setTime(value as ISO8601);
+          break;
       }
       // console.log('this._requireNotes (after):', this._requireNotes);
       // console.log('this._requireHelpTxt (after):', this._requireHelpTxt);
@@ -349,11 +431,13 @@ export class NewLogEntry extends LitElement {
           console.log(`detail._validity issue: ${key} => ${detail._validity[key]}`);
         }
       }
-      console.log('detail:', detail);
-      console.log('key:', key);
-      console.log('value:', detail._value);
-      console.warn(`current value for ${key} is invalid`);
-      console.groupEnd();
+
+      // console.log('detail:', detail);
+      // console.log('key:', key);
+      // console.log('value:', detail._value);
+      // console.warn(`current value for ${key} is invalid`);
+      // console.groupEnd();
+
       this._logEntry.delete(key);
     }
 
@@ -394,21 +478,21 @@ export class NewLogEntry extends LitElement {
   }
 
   handleSubmit() : void {
-    console.group('<new-log-entry>.handleSubmit()');
-    console.log('this._type:', this._type);
-    console.log('this._logEntry:', this._logEntry);
-    console.log('this._requiredFields:', this._requiredFields);
-    console.log('isTFiringLogEntryType(this._type):', isTFiringLogEntryType(this._type));
+    // console.group('<new-log-entry>.handleSubmit()');
+    // console.log('this._type:', this._type);
+    // console.log('this._logEntry:', this._logEntry);
+    // console.log('this._requiredFields:', this._requiredFields);
+    // console.log('isTFiringLogEntryType(this._type):', isTFiringLogEntryType(this._type));
     if (!isTFiringLogEntryType(this._type)) {
-      console.warn('log type is invalid');
-      console.log('this._type:', this._type);
-      console.groupEnd();
+      // console.warn('log type is invalid');
+      // console.log('this._type:', this._type);
+      // console.groupEnd();
       return;
     }
 
     for (const required of this._requiredFields) {
-      console.log('required:', required);
-      console.log(`this._logEntry.has(${required}):`, this._logEntry.has(required));
+      // console.log('required:', required);
+      // console.log(`this._logEntry.has(${required}):`, this._logEntry.has(required));
       if (!this._logEntry.has(required)) {
         this._findAndFocusError(required);
         return;
@@ -416,14 +500,17 @@ export class NewLogEntry extends LitElement {
     }
 
     const detail : IKeyScalar = map2Obj(this._logEntry);
-    console.log('detail (before):', detail);
+    // console.log('detail (before):', detail);
     detail.type = this._type
     detail.time = getLocalISO8601((this._time > 0)
       ? this._time
       : this._now
     );
-    console.log('detail (after):', detail);
-    console.groupEnd();
+    detail.createdTime = getLocalISO8601(Date.now());
+
+    // console.log('detail (after):', detail);
+    // console.log('detail.createdTime:', detail.createdTime);
+    // console.groupEnd();
 
     this.dispatchEvent(
       new CustomEvent(
@@ -516,13 +603,13 @@ export class NewLogEntry extends LitElement {
           <li><accessible-select-field
             block-before="22"
             field-id="log-firingState"
-            label="Firing"
+            label="Status"
             .options=${this.stateOptions}
             value="${this.type}"
             required
             show-empty
             @change=${this.setSpecific.bind(this)}></accessible-select-field></li>
-          ${this._timeField}`;
+          ${this._temperatureField}`;
         break;
 
       case 'responsible':
@@ -565,7 +652,8 @@ export class NewLogEntry extends LitElement {
     // console.groupEnd();
     return html`
       <firing-logger-modal
-        btn-text="${getModalBtnText(this.type)}"
+        no-open
+        access-key="${this.accessKey}"
         heading="${getModalBtnText(this.type)}"
         @open=${this.handleOpen.bind(this)}>
         ${(this._open === true)
