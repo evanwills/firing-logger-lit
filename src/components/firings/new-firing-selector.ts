@@ -70,7 +70,7 @@ export class NewFiringSelector extends LoggerElement {
     _setData(_ok : boolean) : void {
       // console.group('<new-firing-selector>._setData()');
       if (this.store !== null) {
-        this.store.dispatch('getProgramsList', '', true)
+        this.store.dispatch('getProgramsList', '')
           .then(this._setDataThen.bind(this))
           .catch(storeCatch);
       }
