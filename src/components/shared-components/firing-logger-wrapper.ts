@@ -108,7 +108,7 @@ export class FiringLoggerWrapper extends LoggerElement {
       ? 'in'
       : 'out';
 
-    console.log('this.allowReset:', this.allowReset);
+    // console.log('this.allowReset:', this.allowReset);
     // console.log('this._user:', this._user);
     // console.log('this._userHasAuth(2):', this._userHasAuth(2));
 
@@ -143,7 +143,7 @@ export class FiringLoggerWrapper extends LoggerElement {
         </nav>
       </header>
 
-      <main><slot></slot></main>
+      <main aria-live="polite"><slot></slot></main>
 
       <login-ui
         .open=${this._showLogin}
