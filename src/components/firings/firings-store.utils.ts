@@ -1,4 +1,5 @@
-import type { IFiring, IFiringLogEntry, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
+import type { IFiring, TFiringsListItem, TGetFirningDataPayload } from '../../types/firings.d.ts';
+import type { IFiringLogEntry } from '../../types/firing-logs.d.ts';
 import type { CDataStoreClass, FActionHandler, IUpdateHelperData } from '../../types/store.d.ts';
 import type { ID, IIdObject, IKeyScalar, IKeyStr, TDateRange } from '../../types/data-simple.d.ts';
 import { isFiringLogEntry, isIFiring, isTFiringsListItem } from '../../types/firing.type-guards.ts';
