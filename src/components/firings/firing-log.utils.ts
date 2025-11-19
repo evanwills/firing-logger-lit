@@ -46,6 +46,12 @@ export const validateFiringLogEntry = (item: unknown) : string | null => {
   if (isISO8601(item.time) === false) {
     return getFiringError('time', item.time, 'string', 'IFiringLogEntry');
   }
+  if (isISO8601(item.createdTime) === false && item.createdTime !== null) {
+    return getFiringError('createdTime', item.createdTime, 'string or null', 'IFiringLogEntry');
+  }
+  if (isID(item.supersededByID) === false && item.supersededByID !== null) {
+    return getFiringError('supersededByID', item.time, 'string or null', 'IFiringLogEntry');
+  }
   if (isTFiringLogEntryType(item.type) === false) {
     return getFiringError('type', item.type, 'string', 'IFiringLogEntry');
   }
@@ -67,9 +73,6 @@ export const validateTempLogEntry = (item: unknown) : string | null => {
   }
   if (typeof (item as ITempLogEntry).timeOffset !== 'number') {
     return getFiringError('timeOffset', (item as ITempLogEntry).timeOffset, 'number', 'ITempLogEntry');
-  }
-  if (typeof (item as ITempLogEntry).stage !== 'number') {
-    return getFiringError('stage', (item as ITempLogEntry).stage, 'number', 'ITempLogEntry');
   }
   if (typeof (item as ITempLogEntry).tempExpected !== 'number') {
     return getFiringError('tempExpected', (item as ITempLogEntry).tempExpected, 'number', 'ITempLogEntry');
@@ -156,8 +159,14 @@ export const getNewLogEntry = (
   firingID: ID,
   userID: ID,
   actualStart : ISO8601 | null,
-  { type, notes, time } : INewLogEntryOptions,
+  { type, notes, time, createdTime } : INewLogEntryOptions,
 ) : IFiringLogEntry => {
+  // console.group('getNewLogEntry()');
+  // console.log('firingID:', firingID);
+  // console.log('userID:', userID);
+  // console.log('actualStart:', actualStart);
+  // console.log('options:', { type, notes, time, createdTime });
+  // console.groupEnd();
   const _time = (isISO8601(time) === true)
       ? time
       : getLocalISO8601(null);
@@ -169,9 +178,14 @@ export const getNewLogEntry = (
   return {
     id: getUID(),
     firingID,
+    userID,
+    createdTime: (isISO8601(createdTime) === true)
+      ? createdTime
+      : getLocalISO8601(Date.now()),
+    supersededByID: null,
     time: _time,
     timeOffset,
-    userID,
+
     type : (isTFiringLogEntryType(type))
       ? type
       : 'temp',
@@ -238,3 +252,18 @@ export const getScheduleLogEntry = (
   newStart: options.newStart,
   oldStart: options.oldStart,
 } as IScheduleLogEntry);
+
+export const getModalBtnText = (type: TFiringLogEntryType | '') : string => {
+  switch (type) {
+    case 'temp':
+      return 'Log temperature';
+    case 'firingState':
+      return 'Update Firing State';
+    case 'schedule':
+      return 'Reschedule Firing';
+    case 'responsible':
+      return 'Update responsibility';
+    default:
+      return 'Add Log Entry';
+  }
+}
