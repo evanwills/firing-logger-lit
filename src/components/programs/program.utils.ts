@@ -1,5 +1,5 @@
 import { html, type TemplateResult } from 'lit';
-import type { IProgramStep } from '../../types/programs.d.ts';
+import type { IProgram, IProgramStep } from '../../types/programs.d.ts';
 import type { CDataStoreClass } from '../../types/store.d.ts';
 import type { FConverter, ID } from '../../types/data-simple.d.ts';
 import { isID, isIkeyValue, isISO8601, isTCone } from '../../types/data.type-guards.ts';
@@ -108,7 +108,7 @@ export const validateProgramData = (program: unknown) : string | null => {
   }
 
   if (isNonEmptyStr(program, 'urlPart') === false) {
-    return getProgramError('urlPart', program.urlPart, 'string');
+    return getProgramError('urlPart', (program as IProgram).urlPart, 'string');
   }
 
   if (typeof program.description !== 'string') {
@@ -258,7 +258,7 @@ export const redirectProgram = (
   uid : ID,
   mode: string = '',
 ) : void => {
-  db.dispatch('getProgramURL', uid, false).then((url: string) => {
+  db.dispatch('getProgramURL', uid).then((url: unknown) : void => {
     if (url !== '') {
       const _ext = (mode !== '' && mode.startsWith('/') === false)
         ? `/${mode}`
