@@ -222,6 +222,7 @@ export const addNewFiringData : FActionHandler = async(
     );
     // console.log('hold:', hold);
     // console.log('user:', user);
+    // console.groupEnd();
 
     return  (hold === true)
       ? saveChangeOnHold(
@@ -233,7 +234,9 @@ export const addNewFiringData : FActionHandler = async(
         )
       : db.put('firings', data);
   } catch(error) {
+    console.group('addNewFiringData()');
     console.error('Caught error:', error);
+    console.groupEnd();
     throw error;
   }
 }
