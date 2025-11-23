@@ -138,8 +138,8 @@ export const renderStatusLogEntry = (
   // console.group('renderStatusLogEntry()');
   // console.log('item:', item);
   // console.log('item.id:', item.id);
-  // console.log('item.oldState:', item.oldState);
-  // console.log('item.newState:', item.newState);
+  // console.log('item.previous:', item.previous);
+  // console.log('item.current:', item.current);
   // console.log('firingStates:', firingStates);
   // console.log('user:', user);
   // console.log('canViewUser:', canViewUser);
@@ -149,8 +149,8 @@ export const renderStatusLogEntry = (
     ${renderTime(item)}
     <span class="firing-status">
       <strong>New Status:</strong>
-      ${getLabelFromOrderedEnum(firingStates, item.newState.toLowerCase())} <br />
-      <em>(was ${getLabelFromOrderedEnum(firingStates, item.oldState.toLowerCase())})</em>
+      ${getLabelFromOrderedEnum(firingStates, item.current.toLowerCase())} <br />
+      <em>(was ${getLabelFromOrderedEnum(firingStates, item.previous.toLowerCase())})</em>
     </span>
     ${(isUser(user)) ? renderUser(user, canViewUser) : ''}
     ${renderNotes(item)}

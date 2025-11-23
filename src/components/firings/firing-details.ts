@@ -631,15 +631,15 @@ export class FiringDetails extends LoggerElement {
       && isISO8601(time) === true
       && this.store !== null
     ) {
-      const oldState = this._firingState;
+      const previous = this._firingState;
       const output = getStatusLogEntry(
         firingID,
         userID,
         this._actualStart,
         {
           ...detail,
-          newState: firingState,
-          oldState: oldState,
+          current: firingState,
+          previous: previous,
         },
       );
       let doTempLog : boolean = false;
@@ -660,7 +660,7 @@ export class FiringDetails extends LoggerElement {
           break;
 
         case 'ready':
-          if (oldState === 'packing') {
+          if (previous === 'packing') {
             this._packed = time;
             change.packed = detail.time;
           }
@@ -708,7 +708,7 @@ export class FiringDetails extends LoggerElement {
           break;
         case 'empty':
           change.active = false;
-          if (oldState === 'unpacking') {
+          if (previous === 'unpacking') {
             this._unpacked = time;
             change.unpacked = time;
           }
@@ -999,18 +999,19 @@ export class FiringDetails extends LoggerElement {
       return;
     }
 
-    let newState : TFiringState = this._firingState;
-    // let activeState : TFiringActiveState = this._firingActiveState;
+    let current : TFiringState = this._firingState;
+    let activeState : TFiringActiveState = this._firingActiveState;
 
     if (this._canEnd === 'cancel') {
-      newState = 'cancelled';
-      // activeState = 'cancelled';
+      current = 'cancelled';
+      activeState = 'cancelled';
     } else if (this._firingState === 'active') {
-      newState = 'aborted';
-      // activeState = 'aborted';
+      current = 'aborted';
+      activeState = 'aborted';
     }
-    const oldState = this._firingState;
-    this._firingState = newState;
+    const previous = this._firingState;
+    this._firingState = current;
+    this._firingActiveState = activeState;
 
     if (this._canEnd !== ''
       && isNonEmptyStr(this._logNotes)
@@ -1020,7 +1021,7 @@ export class FiringDetails extends LoggerElement {
       this._handleStateLogEntry(
         this._firing?.id,
         this._user?.id,
-        { newState, oldState }
+        { current, previous }
       );
       this._toggleConfirmShowModal(false);
     }

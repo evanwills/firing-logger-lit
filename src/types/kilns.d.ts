@@ -253,8 +253,8 @@ export type IKilnStatusLogEntry = {
   created: ISO8601,
   userID: ID,
   type: 'fault' | 'observation' | 'mantenance' | 'note' | 'serviceState',
-  oldState: string,
-  newState: string,
+  previous: string,
+  current: string,
   notes: string,
 }
 

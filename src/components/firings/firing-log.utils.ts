@@ -100,11 +100,11 @@ export const validateStateLogEntry = (item: unknown) : string | null => {
   if ((item as IStateLogEntry).type !== 'firingState') {
     return getFiringError('type', (item as IStateLogEntry).type, 'string', 'IStateLogEntry');
   }
-  if (isTFiringState((item as IStateLogEntry).newState) === false) {
-    return getFiringError('newState', (item as IStateLogEntry).newState, 'string', 'IStateLogEntry');
+  if (isTFiringState((item as IStateLogEntry).current) === false) {
+    return getFiringError('current', (item as IStateLogEntry).current, 'string', 'IStateLogEntry');
   }
-  if (isTFiringState((item as IStateLogEntry).oldState) === false) {
-    return getFiringError('tempExpected', (item as IStateLogEntry).oldState, 'string', 'IStateLogEntry');
+  if (isTFiringState((item as IStateLogEntry).previous) === false) {
+    return getFiringError('tempExpected', (item as IStateLogEntry).previous, 'string', 'IStateLogEntry');
   }
 
   return null;
@@ -218,8 +218,8 @@ export const getStatusLogEntry = (
         type: 'firingState',
       },
     ),
-    oldState: options.oldState,
-    newState: options.newState,
+    previous: options.previous,
+    current: options.current,
   } as IStateLogEntry);
 
 export const getStageLogEntry = (
@@ -289,8 +289,8 @@ export const getScheduleLogEntry = (
       type: 'schedule',
     },
   ),
-  newStart: options.newStart,
-  oldStart: options.oldStart,
+  current: options.current,
+  previous: options.previous,
 } as IScheduleLogEntry);
 
 export const getModalBtnText = (type: TFiringLogEntryType | '') : string => {

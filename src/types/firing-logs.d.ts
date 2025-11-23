@@ -46,7 +46,7 @@ export interface IFiringLogEntry {
    * @property The time the log entry was created (if different to
    *           the time it applies to)
    */
-  createdTime: null | ISO8601,
+  createdTime: ISO8601,
 
   /**
    * @property The time the log entry applies to
@@ -59,7 +59,7 @@ export interface IFiringLogEntry {
   time: ISO8601,
 
   /**
-   * @property Once the firing program hass tarted this is the number
+   * @property Once the firing program has started this is the number
    *           of seconds from when the firing went active.
    */
   timeOffset: number | null,
@@ -124,8 +124,6 @@ export interface ITempLogEntry extends IFiringLogEntry {
    */
   timeOffset: number,
 
-  stage: number,
-
   /**
    * @property The expected temperature of the kiln
    *
@@ -167,6 +165,10 @@ export interface IStageLogEntry extends IFiringLogEntry {
    * @property The ID of the firing the log entry is for
    */
   firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
 
   /**
@@ -175,6 +177,10 @@ export interface IStageLogEntry extends IFiringLogEntry {
    *           previous version of the log entry.
    */
   supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   */
   type: 'stage',
 
   /**
@@ -192,18 +198,62 @@ export interface IStageLogEntry extends IFiringLogEntry {
    *           time the data was recorded.
    */
   time: ISO8601,
+
+  /**
+   * @property Once the firing program hass tarted this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: number,
+
+  /**
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
+   */
   notes: string|null,
+
+  /**
+   * @property Stage/Step in the program
+   */
   stage: number,
+
+  /**
+   * @property Program stage firing rate (degrees per hour)
+   */
   rate: number,
+
+  /**
+   * @property target temperature at the end of the stage
+   */
   endTemp: number,
+
+  /**
+   * @property number of minutes to hold at end/target temperature
+   *           before moving on to the next stage/step of the program
+   */
   hold: number,
+
+  /**
+   * @property Expected date/time when the stage/step will end
+   */
   expectedEnd: ISO8601,
 };
 
 export interface IStateLogEntry extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
   firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
 
   /**
@@ -214,22 +264,49 @@ export interface IStateLogEntry extends IFiringLogEntry {
   supersededByID: ID | null,
 
   /**
+   * @property The type of log entry
+   */
+  type: 'firingState',
+
+  /**
    * @property The time the log entry was created (if different to
    *           the time it applies to)
    */
   createdTime: null | ISO8601,
-  type: 'firingState',
-  time: ISO8601,
-  timeOffset: number | null,
 
   /**
-   * @property If this log entry is updated,  another log entry,
-   *           this is the ID of that log entry.
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
    */
-  supersededByID: ID,
+  time: ISO8601,
+
+  /**
+   * @property Once the firing program has started this is the number
+   *           of seconds from when the firing went active.
+   */
+  timeOffset: number,
+
+  /**
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
+   */
   notes: string|null,
-  newState: TFiringState,
-  oldState: TFiringState,
+
+  /**
+   * @property The current status of the firing
+   */
+  current: TFiringState,
+
+  /**
+   * @property The previous status of the firing
+   */
+  previous: TFiringState,
 };
 
 export interface IScheduleLogEntry extends IFiringLogEntry {
@@ -264,7 +341,7 @@ export interface IScheduleLogEntry extends IFiringLogEntry {
    * @property The time the log entry was created (if different to
    *           the time it applies to)
    */
-  createdTime: null | ISO8601,
+  createdTime: ISO8601,
 
   /**
    * @property The time the log entry applies to
@@ -277,7 +354,7 @@ export interface IScheduleLogEntry extends IFiringLogEntry {
   time: ISO8601,
 
   /**
-   * @property Once the firing program hass tarted this is the number
+   * @property Once the firing program has started this is the number
    *           of seconds from when the firing went active.
    */
   timeOffset: null,
@@ -291,19 +368,30 @@ export interface IScheduleLogEntry extends IFiringLogEntry {
   notes: string|null,
 
   /**
-   * @property the time the firing is now scheduled to start
+   * @property The current time the firing is scheduled to start
    */
-  newStart: ISO8601,
+  current: ISO8601,
 
   /**
-   * @property the time the firing was previously scheduled to start
+   * @property The time the firing was previously scheduled to start
    */
-  oldStart: ISO8601,
+  previous: ISO8601,
 };
 
 export interface IDamperLogEntry extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
   firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
 
   /**
@@ -312,24 +400,65 @@ export interface IDamperLogEntry extends IFiringLogEntry {
    *           previous version of the log entry.
    */
   supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   */
   type: 'damper',
+
 
   /**
    * @property The time the log entry was created (if different to
    *           the time it applies to)
    */
-  createdTime: null | ISO8601,
+  createdTime: ISO8601,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
   time: ISO8601,
+
+  /**
+   * @property Once the firing program has started this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: number,
+
+  /**
+   * @property The percentage the exhaust damper is open
+   *           (a number between 0 & 100)
+   */
   damperAdjustment: number,
+
+  /**
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
+   */
   notes: string|null,
 };
 
 export interface IBurnerStateLogEntry  extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
-  firingID: ID,
-  userID: ID,
 
+  /**
+   * @property The ID of the firing the log entry is for
+   */
+  firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
+  userID: ID,
 
   /**
    * @property If this log entry is updated, a new log entry is
@@ -337,20 +466,67 @@ export interface IBurnerStateLogEntry  extends IFiringLogEntry {
    *           previous version of the log entry.
    */
   supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   */
   type: 'burner',
 
   /**
    * @property The time the log entry was created (if different to
    *           the time it applies to)
    */
-  createdTime: null | ISO8601,
+  createdTime: ISO8601,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
   time: ISO8601,
+
+  /**
+   * @property Once the firing program has started this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: number,
+
+  /**
+   * @property The ID of the burner for that particular kiln
+   */
   burnerID: ID,
+
+  /**
+   * @property The position of the burner in the kiln
+   */
   burnerPosition: string,
+
+  /**
+   * @property The type of burner
+   */
   burnerType: string,
+
+  /**
+   * @property How far open the burner valve is open
+   *           (a number between 1 & 100)
+   */
   valvePosition: number,
+
+  /**
+   * @property How far open the burner's primary air control is open
+   *           (a number between 1 & 100)
+   */
   primaryAir: number,
+
+  /**
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
+   */
   notes: string|null,
 };
 
@@ -470,8 +646,8 @@ export interface INewFiringStateLogEntryOptions {
   notes?: string | null,
   createdTime?: ISO8601 | null,
   time?: ISO8601,
-  newState: TFiringState,
-  oldState: TFiringState,
+  current: TFiringState,
+  previous: TFiringState,
 };
 
 export interface INewStageLogEntryOptions {
@@ -497,6 +673,6 @@ export interface INewScheduleLogEntryOptions {
   notes?: string | null,
   createdTime?: ISO8601 | null,
   time?: ISO8601,
-  newStart: ISO8601,
-  oldStart: ISO8601,
+  current: ISO8601,
+  previous: ISO8601,
 };
