@@ -16,6 +16,7 @@ import type {
   IResponsibleLogEntry,
   IStateLogEntry,
   TFiringLogEntryType,
+  IScheduleLogEntry,
 } from './firing-logs.d.ts';
 import { isTFiringType } from './program.type-guards.ts';
 
@@ -84,6 +85,12 @@ export const isTempLog = (item : unknown) : item is ITempLogEntry => (
   && typeof (item as ITempLogEntry).tempExpected === 'number'
   && typeof (item as ITempLogEntry).tempActual === 'number'
   && typeof (item as ITempLogEntry).state === 'string'
+);
+
+export const isSchedulepLog = (item : unknown) : item is IScheduleLogEntry => (
+  isFiringLogEntry(item) === true
+  && isISO8601((item as IScheduleLogEntry).newStart) === true
+  && isISO8601((item as IScheduleLogEntry).oldStart) === true
 );
 
 export const isRespLog = (item : unknown) : item is IResponsibleLogEntry => (

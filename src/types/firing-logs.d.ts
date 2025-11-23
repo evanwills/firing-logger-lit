@@ -1,5 +1,6 @@
 // import type { SVGTemplateResult, TemplateResult } from 'lit';
 import type { ID, ISO8601 } from './data-simple.d.ts';
+import type { IProgramStep } from "./programs.d.ts";
 
 export type TFiringLogEntryType = 'temp' |
   'burner' |
@@ -232,8 +233,19 @@ export interface IStateLogEntry extends IFiringLogEntry {
 };
 
 export interface IScheduleLogEntry extends IFiringLogEntry {
+  /**
+   * @property Unique ID of the log entry
+   */
   id: ID,
+
+  /**
+   * @property The ID of the firing the log entry is for
+   */
   firingID: ID,
+
+  /**
+   * @property The ID of the user who submitted the log entry
+   */
   userID: ID,
 
   /**
@@ -242,6 +254,10 @@ export interface IScheduleLogEntry extends IFiringLogEntry {
    *           previous version of the log entry.
    */
   supersededByID: ID | null,
+
+  /**
+   * @property The type of log entry
+   */
   type: 'schedule',
 
   /**
@@ -249,17 +265,39 @@ export interface IScheduleLogEntry extends IFiringLogEntry {
    *           the time it applies to)
    */
   createdTime: null | ISO8601,
+
+  /**
+   * @property The time the log entry applies to
+   *
+   * __Note:__ For firings that are currently under way, this is
+   *           usually the current time. However, for firings that
+   *           are being logged retrospectively, this will be the
+   *           time the data was recorded.
+   */
   time: ISO8601,
+
+  /**
+   * @property Once the firing program hass tarted this is the number
+   *           of seconds from when the firing went active.
+   */
   timeOffset: null,
 
   /**
-   * @property If this log entry is updated, a new log entry is
-   *           created with the updated data, this is the ID of
-   *           previous version of the log entry.
+   * @property Any additional info that's worth adding.
+   *
+   * __Note:__ In some instances (like aborting a firing) this
+   *           becomes a required field.
    */
-  supersededByID: ID | null,
   notes: string|null,
+
+  /**
+   * @property the time the firing is now scheduled to start
+   */
   newStart: ISO8601,
+
+  /**
+   * @property the time the firing was previously scheduled to start
+   */
   oldStart: ISO8601,
 };
 
@@ -434,6 +472,15 @@ export interface INewFiringStateLogEntryOptions {
   time?: ISO8601,
   newState: TFiringState,
   oldState: TFiringState,
+};
+
+export interface INewStageLogEntryOptions {
+  timeOffset: number,
+  createdTime?: ISO8601 | null,
+  time?: ISO8601,
+  notes?: string | null,
+  tempActual: number,
+  programSteps: IProgramStep[],
 };
 
 export interface INewTempLogEntryOptions {
