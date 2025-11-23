@@ -20,11 +20,15 @@ import type {
   ITempLogEntry,
   IScheduleLogEntry,
   TFiringLogEntryType,
+  IStageLogEntry,
+  INewStageLogEntryOptions,
 } from '../../types/firing-logs.d.ts';
 import { getUID } from '../../utils/data.utils.ts';
 import { getLocalISO8601 } from '../../utils/date-time.utils.ts';
 import { isNonEmptyStr } from '../../utils/string.utils.ts';
 import { getFiringError } from './firing-data.utils.ts';
+import { isFiringStep } from "../../types/program.type-guards.ts";
+import { getStepDuration } from "../../utils/conversions.utils.ts";
 
 
 export const validateFiringLogEntry = (item: unknown) : string | null => {
@@ -166,7 +170,7 @@ export const getNewLogEntry = (
   // console.log('userID:', userID);
   // console.log('actualStart:', actualStart);
   // console.log('options:', { type, notes, time, createdTime });
-  // console.groupEnd();
+
   const _time = (isISO8601(time) === true)
       ? time
       : getLocalISO8601(null);
@@ -174,6 +178,10 @@ export const getNewLogEntry = (
   const timeOffset = (isISO8601(actualStart))
     ? Math.round((new Date(_time).getTime() - new Date(actualStart).getTime()) / 1000)
     : null;
+
+  // console.log('_time:', _time);
+  // console.log('timeOffset:', timeOffset);
+  // console.groupEnd();
 
   return {
     id: getUID(),
@@ -214,6 +222,39 @@ export const getStatusLogEntry = (
     newState: options.newState,
   } as IStateLogEntry);
 
+export const getStageLogEntry = (
+  firingID: ID,
+  userID: ID,
+  actualStart : ISO8601 | null,
+  options : INewStageLogEntryOptions,
+) : IStageLogEntry => {
+  const stage = options.programSteps.find((item) => item.endTemp < options.tempActual);
+
+  if (isFiringStep(stage) && isISO8601(options.time)) {
+    const { order, ...props } = stage;
+    return {
+      ...getNewLogEntry(
+        firingID,
+        userID,
+        actualStart,
+        {
+          ...options,
+          type: 'stage',
+        },
+      ),
+      stage: order as number,
+      endTemp: props.endTemp,
+      rate: props.rate,
+      hold: props.hold,
+      expectedEnd: getLocalISO8601(
+        new Date(options.time).getTime() + getStepDuration(options.programSteps, order)
+      ),
+    } as IStageLogEntry;
+  }
+
+  throw new Error('Could not create new stage log entry');
+};
+
 export const getTempLogEntry = (
   firingID: ID,
   userID: ID,
@@ -246,7 +287,6 @@ export const getScheduleLogEntry = (
     {
       ...options,
       type: 'schedule',
-      time: getLocalISO8601(null),
     },
   ),
   newStart: options.newStart,
@@ -255,14 +295,18 @@ export const getScheduleLogEntry = (
 
 export const getModalBtnText = (type: TFiringLogEntryType | '') : string => {
   switch (type) {
-    case 'temp':
-      return 'Log temperature';
     case 'firingState':
       return 'Update Firing State';
+    case 'issue':
+      return 'Report an issue';
+    case 'observation':
+      return 'Record an observation';
+    case 'responsible':
+        return 'Update responsibility';
     case 'schedule':
       return 'Reschedule Firing';
-    case 'responsible':
-      return 'Update responsibility';
+    case 'temp':
+      return 'Log temperature';
     default:
       return 'Add Log Entry';
   }
