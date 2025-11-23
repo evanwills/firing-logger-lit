@@ -108,4 +108,29 @@ ul.firing-details-list.cancel {
     text-align: right;
   }
 }
+
+.btn-wrap {
+  container-name: log-btns;
+  container-type: inline-size;
+}
+
+.log-btns {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-around;
+
+  button { display: block; }
+
+  @container log-btns (inline-size >= 21rem) {
+    flex-direction: row;
+    justify-content: space-around;
+
+    button {
+      display: inline-block;
+      width: auto;
+    }
+  }
+}
 `;
