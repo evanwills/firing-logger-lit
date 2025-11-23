@@ -29,6 +29,7 @@ import '../input-fields/accessible-select-field.ts';
 import '../input-fields/accessible-temporal-field.ts';
 import '../input-fields/accessible-text-field.ts';
 import { getModalBtnText } from "./firing-log.utils.ts";
+import { isNonEmptyStr } from "../../utils/string.utils.ts";
 
 @customElement('new-log-entry')
 export class NewLogEntry extends LitElement {
@@ -167,6 +168,9 @@ export class NewLogEntry extends LitElement {
   @state()
   _temperatureField : TemplateResult | string = '';
 
+  @state()
+  _forceType : boolean = false;
+
   _firingLoggerModal : FiringLoggerModal | null = null;
 
 
@@ -303,6 +307,12 @@ export class NewLogEntry extends LitElement {
   // START: public methods
 
   showModal(logType : TFiringLogEntryType | '') {
+    // console.group('<new-log-entry>.showModal()');
+    // console.log('logType:', logType);
+    // console.log('this._forceType:', this._forceType);
+    // console.log('this._forceType:', this._forceType);
+    // console.log('this._firingLoggerModal', this._firingLoggerModal);
+
     if (this._firingLoggerModal === null) {
       const tmp = this.shadowRoot?.querySelector('firing-logger-modal');
 
@@ -313,13 +323,17 @@ export class NewLogEntry extends LitElement {
 
     if (this._firingLoggerModal instanceof FiringLoggerModal) {
       if (logType === '') {
-      this._setRequireNotes();
-      this._type = '';
+        this._setRequireNotes();
+        this._type = '';
+        this._forceType = false;
       } else {
+        this._forceType = true;
         this._updateTypeInner(logType);
       }
+
       this._firingLoggerModal.showModal();
     }
+    // console.groupEnd();
   }
 
   //  END:  public methods
@@ -539,9 +553,9 @@ export class NewLogEntry extends LitElement {
   // START: helper render methods
 
   _getTemperatureField() : TemplateResult {
-    console.group('<new-log-entry>._getTemperatureField()');
-    console.log('this.unit:', this.unit);
-    console.groupEnd();
+    // console.group('<new-log-entry>._getTemperatureField()');
+    // console.log('this.unit:', this.unit);
+    // console.groupEnd();
     return html`<li><accessible-number-field
       block-before="22"
       field-id="log-tempActual"
@@ -553,16 +567,16 @@ export class NewLogEntry extends LitElement {
   }
 
   _getTimeField() : TemplateResult {
-    console.group('<new-log-entry>._getTimeField()');
-    console.log('this._temporalType:', this._temporalType);
-    console.log('this._max:', this._max);
-    console.log('this._humanNow:', this._humanNow);
+    // console.group('<new-log-entry>._getTimeField()');
+    // console.log('this._temporalType:', this._temporalType);
+    // console.log('this._max:', this._max);
+    // console.log('this._humanNow:', this._humanNow);
     const min : string | null = (isISO8601(this.minTime) === true)
       ? makeISO8601simple(this.minTime)
       : null;
 
-    console.log('min:', min);
-    console.groupEnd();
+    // console.log('min:', min);
+    // console.groupEnd();
     return html`<li><accessible-temporal-field
         block-before="22"
         field-id="log-time"
@@ -576,12 +590,14 @@ export class NewLogEntry extends LitElement {
   }
 
   _renderCustomFields() : TemplateResult  {
-    console.group('<new-log-entry>._renderCustomFields()');
-    console.log('this._type:', this._type);
-    console.log('this._max:', this._max);
-    console.log('this._now:', this._now);
-    console.log('this._time:', this._time);
-    console.log('this._humanNow:', this._humanNow);
+    // console.group('<new-log-entry>._renderCustomFields()');
+    // console.log('this.type:', this.type);
+    // console.log('this._type:', this._type);
+    // console.log('this._max:', this._max);
+    // console.log('this._now:', this._now);
+    // console.log('this._time:', this._time);
+    // console.log('this._humanNow:', this._humanNow);
+
     const cancel = html`<button
       class="secondary"
       type="button"
@@ -605,7 +621,7 @@ export class NewLogEntry extends LitElement {
             field-id="log-firingState"
             label="Status"
             .options=${this.stateOptions}
-            value="${this.type}"
+            .value=${this._type}
             required
             show-empty
             @change=${this.setSpecific.bind(this)}></accessible-select-field></li>
@@ -617,7 +633,7 @@ export class NewLogEntry extends LitElement {
         break;
     }
 
-    console.groupEnd();
+    // console.groupEnd();
     return html`${this._getTimeField()}
       ${output}
       <li><accessible-text-field
@@ -634,6 +650,28 @@ export class NewLogEntry extends LitElement {
         @click=${this.handleSubmit.bind(this)}>Save</button> ${cancel}</li>`;
   }
 
+  _renderTypeSelector() : TemplateResult | string {
+    // console.group('<new-log-entry>._renderTypeSelector()');
+    // console.log('this._forceType:', this._forceType);
+    // console.log('(this._forceType === true):', (this._forceType === true));
+    // console.log('this._type:', this._type);
+    // console.log('isNonEmptyStr(this._type):', isNonEmptyStr(this._type));
+    // console.log('(this._forceType === true && isNonEmptyStr(this._type)):', (this._forceType === true && isNonEmptyStr(this._type)));
+    // console.groupEnd();
+    return (this._forceType === true && isNonEmptyStr(this._type))
+      ? ''
+      : html`<li>
+        <accessible-select-field
+          block-before="22"
+          field-id="log-type"
+          label="Log type"
+          .options=${this._getOptions()}
+          ?show-empty=${emptyOrNull(this._type)}
+          value="${this._type}"
+          @change=${this.updateType.bind(this)}></accessible-select-field>
+      </li>`;
+  }
+
   //  END:  helper render methods
   // ------------------------------------------------------
   // START: main render method
@@ -644,8 +682,6 @@ export class NewLogEntry extends LitElement {
     // console.log('this._type (before):', this._type);
     this._setType();
 
-    const options = this._getOptions();
-
     // console.log('this._type (after):', this._type);
     // console.log('this._logTypes:', this._logTypes);
     // console.log('options:', options);
@@ -654,18 +690,11 @@ export class NewLogEntry extends LitElement {
       <firing-logger-modal
         no-open
         access-key="${this.accessKey}"
-        heading="${getModalBtnText(this.type)}"
+        heading="${getModalBtnText(this._type)}"
         @open=${this.handleOpen.bind(this)}>
         ${(this._open === true)
           ? html`<ul class="details w-30 btn-container">
-              <li><accessible-select-field
-                block-before="22"
-                field-id="log-type"
-                label="Log type"
-                .options=${options}
-                ?show-empty=${emptyOrNull(this.type)}
-                value="${this.type}"
-                @change=${this.updateType.bind(this)}></accessible-select-field></li>
+              ${this._renderTypeSelector()}
               ${this._renderCustomFields()}
             </ul>`
           : ''
