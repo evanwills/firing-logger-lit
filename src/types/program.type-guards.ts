@@ -1,15 +1,40 @@
-import { validateProgramData, validateProgramStep } from '../components/programs/program.utils.ts';
+import { isNumMinMax } from "../utils/data.utils.ts";
 import { isNonEmptyStr } from "../utils/string.utils.ts";
-import { isID, isIkeyValue } from "./data.type-guards.ts";
+import { isID, isIdNameObject, isIkeyValue, isISO8601, isTCone } from "./data.type-guards.ts";
 import type { IProgramStep, IProgram, PProgramDetails, TFiringType, TProgramListRenderItem } from './programs.d.ts';
 
-export const isProgram = (obj: unknown) : obj is IProgram => {
-  return (validateProgramData(obj) === null);
-}
+export const isProgram = (program: unknown) : program is IProgram => (
+  isIdNameObject(program) === true
+  && isID(program.kilnID) === true
+  && isNumMinMax(program.controllerProgramID, 1, 100) === true
+  && isTFiringType(program.type) === true
+  && isNonEmptyStr(program, 'urlPart')
+  && typeof program.description === 'string'
+  && isNumMinMax(program.maxTemp, 0, 1500)
+  && isTCone(program.cone)
+  && isNumMinMax(program.duration, 1, 864000)
+  && isNumMinMax(program.averageRate, 0, 500)
+  && Array.isArray(program.steps)
+  && program.steps.length > 0
+  && program.steps.every(isFiringStep)
+  && isISO8601(program.created)
+  && isID(program.createdBy)
+  && isNumMinMax(program.version, 0, 1000)
+  && typeof program.superseded === 'boolean'
+  && (program.supersedesID === null || isID(program.supersedesID))
+  && isNumMinMax(program.useCount, 0, 10000)
+  && typeof program.deleted === 'boolean'
+  && typeof program.locked === 'boolean'
+);
 
-export const isFiringStep = (obj : unknown) : obj is IProgramStep => {
-  return (validateProgramStep(obj) === null);
-}
+export const isIProgramStep = (step : unknown) : step is IProgramStep => (
+  isIkeyValue(step) === true
+  && isNumMinMax((step as IProgramStep).order, 1, 100)   // step order in program, starting at 1
+  && isNumMinMax((step as IProgramStep).endTemp, 0, 1500) // positive degrees
+  && isNumMinMax((step as IProgramStep).rate, 0, 500) // degrees per hour
+  && isNumMinMax((step as IProgramStep).hold, 0, 1440) // minutes to hold at end temperature
+);
+export const isFiringStep = isIProgramStep;
 
 export const isPProgramDetails = (obj : unknown) : obj is PProgramDetails => (
   typeof (obj as PProgramDetails).program !== 'undefined'
