@@ -96,7 +96,7 @@ export const durationFromSteps = (steps: IProgramStep[]) : number => {
   return Math.round(output);
 };
 
-export const durationFromStep = (steps: IProgramStep[], i : number) : string => {
+export const getStepDuration = (steps: IProgramStep[], i : number) : number => {
   let diff : number = 0;
 
   if (steps.length > 0) {
@@ -107,8 +107,12 @@ export const durationFromStep = (steps: IProgramStep[], i : number) : string => 
     }
   }
 
-  return hoursFromSeconds((diff / steps[i].rate) * 3600 + (steps[i].hold * 60));
-}
+  return (diff / steps[i].rate) * 3600 + (steps[i].hold * 60);
+};
+
+export const durationFromStep = (steps: IProgramStep[], i : number) : string => hoursFromSeconds(
+  getStepDuration(steps, i),
+);
 
 export const maxTempFromSteps = (steps: IProgramStep[]) : number => {
   if (steps.length === 0) {
